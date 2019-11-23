@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 var discord = require('discord.js');
 var roblox = require('noblox.js');
 var Trello = require('node-trello');
@@ -6,23 +8,21 @@ var fs = require('fs');
 var request = require('request');
 var cheerio = require('cheerio');
 
-var sleep = require('sleep')
+var sleep = require('sleep');
 var time = require('time');
 
-var t = new Trello('3cf6fcf74eb6e1dde99556ccf2576ea1', '776f89753f0b74aaa202a5f679298eaf2873b8e474b074f9ceafd58013fa1640');
+var t = new Trello(process.env.TRELLO_KEY, process.env.TRELLO_TOKEN);
 
 var client = new discord.Client();
-var token = 'MjQ4ODc2MzEzNzc4MDYxMzEy.DN5CeA.coP03r7-E6u0T8gNjA_ZJUvlhUc'
-client.login(token);
-console.log('Client logged in!');
+client.login(process.env.DISCORD_TOKEN);
 
-var settings = require('./noblox.js-server/settings.json')
+/*var settings = require('./noblox.js-server/settings.json')
 const COOKIE = settings.cookie
 
 function login () {
     return roblox.cookieLogin(COOKIE)
 }
-login()
+login()*/
 
 var currentActivityNumber;
 
@@ -87,7 +87,7 @@ client.on('error', err => {
 
 function restart(client) {
     client.destroy().then(() => {
-        client.login(token).then(() => {
+        client.login(process.env.DISCORD_TOKEN).then(() => {
             var guild = client.guilds.find(x => x.name === 'NS Roblox');
             if (guild) {
                 var admin_logschannel = guild.channels.find(x => x.name === 'admin_logs');
@@ -254,7 +254,7 @@ const cmdsEmbeds = [
 var joindatecache = {};
 
 var convertedTimezones;
-fs.readFile('/home/pi/convertedTimezones.txt', (err, data) => {
+fs.readFile('./convertedTimezones.txt', (err, data) => {
     convertedTimezones = JSON.parse(data);
 });
 
@@ -1386,9 +1386,9 @@ client.on('message', async (message) => {
         if (isAdmin(member)) {
             logCommand(member.nickname || message.author.username, command, message, nsadmin_logschannel);
             if (message.channel == hrchannel) {
-                message.channel.send('<https://docs.google.com/document/d/1ZrRyEsZOHgWANY9pgCurrV1wv3xVheG8Y0LzHgajdAw/edit?usp=sharing> - Training Protocols');
-                message.channel.send('<https://docs.google.com/spreadsheets/d/1F-7zDzl5S3BYsh5YTUj_kWaKhDkCCn0Mra6oud7ft0Q/edit?usp=sharing> - Training Logs');
-                message.channel.send('<https://docs.google.com/spreadsheets/d/1PEq7u7qaueFbuE-aFBqMJLBnLFX7vOcS2darZE_pDwQ/edit?usp=sharing> - Malicious Spreadsheets');
+                message.channel.send(`<${process.env.TP_DOC}> - Training Protocols`);
+                message.channel.send(`<${process.env.TL_DOC}g> - Training Logs`);
+                message.channel.send(`<${process.env.MS_DOC}> - Malicious Spreadsheets`);
             } else {
                 message.channel.send('Wrong channel!');
             }
@@ -1401,7 +1401,7 @@ client.on('message', async (message) => {
         if (isAdmin(member)) {
             logCommand(member.nickname || message.author.username, command, message, nsadmin_logschannel);
             if (message.channel == hrchannel) {
-                message.channel.send('<https://docs.google.com/spreadsheets/d/1F-7zDzl5S3BYsh5YTUj_kWaKhDkCCn0Mra6oud7ft0Q/edit?usp=sharing> - Training Logs');
+                message.channel.send(`<${process.env._TL_DOC}> - Training Logs`);
             } else {
                 message.channel.send('Wrong channel!');
             }
@@ -1414,7 +1414,7 @@ client.on('message', async (message) => {
         if (isAdmin(member)) {
             logCommand(member.nickname || message.author.username, command, message, nsadmin_logschannel);
             if (message.channel == hrchannel) {
-                message.channel.send('<https://docs.google.com/spreadsheets/d/1PEq7u7qaueFbuE-aFBqMJLBnLFX7vOcS2darZE_pDwQ/edit?usp=sharing> - Malicious Spreadsheets');
+                message.channel.send(`<${process.env.MS_DOC}> - Malicious Spreadsheets`);
             } else {
                 message.channel.send('Wrong channel!');
             }
@@ -1427,7 +1427,7 @@ client.on('message', async (message) => {
         if (isAdmin(member)) {
             logCommand(member.nickname || message.author.username, command, message, nsadmin_logschannel);
             if (message.channel == hrchannel) {
-                message.channel.send('<https://docs.google.com/document/d/1ZrRyEsZOHgWANY9pgCurrV1wv3xVheG8Y0LzHgajdAw/edit?usp=sharing> - Training Protocols');
+                message.channel.send(`<${process.env.TP_DOC}> - Training Protocols`);
             } else {
                 message.channel.send('Wrong channel!');
             }
@@ -2427,7 +2427,7 @@ client.on('message', async (message) => {
         return;
     }
     if (isCommand('lastupdate', message)) {
-        fs.stat('/home/pi/nsadmin.js', (err, stats) => {
+        fs.stat('..', (err, stats) => {
             if (!err) {
                 message.channel.send(getEmbed('NSadmin was last updated on', stats.mtime));
             } else {
