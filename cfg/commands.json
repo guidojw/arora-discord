@@ -1,0 +1,113 @@
+{
+  "commands": [
+    {
+      "main1": [
+        "**/amiadmin** *[username]*: Tells if you're a server admin.",
+        "**/isadmin** *[username]*: Equivalent of **/amiadmin**.",
+        "**/reason** *[username]*: If suspended, posts the duration and reason of suspension of given/your nickname.",
+        "**/suspendinfo** *[username]*: Equivalent of **/reason**.",
+        "**/getshout**: Fetches current group shout, author and date.",
+        "**/groupshout**: Equivalent of **/getshout**.",
+        "**/suggest** *\",suggestion,\"*: Suggests suggestion in the suggestions channel, suggestion must be between double quotation marks.",
+        "**/userid** *[username]*: Fetches userId of username given/your nickname.",
+        "**/getuserid** *[username]*: Equivalent of **/userid**.",
+        "**/rank** *[username]*: Fetches the group rank of username given/your nickname.",
+        "**/getrank** *[username]*: Equivalent of **/rank**.",
+        "**/role** *[username]*: Fetches the group role of username given/your nickname.",
+        "**/getrole** *[username]*: Equivalent of **/role**."
+      ], "main2": [
+        "**/joindate** *[username]*: Fetches Join Date of username given/your nickname.",
+        "**/age** *[username]*: Fetches AccountAge of username given/your nickname.",
+        "**/playerurl** *[username]*: Posts a link of the profile of username given/your nickname.",
+        "**/userurl** *[username]*: Equivalent of **/playerurl**.",
+        "**/url** *[username]*: Equivalent of **/playerurl**.",
+        "**/suggestqotd** *\"suggestion\"*: Suggests QOTD suggestion on the Trello board.",
+        "**/activities**: Postst a list of all activities.",
+        "**/statuses**: Equivalent of **/activities**.",
+        "**/update** *[username]*: Updates roles of username given/you.",
+        "**/notdutch**: Gives command's author the Not Dutch role which will prevent one from chatting in #dutchland.",
+        "**/trainings** *[trainingid]*: DMs command's author information about training with given ID/all trainings.",
+        "**/traininginfo** *[trainingid]*: Equivalent of **/trainings**.",
+        "**/traininglist** *[trainingid]*: Equivalent of **/trainings**.",
+        "**/training** *[trainingid]*: Equivalent of **/trainings**."
+      ], "main3": [
+        "**/optout**: Gives command's author the No Training Announcements role which will disable the #trainings channel.",
+        "**/optin**: Removes command's author's No Training Announcements role which will enable the #trainings channel."
+      ], "misc1": [
+        "**/rr**: Posts a link of the Rules & Regulations.",
+        "**/rulesregulations**: Equivalent of **/rr**.",
+        "**/group**: Posts a link of the group's page.",
+        "**/grouppage**: Equivalent of **/group**.",
+        "**/grouplink**: Equivalent of **/group**.",
+        "**/game**: Posts a link of the main game's page.",
+        "**/gamepage**: Equivalent of **/game**.",
+        "**/trello**: Posts link of the development board on Trello.",
+        "**/ttdt**: Posts a link of the Theoretical Train Driver Test II.",
+        "**/theoretical**: Equivalent of **/ttdt**.",
+        "**/ptdt**: Posts a link of the Practical Train Driver Test II.",
+        "**/practical**: Equivalent of **/ptdt**.",
+        "**/time** *[timezone]*: Posts time of timezone (abbreviation). Defaults to Dutch time.",
+        "**/date** *[timezone]*: Posts local time, date, weekday and timezone information of given timezone (abbreviation). Defaults to Dutch time.",
+        "**/unix**: Posts current epoch time.",
+        "**/epoch**: Equivalent of **/unix**.",
+        "**/place** *timezone*: Posts region of timezone (abbreviation)."
+      ], "misc2": [
+        "**/groupcenter**: Posts a link of the Group Center.",
+        "**/groupcentre**: Equivalent of **/groupcenter**.",
+        "**/gc**: Equivalent of **/groupcenter**.",
+        "**/discord**: Posts link to the server."
+      ], "HR1": [
+        "**/suspend** *username, days[, rankback], \",reason\"*: Suspends username in group for given amount of days.",
+        "**/promote** *username*: Promotes username in group.",
+        "**/pban** *username*: Pbans username from NS games.",
+        "**/shout** *[\"clear\"]*/*\"content\"*: Posts shout with given content to the group.",
+        "**/clearreports**: Clears the reports channel.",
+        "**/uw**: Posts a link of the Updates Workplace.",
+        "**/updatesworkplace**: Equivalent of **/uw**.",
+        "**/docs**: Posts links of all HR related documentss.",
+        "**/hrdocs**: Equivalent of **/docs**.",
+        "**/trainingslogs**: Posts a link of the Training Logs Spreadsheets.",
+        "**/tl**: Equivalent of **/traininglogs**.",
+        "**/maliciousspreadsheets**: Posts a link of the Malicious Spreadsheets.",
+        "**/ms**: Equivalent of **/maliciousspreadsheets**.",
+        "**/trainingprotocols**: Posts a link of the Training Protocols document.",
+        "**/tp**: Equivalent of **/trainingprotocols**.",
+        "**/isindiscord** *username*: Checks if user with given username is in Discord server."
+      ]
+    }, {
+      "HR2": [
+        "**/activity** *[activity]*: Sets NSadmin's activity to given activity/random.",
+        "**/status** *[activity]*: Equivalent of **/activity**.",
+        "**/host** *type date time [\"specialnotes\"]*: Creates a new training of given type on given time and date and with optional specialnotes.",
+        "**/hosttraining** *type date time [\"specialnotes\"]*: Equivalent of **/host**.",
+        "**/finish** *trainingid*: Finishes training with given ID.",
+        "**/finishtraining** *trainingid*: Equivalent of **/finish**.",
+        "**/canceltraining** *trainingid \"reason\"*: Cancels training with given ID with given reason.",
+        "**/changetraining** *trainingid key:data*: Changes training with given ID's given key to given data. Key can be by/date/time/type/specialnotes and data should be formatted the same as in **/host**. Key \"by\" regards the host and you can only change trainings you're the host of.",
+        "**/announce** *trainingid*: Announces training with given ID on Discord and shouts default training shout on Roblox."
+      ], "HR3": [
+        "**/announcediscord** *trainingid*: Announces training with given ID on Discord.",
+        "**/announceroblox** *trainingid*: Shouts default training shout on Roblox.",
+        "**/exampleshout** *trainingid*: Posts the default training shout.",
+        "**/exampleannouncement** *trainingid*: Posts an announcement example for training with given ID.",
+        "**/cancelsuspension** *username \"reason\"*: Cancels suspension of username given with given reason.",
+        "**/extend** *username days \"reason\"*: Extends suspension of username given for given amount of days with given reason.",
+        "**/extendsuspension** *username days \"reason\"*: Equivalent of **/extend**.",
+        "**/changesuspension** *username key:data*: Changes suspension of username given's key to given data. Key can be by/reason/rankback and data should be formatted the same as in **/suspend**. Key \"by\" regards the suspender and you can only change suspension you've made.",
+        "**/cancel**: Command does nothing but warns author to specify what to cancel (training/suspension)."
+      ], "HR4": [
+        "**/change**: Command does nothing but warns author to specify what to change (training/suspension).",
+        "**/issuspended** *[username]*: Tells if you're/given username is suspended.",
+        "**/unpban** *username*: Unpbans username from NS games.",
+        "**/pbanlist**: DMs command's author the pbanlist.",
+        "**/checkeverything**: Checks for recent promotions, QOTD updates and MT join requests."
+      ], "bot1": [
+        "**/cmds**: DMs command's author a list of all commands.",
+        "**/commands**: Equivalent of **/cmds**.",
+        "**/help**: Equivalent of **/cmds**.",
+        "**/lastupdated**: Posts a timestamp of when the bot was last updated.",
+        "**/uptime**: Posts a timestamp in s of how long the bot has been online."
+      ]
+    }
+  ]
+}
