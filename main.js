@@ -1,45 +1,38 @@
 require('dotenv').config();
 
-var discord = require('discord.js');
-var roblox = require('noblox.js');
-var Trello = require('node-trello');
+const discord = require('discord.js');
+const roblox = require('noblox.js');
+const trello = require('node-trello');
 
-var fs = require('fs');
-var request = require('request');
-var cheerio = require('cheerio');
+const fs = require('fs');
+/*const request = require('request');
+const cheerio = require('cheerio');*/
 
-var sleep = require('sleep');
-var time = require('time');
+const sleep = require('sleep');
+const time = require('time');
 
-var t = new Trello(process.env.TRELLO_KEY, process.env.TRELLO_TOKEN);
+const t = new trello(process.env.TRELLO_KEY, process.env.TRELLO_TOKEN);
 
-var client = new discord.Client();
+const client = new discord.Client();
 client.login(process.env.DISCORD_TOKEN);
 
-/*var settings = require('./noblox.js-server/settings.json')
-const COOKIE = settings.cookie
+let currentActivityNumber;
 
-function login () {
-    return roblox.cookieLogin(COOKIE)
-}
-login()*/
-
-var currentActivityNumber;
-
-var activities = require("./cfg/activities.json").activities
+/** @member {Array} */
+const activities = require('./cfg/activities');
 
 function getActivityFromNumber(num) {
-    return num == 0 && "Playing" || num == 1 && "Streaming" || num == 2 && "Listening to" || num == 3 && "Watching";
+    return num === 0 && 'Playing' || num === 1 && 'Streaming' || num === 2 && 'Listening to' || num === 3 && 'Watching';
 }
 
-var activitiesString = "";
+let activitiesString = "";
 activities.forEach((activity, index) => {
     activitiesString += `${index + 1}. **${getActivityFromNumber(activity.options.type)}** ${activity.name}\n`;
 });
 
 function getRandomInt(max, last) {
-    var newNumber = Math.floor(Math.random()*Math.floor(max));
-    if (max == 1 || !last || newNumber != last) {
+    const newNumber = Math.floor(Math.random()*Math.floor(max));
+    if (max === 1 || !last || newNumber !== last) {
         return newNumber;
     } else {
         return getRandomInt(max, last);
@@ -47,13 +40,13 @@ function getRandomInt(max, last) {
 }
 
 function setActivity(num) {
-    var activity = activities[num];
+    const activity = activities[num];
     client.user.setActivity(activity.name, activity.options);
     currentActivityNumber = num;
     return `**${getActivityFromNumber(activity.options.type)}** ${activity.name}`;
 }
 
-var startUnix;
+let startUnix;
 
 client.on('ready', () => {
     startUnix = getUnix();
@@ -91,7 +84,7 @@ const groupId = 1018818;
 const MTgroupId = 2661380;
 
 const QOTDInterval = 3; // in days
-const checkRate = 60*60*1000; // in miliseconds
+const checkRate = 60*60*1000; // in milliseconds
 
 const NSadminDiscordUserID = '5a57ee52ffa8593145697d03';
 const trainingSchedulerBoardID = '5a52b61dbb039ad5909f2895';
@@ -108,7 +101,8 @@ const declinedQOTDsListID = '5a5df665f1acaee38bf29e1a';
 const approvedQOTDsListID = '5a5df475379b29fc0a41fffd';
 const askedQOTDsListID = '5a5df47c4416542fa7573528';
 
-const commands = require("./cfg/commands.json");
+/** @member (Array) */
+const commands = require('./cfg/commands');
 
 const defaultTrainingShout = '[TRAININGS] There are new trainings being hosted soon, check out the Training Scheduler in the Group Center for more info!';
 
@@ -133,17 +127,17 @@ const cmdsEmbeds = [
         .addField('Bot commands', commands[1].bot1)
 ]
 
-var joindatecache = {};
+let joindatecache = {};
 
-var convertedTimezones = require('./cfg/convertedTimezones.json');
+const convertedTimezones = require('./cfg/timezones');
 
 function isCommand(command, message) {
     var command = command.toLowerCase();
     var content = message.content.toLowerCase();
-    if (String(content).length == String(command + prefix).length) {
+    if (content.length === (command + prefix).length) {
         return content.startsWith(prefix + command);
     } else {
-        return content.startsWith(prefix + command + " ");
+        return content.startsWith(prefix + command + ' ');
     }
 }
 
