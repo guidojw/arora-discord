@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "Discord bot of the NSadmin Roblox group bot.",
   "repository": "github:guidojw/nsadmin-discord",
-  "main": "main.js",
+  "main": "app.js",
   "scripts": {
-    "start": "node main.js"
+    "start": "node app.js"
   },
   "keywords": [
     "discord-bot",

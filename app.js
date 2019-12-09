@@ -19,7 +19,7 @@ client.login(process.env.DISCORD_TOKEN)
 let currentActivityNumber
 
 /** @member {Array} */
-const activities = require('./cfg/activities')
+const activities = require('./config/activities')
 
 function getActivityFromNumber(num) {
     return num === 0 && 'Playing' || num === 1 && 'Streaming' || num === 2 && 'Listening to' || num === 3 && 'Watching'
@@ -102,7 +102,7 @@ const approvedQOTDsListID = '5a5df475379b29fc0a41fffd'
 const askedQOTDsListID = '5a5df47c4416542fa7573528'
 
 /** @member (Array) */
-const commands = require('./cfg/commands')
+const commands = require('./config/commands')
 
 const defaultTrainingShout = '[TRAININGS] There are new trainings being hosted soon, check out the Training Scheduler in the Group Center for more info!'
 
@@ -129,7 +129,7 @@ const cmdsEmbeds = [
 
 let joindatecache = {}
 
-const convertedTimezones = require('./cfg/timezones')
+const convertedTimezones = require('./config/timezones')
 
 function isCommand(command, message) {
     command = command.toLowerCase()
@@ -2366,7 +2366,7 @@ client.on('message', async (message) => {
         return
     }
     if (isCommand('lastupdate', message)) {
-        fs.stat('..', (err, stats) => {
+        fs.stat('.', (err, stats) => {
             if (!err) {
                 message.channel.send(getEmbed('NSadmin was last updated on', stats.mtime))
             } else {
