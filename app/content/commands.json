@@ -8,7 +8,7 @@
       "**/suspendinfo** *[username]*: Equivalent of **/reason**.",
       "**/getshout**: Fetches current group shout, author and date.",
       "**/groupshout**: Equivalent of **/getshout**.",
-      "**/suggest** *\",suggestion,\"*: Suggests suggestion in the suggestions channel, suggestion must be between double quotation marks.",
+      "**/suggest** *\"suggestion\"*: Suggests suggestion in the suggestions channel, suggestion must be between double quotation marks.",
       "**/userid** *[username]*: Fetches userId of username given/your nickname.",
       "**/getuserid** *[username]*: Equivalent of **/userid**.",
       "**/rank** *[username]*: Fetches the group rank of username given/your nickname.",
@@ -51,7 +51,6 @@
       "**/date** *[timezone]*: Posts local time, date, weekday and timezone information of given timezone (abbreviation). Defaults to Dutch time.",
       "**/unix**: Posts current epoch time.",
       "**/epoch**: Equivalent of **/unix**.",
-      "**/place** *timezone*: Posts region of timezone (abbreviation).",
       "**/groupcenter**: Posts a link of the Group Center.",
       "**/groupcentre**: Equivalent of **/groupcenter**.",
       "**/gc**: Equivalent of **/groupcenter**.",
@@ -69,7 +68,7 @@
       "**/updatesworkplace**: Equivalent of **/uw**.",
       "**/docs**: Posts links of all HR related documentss.",
       "**/hrdocs**: Equivalent of **/docs**.",
-      "**/trainingslogs**: Posts a link of the Training Logs Spreadsheets.",
+      "**/traininglogs**: Posts a link of the Training Logs Spreadsheets.",
       "**/tl**: Equivalent of **/traininglogs**.",
       "**/maliciousspreadsheets**: Posts a link of the Malicious Spreadsheets.",
       "**/ms**: Equivalent of **/maliciousspreadsheets**.",
@@ -97,8 +96,7 @@
       "**/change**: Command does nothing but warns author to specify what to change (training/suspension).",
       "**/issuspended** *[username]*: Tells if you're/given username is suspended.",
       "**/unpban** *username*: Unpbans username from NS games.",
-      "**/pbanlist**: DMs command's author the pbanlist.",
-      "**/checkeverything**: Checks for recent promotions, QOTD updates and MT join requests."
+      "**/pbanlist**: DMs command's author the pbanlist."
     ]
   }, {
     "title": "Bot",
@@ -106,7 +104,6 @@
       "**/cmds**: DMs command's author a list of all commands.",
       "**/commands**: Equivalent of **/cmds**.",
       "**/help**: Equivalent of **/cmds**.",
-      "**/lastupdated**: Posts a timestamp of when the bot was last updated.",
       "**/uptime**: Posts a timestamp in s of how long the bot has been online."
     ]
   }
