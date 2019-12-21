@@ -45,6 +45,7 @@ client.on('message', async message => {
                 guild: message.guild,
                 channel: message.channel,
                 member: message.member,
+                author: message.author,
                 message: message,
                 command: command,
                 args: args

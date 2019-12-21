@@ -20,7 +20,7 @@ exports.getMemberByName = (guild, name) => {
     const members = guild.members.array()
     let foundMember = null
     members.forEach(member => {
-        const username = member.nickname
+        const username = member.nickname ? member.nickname : member.user.username
         if (username && username.toLowerCase() === name.toLowerCase()) {
             foundMember = member
         }

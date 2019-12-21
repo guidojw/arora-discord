@@ -46,7 +46,7 @@ exports.isadmin = async req => {
 
 exports.reason = async req => {
     if (req.args[0] && !discordHelper.isAdmin(req.member)) throw new PermissionError()
-    const username = req.args[0] ? req.args[0] : req.member.nickname
+    const username = req.args[0] ? req.args[0] : req.member.nickname ? req.member.nickname : req.author.username
     const userId = await userHelper.getIdFromUsername(username)
     const suspension = (await applicationAdapter('get', `/v1/groups/${config.groupId}/suspensions/` +
     userId)).data
@@ -100,7 +100,7 @@ exports.suggest = async req => {
 }
 
 exports.userid = async req => {
-    const username = req.args[0] ? req.args[0] : req.member.nickname
+    const username = req.args[0] ? req.args[0] : req.member.nickname ? req.member.nickname : req.author.username
     const userId = await userHelper.getIdFromUsername(username)
     req.channel.send(discordHelper.getEmbed(req.command, `**${username}** has userId **${userId}**.`))
 }
@@ -110,7 +110,7 @@ exports.getuserid = async req => {
 }
 
 exports.rank = async req => {
-    const username = req.args[0] ? req.args[0] : req.member.nickname
+    const username = req.args[0] ? req.args[0] : req.member.nickname ? req.member.nickname : req.author.username
     const userId = await userHelper.getIdFromUsername(username)
     const rank = (await applicationAdapter('get', `/v1/groups/${config.groupId}/rank/${userId}`))
         .data
@@ -122,7 +122,7 @@ exports.getrank = async req => {
 }
 
 exports.role = async req => {
-    const username = req.args[0] ? req.args[0] : req.member.nickname
+    const username = req.args[0] ? req.args[0] : req.member.nickname ? req.member.nickname : req.author.username
     const userId = await userHelper.getIdFromUsername(username)
     const role = (await applicationAdapter('get', `/v1/groups/${config.groupId}/role/${userId}`))
         .data
@@ -134,7 +134,7 @@ exports.getrole = async req => {
 }
 
 exports.joindate = async req => {
-    const username = req.args[0] ? req.args[0] : req.member.nickname
+    const username = req.args[0] ? req.args[0] : req.member.nickname ? req.member.nickname : req.author.username
     const userId = await userHelper.getIdFromUsername(username)
     const joinDate = new Date((await applicationAdapter('get', `/v1/users/${userId}/join-date`))
         .data)
@@ -143,7 +143,7 @@ exports.joindate = async req => {
 }
 
 exports.age = async req => {
-    const username = req.args[0] ? req.args[0] : req.member.nickname
+    const username = req.args[0] ? req.args[0] : req.member.nickname ? req.member.nickname : req.author.username
     const userId = await userHelper.getIdFromUsername(username)
     const joinDate = new Date((await applicationAdapter('get', `/v1/users/${userId}/join-date`))
         .data)
@@ -153,7 +153,7 @@ exports.age = async req => {
 }
 
 exports.playerurl = async req => {
-    const username = req.args[0] ? req.args[0] : req.member.nickname
+    const username = req.args[0] ? req.args[0] : req.member.nickname ? req.member.nickname : req.author.username
     const userId = await userHelper.getIdFromUsername(username)
     req.channel.send(`https://www.roblox.com/users/${userId}/profile`)
 }
@@ -163,7 +163,7 @@ exports.url = async req => {
 }
 
 exports.suggestqotd = async req => {
-    const username = req.member.nickname
+    const username = req.member.nickname ? req.member.nickname : req.author.username
     const qotd = await stringHelper.extractText(req.message.content, '"')
     if (!qotd) throw new InputError('Please enter a QOTD suggestion between *double* quotation marks.')
     await applicationAdapter('post', '/v1/qotds', {
@@ -184,7 +184,7 @@ exports.statuses = async req => {
 }
 
 exports.update = async req => {
-    const username = req.args[0] ? req.args[0] : req.member.nickname
+    const username = req.args[0] ? req.args[0] : req.member.nickname ? req.member.nickname : req.author.username
     let member = req.member
     if (req.args[0]) {
         if (!discordHelper.isAdmin(req.member)) throw new PermissionError()

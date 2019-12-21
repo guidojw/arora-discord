@@ -36,7 +36,8 @@ exports.suspend = async req => {
     if (!reason) throw new InputError('Please enter a reason between *double* quotation marks.')
     const username = req.args[0]
     const userId = await userHelper.getIdFromUsername(username)
-    const byUserId = await userHelper.getIdFromUsername(req.member.nickname)
+    const byUserId = await userHelper.getIdFromUsername(req.member.nickname ? req.member.nickname : req.author
+        .username)
     await applicationAdapter('post', `/v1/groups/${config.groupId}/suspensions`, {
         id: process.env.ID,
         key: process.env.KEY,
@@ -52,7 +53,8 @@ exports.suspend = async req => {
 exports.promote = async req => {
     const username = req.args[0]
     const userId = await userHelper.getIdFromUsername(username)
-    const byUserId = await userHelper.getIdFromUsername(req.member.nickname)
+    const byUserId = await userHelper.getIdFromUsername(req.member.nickname ? req.member.nickname : req.author
+        .username)
     await applicationAdapter('post', `/v1/groups/${config.groupId}/promote/${userId}`, {
         id: process.env.ID,
         key: process.env.KEY,
@@ -66,7 +68,8 @@ exports.pban = async req => {
     if (!reason) throw new InputError('Please enter a reason between *double* quotation marks.')
     const username = req.args[0]
     const userId = await userHelper.getIdFromUsername(username)
-    const byUserId = await userHelper.getIdFromUsername(req.member.nickname)
+    const byUserId = await userHelper.getIdFromUsername(req.member.nickname ? req.member.nickname : req.author
+        .username)
     await applicationAdapter('post', `/v1/bans`, {
         id: process.env.ID,
         key: process.env.KEY,
@@ -86,7 +89,8 @@ exports.shout = async req => {
         message += (' ~' + username)
         if (message.length > 255) throw new InputError('Can\'t post shout, it\'s too long.')
     }
-    const byUserId = await userHelper.getIdFromUsername(req.member.nickname)
+    const byUserId = await userHelper.getIdFromUsername(req.member.nickname ? req.member.nickname : req.author
+        .username)
     await applicationAdapter('post', `/v1/groups/${config.groupId}/shout`, {
         id: process.env.ID,
         key: process.env.KEY,
@@ -201,7 +205,6 @@ exports.status = async req => {
 }
 
 exports.host = async req => {
-    const username = req.member.nickname
     const type = req.args[0]
     const role = groupHelper.getRoleByAbbreviation(type)
     if (!role) throw new InputError('Please enter a valid type of training.')
@@ -219,6 +222,7 @@ exports.host = async req => {
     const nowUnix = timeHelper.getUnix()
     const afterNow = dateUnix - nowUnix > 0
     if (!afterNow) throw new InputError('Please give a date and time that\'s after now.')
+    const username = req.member.nickname ? req.member.nickname : req.author.username
     const trainingId = (await applicationAdapter('post', `/v1/groups/${config.groupId}/trainings`,
         {
         id: process.env.ID,
@@ -239,9 +243,9 @@ exports.hosttraining = async req => {
 }
 
 exports.finish = async req => {
-    const username = req.member.nickname
     const id = parseInt(req.args[0])
     if (!id) throw new InputError('Please enter a training ID.')
+    const username = req.member.nickname ? req.member.nickname : req.author.username
     const training = (await applicationAdapter('put', `/v1/groups/${config.groupId}/trainings/${id}`,
     {
         id: process.env.ID,
@@ -264,7 +268,7 @@ exports.canceltraining = async req => {
     if (!id) throw new InputError('Please enter a training ID.')
     const reason = stringHelper.extractText(req.message.content, '"')
     if (!reason) throw new InputError('Please enter a reason between *double* quotation marks.')
-    const username = req.member.nickname
+    const username = req.member.nickname ? req.member.nickname : req.author.username
     const training = (await applicationAdapter('put', `/v1/groups/${config.groupId}/trainings/${id}`,
         {
         id: process.env.ID,
@@ -346,7 +350,8 @@ exports.announcediscord = async req => {
 exports.announceroblox = async req => {
     const id = parseInt(req.args[0])
     if (!id) throw new InputError('Please enter a training ID.')
-    const byUserId = await userHelper.getIdFromUsername(req.member.nickname)
+    const byUserId = await userHelper.getIdFromUsername(req.member.nickname ? req.member.nickname : req.author
+        .username)
     await applicationAdapter('post', `/v1/groups/${config.groupId}/shout`, {
         id: process.env.ID,
         key: process.env.KEY,
@@ -376,7 +381,8 @@ exports.cancelsuspension = async req => {
     const reason = stringHelper.extractText(req.message.content, '"')
     if (!reason) throw new InputError('Please enter a reason between *double* quotation marks.')
     const userId = await userHelper.getIdFromUsername(username)
-    const byUserId = await userHelper.getIdFromUsername(req.member.nickname)
+    const byUserId = await userHelper.getIdFromUsername(req.member.nickname ? req.member.nickname : req.author
+        .username)
     const suspension = (await applicationAdapter('put', `/v1/groups/${config.groupId}/suspensions/` +
         userId, {
         id: process.env.ID,
@@ -401,7 +407,8 @@ exports.extend = async req => {
     if (!extension) throw new InputError('Please enter a number amount of days!')
     extension = Math.round(extension)
     const userId = await userHelper.getIdFromUsername(username)
-    const byUserId = await userHelper.getIdFromUsername(req.member.nickname)
+    const byUserId = await userHelper.getIdFromUsername(req.member.nickname ? req.member.nickname : req.author
+        .username)
     const suspension = (await applicationAdapter('put', `/v1/groups/${config.groupId}/suspensions/` +
         userId, {
         id: process.env.ID,
