@@ -111,7 +111,8 @@ exports.setActivity = async num => {
 exports.log = async req => {
     try {
         (await discordHelper.getChannel(req.guild, 'nsadmin_logs')).send(discordHelper.getEmbed(`**${req
-            .member.nickname}** used command **${req.command}**!`, req.message.content))
+            .member.nickname ? req.member.nickname : req.author.username}** used command **${req.command}**!`, req
+            .message.content))
     } catch (err) {
         console.error(err.message)
     }
