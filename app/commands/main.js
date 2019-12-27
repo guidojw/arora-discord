@@ -263,6 +263,28 @@ exports.optin = async req => {
     }
 }
 
+exports.poll = async req => {
+    const username = req.member.nickname ? req.member.nickname : req.author.username
+    const poll = await stringHelper.extractText(req.message.content, '"')
+    if (!poll) throw new InputError('Please enter a poll between *double* quotation marks.')
+    const options = []
+    for (let num = 0; num < 10; num++) {
+        if (poll.indexOf(`(${num})`) !== -1) {
+            options.push(num)
+        }
+    }
+    const message = await req.channel.send(discordHelper.getEmbed(`Poll by ${username}:`, poll).setFooter(
+        'Vote using the reactions!'))
+    if (options.length > 0) {
+        options.forEach(option => {
+            message.react(`:${discordHelper.getWordFromNumber(option)}:`)
+        })
+    } else {
+        await message.react('✔')
+        await message.react('✖')
+    }
+}
+
 {
     activities.forEach((activity, index) => {
         activitiesString += `${index + 1}. **${discordHelper.getActivityFromNumber(activity.options.type)}** ` +

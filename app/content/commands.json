@@ -30,7 +30,8 @@
       "**/traininglist** *[trainingid]*: Equivalent of **/trainings**.",
       "**/training** *[trainingid]*: Equivalent of **/trainings**.",
       "**/optout**: Gives command's author the No Training Announcements role which will disable the #trainings channel.",
-      "**/optin**: Removes command's author's No Training Announcements role which will enable the #trainings channel."
+      "**/optin**: Removes command's author's No Training Announcements role which will enable the #trainings channel.",
+      "**/poll** *\"poll\"*: Sends given poll in current channel with numbers as reactions which people can use to vote. Use *(X)* with X being a number in your poll so that the bot knows what reactions to give. If none provided, the bot will react a check and cross mark."
     ]
   }, {
     "title": "Miscellaneous",
