@@ -48,7 +48,8 @@ client.on('message', async message => {
                 author: message.author,
                 message: message,
                 command: command,
-                args: args
+                args: args,
+                client: client
             }
             try {
                 if (title === 'hr' && !discordHelper.hasRole(req.member, 'HR')) throw new PermissionError()

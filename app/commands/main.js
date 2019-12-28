@@ -277,7 +277,7 @@ exports.poll = async req => {
         'Vote using the reactions!'))
     if (options.length > 0) {
         options.forEach(option => {
-            message.react(`:${discordHelper.getWordFromNumber(option)}:`)
+            message.react(req.client.emojis.find(emoji => emoji.name === discordHelper.getWordFromNumber(option)))
         })
     } else {
         await message.react('✔')
