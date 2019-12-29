@@ -75,7 +75,8 @@ exports.pban = async req => {
         key: process.env.KEY,
         userId: userId,
         by: byUserId,
-        reason: reason
+        reason: reason,
+        groupId: config.groupId
     })
     req.channel.send(discordHelper.getEmbed(req.command, `Successfully banned **${username}**.`))
 }
