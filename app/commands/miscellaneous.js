@@ -109,14 +109,21 @@ exports.discord = req => {
     req.channel.send(`${config.discordLink}`)
 }
 
-exports.isdst = req => {
-    req.channel.send(timeHelper.isDst(timeHelper.getUnix()))
+exports.isdst = async req => {
+    await req.channel.send(timeHelper.isDst(timeHelper.getUnix()))
 }
 
 exports.isloggedin = async req => {
     try {
         req.channel.send((await applicationAdapter('get', '/v1/status')).data)
     } catch (err) {
-        req.channel.send(false)
+        await req.channel.send(false)
     }
+}
+
+exports.membercount = async req => {
+    let groupId = req.args[0] ? parseInt(req.args[0]) : config.groupId
+    if (!groupId) throw new InputError('Please enter a group ID.')
+    const group = (await applicationAdapter('get', `/v1/groups/${groupId}`)).data
+    req.channel.send(discordHelper.getEmbed(`${group.name} has`, `**${group.memberCount}** members.`))
 }

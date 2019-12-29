@@ -486,10 +486,19 @@ exports.issuspended = async req => {
 }
 
 exports.unpban = async req => {
-    const happywalker = discordHelper.getMemberByName(req.guild, "Happywalker")
-    if (req.member === happywalker) {
-
-    } else throw new PermissionError()
+    const happywalker = discordHelper.getMemberByName(req.guild, 'Happywalker')
+    if (req.member !== happywalker) throw new PermissionError()
+    const username = req.args[0]
+    const userId = await userHelper.getIdFromUsername(username)
+    const byUserId = await userHelper.getIdFromUsername(req.member.nickname ? req.member.nickname : req.author
+        .username)
+    await applicationAdapter('put', `/v1/bans/${userId}`, {
+        id: process.env.ID,
+        key: process.env.KEY,
+        unbanned: true,
+        by: byUserId
+    })
+    req.channel.send(`Successfully unbanned **${username}**.`)
 }
 
 exports.pbanlist = async req => {
