@@ -268,7 +268,7 @@ exports.poll = async req => {
     const poll = await stringHelper.extractText(req.message.content, '"')
     if (!poll) throw new InputError('Please enter a poll between *double* quotation marks.')
     const options = []
-    for (let num = 0; num < 10; num++) {
+    for (let num = 1; num < 10; num++) {
         if (poll.indexOf(`(${num})`) !== -1) {
             options.push(num)
         }
@@ -277,7 +277,7 @@ exports.poll = async req => {
         'Vote using the reactions!'))
     if (options.length > 0) {
         options.forEach(option => {
-            message.react(req.client.emojis.find(emoji => emoji.name === discordHelper.getWordFromNumber(option)))
+            message.react(option + '️')
         })
     } else {
         await message.react('✔')
