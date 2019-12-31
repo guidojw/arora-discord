@@ -277,7 +277,7 @@ exports.poll = async req => {
         'Vote using the reactions!'))
     if (options.length > 0) {
         options.forEach(option => {
-            message.react(option + '️')
+            message.react(discordHelper.getEmojiFromNumber(option))
         })
     } else {
         await message.react('✔')
