@@ -55,6 +55,7 @@ client.on('message', async message => {
                 if (title === 'hr' && !discordHelper.hasRole(req.member, 'HR')) throw new PermissionError()
                 await controller[command](req)
             } catch (err) {
+                console.error(err)
                 if (err instanceof InputError) {
                     req.channel.send(err.message)
                 } else if (err instanceof ApplicationError) {
@@ -62,9 +63,7 @@ client.on('message', async message => {
                 } else if (err instanceof PermissionError) {
                     req.channel.send('Insufficient powers!')
                 } else {
-                    console.log(err)
                     if (err.response.status === 500) {
-                        console.error(err.message)
                         req.channel.send('An error occurred!')
                     } else {
                         req.channel.send(discordHelper.getEmbed(req.command, err.response.data.errors[0].message))
