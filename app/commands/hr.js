@@ -39,8 +39,6 @@ exports.suspend = async req => {
     const byUserId = await userHelper.getIdFromUsername(req.member.nickname ? req.member.nickname : req.author
         .username)
     await applicationAdapter('post', `/v1/groups/${config.groupId}/suspensions`, {
-        id: process.env.ID,
-        key: process.env.KEY,
         userId: userId,
         rankback: rankback,
         duration: days * 86400,
@@ -56,8 +54,6 @@ exports.promote = async req => {
     const byUserId = await userHelper.getIdFromUsername(req.member.nickname ? req.member.nickname : req.author
         .username)
     await applicationAdapter('post', `/v1/groups/${config.groupId}/promote/${userId}`, {
-        id: process.env.ID,
-        key: process.env.KEY,
         by: byUserId
     })
     req.channel.send(discordHelper.getEmbed(req.command, `Successfully promoted **${username}**.`))
@@ -71,8 +67,6 @@ exports.pban = async req => {
     const byUserId = await userHelper.getIdFromUsername(req.member.nickname ? req.member.nickname : req.author
         .username)
     await applicationAdapter('post', `/v1/bans`, {
-        id: process.env.ID,
-        key: process.env.KEY,
         userId: userId,
         by: byUserId,
         reason: reason,
@@ -93,8 +87,6 @@ exports.shout = async req => {
     const byUserId = await userHelper.getIdFromUsername(req.member.nickname ? req.member.nickname : req.author
         .username)
     await applicationAdapter('post', `/v1/groups/${config.groupId}/shout`, {
-        id: process.env.ID,
-        key: process.env.KEY,
         by: byUserId,
         message: message
     })
@@ -226,8 +218,6 @@ exports.host = async req => {
     const username = req.member.nickname ? req.member.nickname : req.author.username
     const trainingId = (await applicationAdapter('post', `/v1/groups/${config.groupId}/trainings`,
         {
-        id: process.env.ID,
-        key: process.env.KEY,
         by: username,
         type: type,
         date: dateUnix,
@@ -249,8 +239,6 @@ exports.finish = async req => {
     const username = req.member.nickname ? req.member.nickname : req.author.username
     const training = (await applicationAdapter('put', `/v1/groups/${config.groupId}/trainings/${id}`,
     {
-        id: process.env.ID,
-        key: process.env.KEY,
         by: username
     })).data
     if (training) {
@@ -272,8 +260,6 @@ exports.canceltraining = async req => {
     const username = req.member.nickname ? req.member.nickname : req.author.username
     const training = (await applicationAdapter('put', `/v1/groups/${config.groupId}/trainings/${id}`,
         {
-        id: process.env.ID,
-        key: process.env.KEY,
         cancelled: true,
         reason: reason,
         by: username
@@ -294,10 +280,7 @@ exports.changetraining = async req => {
     let changeData = req.message.content.substring(req.message.content.indexOf(':') + 1, req.message.content.length)
     if (key !== 'by' && key !== 'type' && key !== 'date' && key !== 'time' && key !== 'specialnotes') throw new
     InputError('That key is not valid.')
-    const data = {
-        id: process.env.ID,
-        key: process.env.KEY
-    }
+    const data = {}
     if (key === 'by') {
         data.by = await userHelper.getIdFromUsername(changeData)
     } else if (key === 'specialnotes') {
@@ -354,8 +337,6 @@ exports.announceroblox = async req => {
     const byUserId = await userHelper.getIdFromUsername(req.member.nickname ? req.member.nickname : req.author
         .username)
     await applicationAdapter('post', `/v1/groups/${config.groupId}/shout`, {
-        id: process.env.ID,
-        key: process.env.KEY,
         by: byUserId,
         message: groupHelper.defaultTrainingShout
     })
@@ -386,8 +367,6 @@ exports.cancelsuspension = async req => {
         .username)
     const suspension = (await applicationAdapter('put', `/v1/groups/${config.groupId}/suspensions/` +
         userId, {
-        id: process.env.ID,
-        key: process.env.KEY,
         cancelled: true,
         reason: reason,
         by: byUserId
@@ -412,8 +391,6 @@ exports.extend = async req => {
         .username)
     const suspension = (await applicationAdapter('put', `/v1/groups/${config.groupId}/suspensions/` +
         userId, {
-        id: process.env.ID,
-        key: process.env.KEY,
         extended: true,
         duration: extension * 86400,
         reason: reason,
@@ -438,10 +415,7 @@ exports.changesuspension = async req => {
     key = key.substring(0, key.indexOf(':')).toLowerCase()
     let changeData = req.message.content.substring(req.message.content.indexOf(':') + 1, req.message.content.length)
     if (key !== 'by' && key !== 'reason' && key !== 'rankback') throw new InputError('That key is not valid.')
-    const data = {
-        id: process.env.ID,
-        key: process.env.KEY
-    }
+    const data = {}
     if (key === 'by') {
         data.by = await userHelper.getIdFromUsername(changeData)
     } else if (key === 'reason') {
@@ -493,8 +467,6 @@ exports.unpban = async req => {
     const byUserId = await userHelper.getIdFromUsername(req.member.nickname ? req.member.nickname : req.author
         .username)
     await applicationAdapter('put', `/v1/bans/${userId}`, {
-        id: process.env.ID,
-        key: process.env.KEY,
         unbanned: true,
         by: byUserId
     })
