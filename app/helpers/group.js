@@ -7,7 +7,7 @@ const applicationAdapter = require('../adapters/application')
 
 const InputError = require('../errors/input-error')
 
-const config = require(base + "/config/application")
+const config = require(base + '/config/application')
 
 exports.defaultTrainingShout = '[TRAININGS] There are new trainings being hosted soon, check out the Training ' +
     'Scheduler in the Group Center for more info!'

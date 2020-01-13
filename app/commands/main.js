@@ -18,7 +18,7 @@ const PermissionError = require('../errors/permission-error')
 
 const activities = require('../content/activities')
 
-const config = require(base + "/config/application")
+const config = require(base + '/config/application')
 
 let activitiesString = ''
 

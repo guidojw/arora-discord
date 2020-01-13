@@ -7,7 +7,8 @@
   "main": "main.js",
   "scripts": {
     "start": "node main.js",
-    "start:dev": "nodemon main.js"
+    "start:dev": "nodemon main.js",
+    "lint": "eslint app"
   },
   "keywords": [
     "discord-bot",
@@ -27,6 +28,8 @@
     "sleep": "^6.1.0"
   },
   "devDependencies": {
+    "babel-eslint": "^10.0.3",
+    "eslint": "^6.8.0",
     "nodemon": "^2.0.2"
   }
 }
