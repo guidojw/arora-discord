@@ -226,13 +226,13 @@ exports.host = async req => {
     const username = req.member.nickname ? req.member.nickname : req.author.username
     const trainingId = (await applicationAdapter('post', `/v1/groups/${config.groupId}/trainings`,
         {
-        id: process.env.ID,
-        key: process.env.KEY,
-        by: username,
-        type: type,
-        date: dateUnix,
-        specialnotes: specialnotes
-    })).data
+            id: process.env.ID,
+            key: process.env.KEY,
+            by: username,
+            type: type,
+            date: dateUnix,
+            specialnotes: specialnotes
+        })).data
     req.channel.send(discordHelper.compileRichEmbed([{
         title: 'Successfully hosted',
         message: `**${role}** training on **${dateString}** at **${timeString}**.`,
@@ -248,11 +248,11 @@ exports.finish = async req => {
     if (!id) throw new InputError('Please enter a training ID.')
     const username = req.member.nickname ? req.member.nickname : req.author.username
     const training = (await applicationAdapter('put', `/v1/groups/${config.groupId}/trainings/${id}`,
-    {
-        id: process.env.ID,
-        key: process.env.KEY,
-        by: username
-    })).data
+        {
+            id: process.env.ID,
+            key: process.env.KEY,
+            by: username
+        })).data
     if (training) {
         req.channel.send(`Successfully finished Training ID **${id}**.`)
     } else {
@@ -272,12 +272,12 @@ exports.canceltraining = async req => {
     const username = req.member.nickname ? req.member.nickname : req.author.username
     const training = (await applicationAdapter('put', `/v1/groups/${config.groupId}/trainings/${id}`,
         {
-        id: process.env.ID,
-        key: process.env.KEY,
-        cancelled: true,
-        reason: reason,
-        by: username
-    })).data
+            id: process.env.ID,
+            key: process.env.KEY,
+            cancelled: true,
+            reason: reason,
+            by: username
+        })).data
     if (training) {
         req.channel.send(`Successfully cancelled Training ID **${id}**.`)
     } else {

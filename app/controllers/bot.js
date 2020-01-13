@@ -18,7 +18,7 @@ const commands = require('../commands')
 
 const activities = require('../content/activities')
 
-const config = require(base + "/config/application")
+const config = require(base + '/config/application')
 
 const client = new discord.Client()
 
