@@ -21,7 +21,7 @@
   "author": "Guido de Jong",
   "license": "MIT",
   "dependencies": {
-    "axios": "^0.19.0",
+    "axios": "^0.19.1",
     "discord.js": "^11.5.1",
     "dotenv": "^8.2.0",
     "pluralize": "^8.0.0",
