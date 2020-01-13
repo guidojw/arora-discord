@@ -7,6 +7,9 @@ module.exports = async (method, pathname, data) => {
     return axios({
         method: method,
         url: process.env.HOST + pathname,
-        data: data
+        data: data,
+        headers: {
+            Authorization: 'Bearer ' + process.env.TOKEN
+        }
     })
 }

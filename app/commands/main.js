@@ -167,8 +167,6 @@ exports.suggestqotd = async req => {
     const qotd = await stringHelper.extractText(req.message.content, '"')
     if (!qotd) throw new InputError('Please enter a QOTD suggestion between *double* quotation marks.')
     await applicationAdapter('post', '/v1/qotds', {
-        id: process.env.ID,
-        key: process.env.KEY,
         by: username,
         qotd: qotd
     })
