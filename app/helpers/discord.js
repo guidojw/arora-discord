@@ -137,7 +137,6 @@ exports.updateRoles = async (guild, member, rank) => {
         if (!exports.hasRole(member, 'Suspended')) {
             await member.addRole(guild.roles.find(role => role.name === 'Suspended'))
         }
-
         if (exports.hasRole(member, 'MR')) {
             await member.removeRole(guild.roles.find(role => role.name === 'MR'))
         }

@@ -192,7 +192,7 @@ exports.update = async req => {
     const userId = await userHelper.getIdFromUsername(username)
     const rank = (await applicationAdapter('get', `/v1/groups/${config.groupId}/rank/${userId}`))
         .data
-    await discordHelper.updateRoles(req.guild, req.member, rank)
+    await discordHelper.updateRoles(req.guild, member, rank)
     req.channel.send(`Successfully checked **${username}**'s roles.`)
 }
 
