@@ -267,7 +267,7 @@ exports.poll = async req => {
     if (!poll) throw new InputError('Please enter a poll between *double* quotation marks.')
     const options = []
     for (let num = 1; num <= 10; num++) {
-        if (poll.indexOf(`(${num})`) !== -1) {
+        if (req.message.indexOf(`(${num})`) !== -1) {
             options.push(num)
         }
     }
