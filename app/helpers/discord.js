@@ -278,17 +278,17 @@ exports.getBanEmbeds = bans => {
     return embeds
 }
 
-exports.getEmojiNameFromNumber = number => {
+exports.getEmojiFromNumber = number => {
     switch (number) {
-        case 1: return 'one'
-        case 2: return 'two'
-        case 3: return 'three'
-        case 4: return 'four'
-        case 5: return 'five'
-        case 6: return 'six'
-        case 7: return 'seven'
-        case 8: return 'eight'
-        case 9: return 'nine'
-        case 10: return 'keycap_ten'
+        case 1: return '1⃣'
+        case 2: return '2⃣'
+        case 3: return '3⃣'
+        case 4: return '4⃣'
+        case 5: return '5⃣'
+        case 6: return '6⃣'
+        case 7: return '7⃣'
+        case 8: return '8⃣'
+        case 9: return '9⃣'
+        case 10: return '🔟'
     }
 }
