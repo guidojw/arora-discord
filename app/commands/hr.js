@@ -239,6 +239,7 @@ exports.finish = async req => {
     const username = req.member.nickname ? req.member.nickname : req.author.username
     const training = (await applicationAdapter('put', `/v1/groups/${config.groupId}/trainings/${id}`,
     {
+        finished: true,
         by: username
     })).data
     if (training) {
