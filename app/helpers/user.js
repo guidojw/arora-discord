@@ -14,5 +14,5 @@ exports.getIdFromUsername = async username => {
 }
 
 exports.hasBadge = async (userId, badgeId) => {
-    return (await applicationAdapter('get', `/v1/users/${userId}/has-badge${badgeId}`)).data
+    return (await applicationAdapter('get', `/v1/users/${userId}/has-badge/${badgeId}`)).data
 }
