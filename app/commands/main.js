@@ -1,8 +1,8 @@
 'use strict'
 require('dotenv').config()
 
-const base = require('path').resolve('.')
 const pluralize = require('pluralize')
+const { RichEmbed } = require('discord.js')
 
 const discordHelper = require('../helpers/discord')
 const timeHelper = require('../helpers/time')
@@ -18,7 +18,7 @@ const PermissionError = require('../errors/permission-error')
 
 const activities = require('../content/activities')
 
-const config = require(base + '/config/application')
+const config = require('../../config/application')
 
 let activitiesString = ''
 
@@ -281,6 +281,20 @@ exports.poll = async req => {
         await message.react('✔')
         await message.react('✖')
     }
+}
+
+exports.badges = async req => {
+    const username = req.args[0] ? req.args[0] : req.member.nickname ? req.member.nickname : req.author.username
+    const userId = await userHelper.getIdFromUsername(username)
+    const hasTtdt = await userHelper.hasBadge(userId, config.ttdtId)
+    const hasPtdt = await userHelper.hasBadge(userId, config.ptdtId)
+    const hasTct = await userHelper.hasBadge(userId, config.tctId)
+    const embed = new RichEmbed()
+        .setTitle(`${username}'s badges:`)
+        .addField('TTDT', hasTtdt ? 'yes' : 'no', true)
+        .addField('PTDT', hasPtdt ? 'yes' : 'no', true)
+        .addField('TCT', hasTct ? 'yes' : 'no', true)
+    await req.channel.send(embed)
 }
 
 {
