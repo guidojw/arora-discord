@@ -9,8 +9,6 @@ const groupService = require('../services/group')
 const userService = require('../services/user')
 
 const timeHelper = require('../helpers/time')
-const groupHelper = require('../helpers/group')
-const userHelper = require('../helpers/user')
 const stringHelper = require('../helpers/string')
 
 const applicationAdapter = require('../adapters/application')
@@ -288,10 +286,10 @@ exports.poll = async req => {
 
 exports.badges = async req => {
     const username = req.args[0] ? req.args[0] : req.member.nickname ? req.member.nickname : req.author.username
-    const userId = await userHelper.getIdFromUsername(username)
-    const hasTtdt = await userHelper.hasBadge(userId, config.ttdtId)
-    const hasPtdt = await userHelper.hasBadge(userId, config.ptdtId)
-    const hasTct = await userHelper.hasBadge(userId, config.tctId)
+    const userId = await userService.getIdFromUsername(username)
+    const hasTtdt = await userService.hasBadge(userId, config.ttdtId)
+    const hasPtdt = await userService.hasBadge(userId, config.ptdtId)
+    const hasTct = await userService.hasBadge(userId, config.tctId)
     const embed = new RichEmbed()
         .setTitle(`${username}'s badges:`)
         .addField('TTDT', hasTtdt ? 'yes' : 'no', true)
