@@ -1,5 +1,5 @@
 'use strict'
-const discord = require('./discord')
+const discord = require('discord.js')
 
 const groupService = require('./group')
 const timeHelper = require('../helpers/time')
@@ -137,7 +137,6 @@ exports.updateRoles = async (guild, member, rank) => {
         if (!exports.hasRole(member, 'Suspended')) {
             await member.addRole(guild.roles.find(role => role.name === 'Suspended'))
         }
-
         if (exports.hasRole(member, 'MR')) {
             await member.removeRole(guild.roles.find(role => role.name === 'MR'))
         }
@@ -220,6 +219,17 @@ exports.getTrainingEmbeds = trainings => {
     return embeds
 }
 
+exports.getTrainingAnnouncement = (training, guild) => {
+    const role = groupService.getRoleByAbbreviation(training.type)
+    const dateString = timeHelper.getDate(training.date * 1000)
+    const timeString = timeHelper.getTime(training.date * 1000)
+    const by = training.by
+    const specialNotes = training.specialnotes
+    return `${guild.emojis.get('248922413599817728')} **TRAINING**\nThere will be a *${role}* training on **` +
+        `${dateString}**.\nTime: **${timeString} ${timeHelper.isDst(training.date * 1000) && 'CEST' || 'CET'}**.` +
+        `\n${specialNotes && specialNotes + '\n' || ''}Hosted by **${by}**.\n@everyone`
+}
+
 exports.getBanEmbeds = bans => {
     const embeds = []
     let fields = []
@@ -268,18 +278,17 @@ exports.getBanEmbeds = bans => {
     return embeds
 }
 
-// TODO: fix
-exports.getEmojiNameFromNumber = number => {
+exports.getEmojiFromNumber = number => {
     switch (number) {
-        case 1: return 'one'
-        case 2: return 'two'
-        case 3: return 'three'
-        case 4: return 'four'
-        case 5: return 'five'
-        case 6: return 'six'
-        case 7: return 'seven'
-        case 8: return 'eight'
-        case 9: return 'nine'
-        case 10: return 'keycap_ten'
+        case 1: return '1⃣'
+        case 2: return '2⃣'
+        case 3: return '3⃣'
+        case 4: return '4⃣'
+        case 5: return '5⃣'
+        case 6: return '6⃣'
+        case 7: return '7⃣'
+        case 8: return '8⃣'
+        case 9: return '9⃣'
+        case 10: return '🔟'
     }
 }

@@ -1,14 +1,16 @@
 'use strict'
 require('dotenv').config()
 
-const base = require('path').resolve('.')
 const pluralize = require('pluralize')
+const { RichEmbed } = require('discord.js')
 
 const discordService = require('../services/discord')
 const groupService = require('../services/group')
 const userService = require('../services/user')
 
 const timeHelper = require('../helpers/time')
+const groupHelper = require('../helpers/group')
+const userHelper = require('../helpers/user')
 const stringHelper = require('../helpers/string')
 
 const applicationAdapter = require('../adapters/application')
@@ -19,7 +21,7 @@ const PermissionError = require('../errors/permission-error')
 
 const activities = require('../content/activities')
 
-const config = require(base + '/config/application')
+const config = require('../../config/application')
 
 let activitiesString = ''
 
@@ -193,7 +195,7 @@ exports.update = async req => {
     const userId = await userService.getIdFromUsername(username)
     const rank = (await applicationAdapter('get', `/v1/groups/${config.groupId}/rank/${userId}`))
         .data
-    await discordService.updateRoles(req.guild, req.member, rank)
+    await discordService.updateRoles(req.guild, member, rank)
     req.channel.send(`Successfully checked **${username}**'s roles.`)
 }
 
@@ -267,22 +269,35 @@ exports.poll = async req => {
     const poll = await stringHelper.extractText(req.message.content, '"')
     if (!poll) throw new InputError('Please enter a poll between *double* quotation marks.')
     const options = []
-    for (let num = 1; num < 10; num++) {
-        if (poll.indexOf(`(${num})`) !== -1) {
+    for (let num = 1; num <= 10; num++) {
+        if (req.message.content.indexOf(`(${num})`) !== -1) {
             options.push(num)
         }
     }
     const message = await req.channel.send(discordService.getEmbed(`Poll by ${username}:`, poll).setFooter(
         'Vote using the reactions!'))
     if (options.length > 0) {
-        options.forEach(option => {
-            message.react(req.client.emojis.find(emoji => emoji.name === discordService.getEmojiNameFromNumber(option
-            )))
-        })
+        for (const option of options) {
+            await message.react(discordService.getEmojiFromNumber(option))
+        }
     } else {
         await message.react('✔')
         await message.react('✖')
     }
+}
+
+exports.badges = async req => {
+    const username = req.args[0] ? req.args[0] : req.member.nickname ? req.member.nickname : req.author.username
+    const userId = await userHelper.getIdFromUsername(username)
+    const hasTtdt = await userHelper.hasBadge(userId, config.ttdtId)
+    const hasPtdt = await userHelper.hasBadge(userId, config.ptdtId)
+    const hasTct = await userHelper.hasBadge(userId, config.tctId)
+    const embed = new RichEmbed()
+        .setTitle(`${username}'s badges:`)
+        .addField('TTDT', hasTtdt ? 'yes' : 'no', true)
+        .addField('PTDT', hasPtdt ? 'yes' : 'no', true)
+        .addField('TCT', hasTct ? 'yes' : 'no', true)
+    await req.channel.send(embed)
 }
 
 {
