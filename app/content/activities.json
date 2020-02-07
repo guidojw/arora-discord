@@ -16,5 +16,6 @@
   {"options": {"type": 2}, "name": "autistic screeching"},
   {"options": {"type": 1, "url": "https://www.twitch.tv/guidojw"}, "name": "nothing"},
   {"options": {"type": 1, "url": "https://www.twitch.tv/guidojw"}, "name": "how to tie a tie"},
-  {"options": {"type": 3}, "name": "the end of the world"}
+  {"options": {"type": 3}, "name": "the end of the world"},
+  {"options": {"type":  0}, "name": "work on the update"}
 ]

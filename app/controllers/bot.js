@@ -7,7 +7,7 @@ const sleep = require('sleep')
 const base = require('path').resolve('.')
 
 const timeHelper = require('../helpers/time')
-const discordHelper = require('../helpers/discord')
+const discordService = require('../services/discord')
 const randomHelper = require('../helpers/random')
 
 const InputError = require('../errors/input-error')
@@ -52,21 +52,21 @@ client.on('message', async message => {
                 client: client
             }
             try {
-                if (title === 'hr' && !discordHelper.hasRole(req.member, 'HR')) throw new PermissionError()
+                if (title === 'hr' && !discordService.hasRole(req.member, 'HR')) throw new PermissionError()
                 await controller[command](req)
             } catch (err) {
                 console.error(err)
                 if (err instanceof InputError) {
                     req.channel.send(err.message)
                 } else if (err instanceof ApplicationError) {
-                    req.channel.send(discordHelper.getEmbed(req.command, err.message))
+                    req.channel.send(discordService.getEmbed(req.command, err.message))
                 } else if (err instanceof PermissionError) {
                     req.channel.send('Insufficient powers!')
                 } else {
                     if (err.response.status === 500) {
                         req.channel.send('An error occurred!')
                     } else {
-                        req.channel.send(discordHelper.getEmbed(req.command, err.response.data.errors[0].message))
+                        req.channel.send(discordService.getEmbed(req.command, err.response.data.errors[0].message))
                     }
                 }
             }
@@ -102,7 +102,7 @@ exports.setActivity = async num => {
         exports.currentActivityNumber = num
         const activity = activities[exports.currentActivityNumber]
         await client.user.setActivity(activity.name, activity.options)
-        return `**${discordHelper.getActivityFromNumber(activity.options.type)}** ${activity.name}`
+        return `**${discordService.getActivityFromNumber(activity.options.type)}** ${activity.name}`
     } catch (err) {
         console.error(err)
     }
@@ -110,7 +110,7 @@ exports.setActivity = async num => {
 
 exports.log = async req => {
     try {
-        (await discordHelper.getChannel(req.guild, 'nsadmin_logs')).send(discordHelper.getEmbed(`**${req
+        (await discordService.getChannel(req.guild, 'nsadmin_logs')).send(discordService.getEmbed(`**${req
             .member.nickname ? req.member.nickname : req.author.username}** used command **${req.command}**!`, req
             .message.content))
     } catch (err) {

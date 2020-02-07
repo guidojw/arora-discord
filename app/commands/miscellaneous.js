@@ -1,7 +1,8 @@
 'use strict'
 const base = require('path').resolve('.')
 
-const discordHelper = require('../helpers/discord')
+const discordService = require('../services/discord')
+
 const timeHelper = require('../helpers/time')
 
 const applicationAdapter = require('../adapters/application')
@@ -70,7 +71,7 @@ exports.time = async req => {
     const hours = ('0' + date.getHours()).slice(-2)
     const minutes = ('0' + date.getMinutes()).slice(-2)
     const timeString = hours + ':' + minutes
-    req.channel.send(discordHelper.getEmbed('time', timeString))
+    req.channel.send(discordService.getEmbed('time', timeString))
 }
 
 exports.date = async req => {
@@ -82,11 +83,11 @@ exports.date = async req => {
     } else {
         date = timeHelper.getTimeInTimezone('Europe/Amsterdam')
     }
-    req.channel.send(discordHelper.getEmbed('date', date.toString()))
+    req.channel.send(discordService.getEmbed('date', date.toString()))
 }
 
 exports.unix = req => {
-    req.channel.send(discordHelper.getEmbed(req.command, timeHelper.getUnix()))
+    req.channel.send(discordService.getEmbed(req.command, timeHelper.getUnix()))
 }
 
 exports.epoch = req => {
@@ -125,5 +126,5 @@ exports.membercount = async req => {
     let groupId = req.args[0] ? parseInt(req.args[0]) : config.groupId
     if (!groupId) throw new InputError('Please enter a group ID.')
     const group = (await applicationAdapter('get', `/v1/groups/${groupId}`)).data
-    req.channel.send(discordHelper.getEmbed(`${group.name} has`, `**${group.memberCount}** members.`))
+    req.channel.send(discordService.getEmbed(`${group.name} has`, `**${group.memberCount}** members.`))
 }

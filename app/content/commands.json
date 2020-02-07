@@ -87,8 +87,6 @@
       "**/announce** *trainingid*: Announces training with given ID on Discord and shouts default training shout on Roblox.",
       "**/announcediscord** *trainingid*: Announces training with given ID on Discord.",
       "**/announceroblox** *trainingid*: Shouts default training shout on Roblox.",
-      "**/exampleshout** *trainingid*: Posts the default training shout.",
-      "**/exampleannouncement** *trainingid*: Posts an announcement example for training with given ID.",
       "**/cancelsuspension** *username \"reason\"*: Cancels suspension of username given with given reason.",
       "**/extend** *username days \"reason\"*: Extends suspension of username given for given amount of days with given reason.",
       "**/extendsuspension** *username days \"reason\"*: Equivalent of **/extend**.",

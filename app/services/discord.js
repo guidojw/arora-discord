@@ -1,8 +1,8 @@
 'use strict'
-const discord = require('discord.js')
+const discord = require('./discord')
 
-const groupHelper = require('./group')
-const timeHelper = require('./time')
+const groupService = require('./group')
+const timeHelper = require('../helpers/time')
 
 const commands = require('../content/commands')
 
@@ -194,7 +194,7 @@ exports.getTrainingEmbeds = trainings => {
     }
     let message = ''
     trainings.forEach(training => {
-        const line = training.id + '. ' + groupHelper.getTrainingSentence(training)
+        const line = training.id + '. ' + groupService.getTrainingSentence(training)
         const addition = line.length + 8 // TODO: tweak additions
         if (sum + addition <= 6000) {
             if (message.length + line.length <= 1024) {
@@ -220,17 +220,6 @@ exports.getTrainingEmbeds = trainings => {
     return embeds
 }
 
-exports.getTrainingAnnouncement = (training, guild) => {
-    const role = groupHelper.getRoleByAbbreviation(training.type)
-    const dateString = timeHelper.getDate(training.date * 1000)
-    const timeString = timeHelper.getTime(training.date * 1000)
-    const by = training.by
-    const specialNotes = training.specialnotes
-    return `${guild.emojis.get('248922413599817728')} **TRAINING**\nThere will be a *${role}* training on **` +
-        `${dateString}**.\nTime: **${timeString} ${timeHelper.isDst(training.date * 1000) && 'CEST' || 'CET'}**.` +
-        `\n${specialNotes && specialNotes + '\n' || ''}Hosted by **${by}**.\n@everyone`
-}
-
 exports.getBanEmbeds = bans => {
     const embeds = []
     let fields = []
@@ -251,7 +240,7 @@ exports.getBanEmbeds = bans => {
         const byId = ban.by !== 0 ? ban.by : '??'
         const at = ban.at
         const reason = ban.reason ? ban.reason : '??'
-        const role = rank ? groupHelper.getAbbreviationByRank(rank) : '??'
+        const role = rank ? groupService.getAbbreviationByRank(rank) : '??'
         const dateString = at ? timeHelper.getDate(at * 1000) : '??'
         const line = `**${userId}** (**${role}**) by **${byId}** at **${dateString}** with reason "*${reason}*"`
         const addition = line.length + 16 // TODO: tweak additions
@@ -279,6 +268,7 @@ exports.getBanEmbeds = bans => {
     return embeds
 }
 
+// TODO: fix
 exports.getEmojiNameFromNumber = number => {
     switch (number) {
         case 1: return 'one'

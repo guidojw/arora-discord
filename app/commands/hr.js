@@ -3,11 +3,12 @@ require('dotenv').config()
 
 const base = require('path').resolve('.')
 
-const discordHelper = require('../helpers/discord')
+const discordService = require('../services/discord')
+const groupService = require('../services/group')
+const userService = require('../services/user')
+
 const randomHelper = require('../helpers/random')
 const stringHelper = require('../helpers/string')
-const groupHelper = require('../helpers/group')
-const userHelper = require('../helpers/user')
 const timeHelper = require('../helpers/time')
 
 const applicationAdapter = require('../adapters/application')
@@ -35,8 +36,8 @@ exports.suspend = async req => {
     const reason = stringHelper.extractText(req.message.content, '"')
     if (!reason) throw new InputError('Please enter a reason between *double* quotation marks.')
     const username = req.args[0]
-    const userId = await userHelper.getIdFromUsername(username)
-    const byUserId = await userHelper.getIdFromUsername(req.member.nickname ? req.member.nickname : req.author
+    const userId = await userService.getIdFromUsername(username)
+    const byUserId = await userService.getIdFromUsername(req.member.nickname ? req.member.nickname : req.author
         .username)
     await applicationAdapter('post', `/v1/groups/${config.groupId}/suspensions`, {
         userId: userId,
@@ -45,26 +46,26 @@ exports.suspend = async req => {
         by: byUserId,
         reason: reason
     })
-    req.channel.send(discordHelper.getEmbed(req.command, `Successfully suspended **${username}**.`))
+    req.channel.send(discordService.getEmbed(req.command, `Successfully suspended **${username}**.`))
 }
 
 exports.promote = async req => {
     const username = req.args[0]
-    const userId = await userHelper.getIdFromUsername(username)
-    const byUserId = await userHelper.getIdFromUsername(req.member.nickname ? req.member.nickname : req.author
+    const userId = await userService.getIdFromUsername(username)
+    const byUserId = await userService.getIdFromUsername(req.member.nickname ? req.member.nickname : req.author
         .username)
     await applicationAdapter('post', `/v1/groups/${config.groupId}/promote/${userId}`, {
         by: byUserId
     })
-    req.channel.send(discordHelper.getEmbed(req.command, `Successfully promoted **${username}**.`))
+    req.channel.send(discordService.getEmbed(req.command, `Successfully promoted **${username}**.`))
 }
 
 exports.pban = async req => {
     const reason = stringHelper.extractText(req.message.content, '"')
     if (!reason) throw new InputError('Please enter a reason between *double* quotation marks.')
     const username = req.args[0]
-    const userId = await userHelper.getIdFromUsername(username)
-    const byUserId = await userHelper.getIdFromUsername(req.member.nickname ? req.member.nickname : req.author
+    const userId = await userService.getIdFromUsername(username)
+    const byUserId = await userService.getIdFromUsername(req.member.nickname ? req.member.nickname : req.author
         .username)
     await applicationAdapter('post', `/v1/bans`, {
         userId: userId,
@@ -72,7 +73,7 @@ exports.pban = async req => {
         reason: reason,
         groupId: config.groupId
     })
-    req.channel.send(discordHelper.getEmbed(req.command, `Successfully banned **${username}**.`))
+    req.channel.send(discordService.getEmbed(req.command, `Successfully banned **${username}**.`))
 }
 
 exports.shout = async req => {
@@ -84,26 +85,26 @@ exports.shout = async req => {
         message += (' ~' + username)
         if (message.length > 255) throw new InputError('Can\'t post shout, it\'s too long.')
     }
-    const byUserId = await userHelper.getIdFromUsername(req.member.nickname ? req.member.nickname : req.author
+    const byUserId = await userService.getIdFromUsername(req.member.nickname ? req.member.nickname : req.author
         .username)
     await applicationAdapter('post', `/v1/groups/${config.groupId}/shout`, {
         by: byUserId,
         message: message
     })
     if (req.args[0] === 'clear') {
-        req.channel.send(discordHelper.getEmbed(req.command, 'Successfully cleared shout.'))
+        req.channel.send(discordService.getEmbed(req.command, 'Successfully cleared shout.'))
     } else {
-        req.channel.send(discordHelper.getEmbed(req.command, `Successfully shouted *"${message}"*`))
+        req.channel.send(discordService.getEmbed(req.command, `Successfully shouted *"${message}"*`))
     }
 }
 
 exports.clearreports = async req => {
-    const reportsChannel = discordHelper.getChannel(req.guild, 'reports')
+    const reportsChannel = discordService.getChannel(req.guild, 'reports')
     const messages = reportsChannel.fetchMessages()
     if (messages.size - 1 > 0) {
         await reportsChannel.bulkDelete(messages.size - 1)
         if (req.channel !== reportsChannel) {
-            req.channel.send(discordHelper.getEmbed(req.command, `Successfully deleted **${messages.size - 1}** ` +
+            req.channel.send(discordService.getEmbed(req.command, `Successfully deleted **${messages.size - 1}** ` +
                 `messages in ${reportsChannel}.`))
         }
     } else throw new InputError('There are no messages to delete in #reports.')
@@ -118,7 +119,7 @@ exports.updatesworkplace = req => {
 }
 
 exports.docs = req => {
-    const hrChannel = discordHelper.getChannel(req.guild, 'hr')
+    const hrChannel = discordService.getChannel(req.guild, 'hr')
     if (req.channel === hrChannel) {
         req.channel.send(`<${process.env.TP_DOC}> - Training Protocols`)
         req.channel.send(`<${process.env.TL_DOC}> - Training Logs`)
@@ -131,7 +132,7 @@ exports.hrdocs = req => {
 }
 
 exports.traininglogs = req => {
-    const hrChannel = discordHelper.getChannel(req.guild, 'hr')
+    const hrChannel = discordService.getChannel(req.guild, 'hr')
     if (req.channel === hrChannel) {
         req.channel.send(`<${process.env.TL_DOC}> - Training Logs`)
     } else throw new InputError('Wrong channel!')
@@ -142,7 +143,7 @@ exports.tl = req => {
 }
 
 exports.maliciousspreadsheets = req => {
-    const hrChannel = discordHelper.getChannel(req.guild, 'hr')
+    const hrChannel = discordService.getChannel(req.guild, 'hr')
     if (req.channel === hrChannel) {
         req.channel.send(`<${process.env.MS_DOC}> - Malicious Spreadsheets`)
     } else throw new InputError('Wrong channel!')
@@ -153,7 +154,7 @@ exports.ms = req => {
 }
 
 exports.trainingprotocols = req => {
-    const hrChannel = discordHelper.getChannel(req.guild, 'hr')
+    const hrChannel = discordService.getChannel(req.guild, 'hr')
     if (req.channel === hrChannel) {
         req.channel.send(`<${process.env.MS_DOC}> - Malicious Spreadsheets`)
     } else throw new InputError('Wrong channel!')
@@ -165,14 +166,14 @@ exports.tp = req => {
 
 exports.isindiscord = req => {
     if (!req.args[0]) throw new InputError('Please enter a username.')
-    const member = discordHelper.getMemberByName(req.guild, req.args[0])
+    const member = discordService.getMemberByName(req.guild, req.args[0])
     if (member) {
-        req.channel.send(discordHelper.compileRichEmbed([{
+        req.channel.send(discordService.compileRichEmbed([{
             title: req.command,
             message: `Yes, **${member.nickname}** is in this server`,
         }]))
     } else {
-        req.channel.send(discordHelper.compileRichEmbed([{
+        req.channel.send(discordService.compileRichEmbed([{
             title: req.command,
             message: `No, **${req.args[0]}** is not in this server.`,
         }]))
@@ -184,12 +185,12 @@ exports.activity = async req => {
         const activity = parseInt(req.args[0]) - 1
         if (activities[activity]) {
             const status = await botController.setActivity(activity)
-            req.channel.send(discordHelper.getEmbed('**Successfully set activity to**', status))
+            req.channel.send(discordService.getEmbed('**Successfully set activity to**', status))
         } else throw new InputError('No action with that number exists.')
     } else {
         const status = await botController.setActivity(randomHelper.getRandomInt(activities.length, botController
             .currentActivityNumber))
-        req.channel.send(discordHelper.getEmbed('**Successfully set activity to**', status))
+        req.channel.send(discordService.getEmbed('**Successfully set activity to**', status))
     }
 }
 
@@ -199,7 +200,7 @@ exports.status = async req => {
 
 exports.host = async req => {
     const type = req.args[0]
-    const role = groupHelper.getRoleByAbbreviation(type)
+    const role = groupService.getRoleByAbbreviation(type)
     if (!role) throw new InputError('Please enter a valid type of training.')
     const dateString = req.args[1]
     if (!dateString) throw new InputError('Please give a date for your training.')
@@ -223,7 +224,7 @@ exports.host = async req => {
         date: dateUnix,
         specialnotes: specialnotes
     })).data
-    req.channel.send(discordHelper.compileRichEmbed([{
+    req.channel.send(discordService.compileRichEmbed([{
         title: 'Successfully hosted',
         message: `**${role}** training on **${dateString}** at **${timeString}**.`,
     }, {title: 'Training ID:', message: trainingId.toString()}]))
@@ -282,18 +283,18 @@ exports.changetraining = async req => {
     InputError('That key is not valid.')
     const data = {}
     if (key === 'by') {
-        data.by = await userHelper.getIdFromUsername(changeData)
+        data.by = await userService.getIdFromUsername(changeData)
     } else if (key === 'specialnotes') {
         const specialnotes = stringHelper.extractText(changeData, '"')
         if (!specialnotes) throw new InputError('Please enter new specialnotes between *double* quotation marks.')
         data.specialnotes = specialnotes
     } else if (key === 'type') {
         changeData = changeData.toLowerCase()
-        if (!groupHelper.getRoleByAbbreviation(changeData)) throw new InputError(`Role abbreviaton **${changeData}** ` +
+        if (!groupService.getRoleByAbbreviation(changeData)) throw new InputError(`Role abbreviaton **${changeData}** ` +
             'does not exist.')
         data.type = changeData
     } else if (key === 'date' || key === 'time') {
-        const training = await groupHelper.getTrainingById(id)
+        const training = await groupService.getTrainingById(id)
         const unix = training.date * 1000
         let dateInfo
         let timeInfo
@@ -318,43 +319,35 @@ exports.changetraining = async req => {
     }
 }
 
-exports.announce = async req => {
-    await exports.announcediscord(req)
-    await exports.announceroblox(req)
+exports.announce = async req => {const id = parseInt(req.args[0])
+    if (!id) throw new InputError('Please enter a training ID.')
+    const content = (await applicationAdapter('post', `/api/v1/groups/${config.groupId}/trainings/` +
+        `${id}/announce`, {
+            medium: 'both'
+        })).data
+    req.channel.send(discordService.getEmbed('Successfully announced', content.announcement))
+    req.channel.send(discordService.getEmbed('Successfully shouted', content.shout))
 }
 
 exports.announcediscord = async req => {
     const id = parseInt(req.args[0])
-    const training = await groupHelper.getTrainingById(id)
-    const content = await discordHelper.getChannel(req.guild, 'trainings').send(discordHelper
-        .getTrainingAnnouncement(training, req.guild))
-    req.channel.send(discordHelper.getEmbed('Successfully announced', content))
+    if (!id) throw new InputError('Please enter a training ID.')
+    const content = (await applicationAdapter('post', `/api/v1/groups/${config.groupId}/trainings/` +
+        `${id}/announce`, {
+            medium: 'discord'
+        })).data
+    req.channel.send(discordService.getEmbed('Successfully announced', content))
 }
 
 exports.announceroblox = async req => {
     const id = parseInt(req.args[0])
     if (!id) throw new InputError('Please enter a training ID.')
-    const byUserId = await userHelper.getIdFromUsername(req.member.nickname ? req.member.nickname : req.author
-        .username)
-    await applicationAdapter('post', `/v1/groups/${config.groupId}/shout`, {
-        by: byUserId,
-        message: groupHelper.defaultTrainingShout
-    })
-    req.channel.send(discordHelper.getEmbed('Successfully shouted', groupHelper.defaultTrainingShout))
-}
+    const content = (await applicationAdapter('post', `/api/v1/groups/${config.groupId}/trainings/` +
+        `${id}/announce`, {
+            medium: 'roblox'
+        })).data
+    req.channel.send(discordService.getEmbed('Successfully shouted', groupService.defaultTrainingShout))
 
-exports.exampleshout = async req => {
-    const id = parseInt(req.args[0])
-    if (!id) throw new InputError('Please enter a training ID.')
-    req.channel.send(discordHelper.getEmbed('Shout for Training ID ' + id, groupHelper.defaultTrainingShout))
-}
-
-exports.exampleannouncement = async req => {
-    const id = parseInt(req.args[0])
-    const training = await groupHelper.getTrainingById(id)
-    req.channel.send(discordHelper.getEmbed('Announcement for Training ID ' + id , discordHelper
-        .getTrainingAnnouncement(training, req.guild)).setFooter('Please note: Copying and pasting the ' +
-            'announcement does NOT copy the layout.'))
 }
 
 exports.cancelsuspension = async req => {
@@ -362,8 +355,8 @@ exports.cancelsuspension = async req => {
     if (!username) throw new InputError('Please enter a username.')
     const reason = stringHelper.extractText(req.message.content, '"')
     if (!reason) throw new InputError('Please enter a reason between *double* quotation marks.')
-    const userId = await userHelper.getIdFromUsername(username)
-    const byUserId = await userHelper.getIdFromUsername(req.member.nickname ? req.member.nickname : req.author
+    const userId = await userService.getIdFromUsername(username)
+    const byUserId = await userService.getIdFromUsername(req.member.nickname ? req.member.nickname : req.author
         .username)
     const suspension = (await applicationAdapter('put', `/v1/groups/${config.groupId}/suspensions/` +
         userId, {
@@ -386,8 +379,8 @@ exports.extend = async req => {
     let extension = parseFloat(req.args[1])
     if (!extension) throw new InputError('Please enter a number amount of days!')
     extension = Math.round(extension)
-    const userId = await userHelper.getIdFromUsername(username)
-    const byUserId = await userHelper.getIdFromUsername(req.member.nickname ? req.member.nickname : req.author
+    const userId = await userService.getIdFromUsername(username)
+    const byUserId = await userService.getIdFromUsername(req.member.nickname ? req.member.nickname : req.author
         .username)
     const suspension = (await applicationAdapter('put', `/v1/groups/${config.groupId}/suspensions/` +
         userId, {
@@ -417,7 +410,7 @@ exports.changesuspension = async req => {
     if (key !== 'by' && key !== 'reason' && key !== 'rankback') throw new InputError('That key is not valid.')
     const data = {}
     if (key === 'by') {
-        data.by = await userHelper.getIdFromUsername(changeData)
+        data.by = await userService.getIdFromUsername(changeData)
     } else if (key === 'reason') {
         const reason = stringHelper.extractText(changeData, '"')
         if (!reason) throw new InputError('Please enter new reason between *double* quotation marks.')
@@ -428,7 +421,7 @@ exports.changesuspension = async req => {
             'value for rankback.')
         data.rankback = changeData === 'yes' ? 1 : 0
     }
-    const userId = await userHelper.getIdFromUsername(username)
+    const userId = await userService.getIdFromUsername(username)
     const suspension = (await applicationAdapter('put', `/v1/groups/${config.groupId}/suspensions/` +
         userId, data)).data
     if (suspension) {
@@ -449,7 +442,7 @@ exports.change = req => {
 
 exports.issuspended = async req => {
     const username = req.args[0]
-    const userId = await userHelper.getIdFromUsername(username)
+    const userId = await userService.getIdFromUsername(username)
     const suspension = (await applicationAdapter('get', `/v1/groups/${config.groupId}/suspension/` +
         userId)).data
     if (suspension) {
@@ -460,11 +453,11 @@ exports.issuspended = async req => {
 }
 
 exports.unpban = async req => {
-    const happywalker = discordHelper.getMemberByName(req.guild, 'Happywalker')
+    const happywalker = discordService.getMemberByName(req.guild, 'Happywalker')
     if (req.member !== happywalker) throw new PermissionError()
     const username = req.args[0]
-    const userId = await userHelper.getIdFromUsername(username)
-    const byUserId = await userHelper.getIdFromUsername(req.member.nickname ? req.member.nickname : req.author
+    const userId = await userService.getIdFromUsername(username)
+    const byUserId = await userService.getIdFromUsername(req.member.nickname ? req.member.nickname : req.author
         .username)
     await applicationAdapter('put', `/v1/bans/${userId}`, {
         unbanned: true,
@@ -475,7 +468,7 @@ exports.unpban = async req => {
 
 exports.pbanlist = async req => {
     const bans = (await applicationAdapter('get', '/v1/bans')).data
-    const banEmbeds = discordHelper.getBanEmbeds(bans)
+    const banEmbeds = discordService.getBanEmbeds(bans)
     const channel = await req.member.createDM()
     for (const embed of banEmbeds) {
         await channel.send(embed)
