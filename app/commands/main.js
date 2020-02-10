@@ -53,7 +53,7 @@ exports.reason = async req => {
     userId)).data
     if (suspension) {
         const days = suspension.duration / 86400
-        req.channel.send(discordService.compileRichEmbed([{
+        await req.channel.send(discordService.compileRichEmbed([{
             title: req.args[0] ? `${username} is suspended for`: 'You\'re suspended for',
             message: `${days} ${pluralize('day', days)}`
         }, {
@@ -72,7 +72,7 @@ exports.suspendinfo = async req => {
 exports.getshout = async req => {
     const shout = (await applicationAdapter('get', `/v1/groups/${config.groupId}/shout`)).data
     if (shout.body !== '') {
-        req.channel.send(discordService.compileRichEmbed([{
+        await req.channel.send(discordService.compileRichEmbed([{
             title: `Current shout by ${shout.poster.username}`,
             message: shout.body,
         }], {timestamp: shout.updated}))
@@ -88,7 +88,7 @@ exports.groupshout = async req => {
 exports.suggest = async req => {
     const suggestion = await discordService.extractText(req.message.content, '"')
     if (!suggestion) throw new InputError('Please enter a suggestion between *double* quotation marks.')
-    req.channel.send(discordService.compileRichEmbed([{
+    await req.channel.send(discordService.compileRichEmbed([{
         title: 'Successfully suggested', message: `*"${suggestion}"*`
     }]))
     const suggestionsChannel = await req.guild.channels.find(channel => channel.name === 'suggestions')
@@ -289,12 +289,12 @@ exports.badges = async req => {
     const userId = await userService.getIdFromUsername(username)
     const hasTtdt = await userService.hasBadge(userId, config.ttdtId)
     const hasPtdt = await userService.hasBadge(userId, config.ptdtId)
-    const hasTct = await userService.hasBadge(userId, config.tctId)
+    const hasTcdt = await userService.hasBadge(userId, config.tcdtId)
     const embed = new RichEmbed()
         .setTitle(`${username}'s badges:`)
         .addField('TTDT', hasTtdt ? 'yes' : 'no', true)
         .addField('PTDT', hasPtdt ? 'yes' : 'no', true)
-        .addField('TCT', hasTct ? 'yes' : 'no', true)
+        .addField('TCDT', hasTcdt ? 'yes' : 'no', true)
     await req.channel.send(embed)
 }
 

@@ -6,12 +6,6 @@ const timeHelper = require('../helpers/time')
 
 const commands = require('../content/commands')
 
-function pluck(array) {
-    return array.map(item => {
-        return item['name']
-    })
-}
-
 exports.getActivityFromNumber = num => {
     return num === 0 && 'Playing' || num === 1 && 'Streaming' || num === 2 && 'Listening to' || num === 3 && 'Watching'
 }
@@ -67,8 +61,8 @@ exports.compileRichEmbed = (fields, opts) => {
 }
 
 
-exports.hasRole = (member, role) => {
-    return pluck(member.roles).includes(role)
+exports.hasRole = (member, name) => {
+    return member.roles.some(role => role.name === name)
 }
 
 exports.isAdmin = member => {

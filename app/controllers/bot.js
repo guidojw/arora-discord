@@ -1,13 +1,12 @@
 'use strict'
 require('dotenv').config()
 
-const discord = require('discord.js')
+const { Client, RichEmbed } = require('discord.js')
 const sleep = require('sleep')
 
-const base = require('path').resolve('.')
+const discordService = require('../services/discord')
 
 const timeHelper = require('../helpers/time')
-const discordService = require('../services/discord')
 const randomHelper = require('../helpers/random')
 
 const InputError = require('../errors/input-error')
@@ -18,9 +17,10 @@ const commands = require('../commands')
 
 const activities = require('../content/activities')
 
-const config = require(base + '/config/application')
+const applicationConfig = require('../../config/application')
+const guildConfigs = require('../../config/guilds')
 
-const client = new discord.Client()
+const client = new Client()
 
 client.on('ready', async () => {
     exports.startUnix = timeHelper.getUnix()
@@ -35,6 +35,8 @@ client.on('error', async err => {
 
 client.on('message', async message => {
     if (message.author.bot) return
+    const config = guildConfigs[message.guild.id]
+    if (!config) return
     if (!message.content.startsWith(config.prefix)) return
     let args = message.content.split(' ')
     const command = args[0].slice(1)
@@ -49,7 +51,8 @@ client.on('message', async message => {
                 message: message,
                 command: command,
                 args: args,
-                client: client
+                client: client,
+                config: config
             }
             try {
                 if (title === 'hr' && !discordService.hasRole(req.member, 'HR')) throw new PermissionError()
@@ -57,16 +60,17 @@ client.on('message', async message => {
             } catch (err) {
                 console.error(err)
                 if (err instanceof InputError) {
-                    req.channel.send(err.message)
+                    await req.channel.send(err.message)
                 } else if (err instanceof ApplicationError) {
-                    req.channel.send(discordService.getEmbed(req.command, err.message))
+                    await req.channel.send(discordService.getEmbed(req.command, err.message))
                 } else if (err instanceof PermissionError) {
-                    req.channel.send('Insufficient powers!')
+                    await req.channel.send('Insufficient powers!')
                 } else {
                     if (err.response.status === 500) {
-                        req.channel.send('An error occurred!')
+                        await req.channel.send('An error occurred!')
                     } else {
-                        req.channel.send(discordService.getEmbed(req.command, err.response.data.errors[0].message))
+                        await req.channel.send(discordService.getEmbed(req.command, err.response.data.errors[0].message)
+                        )
                     }
                 }
             }
@@ -74,6 +78,16 @@ client.on('message', async message => {
             break
         }
     }
+})
+
+client.on('guildMemberAdd', async member => {
+    const config = guildConfigs[member.guild.id]
+    if (!config) return
+    const embed = new RichEmbed()
+        .setTitle(`Hey ${member.user.tag},`)
+        .setDescription(`You're the **${member.guild.memberCount}th** member on **${member.guild.name}**!`)
+        .setThumbnail(member.user.displayAvatarURL)
+    member.guild.channels.find(channel => channel.id === config.channels.welcome).send(embed)
 })
 
 exports.login = async () => {
@@ -89,10 +103,10 @@ exports.login = async () => {
 exports.restart = async client => {
     try {
         await client.destroy()
+        await sleep.sleep(applicationConfig.restartDelay)
         await exports.login()
     } catch (err) {
         console.error(err)
-        await sleep.sleep(config.restartDelay)
         await exports.restart(client)
     }
 }
