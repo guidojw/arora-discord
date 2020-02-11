@@ -6,12 +6,6 @@ const timeHelper = require('../helpers/time')
 
 const commands = require('../content/commands')
 
-function pluck(array) {
-    return array.map(item => {
-        return item['name']
-    })
-}
-
 exports.getActivityFromNumber = num => {
     return num === 0 && 'Playing' || num === 1 && 'Streaming' || num === 2 && 'Listening to' || num === 3 && 'Watching'
 }
@@ -20,7 +14,7 @@ exports.getMemberByName = (guild, name) => {
     const members = guild.members.array()
     let foundMember = null
     members.forEach(member => {
-        const username = member.nickname ? member.nickname : member.user.username
+        const username = member.nickname !== null ? member.nickname : member.user.username
         if (username && username.toLowerCase() === name.toLowerCase()) {
             foundMember = member
         }
@@ -67,8 +61,8 @@ exports.compileRichEmbed = (fields, opts) => {
 }
 
 
-exports.hasRole = (member, role) => {
-    return pluck(member.roles).includes(role)
+exports.hasRole = (member, name) => {
+    return member.roles.some(role => role.name === name)
 }
 
 exports.isAdmin = member => {
@@ -83,10 +77,6 @@ exports.extractText = (str, delimiter) => {
             return str.substring(firstIndex, lastIndex)
         }
     }
-}
-
-exports.getChannel = (guild, name) => {
-    return guild.channels.find(channel => channel.name === name)
 }
 
 exports.getCmdEmbeds = () => {

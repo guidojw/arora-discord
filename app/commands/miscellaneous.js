@@ -9,10 +9,10 @@ const applicationAdapter = require('../adapters/application')
 
 const InputError = require('../errors/input-error')
 
-const config = require(base + '/config/application')
+const applicationConfig = require(base + '/config/application')
 
 exports.rr = req => {
-    req.channel.send(`<${config.rulesRegulationsLink}> - Rules & Regulations`)
+    req.channel.send(`<${applicationConfig.rulesRegulationsLink}> - Rules & Regulations`)
 }
 
 exports.rulesregulations = req => {
@@ -20,7 +20,7 @@ exports.rulesregulations = req => {
 }
 
 exports.group = req => {
-    req.channel.send(`<${config.groupLink}> - Group Page`)
+    req.channel.send(`<${applicationConfig.groupLink}> - Group Page`)
 }
 
 exports.grouppage = req => {
@@ -32,7 +32,7 @@ exports.grouplink = req => {
 }
 
 exports.game = req => {
-    req.channel.send(`<${config.gameLink}> - Game Page`)
+    req.channel.send(`<${applicationConfig.gameLink}> - Game Page`)
 }
 
 exports.gamepage = req => {
@@ -40,11 +40,11 @@ exports.gamepage = req => {
 }
 
 exports.trello = req => {
-    req.channel.send(`<${config.trelloLink}> - Trello Dev Board`)
+    req.channel.send(`<${applicationConfig.trelloLink}> - Trello Dev Board`)
 }
 
 exports.ttdt = req => {
-    req.channel.send(`<${config.theoreticalTrainDriverTestLink}> - Theoretical Train Driver Test II`)
+    req.channel.send(`<${applicationConfig.theoreticalTrainDriverTestLink}> - Theoretical Train Driver Test II`)
 }
 
 exports.theoretical = req => {
@@ -52,7 +52,7 @@ exports.theoretical = req => {
 }
 
 exports.ptdt = req => {
-    req.channel.send(`<${config.practicalTrainDriverTestLink}> - Practical Train Driver Test II`)
+    req.channel.send(`<${applicationConfig.practicalTrainDriverTestLink}> - Practical Train Driver Test II`)
 }
 
 exports.practical = req => {
@@ -95,7 +95,7 @@ exports.epoch = req => {
 }
 
 exports.groupcenter = req => {
-    req.channel.send(`<${config.groupCenterLink}> - Group Center`)
+    req.channel.send(`<${applicationConfig.groupCenterLink}> - Group Center`)
 }
 
 exports.groupcentre = req => {
@@ -107,7 +107,7 @@ exports.gc = req => {
 }
 
 exports.discord = req => {
-    req.channel.send(`${config.discordLink}`)
+    req.channel.send(`${applicationConfig.discordLink}`)
 }
 
 exports.isdst = async req => {
@@ -123,7 +123,7 @@ exports.isloggedin = async req => {
 }
 
 exports.membercount = async req => {
-    let groupId = req.args[0] ? parseInt(req.args[0]) : config.groupId
+    let groupId = req.args[0] ? parseInt(req.args[0]) : applicationConfig.groupId
     if (!groupId) throw new InputError('Please enter a group ID.')
     const group = (await applicationAdapter('get', `/v1/groups/${groupId}`)).data
     req.channel.send(discordService.getEmbed(`${group.name} has`, `**${group.memberCount}** members.`))

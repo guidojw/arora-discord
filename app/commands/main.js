@@ -19,7 +19,7 @@ const PermissionError = require('../errors/permission-error')
 
 const activities = require('../content/activities')
 
-const config = require('../../config/application')
+const applicationConfig = require('../../config/application')
 
 let activitiesString = ''
 
@@ -28,9 +28,11 @@ exports.amiadmin = async req => {
         const member = discordService.getMemberByName(req.guild, req.args[0])
         if (!member) throw new ApplicationError(`Couldn't find **${req.args[0]}** in server.`)
         if (discordService.isAdmin(member)) {
-            req.channel.send(discordService.getEmbed(req.command, `Yes, **${member.nickname}** is admin.`))
+            req.channel.send(discordService.getEmbed(req.command, `Yes, **${member.nickname !== null ? member
+                .nickname : member.user.username}** is admin.`))
         } else {
-            req.channel.send(discordService.getEmbed(req.command, `No, **${member.nickname}** is not admin.`))
+            req.channel.send(discordService.getEmbed(req.command, `No, **${member.nickname !== null ? member
+                .nickname : member.user.username}** is not admin.`))
         }
     } else {
         if (discordService.isAdmin(req.member)) {
@@ -47,13 +49,14 @@ exports.isadmin = async req => {
 
 exports.reason = async req => {
     if (req.args[0] && !discordService.isAdmin(req.member)) throw new PermissionError()
-    const username = req.args[0] ? req.args[0] : req.member.nickname ? req.member.nickname : req.author.username
+    const username = req.args[0] ? req.args[0] : req.member.nickname !== null ? req.member.nickname : req.author
+        .username
     const userId = await userService.getIdFromUsername(username)
-    const suspension = (await applicationAdapter('get', `/v1/groups/${config.groupId}/suspensions/` +
-    userId)).data
+    const suspension = (await applicationAdapter('get', `/v1/groups/${applicationConfig.groupId}` +
+        `/suspensions/${userId}`)).data
     if (suspension) {
         const days = suspension.duration / 86400
-        req.channel.send(discordService.compileRichEmbed([{
+        await req.channel.send(discordService.compileRichEmbed([{
             title: req.args[0] ? `${username} is suspended for`: 'You\'re suspended for',
             message: `${days} ${pluralize('day', days)}`
         }, {
@@ -70,9 +73,10 @@ exports.suspendinfo = async req => {
 }
 
 exports.getshout = async req => {
-    const shout = (await applicationAdapter('get', `/v1/groups/${config.groupId}/shout`)).data
+    const shout = (await applicationAdapter('get', `/v1/groups/${applicationConfig.groupId}/shout`))
+        .data
     if (shout.body !== '') {
-        req.channel.send(discordService.compileRichEmbed([{
+        await req.channel.send(discordService.compileRichEmbed([{
             title: `Current shout by ${shout.poster.username}`,
             message: shout.body,
         }], {timestamp: shout.updated}))
@@ -88,12 +92,12 @@ exports.groupshout = async req => {
 exports.suggest = async req => {
     const suggestion = await discordService.extractText(req.message.content, '"')
     if (!suggestion) throw new InputError('Please enter a suggestion between *double* quotation marks.')
-    req.channel.send(discordService.compileRichEmbed([{
+    await req.channel.send(discordService.compileRichEmbed([{
         title: 'Successfully suggested', message: `*"${suggestion}"*`
     }]))
     const suggestionsChannel = await req.guild.channels.find(channel => channel.name === 'suggestions')
     const message = await suggestionsChannel.send(discordService.compileRichEmbed([{
-        title: `**${req.member.nickname}** suggested`,
+        title: `**${req.member.nickname !== null ? req.member.nickname : req.author.username}** suggested`,
         message: `*"${suggestion}"*`
     }]).setFooter('Vote using the reactions!'))
     await message.react('✔')
@@ -101,7 +105,8 @@ exports.suggest = async req => {
 }
 
 exports.userid = async req => {
-    const username = req.args[0] ? req.args[0] : req.member.nickname ? req.member.nickname : req.author.username
+    const username = req.args[0] ? req.args[0] : req.member.nickname !== null ? req.member.nickname : req.author
+        .username
     const userId = await userService.getIdFromUsername(username)
     req.channel.send(discordService.getEmbed(req.command, `**${username}** has userId **${userId}**.`))
 }
@@ -111,9 +116,11 @@ exports.getuserid = async req => {
 }
 
 exports.rank = async req => {
-    const username = req.args[0] ? req.args[0] : req.member.nickname ? req.member.nickname : req.author.username
+    const username = req.args[0] ? req.args[0] : req.member.nickname !== null ? req.member.nickname : req.author
+        .username
     const userId = await userService.getIdFromUsername(username)
-    const rank = (await applicationAdapter('get', `/v1/groups/${config.groupId}/rank/${userId}`))
+    const rank = (await applicationAdapter('get', `/v1/groups/${applicationConfig.groupId}/rank/` +
+        userId))
         .data
     req.channel.send(discordService.getEmbed(req.command, `**${username}** has rank **${rank}**.`))
 }
@@ -123,9 +130,11 @@ exports.getrank = async req => {
 }
 
 exports.role = async req => {
-    const username = req.args[0] ? req.args[0] : req.member.nickname ? req.member.nickname : req.author.username
+    const username = req.args[0] ? req.args[0] : req.member.nickname !== null ? req.member.nickname : req.author
+        .username
     const userId = await userService.getIdFromUsername(username)
-    const role = (await applicationAdapter('get', `/v1/groups/${config.groupId}/role/${userId}`))
+    const role = (await applicationAdapter('get', `/v1/groups/${applicationConfig.groupId}/role/` +
+        userId))
         .data
     req.channel.send(discordService.getEmbed(req.command, `**${username}** has role **${role}**.`))
 }
@@ -135,7 +144,8 @@ exports.getrole = async req => {
 }
 
 exports.joindate = async req => {
-    const username = req.args[0] ? req.args[0] : req.member.nickname ? req.member.nickname : req.author.username
+    const username = req.args[0] ? req.args[0] : req.member.nickname !== null ? req.member.nickname : req.author
+        .username
     const userId = await userService.getIdFromUsername(username)
     const joinDate = new Date((await applicationAdapter('get', `/v1/users/${userId}/join-date`))
         .data)
@@ -144,7 +154,8 @@ exports.joindate = async req => {
 }
 
 exports.age = async req => {
-    const username = req.args[0] ? req.args[0] : req.member.nickname ? req.member.nickname : req.author.username
+    const username = req.args[0] ? req.args[0] : req.member.nickname !== null ? req.member.nickname : req.author
+        .username
     const userId = await userService.getIdFromUsername(username)
     const joinDate = new Date((await applicationAdapter('get', `/v1/users/${userId}/join-date`))
         .data)
@@ -154,7 +165,8 @@ exports.age = async req => {
 }
 
 exports.playerurl = async req => {
-    const username = req.args[0] ? req.args[0] : req.member.nickname ? req.member.nickname : req.author.username
+    const username = req.args[0] ? req.args[0] : req.member.nickname !== null ? req.member.nickname : req.author
+        .username
     const userId = await userService.getIdFromUsername(username)
     req.channel.send(`https://www.roblox.com/users/${userId}/profile`)
 }
@@ -164,7 +176,7 @@ exports.url = async req => {
 }
 
 exports.suggestqotd = async req => {
-    const username = req.member.nickname ? req.member.nickname : req.author.username
+    const username = req.member.nickname !== null ? req.member.nickname : req.author.username
     const qotd = await stringHelper.extractText(req.message.content, '"')
     if (!qotd) throw new InputError('Please enter a QOTD suggestion between *double* quotation marks.')
     await applicationAdapter('post', '/v1/qotds', {
@@ -183,7 +195,8 @@ exports.statuses = async req => {
 }
 
 exports.update = async req => {
-    const username = req.args[0] ? req.args[0] : req.member.nickname ? req.member.nickname : req.author.username
+    const username = req.args[0] ? req.args[0] : req.member.nickname !== null ? req.member.nickname : req.author
+        .username
     let member = req.member
     if (req.args[0]) {
         if (!discordService.isAdmin(req.member)) throw new PermissionError()
@@ -191,7 +204,8 @@ exports.update = async req => {
     }
     if (!member) throw new InputError(`**${username}** is not in this server.`)
     const userId = await userService.getIdFromUsername(username)
-    const rank = (await applicationAdapter('get', `/v1/groups/${config.groupId}/rank/${userId}`))
+    const rank = (await applicationAdapter('get', `/v1/groups/${applicationConfig.groupId}/rank/` +
+        userId))
         .data
     await discordService.updateRoles(req.guild, member, rank)
     req.channel.send(`Successfully checked **${username}**'s roles.`)
@@ -207,8 +221,8 @@ exports.notdutch = async req => {
 }
 
 exports.trainings = async req => {
-    const trainings = (await applicationAdapter('get', `/v1/groups/${config.groupId}/trainings`))
-        .data
+    const trainings = (await applicationAdapter('get', `/v1/groups/${applicationConfig.groupId}` +
+        '/trainings')).data
     if (trainings.length === 0) {
         req.channel.send('There are currently no hosted trainings.')
         return
@@ -263,7 +277,7 @@ exports.optin = async req => {
 }
 
 exports.poll = async req => {
-    const username = req.member.nickname ? req.member.nickname : req.author.username
+    const username = req.member.nickname !== null ? req.member.nickname : req.author.username
     const poll = await stringHelper.extractText(req.message.content, '"')
     if (!poll) throw new InputError('Please enter a poll between *double* quotation marks.')
     const options = []
@@ -285,16 +299,17 @@ exports.poll = async req => {
 }
 
 exports.badges = async req => {
-    const username = req.args[0] ? req.args[0] : req.member.nickname ? req.member.nickname : req.author.username
+    const username = req.args[0] ? req.args[0] : req.member.nickname !== null ? req.member.nickname : req.author
+        .username
     const userId = await userService.getIdFromUsername(username)
-    const hasTtdt = await userService.hasBadge(userId, config.ttdtId)
-    const hasPtdt = await userService.hasBadge(userId, config.ptdtId)
-    const hasTct = await userService.hasBadge(userId, config.tctId)
+    const hasTtdt = await userService.hasBadge(userId, applicationConfig.ttdtId)
+    const hasPtdt = await userService.hasBadge(userId, applicationConfig.ptdtId)
+    const hasTcdt = await userService.hasBadge(userId, applicationConfig.tcdtId)
     const embed = new RichEmbed()
         .setTitle(`${username}'s badges:`)
         .addField('TTDT', hasTtdt ? 'yes' : 'no', true)
         .addField('PTDT', hasPtdt ? 'yes' : 'no', true)
-        .addField('TCT', hasTct ? 'yes' : 'no', true)
+        .addField('TCDT', hasTcdt ? 'yes' : 'no', true)
     await req.channel.send(embed)
 }
 
