@@ -205,8 +205,7 @@ exports.update = async req => {
     if (!member) throw new InputError(`**${username}** is not in this server.`)
     const userId = await userService.getIdFromUsername(username)
     const rank = (await applicationAdapter('get', `/v1/groups/${applicationConfig.groupId}/rank/` +
-        userId))
-        .data
+        userId)).data
     await discordService.updateRoles(req.guild, member, rank)
     req.channel.send(`Successfully checked **${username}**'s roles.`)
 }

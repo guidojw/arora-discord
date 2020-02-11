@@ -139,6 +139,15 @@ exports.updateRoles = async (guild, member, rank) => {
         if (exports.hasRole(member, 'Operations Coordinator')) {
             await member.removeRole(guild.roles.find(role => role.name === 'Operations Coordinator'))
         }
+        if (exports.hasRole(member, 'Train Driver')) {
+            await member.removeRole(guild.roles.find(role => role.name === 'Train Driver'))
+        }
+        if (exports.hasRole(member, 'Conductor')) {
+            await member.removeRole(guild.roles.find(role => role.name === 'Conductor'))
+        }
+        if (exports.hasRole(member, 'Customer Service Representative')) {
+            await member.removeRole(guild.roles.find(role => role.name === 'Customer Service Representative'))
+        }
     } else {
         if (exports.hasRole(member, 'Suspended')) {
             await member.removeRole(guild.roles.find(role => role.name === 'Suspended'))
@@ -155,6 +164,15 @@ exports.updateRoles = async (guild, member, rank) => {
         if (rank !== 102 && exports.hasRole(member, 'Operations Coordinator')) {
             await member.removeRole(guild.roles.find(role => role.name === 'Operations Coordinator'))
         }
+        if (rank !== 3 && exports.hasRole(member, 'Train Driver')){
+            await member.removeRole(guild.roles.find(role => role.name === 'Train Driver'))
+        }
+        if (rank !== 4 && exports.hasRole(member, 'Conductor')){
+            await member.removeRole(guild.roles.find(role => role.name === 'Conductor'))
+        }
+        if (rank !== 5 && exports.hasRole(member, 'Customer Service Representative')){
+            await member.removeRole(guild.roles.find(role => role.name === 'Customer Service Representative'))
+        }
         if (rank >= 100 && rank <= 102 && !exports.hasRole(member, 'MR')) {
             await member.addRole(guild.roles.find(role => role.name === 'MR'))
         }
@@ -164,6 +182,12 @@ exports.updateRoles = async (guild, member, rank) => {
             await member.addRole(guild.roles.find(role => role.name === 'Staff Coordinator'))
         } else if (rank === 102 && !exports.hasRole(member, 'Operations Coordinator')) {
             await member.addRole(guild.roles.find(role => role.name === 'Operations Coordinator'))
+        } else if (rank === 3 && !exports.hasRole(member, 'Train Driver')) {
+            await member.addRole(guild.roles.find(role => role.name === 'Train Driver'))
+        } else if (rank === 4 && !exports.hasRole(member, 'Conductor')) {
+            await member.addRole(guild.roles.find(role => role.name === 'Conductor'))
+        } else if (rank === 5 && !exports.hasRole(member, 'Customer Service Representative')) {
+            await member.addRole(guild.roles.find(role => role.name === 'Customer Service Representative'))
         }
     }
 }
