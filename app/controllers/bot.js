@@ -55,7 +55,9 @@ client.on('message', async message => {
                 config: config
             }
             try {
-                if (title === 'hr' && !discordService.hasRole(req.member, 'HR')) throw new PermissionError()
+                if (title === 'admin' && !discordService.isAdmin(req.member, config.adminRoles)) {
+                    throw new PermissionError()
+                }
                 await controller[command](req)
             } catch (err) {
                 console.error(err)

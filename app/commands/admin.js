@@ -117,7 +117,6 @@ exports.clear = async req => {
                     await channel.bulkDelete(messages.size)
                 } catch (err) {
                     for (const message of messages.values()) {
-                        console.log(message)
                         await message.delete()
                     }
                 }

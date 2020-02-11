@@ -65,8 +65,11 @@ exports.hasRole = (member, name) => {
     return member.roles.some(role => role.name === name)
 }
 
-exports.isAdmin = member => {
-    return exports.hasRole(member, 'HR')
+exports.isAdmin = (member, adminRoles) => {
+    for (const role of adminRoles) {
+        if (exports.hasRole(member, role)) return true
+    }
+    return false
 }
 
 exports.extractText = (str, delimiter) => {

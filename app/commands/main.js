@@ -27,7 +27,7 @@ exports.amiadmin = async req => {
     if (req.args[0]) {
         const member = discordService.getMemberByName(req.guild, req.args[0])
         if (!member) throw new ApplicationError(`Couldn't find **${req.args[0]}** in server.`)
-        if (discordService.isAdmin(member)) {
+        if (discordService.isAdmin(member, req.config.adminRoles)) {
             req.channel.send(discordService.getEmbed(req.command, `Yes, **${member.nickname !== null ? member
                 .nickname : member.user.username}** is admin.`))
         } else {
@@ -35,7 +35,7 @@ exports.amiadmin = async req => {
                 .nickname : member.user.username}** is not admin.`))
         }
     } else {
-        if (discordService.isAdmin(req.member)) {
+        if (discordService.isAdmin(req.member, req.config.adminRoles)) {
             req.channel.send(discordService.getEmbed(req.command, `Yes, you are admin!`))
         } else {
             req.channel.send(discordService.getEmbed(req.command, `No, you're not admin.`))
@@ -48,7 +48,7 @@ exports.isadmin = async req => {
 }
 
 exports.reason = async req => {
-    if (req.args[0] && !discordService.isAdmin(req.member)) throw new PermissionError()
+    if (req.args[0] && !discordService.isAdmin(req.member, req.config.adminRoles)) throw new PermissionError()
     const username = req.args[0] ? req.args[0] : req.member.nickname !== null ? req.member.nickname : req.author
         .username
     const userId = await userService.getIdFromUsername(username)
@@ -199,7 +199,7 @@ exports.update = async req => {
         .username
     let member = req.member
     if (req.args[0]) {
-        if (!discordService.isAdmin(req.member)) throw new PermissionError()
+        if (!discordService.isAdmin(req.member, req.config.adminRoles)) throw new PermissionError()
         member = discordService.getMemberByName(req.guild, username)
     }
     if (!member) throw new InputError(`**${username}** is not in this server.`)
