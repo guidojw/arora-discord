@@ -99,17 +99,24 @@ exports.shout = async req => {
     }
 }
 
-exports.clearreports = async req => {
-    const reportsChannel = req.guild.channels.find(channel => channel.id === req.config.channels.reports)
-    const messages = reportsChannel.fetchMessages()
-    if (messages.size - 1 > 0) {
-        await reportsChannel.bulkDelete(messages.size - 1)
-        if (req.channel !== reportsChannel) {
-            req.channel.send(discordService.getEmbed(req.command, `Successfully deleted **${messages.size - 1}** ` +
-                `messages in ${reportsChannel}.`))
-        }
+exports.clear = async req => {
+    if (req.args.length === 0) throw new InputError()
+    const id = discordService.getIdFromArgument(req.args.shift())
+    if (!id) throw new InputError()
+    const reportsChannelId = req.config.channels.reports
+    if (id !== reportsChannelId) throw new InputError(`Can only clear <#${reportsChannelId}>.`)
+    const choice = await discordService.prompt(req.channel, req.author, 'Are you sure you would like to ' +
+        `clear <#${id}>?`)
+    if (choice) {
+        const channel = req.guild.channels.find(channel => channel.id === id)
+        let messages
+        do {
+            messages = (await channel.fetchMessages({ after: req.config.firstReportMessageId }))
+            if (messages.size > 0) await channel.bulkDelete(messages.size)
+        } while (messages.size > 0)
+        req.channel.send(`Successfully cleared <#${id}>.`)
     } else {
-        throw new InputError('There are no messages to delete in #reports.')
+        req.channel.send(`Didn't clear <#${id}>.`)
     }
 }
 
