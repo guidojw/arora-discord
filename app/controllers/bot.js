@@ -124,9 +124,9 @@ exports.setActivity = async num => {
 
 exports.log = async req => {
     try {
-        (await discordService.getChannel(req.guild, 'nsadmin_logs')).send(discordService.getEmbed(`**${req
-            .member.nickname ? req.member.nickname : req.author.username}** used command **${req.command}**!`, req
-            .message.content))
+        const embed = discordService.getEmbed(`**${req.member.nickname !== null ? req.member.nickname : req.author
+            .username}** used command **${req.command}**!`, req.message.content)
+        await req.guild.channels.find(channel => channel.id === req.config.channels.nsAdminLogs).send(embed)
     } catch (err) {
         console.error(err.message)
     }

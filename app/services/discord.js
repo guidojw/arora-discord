@@ -14,7 +14,7 @@ exports.getMemberByName = (guild, name) => {
     const members = guild.members.array()
     let foundMember = null
     members.forEach(member => {
-        const username = member.nickname ? member.nickname : member.user.username
+        const username = member.nickname !== null ? member.nickname : member.user.username
         if (username && username.toLowerCase() === name.toLowerCase()) {
             foundMember = member
         }
@@ -77,10 +77,6 @@ exports.extractText = (str, delimiter) => {
             return str.substring(firstIndex, lastIndex)
         }
     }
-}
-
-exports.getChannel = (guild, name) => {
-    return guild.channels.find(channel => channel.name === name)
 }
 
 exports.getCmdEmbeds = () => {
