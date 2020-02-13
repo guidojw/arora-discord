@@ -328,6 +328,6 @@ exports.prompt = (channel, author, ...options) => {
         } catch (err) {
             reject(new InputError('Prompt timed out.'))
         }
-        message.delete()
+        await message.delete()
     })
 }
