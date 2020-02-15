@@ -92,16 +92,39 @@ exports.groupshout = async req => {
 exports.suggest = async req => {
     const suggestion = await discordService.extractText(req.message.content, '"')
     if (!suggestion) throw new InputError('Please enter a suggestion between *double* quotation marks.')
-    await req.channel.send(discordService.compileRichEmbed([{
-        title: 'Successfully suggested', message: `*"${suggestion}"*`
-    }]))
-    const suggestionsChannel = await req.guild.channels.find(channel => channel.name === 'suggestions')
-    const message = await suggestionsChannel.send(discordService.compileRichEmbed([{
-        title: `**${req.member.nickname !== null ? req.member.nickname : req.author.username}** suggested`,
-        message: `*"${suggestion}"*`
-    }]).setFooter('Vote using the reactions!'))
+    const embed = new RichEmbed()
+        .setDescription(suggestion)
+        .setAuthor(req.author.tag, req.author.displayAvatarURL, req.author.url)
+    if (req.message.attachments.size > 0) {
+        const attachment = req.message.attachments.first()
+        if (attachment.height) embed.setImage(attachment.url)
+    }
+    const message = await req.guild.channels.find(channel => channel.id === req.config.channels.suggestions)
+        .send(embed)
     await message.react('✔')
     await message.react('✖')
+    await message.react('❔')
+    await req.channel.send('Successfully suggested', { embed: embed })
+}
+
+exports.delete = async req => {
+    const channel = req.guild.channels.find(channel => channel.id === req.config.channels.suggestions)
+    const messages = await channel.fetchMessages()
+    for (const suggestion of messages.values()) {
+        if (suggestion.embeds.length === 1 && suggestion.embeds[0].author.name === req.author.tag && suggestion.id !==
+            req.config.firstSuggestionMessageId) {
+            const choice = await discordService.prompt(req.channel, req.author, 'Are you sure you would like' +
+                ' to delete this suggestion?', { embed: suggestion.embeds[0]})
+            if (choice) {
+                await suggestion.delete()
+                req.channel.send('Successfully deleted your last suggestion.')
+            } else {
+                req.channel.send('Didn\'t delete your last suggestion.')
+            }
+            return
+        }
+    }
+    req.channel.send('Could not find a suggestion you made.')
 }
 
 exports.userid = async req => {
