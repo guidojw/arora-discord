@@ -8,7 +8,8 @@
       "**/suspendinfo** *[username]*: Equivalent of **/reason**.",
       "**/getshout**: Fetches current group shout, author and date.",
       "**/groupshout**: Equivalent of **/getshout**.",
-      "**/suggest** *\"suggestion\"*: Suggests suggestion in the suggestions channel, suggestion must be between double quotation marks.",
+      "**/suggest** *suggestion*: Suggests suggestion in the suggestions channel.",
+      "**/delete**: Deletes your last suggestion.",
       "**/userid** *[username]*: Fetches userId of username given/your nickname.",
       "**/getuserid** *[username]*: Equivalent of **/userid**.",
       "**/rank** *[username]*: Fetches the group rank of username given/your nickname.",
@@ -20,7 +21,7 @@
       "**/playerurl** *[username]*: Posts a link of the profile of username given/your nickname.",
       "**/userurl** *[username]*: Equivalent of **/playerurl**.",
       "**/url** *[username]*: Equivalent of **/playerurl**.",
-      "**/suggestqotd** *\"suggestion\"*: Suggests QOTD suggestion on the Trello board.",
+      "**/suggestqotd** *suggestion*: Suggests QOTD suggestion on the Trello board.",
       "**/activities**: Postst a list of all activities.",
       "**/statuses**: Equivalent of **/activities**.",
       "**/update** *[username]*: Updates roles of username given/you.",
@@ -31,7 +32,8 @@
       "**/training** *[trainingid]*: Equivalent of **/trainings**.",
       "**/optout**: Gives command's author the No Training Announcements role which will disable the #trainings channel.",
       "**/optin**: Removes command's author's No Training Announcements role which will enable the #trainings channel.",
-      "**/poll** *\"poll\"*: Sends given poll in current channel with numbers as reactions which people can use to vote. Use *(X)* with X being a number in your poll so that the bot knows what reactions to give. If none provided, the bot will react a check and cross mark."
+      "**/poll** *\"poll\"*: Sends given poll in current channel with numbers as reactions which people can use to vote. Use *(X)* with X being a number in your poll so that the bot knows what reactions to give. If none provided, the bot will react a check and cross mark.",
+      "**/badges** *[username]*: Shows which of the three training badges username/you has."
     ]
   }, {
     "title": "Miscellaneous",
@@ -45,17 +47,17 @@
       "**/gamepage**: Equivalent of **/game**.",
       "**/trello**: Posts link of the development board on Trello.",
       "**/ttdt**: Posts a link of the Theoretical Train Driver Test II.",
-      "**/theoretical**: Equivalent of **/ttdt**.",
       "**/ptdt**: Posts a link of the Practical Train Driver Test II.",
-      "**/practical**: Equivalent of **/ptdt**.",
+      "**/tcdt**: Posts a link of the Theoretical Conductor Test.",
       "**/time** *[timezone]*: Posts time of timezone (abbreviation). Defaults to Dutch time.",
       "**/date** *[timezone]*: Posts local time, date, weekday and timezone information of given timezone (abbreviation). Defaults to Dutch time.",
       "**/unix**: Posts current epoch time.",
       "**/epoch**: Equivalent of **/unix**.",
       "**/groupcenter**: Posts a link of the Group Center.",
-      "**/groupcentre**: Equivalent of **/groupcenter**.",
       "**/gc**: Equivalent of **/groupcenter**.",
-      "**/discord**: Posts link to the server."
+      "**/discord**: Posts link to the server.",
+      "**/invite**: Equivalent of **/discord**.",
+      "**/membercount**: Posts the member count of the group."
     ]
   }, {
     "title": "HR",
@@ -64,7 +66,7 @@
       "**/promote** *username*: Promotes username in group.",
       "**/pban** *username*: Pbans username from NS games.",
       "**/shout** *[\"clear\"]*/*\"content\"*: Posts shout with given content to the group.",
-      "**/clearreports**: Clears the reports channel.",
+      "**/clear** *#channel*: Clears the specified channel.",
       "**/uw**: Posts a link of the Updates Workplace.",
       "**/updatesworkplace**: Equivalent of **/uw**.",
       "**/docs**: Posts links of all HR related documentss.",
