@@ -114,7 +114,7 @@ exports.clear = async req => {
         let messages
         do {
             messages = (await channel.fetchMessages({ after: id === suggestionsChannelId ? req.config
-                    .firstSuggestionMessageId : req.config.firstBugReportMessageId }))
+                    .firstSuggestionMessageId : req.config.firstReportMessageId }))
             if (messages.size > 0) {
                 try {
                     await channel.bulkDelete(messages.size)
