@@ -47,16 +47,12 @@ exports.ttdt = req => {
     req.channel.send(`<${applicationConfig.theoreticalTrainDriverTestLink}> - Theoretical Train Driver Test II`)
 }
 
-exports.theoretical = req => {
-    exports.ttdt(req)
-}
-
 exports.ptdt = req => {
     req.channel.send(`<${applicationConfig.practicalTrainDriverTestLink}> - Practical Train Driver Test II`)
 }
 
-exports.practical = req => {
-    exports.ptdt(req)
+exports.tcdt = req => {
+    req.channel.send(`<${applicationConfig.theoreticalConductorTestLink}> - Theoretical Conductor Test`)
 }
 
 exports.time = async req => {
@@ -98,16 +94,16 @@ exports.groupcenter = req => {
     req.channel.send(`<${applicationConfig.groupCenterLink}> - Group Center`)
 }
 
-exports.groupcentre = req => {
-    exports.groupcenter(req)
-}
-
 exports.gc = req => {
     exports.groupcenter(req)
 }
 
 exports.discord = req => {
     req.channel.send(`${applicationConfig.discordLink}`)
+}
+
+exports.invite = req => {
+    exports.discord(req)
 }
 
 exports.isdst = async req => {
