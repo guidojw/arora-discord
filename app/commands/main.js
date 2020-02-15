@@ -90,8 +90,8 @@ exports.groupshout = async req => {
 }
 
 exports.suggest = async req => {
-    const suggestion = await discordService.extractText(req.message.content, '"')
-    if (!suggestion) throw new InputError('Please enter a suggestion between *double* quotation marks.')
+    if (req.args.length === 0) throw new InputError('Please enter a suggestion.')
+    const suggestion = req.args.join(' ')
     const embed = new RichEmbed()
         .setDescription(suggestion)
         .setAuthor(req.author.tag, req.author.displayAvatarURL, req.author.url)
@@ -200,8 +200,8 @@ exports.url = async req => {
 
 exports.suggestqotd = async req => {
     const username = req.member.nickname !== null ? req.member.nickname : req.author.username
-    const qotd = await stringHelper.extractText(req.message.content, '"')
-    if (!qotd) throw new InputError('Please enter a QOTD suggestion between *double* quotation marks.')
+    if (req.args.length === 0) throw new InputError('Please enter a QOTD suggestion between *double* quotation marks.')
+    const qotd = req.args.join(' ')
     await applicationAdapter('post', '/v1/qotds', {
         by: username,
         qotd: qotd
