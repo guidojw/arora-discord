@@ -93,9 +93,10 @@ exports.suggest = async req => {
     const username = req.member.nickname !== null ? req.member.nickname : req.author.username
     if (req.args.length === 0) throw new InputError('Please enter a suggestion.')
     const suggestion = req.args.join(' ')
+    const authorUrl = `https://discordapp.com/users/${req.author.id}`
     const embed = new RichEmbed()
         .setDescription(suggestion)
-        .setAuthor(username, req.author.displayAvatarURL, req.author.url)
+        .setAuthor(username, req.author.displayAvatarURL, authorUrl)
     if (req.message.attachments.size > 0) {
         const attachment = req.message.attachments.first()
         if (attachment.height) embed.setImage(attachment.url)
@@ -111,9 +112,10 @@ exports.suggest = async req => {
 exports.delete = async req => {
     const channel = req.guild.channels.find(channel => channel.id === req.config.channels.suggestions)
     const messages = await channel.fetchMessages()
+    const authorUrl = `https://discordapp.com/users/${req.author.id}`
     for (const suggestion of messages.values()) {
-        if (suggestion.embeds.length === 1 && suggestion.embeds[0].author.url === req.author.url && suggestion.id !==
-            req.config.firstSuggestionMessageId) {
+        if (suggestion.embeds.length === 1 && suggestion.embeds[0].author.url === authorUrl && suggestion.id !== req
+            .config.firstSuggestionMessageId) {
             const choice = await discordService.prompt(req.channel, req.author, 'Are you sure you would like' +
                 ' to delete this suggestion?', { embed: suggestion.embeds[0]})
             if (choice) {
