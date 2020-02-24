@@ -351,7 +351,7 @@ exports.changetraining = async req => {
 
 exports.announce = async req => {const id = parseInt(req.args[0])
     if (!id) throw new InputError('Please enter a training ID.')
-    const content = (await applicationAdapter('post', `/api/v1/groups/${applicationConfig.groupId}` +
+    const content = (await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId}` +
         `/trainings/${id}/announce`, {
             medium: 'both'
         })).data
@@ -362,7 +362,7 @@ exports.announce = async req => {const id = parseInt(req.args[0])
 exports.announcediscord = async req => {
     const id = parseInt(req.args[0])
     if (!id) throw new InputError('Please enter a training ID.')
-    const content = (await applicationAdapter('post', `/api/v1/groups/${applicationConfig.groupId}` +
+    const content = (await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId}` +
         `/trainings/${id}/announce`, {
             medium: 'discord'
         })).data
@@ -372,7 +372,7 @@ exports.announcediscord = async req => {
 exports.announceroblox = async req => {
     const id = parseInt(req.args[0])
     if (!id) throw new InputError('Please enter a training ID.')
-    const content = (await applicationAdapter('post', `/api/v1/groups/${applicationConfig.groupId}` +
+    const content = (await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId}` +
         `/trainings/${id}/announce`, {
             medium: 'roblox'
         })).data
