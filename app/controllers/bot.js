@@ -3,6 +3,7 @@ require('dotenv').config()
 
 const { Client, RichEmbed } = require('discord.js')
 const sleep = require('sleep')
+const Sentry = require('@sentry/node')
 
 const discordService = require('../services/discord')
 
@@ -21,6 +22,8 @@ const applicationConfig = require('../../config/application')
 const guildConfigs = require('../../config/guilds')
 
 const client = new Client()
+
+Sentry.init({ dsn: process.env.SENTRY_DSN })
 
 client.on('ready', async () => {
     exports.startUnix = timeHelper.getUnix()
@@ -69,6 +72,7 @@ client.on('message', async message => {
                     await req.channel.send('Insufficient powers!')
                 } else {
                     if (err.response.status === 500) {
+                        Sentry.captureException(err)
                         await req.channel.send('An error occurred!')
                     } else {
                         await req.channel.send(discordService.getEmbed(req.command, err.response.data.errors[0].message)
