@@ -21,15 +21,15 @@
   "author": "Guido de Jong",
   "license": "MIT",
   "dependencies": {
-    "@sentry/node": "^5.12.4",
+    "@sentry/node": "^5.13.1",
     "axios": "^0.19.2",
-    "discord.js": "^11.5.1",
+    "discord.js": "^11.6.1",
     "dotenv": "^8.2.0",
     "pluralize": "^8.0.0",
     "sleep": "^6.1.0"
   },
   "devDependencies": {
-    "babel-eslint": "^10.0.3",
+    "babel-eslint": "^10.1.0",
     "eslint": "^6.8.0",
     "nodemon": "^2.0.2"
   }
