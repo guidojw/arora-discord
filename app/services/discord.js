@@ -60,69 +60,15 @@ exports.compileRichEmbed = (fields, opts) => {
     return embed
 }
 
-
 exports.hasRole = (member, name) => {
     return member.roles.some(role => role.name === name)
 }
 
 exports.isAdmin = (member, adminRoles) => {
-    for (const role of adminRoles) {
-        if (exports.hasRole(member, role)) return true
+    for (const roleId of adminRoles) {
+        if (member.roles.has(roleId)) return true
     }
     return false
-}
-
-exports.extractText = (str, delimiter) => {
-    if (str && delimiter) {
-        if (str.indexOf(delimiter) !== str.lastIndexOf(delimiter)) {
-            const firstIndex = str.indexOf(delimiter) + 1
-            const lastIndex = str.lastIndexOf(delimiter)
-            return str.substring(firstIndex, lastIndex)
-        }
-    }
-}
-
-exports.getCmdEmbeds = () => {
-    const embeds = []
-    let fields = []
-    let sum = 0
-    const addField = (title, message) => {
-        message = message.trim()
-        fields.push({title: title, message: message})
-    }
-    const addEmbed = () => {
-        embeds.push(exports.compileRichEmbed(fields, {title: 'Commands'}))
-        fields = []
-        sum = 0
-    }
-    commands.forEach(group => {
-        let message = ''
-        group.commands.forEach(line => {
-            const addition = line.length + group.title.length
-            if (sum + addition <= 6000) {
-                if (message.length + line.length <= 1024) {
-                    sum += line.length
-                } else {
-                    addField(group.title, message)
-                    message = ''
-                    sum += addition
-                }
-            } else {
-                addField(group.title, message)
-                message = ''
-                addEmbed()
-            }
-            message += (line + '\n')
-        })
-        const addition = message.length + group.title.length
-        if (sum + addition > 6000) {
-            addEmbed()
-        }
-        addField(group.title, message)
-        sum += addition
-    })
-    addEmbed()
-    return embeds
 }
 
 exports.updateRoles = async (guild, member, rank) => {
@@ -310,24 +256,18 @@ exports.getEmojiFromNumber = number => {
     }
 }
 
-exports.getIdFromArgument = argument => {
-    return argument.slice(2, -1)
-}
-
-exports.prompt = (channel, author, ...options) => {
-    return new Promise(async (resolve, reject) => {
-        const message = await channel.send(...options)
-        await message.react('✔')
-        await message.react('✖')
-        try {
-            const filter = (reaction, user) => (reaction.emoji.name === '✔' || reaction.emoji.name === '✖') && user.id
-                === author.id
-            const collected = await message.awaitReactions(filter, { max: 1, time: 60000, errors: ['time'] })
+exports.prompt = async (channel, author, message) => {
+    const filter = (reaction, user) => (reaction.emoji.name === '✅' || reaction.emoji.name === '🚫') && user.id
+        === author.id
+    const collector = message.createReactionCollector(filter, { time: 60000 })
+    const promise = new Promise(resolve => {
+        collector.on('end', collected => {
             const reaction = collected.first()
-            resolve(reaction.emoji.name === '✔')
-        } catch (err) {
-            reject(new InputError('Prompt timed out.'))
-        }
-        await message.delete()
+            resolve(reaction && reaction.emoji.name === '✅')
+        })
     })
+    collector.on('collect', collector.stop)
+    await message.react('✅')
+    await message.react('🚫')
+    return promise
 }
