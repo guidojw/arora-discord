@@ -4,8 +4,6 @@ const discord = require('discord.js')
 const groupService = require('./group')
 const timeHelper = require('../helpers/time')
 
-const commands = require('../content/commands')
-
 exports.getActivityFromNumber = num => {
     return num === 0 && 'Playing' || num === 1 && 'Streaming' || num === 2 && 'Listening to' || num === 3 && 'Watching'
 }

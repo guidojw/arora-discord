@@ -39,7 +39,7 @@ module.exports = class Bot {
                 eval: true,
                 prefix: true
             })
-            // .registerCommandsIn(path.join(__dirname, '../commands'))
+            .registerCommandsIn(path.join(__dirname, '../commands'))
 
         this.guilds = {}
 
