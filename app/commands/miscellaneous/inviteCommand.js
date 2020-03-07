@@ -1,5 +1,6 @@
 'use strict'
 const Command = require('../../controllers/command')
+const applicationConfig = require('../../../config/application')
 
 module.exports = class InviteCommand extends Command {
     constructor (client) {
@@ -13,6 +14,6 @@ module.exports = class InviteCommand extends Command {
     }
 
     execute (message) {
-
+        message.reply(applicationConfig.discordLink)
     }
 }

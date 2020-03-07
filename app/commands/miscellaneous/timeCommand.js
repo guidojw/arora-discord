@@ -1,5 +1,7 @@
 'use strict'
 const Command = require('../../controllers/command')
+const timeHelper = require('../../helpers/time')
+const discordService = require('../../services/discord')
 
 module.exports = class TimeCommand extends Command {
     constructor (client) {
@@ -21,7 +23,13 @@ module.exports = class TimeCommand extends Command {
         })
     }
 
-    execute (message, { timezone }) {
-
+    async execute (message, { timezone }) {
+        const place = await timeHelper.getPlaceFromTimezone(timezone)
+        if (!place) return message.reply(`Unknown timezone: ${timezone}`)
+        const date = timeHelper.getTimeInTimezone(timezone)
+        const hours = ('0' + date.getHours()).slice(-2)
+        const minutes = ('0' + date.getMinutes()).slice(-2)
+        const timeString = hours + ':' + minutes
+        message.replyEmbed(discordService.getEmbed('time', timeString))
     }
 }

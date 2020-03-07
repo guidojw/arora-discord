@@ -1,5 +1,6 @@
 'use strict'
 const Command = require('../../controllers/command')
+const applicationAdapter = require('../../adapters/application')
 
 module.exports = class IsLoggedInCommand extends Command {
     constructor (client) {
@@ -11,7 +12,11 @@ module.exports = class IsLoggedInCommand extends Command {
         })
     }
 
-    execute (message) {
-
+    async execute (message) {
+        try {
+            message.reply((await applicationAdapter('get', '/v1/status')).data)
+        } catch (err) {
+            message.reply(false)
+        }
     }
 }

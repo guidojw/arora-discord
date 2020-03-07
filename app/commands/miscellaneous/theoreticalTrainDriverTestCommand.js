@@ -1,5 +1,6 @@
 'use strict'
 const Command = require('../../controllers/command')
+const applicationConfig = require('../../../config/application')
 
 module.exports = class TheoreticalTrainDriverTestCommand extends Command {
     constructor (client) {
@@ -12,6 +13,6 @@ module.exports = class TheoreticalTrainDriverTestCommand extends Command {
     }
 
     execute (message) {
-
+        message.reply(applicationConfig.theoreticalTrainDriverTestLink)
     }
 }

@@ -1,5 +1,6 @@
 'use strict'
 const Command = require('../../controllers/command')
+const timeHelper = require('../../helpers/time')
 
 module.exports = class IsDstCommand extends Command {
     constructor (client) {
@@ -11,7 +12,7 @@ module.exports = class IsDstCommand extends Command {
         })
     }
 
-    execute (message) {
-
+    async execute (message) {
+        message.reply(timeHelper.isDst(timeHelper.getUnix()))
     }
 }

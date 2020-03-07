@@ -1,5 +1,7 @@
 'use strict'
 const Command = require('../../controllers/command')
+const timeHelper = require('../../helpers/time')
+const discordService = require('../../services/discord')
 
 module.exports = class UnixCommand extends Command {
     constructor (client) {
@@ -13,6 +15,6 @@ module.exports = class UnixCommand extends Command {
     }
 
     execute (message) {
-
+        message.replyEmbed(discordService.getEmbed(message.command.name, timeHelper.getUnix()))
     }
 }
