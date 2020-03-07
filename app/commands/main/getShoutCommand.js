@@ -1,5 +1,6 @@
 'use strict'
 const Command = require('../../controllers/command')
+const applicationAdapter = require('../../adapters/application')
 
 module.exports = class GetShoutCommand extends Command {
     constructor (client) {

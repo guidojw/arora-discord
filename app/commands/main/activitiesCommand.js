@@ -1,5 +1,7 @@
 'use strict'
 const Command = require('../../controllers/command')
+const activities = require('../../content/activities')
+const discordService = require('../../services/discord')
 
 module.exports = class ActivitiesCommand extends Command {
     constructor (client) {
@@ -13,6 +15,11 @@ module.exports = class ActivitiesCommand extends Command {
     }
 
     execute (message) {
-
+        let activitiesString = ''
+        for (const [index, activity] of Object.entries(activities)) {
+            activitiesString += `${index + 1}. **${discordService.getActivityFromNumber(activity.options.type)}** ` +
+                `${activity.name}\n`
+        }
+        message.replyEmbed('Activities', activitiesString)
     }
 }
