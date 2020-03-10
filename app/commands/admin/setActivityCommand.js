@@ -31,9 +31,7 @@ module.exports = class SetActivityCommand extends Command {
                     prompt: '',
                     type: 'string',
                     default: '%NONE%',
-                    validate: val => {
-                        return validUrl(val)
-                    }
+                    validate: validUrl
                 }
             ]
         })

@@ -16,7 +16,7 @@ module.exports = class UpdateCommand extends Command {
             clientPermissions: ['MANAGE_MESSAGES', 'MANAGE_ROLES', 'SEND_MESSAGES'],
             args: [
                 {
-                    key: 'nickname',
+                    key: 'member',
                     prompt: 'Whose roles would you like to update?',
                     type: 'member',
                     default: ''
@@ -25,18 +25,18 @@ module.exports = class UpdateCommand extends Command {
         })
     }
 
-    async execute (message, { nickname }, guild) {
-        if (nickname && !discordService.isAdmin(message.member, guild.getData('adminRoles'))) {
+    async execute (message, { member }, guild) {
+        if (member && !discordService.isAdmin(message.member, guild.getData('adminRoles'))) {
             return message.reply('Insufficient powers!')
         }
-        let member = !nickname ? message.member : discordService.getMemberByName(guild.guild, nickname)
-        if (!member) message.reply(`**${nickname}** is not in this server.`)
+        member = member || message.member
+        const username = member.nickname || member.user.username
         try {
-            const userId = await userService.getIdFromUsername(nickname)
+            const userId = await userService.getIdFromUsername(username)
             const rank = (await applicationAdapter('get', `/v1/groups/${applicationConfig.groupId}/` +
                 `rank/${userId}`)).data
             await discordService.updateRoles(guild.guild, member, rank)
-            message.reply(`Successfully checked **${nickname}**'s roles.`)
+            message.reply(`Successfully checked ${message.argString ? '**' + username + '**\'s' : 'your'} roles.`)
         } catch (err) {
             message.reply(err.message)
         }

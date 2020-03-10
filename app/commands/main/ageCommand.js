@@ -1,6 +1,10 @@
 'use strict'
 const Command = require('../../controllers/command')
 const applicationAdapter = require('../../adapters/application')
+const userService = require('../../services/user')
+const discordService = require('../../services/discord')
+const timeHelper = require('../../helpers/time')
+const pluralize = require('pluralize')
 
 module.exports = class AgeCommand extends Command {
     constructor (client) {
@@ -23,7 +27,17 @@ module.exports = class AgeCommand extends Command {
         })
     }
 
-    execute (message, { username }) {
-
+    async execute (message, { username }) {
+        username = username || message.member.nickname || message.author.username
+        try {
+            const userId = await userService.getIdFromUsername(username)
+            const joinDate = new Date((await applicationAdapter('get', `/v1/users/${userId}/join-` +
+                'date')).data)
+            const age = Math.floor((timeHelper.getUnix() - timeHelper.getUnix(joinDate)) / 86400)
+            message.replyEmbed(discordService.getEmbed(message.command.name, `${message.argString ? '**' +
+                username + '**\s' : 'Your'} Roblox account is **${age} ${pluralize('day', age)}** old.`))
+        } catch (err) {
+            message.reply(err.message)
+        }
     }
 }

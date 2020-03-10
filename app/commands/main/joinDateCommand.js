@@ -1,5 +1,9 @@
 'use strict'
 const Command = require('../../controllers/command')
+const userService = require('../../services/user')
+const timeHelper = require('../../helpers/time')
+const discordService = require('../../services/discord')
+const applicationAdapter = require('../../adapters/application')
 
 module.exports = class JoinDateCommand extends Command {
     constructor (client) {
@@ -21,7 +25,16 @@ module.exports = class JoinDateCommand extends Command {
         })
     }
 
-    execute (message, { username }) {
-
+    async execute (message, { username }) {
+        username = username || message.member.nickname || message.author.username
+        try {
+            const userId = await userService.getIdFromUsername(username)
+            const joinDate = new Date((await applicationAdapter('get', `/v1/users/${userId}/join-` +
+                'date')).data)
+            message.replyEmbed(discordService.getEmbed(message.command.name, `**${username}** joined Roblox on ` +
+                `**${timeHelper.getDate(timeHelper.getUnix(joinDate) * 1000)}**.`))
+        } catch (err) {
+            message.reply(err.message)
+        }
     }
 }

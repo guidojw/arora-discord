@@ -1,6 +1,8 @@
 'use strict'
 const Command = require('../../controllers/command')
-const applicationAdapter = require('../../adapters/application')
+const { RichEmbed } = require('discord.js')
+const userService = require('../../services/user')
+const applicationConfig = require('../../../config/application')
 
 module.exports = class BadgesCommand extends Command {
     constructor (client) {
@@ -22,7 +24,21 @@ module.exports = class BadgesCommand extends Command {
         })
     }
 
-    execute (message, { username }) {
-
+    async execute (message, { username }) {
+        username = username || message.member.nickname || message.author.username
+        try {
+            const userId = await userService.getIdFromUsername(username)
+            const hasTtdt = await userService.hasBadge(userId, applicationConfig.ttdtId)
+            const hasPtdt = await userService.hasBadge(userId, applicationConfig.ptdtId)
+            const hasTcdt = await userService.hasBadge(userId, applicationConfig.tcdtId)
+            const embed = new RichEmbed()
+                .setTitle(`${message.argString ? username + '\'s' : 'Your'} badges:`)
+                .addField('TTDT', hasTtdt ? 'yes' : 'no', true)
+                .addField('PTDT', hasPtdt ? 'yes' : 'no', true)
+                .addField('TCDT', hasTcdt ? 'yes' : 'no', true)
+            message.replyEmbed(embed)
+        } catch (err) {
+            message.reply(err.message)
+        }
     }
 }

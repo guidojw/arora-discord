@@ -11,7 +11,12 @@ module.exports = class OptInCommand extends Command {
         })
     }
 
-    execute (message) {
-
+    execute (message, _args, guild) {
+        if (message.member.roles.has('No Training Announcements')) {
+            message.member.removeRole(guild.getData('roles').noTrainingAnnouncementsRole)
+            message.reply('Successfully opted in.')
+        } else {
+            message.reply('You\'re already opted in.')
+        }
     }
 }

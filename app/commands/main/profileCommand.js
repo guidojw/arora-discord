@@ -1,6 +1,6 @@
 'use strict'
 const Command = require('../../controllers/command')
-const applicationAdapter = require('../../adapters/application')
+const userService = require('../../services/user')
 
 module.exports = class ProfileCommand extends Command {
     constructor (client) {
@@ -8,7 +8,7 @@ module.exports = class ProfileCommand extends Command {
             group: 'main',
             name: 'profile',
             details: 'Username must be a username that is being used on Roblox.',
-            aliases: ['playerurl', 'userurl'],
+            aliases: ['playerurl', 'userurl', 'url'],
             description: 'Posts the Roblox profile of given/your username.',
             examples: ['profile', 'profile Happywalker'],
             clientPermissions: ['MANAGE_MESSAGES', 'SEND_MESSAGES'],
@@ -23,7 +23,13 @@ module.exports = class ProfileCommand extends Command {
         })
     }
 
-    execute (message, { username }) {
-
+    async execute (message, { username }) {
+        username = username || message.member.nickname || message.author.username
+        try {
+            const userId = await userService.getIdFromUsername(username)
+            message.reply(`https://www.roblox.com/users/${userId}/profile`)
+        } catch (err) {
+            message.reply(err.message)
+        }
     }
 }

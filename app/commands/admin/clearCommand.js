@@ -9,8 +9,8 @@ module.exports = class ClearCommand extends Command {
             name: 'clearchannel',
             aliases: ['clear'],
             description: 'Clears given channel.',
-            details: 'Only channels #bug-reports and #suggestions can be cleared. This will delete all messages but ' +
-            'the important information ones.',
+            details: 'Only channels #reports and #suggestions can be cleared. This will delete all messages but the ' +
+            'important information ones.',
             examples: ['clear #suggestions'],
             clientPermissions: ['MANAGE_MESSAGES', 'ADD_REACTIONS', 'VIEW_CHANNEL', 'SEND_MESSAGES'],
             args: [

@@ -25,6 +25,7 @@ module.exports = class UserIdCommand extends Command {
     }
 
     async execute (message, { username }) {
+        username = username || message.member.nickname || message.author.username
         try {
             const userId = await userService.getIdFromUsername(username)
             message.replyEmbed(discordService.getEmbed(message.command.name, `**${username}** has userId **${

@@ -8,7 +8,6 @@ module.exports = class ActivitiesCommand extends Command {
         super(client, {
             group: 'main',
             name: 'activities',
-            aliases: ['statuses'],
             description: 'Lists all activities.',
             clientPermissions: ['MANAGE_MESSAGES', 'SEND_MESSAGES']
         })
@@ -20,6 +19,6 @@ module.exports = class ActivitiesCommand extends Command {
             activitiesString += `${index + 1}. **${discordService.getActivityFromNumber(activity.options.type)}** ` +
                 `${activity.name}\n`
         }
-        message.replyEmbed('Activities', activitiesString)
+        message.replyEmbed(discordService.getEmbed('Activities', activitiesString))
     }
 }

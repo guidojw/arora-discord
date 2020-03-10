@@ -11,7 +11,12 @@ module.exports = class OptOutCommand extends Command {
         })
     }
 
-    execute (message) {
-
+    execute (message, _args, guild) {
+        if (!message.member.roles.has('No Training Announcements')) {
+            message.member.addRole(guild.getData('roles').noTrainingAnnouncementsRole)
+            message.reply('Successfully opted out.')
+        } else {
+            message.reply('You\'re already opted out.')
+        }
     }
 }

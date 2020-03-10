@@ -11,7 +11,12 @@ module.exports = class NotDutchCommand extends Command {
         })
     }
 
-    execute (message) {
-
+    execute (message, _args, guild) {
+        if (!message.member.roles.has('Not Dutch')) {
+            message.member.addRole(guild.getData('roles').notDutchRole)
+            message.reply('Successfully updated roles.')
+        } else {
+            message.reply('You already have the Not Dutch role.')
+        }
     }
 }

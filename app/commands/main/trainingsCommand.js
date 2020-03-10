@@ -26,23 +26,26 @@ module.exports = class TrainingsCommand extends Command {
     }
 
     async execute (message, { trainingId }) {
-        const trainings = (await applicationAdapter('get', `/v1/groups/${applicationConfig.groupId}` +
-            '/trainings')).data
-        if (trainings.length === 0) return message.reply('There are currently no hosted trainings.')
-        if (trainingId) {
-            for await (const training of trainings) {
-                if (training.id === trainingId) {
-                    return message.replyEmbed(discordService.getEmbed(`Training ID: ${training.id}`, groupService
-                        .getTrainingSentence(training)))
+        try {
+            const trainings = (await applicationAdapter('get', `/v1/groups/${applicationConfig.groupId}` +
+                '/trainings')).data
+            if (trainings.length === 0) return message.reply('There are currently no hosted trainings.')
+            if (trainingId) {
+                for await (const training of trainings) {
+                    if (training.id === trainingId) {
+                        return message.replyEmbed(discordService.getEmbed(`Training ID: ${training.id}`, groupService
+                            .getTrainingSentence(training)))
+                    }
+                }
+                message.reply(`Couldn't find info for Training ID **${trainingId}**.`)
+            } else {
+                const trainingEmbeds = discordService.getTrainingEmbeds(trainings)
+                for (const embed of trainingEmbeds) {
+                    await message.author.send(embed)
                 }
             }
-            message.reply(`Couldn't find info for Training ID **${trainingId}**.`)
-        } else {
-            const trainingEmbeds = discordService.getTrainingEmbeds(trainings)
-            const channel = await message.member.createDM()
-            for (const embed of trainingEmbeds) {
-                await channel.send(embed)
-            }
+        } catch (err) {
+            message.reply(err.message)
         }
     }
 }
