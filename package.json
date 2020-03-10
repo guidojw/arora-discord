@@ -23,10 +23,11 @@
   "dependencies": {
     "@sentry/node": "^5.12.4",
     "axios": "^0.19.2",
-    "discord.js": "^11.5.1",
+    "discord.js": "^11.6.1",
+    "discord.js-commando": "^0.10.0",
     "dotenv": "^8.2.0",
     "pluralize": "^8.0.0",
-    "sleep": "^6.1.0"
+    "common-tags": "^1.8.0"
   },
   "devDependencies": {
     "babel-eslint": "^10.0.3",
