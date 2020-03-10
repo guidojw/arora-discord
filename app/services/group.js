@@ -5,8 +5,6 @@ const timeHelper = require('../helpers/time')
 
 const applicationAdapter = require('../adapters/application')
 
-const InputError = require('../errors/input-error')
-
 const config = require(base + '/config/application')
 
 exports.defaultTrainingShout = '[TRAININGS] There are new trainings being hosted soon, check out the Training ' +
@@ -24,19 +22,19 @@ exports.getTrainingSentence = training => {
 exports.getRoleByAbbreviation = str => {
     if (str) {
         str = str.toUpperCase()
-        return str === 'G' ? 'Guest' : str === 'C' ? 'Customer' : str === 'S' ? 'Suspended' : str === 'TD' ?
-            'Train Driver' : str === 'CD' ? 'Conductor' : str === 'CSR' ? 'Customer Service Representative' : str
-            === 'CS' ? 'Customer Service' : str === 'J' ? 'Janitor' : str === 'Se' ? 'Security' : str === 'LC' ?
-            'Line Controller' : str === 'PR' ? 'Partner Representative' : str === 'R' ? 'Representative' : str ===
-            'MC' ? 'Management Coordinator' : str === 'OC' ? 'Operations Coordinator' : str === 'GA' ?
-            'Group Admin' : str === 'BoM' ? 'Board of Managers' : str === 'BoD' ? 'Board of Directors' : str ===
-            'CF' ? 'Co-Founder' : str === 'AA' ? 'Alt. Accounts' : str === 'PD' ? 'President-Director' : str ===
-            'UT' ? 'Update Tester' : str === 'P' ? 'Pending' : str === 'PH' ? 'Pending HR' : str === 'MoCR' ?
-            'Manager of Customer Relations' : str === 'MoSe' ? 'Manager of Security' : str === 'MoRS' ?
-            'Manager of Rolling Stock' : str === 'MoSt' ? 'Manager of Stations' : str === 'MoE' ?
-            'Manager of Events' : str === 'MoC' ? 'Manager of Conductors' : str === 'MoRM' ?
-            'Manager of Rail Management' : str === 'DoNSR' ? 'Director of NS Reizgers' : str === 'DoO' ?
-            'Director of Operations' : null
+        return str === 'G' && 'Guest' || str === 'C' && 'Customer' || str === 'S' && 'Suspended' || str === 'TD' &&
+            'Train Driver' || str === 'CD' && 'Conductor' || str === 'CSR' && 'Customer Service Representative' || str
+            === 'CS' && 'Customer Service' || str === 'J' && 'Janitor' || str === 'Se' && 'Security' || str === 'LC' &&
+            'Line Controller' || str === 'PR' && 'Partner Representative' || str === 'R' && 'Representative' || str ===
+            'MC' && 'Management Coordinator' || str === 'OC' && 'Operations Coordinator' || str === 'GA' &&
+            'Group Admin' || str === 'BoM' && 'Board of Managers' || str === 'BoD' && 'Board of Directors' || str ===
+            'CF' && 'Co-Founder' || str === 'AA' && 'Alt. Accounts' || str === 'PD' && 'President-Director' || str ===
+            'UT' && 'Update Tester' || str === 'P' && 'Pending' || str === 'PH' && 'Pending HR' || str === 'MoCR' &&
+            'Manager of Customer Relations' || str === 'MoSe' && 'Manager of Security' || str === 'MoRS' &&
+            'Manager of Rolling Stock' || str === 'MoSt' && 'Manager of Stations' || str === 'MoE' &&
+            'Manager of Events' || str === 'MoC' && 'Manager of Conductors' || str === 'MoRM' &&
+            'Manager of Rail Management' || str === 'DoNSR' && 'Director of NS Reizgers' || str === 'DoO' &&
+            'Director of Operations' || null
     }
 }
 
@@ -59,14 +57,14 @@ exports.getAbbreviationByRank = (rank, group) => {
 }
 
 exports.getTrainingById = async id => {
-    if (!id) throw new InputError('Please enter a training ID.')
+    if (!id) throw new Error('Please enter a training ID.')
     const trainings = (await applicationAdapter('get', `/v1/groups/${config.groupId}/trainings`))
         .data
-    if (trainings.length === 0) throw new InputError('There are currently no hosted trainings.')
+    if (trainings.length === 0) throw new Error('There are currently no hosted trainings.')
     for await (const training of trainings) {
         if (training.id === id) {
             return training
         }
     }
-    throw new InputError(`Couldn't find info for Training ID **${id}**.`)
+    throw new Error(`Couldn't find info for Training ID **${id}**.`)
 }
