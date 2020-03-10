@@ -27,9 +27,7 @@ module.exports = class SuspendCommand extends Command {
                     type: 'integer',
                     prompt: 'How long would you like this suspension to be?',
                     validate: val => {
-                        if (val < 1) return 'Insufficient amount of days.'
-                        if (val > 7) return 'Too many days.'
-                        return true
+                        return val < 1 && 'Insufficient amount of days.' || val > 7 && 'Too many days.' || true
                     }
                 },
                 {
