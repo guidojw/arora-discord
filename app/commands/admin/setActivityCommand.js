@@ -19,7 +19,7 @@ module.exports = class SetActivityCommand extends Command {
                     key: 'type',
                     prompt: 'What type of activity do you want the bot to do?',
                     type: 'string',
-                    oneOf: ['playing', 'listening', 'watching', 'streaming']
+                    oneOf: ['PLAYING', 'LISTENING', 'WATCHING', 'STREAMING']
                 },
                 {
                     key: 'activity',

@@ -1,6 +1,5 @@
 'use strict'
 const Command = require('../../controllers/command')
-const { validTime, validDate } = require('../../helpers/time')
 const groupService = require('../../services/group')
 const timeHelper = require('../../helpers/time')
 const applicationAdapter = require('../../adapters/application')
@@ -29,13 +28,13 @@ module.exports = class HostTrainingCommand extends Command {
                     key: 'date',
                     type: 'string',
                     prompt: 'At what date would you like to host this training?',
-                    validate: validDate
+                    validate: timeHelper.validDate
                 },
                 {
                     key: 'time',
                     type: 'string',
                     prompt: 'At what time would you like to host this training?',
-                    validate: validTime
+                    validate: timeHelper.validTime
                 },
                 {
                     key: 'specialNotes',
@@ -63,7 +62,7 @@ module.exports = class HostTrainingCommand extends Command {
                 by: username,
                 type: type,
                 date: dateUnix,
-                specialnotes: specialNotes
+                specialnotes: specialNotes || undefined
             })).data
             message.replyEmbed(discordService.compileRichEmbed([{
                 title: 'Successfully hosted',

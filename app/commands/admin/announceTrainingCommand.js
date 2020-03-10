@@ -33,6 +33,7 @@ module.exports = class AnnounceTrainingCommand extends Command {
     }
 
     async execute (message, { trainingId, medium }) {
+        medium = medium.toLowerCase()
         try {
             const content = (await applicationAdapter('post', `/v1/groups/${applicationConfig
                 .groupId}/trainings/${trainingId}/announce`, {

@@ -11,10 +11,10 @@ module.exports = class SuspendCommand extends Command {
             group: 'admin',
             name: 'suspend',
             details: 'Username must be a username that is being used on Roblox. Days can be max 7 and rankBack must ' +
-            'be true or false.',
+            'be true or false. The reason must be encapsulated in quotes.',
             description: 'Suspends username in the group.',
-            examples: ['suspend Happywalker 3 false Spamming the group wall.', 'suspend Happywalker 3 Ignoring the ' +
-            'rules'],
+            examples: ['suspend Happywalker 3 "Spamming the group wall." false', 'suspend Happywalker 3 "Ignoring ' +
+            'rules."'],
             clientPermissions: ['MANAGE_MESSAGES', 'SEND_MESSAGES'],
             args: [
                 {
@@ -31,21 +31,21 @@ module.exports = class SuspendCommand extends Command {
                     }
                 },
                 {
+                    key: 'reason',
+                    type: 'string',
+                    prompt: 'For what reason are you suspending this person?'
+                },
+                {
                     key: 'rankBack',
                     type: 'boolean',
                     prompt: 'Should this person get his old rank back when the suspension finishes?',
                     default: true
-                },
-                {
-                    key: 'reason',
-                    type: 'string',
-                    prompt: 'For what reason are you suspending this person?'
                 }
             ]
         })
     }
 
-    async execute (message, { username, days, rankBack, reason}) {
+    async execute (message, { username, days, reason, rankBack}) {
         const byUsername = message.member.nickname || message.author.username
         try {
             const userId = await userService.getIdFromUsername(username)
