@@ -22,19 +22,19 @@ exports.getTrainingSentence = training => {
 exports.getRoleByAbbreviation = str => {
     if (str) {
         str = str.toUpperCase()
-        return str === 'G' ? 'Guest' : str === 'C' ? 'Customer' : str === 'S' ? 'Suspended' : str === 'TD' ?
-            'Train Driver' : str === 'CD' ? 'Conductor' : str === 'CSR' ? 'Customer Service Representative' : str
-            === 'CS' ? 'Customer Service' : str === 'J' ? 'Janitor' : str === 'Se' ? 'Security' : str === 'LC' ?
-            'Line Controller' : str === 'PR' ? 'Partner Representative' : str === 'R' ? 'Representative' : str ===
-            'MC' ? 'Management Coordinator' : str === 'OC' ? 'Operations Coordinator' : str === 'GA' ?
-            'Group Admin' : str === 'BoM' ? 'Board of Managers' : str === 'BoD' ? 'Board of Directors' : str ===
-            'CF' ? 'Co-Founder' : str === 'AA' ? 'Alt. Accounts' : str === 'PD' ? 'President-Director' : str ===
-            'UT' ? 'Update Tester' : str === 'P' ? 'Pending' : str === 'PH' ? 'Pending HR' : str === 'MoCR' ?
-            'Manager of Customer Relations' : str === 'MoSe' ? 'Manager of Security' : str === 'MoRS' ?
-            'Manager of Rolling Stock' : str === 'MoSt' ? 'Manager of Stations' : str === 'MoE' ?
-            'Manager of Events' : str === 'MoC' ? 'Manager of Conductors' : str === 'MoRM' ?
-            'Manager of Rail Management' : str === 'DoNSR' ? 'Director of NS Reizgers' : str === 'DoO' ?
-            'Director of Operations' : null
+        return str === 'G' && 'Guest' || str === 'C' && 'Customer' || str === 'S' && 'Suspended' || str === 'TD' &&
+            'Train Driver' || str === 'CD' && 'Conductor' || str === 'CSR' && 'Customer Service Representative' || str
+            === 'CS' && 'Customer Service' || str === 'J' && 'Janitor' || str === 'Se' && 'Security' || str === 'LC' &&
+            'Line Controller' || str === 'PR' && 'Partner Representative' || str === 'R' && 'Representative' || str ===
+            'MC' && 'Management Coordinator' || str === 'OC' && 'Operations Coordinator' || str === 'GA' &&
+            'Group Admin' || str === 'BoM' && 'Board of Managers' || str === 'BoD' && 'Board of Directors' || str ===
+            'CF' && 'Co-Founder' || str === 'AA' && 'Alt. Accounts' || str === 'PD' && 'President-Director' || str ===
+            'UT' && 'Update Tester' || str === 'P' && 'Pending' || str === 'PH' && 'Pending HR' || str === 'MoCR' &&
+            'Manager of Customer Relations' || str === 'MoSe' && 'Manager of Security' || str === 'MoRS' &&
+            'Manager of Rolling Stock' || str === 'MoSt' && 'Manager of Stations' || str === 'MoE' &&
+            'Manager of Events' || str === 'MoC' && 'Manager of Conductors' || str === 'MoRM' &&
+            'Manager of Rail Management' || str === 'DoNSR' && 'Director of NS Reizgers' || str === 'DoO' &&
+            'Director of Operations' || null
     }
 }
 

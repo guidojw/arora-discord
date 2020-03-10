@@ -54,12 +54,12 @@ module.exports = class SuspendCommand extends Command {
             const byUserId = await userService.getIdFromUsername(byUsername)
             await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId}/suspensions`,
                 {
-                userId: userId,
-                rankback: rankBack,
-                duration: days * 86400,
-                by: byUserId,
-                reason: reason
-            })
+                    userId: userId,
+                    rankback: rankBack,
+                    duration: days * 86400,
+                    by: byUserId,
+                    reason: reason
+                })
             message.replyEmbed(discordService.getEmbed(message.command.name, `Successfully suspended **${username
             }**.`))
         } catch (err) {

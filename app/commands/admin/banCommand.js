@@ -3,6 +3,7 @@ const Command = require('../../controllers/command')
 const userService = require('../../services/user')
 const applicationAdapter = require('../../adapters/application')
 const applicationConfig = require('../../../config/application')
+const discordService = require('../../services/discord')
 
 module.exports = class BanCommand extends Command {
     constructor (client) {

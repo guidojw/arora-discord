@@ -49,7 +49,7 @@ module.exports = class ChangeSuspensionCommand extends Command {
             }
             const userId = await userService.getIdFromUsername(username)
             const suspension = (await applicationAdapter('put', `/v1/groups/${applicationConfig
-                    .groupId}/suspensions/${userId}`, newData)).data
+                .groupId}/suspensions/${userId}`, newData)).data
             if (suspension) {
                 message.reply(`Successfully changed **${username}**'s suspension.`)
             } else {

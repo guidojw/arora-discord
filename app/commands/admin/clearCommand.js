@@ -26,8 +26,8 @@ module.exports = class ClearCommand extends Command {
     async execute (message, { channel }, guild) {
         const channels = guild.getData('channels')
         const suggestionsChannelId = channels.suggestionsChannel
-        const bugReportsChannelId = channels.reportsChannel
-        if (channel.id !== suggestionsChannelId && channel.id !== bugReportsChannelId) {
+        const reportsChannelId = channels.reportsChannel
+        if (channel.id !== suggestionsChannelId && channel.id !== reportsChannelId) {
             return message.reply(`I can only clear <#${suggestionsChannelId}> or <#${reportsChannelId}>.`)
         }
         const choice = await discordService.prompt(message.channel, message.author, await message.reply('Are you sure' +
@@ -37,7 +37,7 @@ module.exports = class ClearCommand extends Command {
             let messages
             do {
                 messages = (await channel.fetchMessages({ after: channel.id === suggestionsChannelId ?
-                        guildMessages.firstSuggestionMessage : guildMessages.firstReportMessage }))
+                    guildMessages.firstSuggestionMessage : guildMessages.firstReportMessage }))
                 if (messages.size > 0) {
                     try {
                         await channel.bulkDelete(messages.size)

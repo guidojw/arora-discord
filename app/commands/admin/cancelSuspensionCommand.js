@@ -34,7 +34,7 @@ module.exports = class CancelSuspensionCommand extends Command {
             const userId = await userService.getIdFromUsername(username)
             const byUserId = await userService.getIdFromUsername(byUsername)
             const suspension = (await applicationAdapter('put', `/v1/groups/${applicationConfig
-                    .groupId}/suspensions/${userId}`, {
+                .groupId}/suspensions/${userId}`, {
                 cancelled: true,
                 reason: reason,
                 by: byUserId

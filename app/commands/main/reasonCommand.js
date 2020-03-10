@@ -35,7 +35,7 @@ module.exports = class ReasonCommand extends Command {
         try {
             const userId = await userService.getIdFromUsername(username)
             const suspension = (await applicationAdapter('get', `/v1/groups/${applicationConfig
-                    .groupId}/suspensions/${userId}`)).data
+                .groupId}/suspensions/${userId}`)).data
             if (suspension) {
                 const days = suspension.duration / 86400
                 await message.replyEmbed(discordService.compileRichEmbed([{

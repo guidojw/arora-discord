@@ -35,7 +35,7 @@ module.exports = class AgeCommand extends Command {
                 'date')).data)
             const age = Math.floor((timeHelper.getUnix() - timeHelper.getUnix(joinDate)) / 86400)
             message.replyEmbed(discordService.getEmbed(message.command.name, `${message.argString ? '**' +
-                username + '**\s' : 'Your'} Roblox account is **${age} ${pluralize('day', age)}** old.`))
+                username + '**\'s' : 'Your'} Roblox account is **${age} ${pluralize('day', age)}** old.`))
         } catch (err) {
             message.reply(err.message)
         }

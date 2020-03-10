@@ -65,7 +65,7 @@ module.exports = class Bot {
             options = activity.options
         }
         this.client.user.setActivity(name, options)
-       }
+    }
 
     ready () {
         this.fetch()
