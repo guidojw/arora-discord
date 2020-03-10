@@ -36,8 +36,8 @@ module.exports = class SuggestCommand extends Command {
         }
         const channels = guild.getData('channels')
         const newMessage = await guild.guild.channels.get(channels.suggestionsChannel).send(embed)
-        await newMessage.react('✅')
-        await newMessage.react('🚫')
+        await newMessage.react('✔')
+        await newMessage.react('✖')
         await newMessage.react('❔')
         message.reply('Successfully suggested', { embed: embed })
     }
