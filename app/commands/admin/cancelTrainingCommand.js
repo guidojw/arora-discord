@@ -1,5 +1,7 @@
 'use strict'
 const Command = require('../../controllers/command')
+const applicationAdapter = require('../../adapters/application')
+const applicationConfig = require('../../../config/application')
 
 module.exports = class CancelTrainingCommand extends Command {
     constructor (client) {
@@ -25,7 +27,22 @@ module.exports = class CancelTrainingCommand extends Command {
         })
     }
 
-    execute (message, { trainingId, reason }) {
-
+    async execute (message, { trainingId, reason }) {
+        const username = message.member.nickname || message.author.username
+        try {
+            const training = (await applicationAdapter('put', `/v1/groups/${applicationConfig
+                .groupId}/trainings/${trainingId}`, {
+                cancelled: true,
+                reason: reason,
+                by: username
+            })).data
+            if (training) {
+                message.reply(`Successfully cancelled Training ID **${trainingId}**.`)
+            } else {
+                message.reply(`Couldn't cancel Training ID **${trainingId}**.`)
+            }
+        } catch (err) {
+            message.reply(err.message)
+        }
     }
 }

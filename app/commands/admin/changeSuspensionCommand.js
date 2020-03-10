@@ -1,5 +1,8 @@
 'use strict'
 const Command = require('../../controllers/command')
+const userService = require('../../services/user')
+const applicationAdapter = require('../../adapters/application')
+const applicationConfig = require('../../../config/application')
 
 module.exports = class ChangeSuspensionCommand extends Command {
     constructor (client) {
@@ -32,7 +35,28 @@ module.exports = class ChangeSuspensionCommand extends Command {
         })
     }
 
-    execute (message, { username, key, data }) {
-
+    async execute (message, { username, key, data }) {
+        const newData = {}
+        try {
+            if (key === 'by') {
+                newData.by = await userService.getIdFromUsername(data)
+            } else if (key === 'reason') {
+                newData.reason = data
+            } else if (key === 'rankBack') {
+                if (data !== 'true' && data !== 'false') return message.reply(`**${data}** is not a valid value for ` +
+                    'rankBack.')
+                data.rankback = data === 'true'
+            }
+            const userId = await userService.getIdFromUsername(username)
+            const suspension = (await applicationAdapter('put', `/v1/groups/${applicationConfig
+                    .groupId}/suspensions/${userId}`, newData)).data
+            if (suspension) {
+                message.reply(`Successfully changed **${username}**'s suspension.`)
+            } else {
+                message.reply(`Couldn't change **${username}**'s suspension.`)
+            }
+        } catch (err) {
+            message.reply(err.message)
+        }
     }
 }

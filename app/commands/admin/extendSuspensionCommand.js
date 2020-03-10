@@ -1,5 +1,8 @@
 'use strict'
 const Command = require('../../controllers/command')
+const applicationAdapter = require('../../adapters/application')
+const applicationConfig = require('../../../config/application')
+const userService = require('../../services/user')
 
 module.exports = class ExtendSuspensionCommand extends Command {
     constructor (client) {
@@ -20,7 +23,12 @@ module.exports = class ExtendSuspensionCommand extends Command {
                 {
                     key: 'days',
                     type: 'integer',
-                    prompt: 'With how many days would you like to extend this person\'s suspension?'
+                    prompt: 'With how many days would you like to extend this person\'s suspension?',
+                    validate: val => {
+                        if (val < 1) return 'Insufficient amount of days.'
+                        if (val > 7) return 'Too many days.'
+                        return true
+                    }
                 },
                 {
                     key: 'reason',
@@ -31,7 +39,25 @@ module.exports = class ExtendSuspensionCommand extends Command {
         })
     }
 
-    execute (message, { username, days, reason }) {
-
+    async execute (message, { username, days, reason }) {
+        const byUsername = message.member.nickname || message.author.username
+        try {
+            const userId = await userService.getIdFromUsername(username)
+            const byUserId = await userService.getIdFromUsername(byUsername)
+            const suspension = (await applicationAdapter('put', `/v1/groups/${applicationConfig
+                .groupId}/suspensions/${userId}`, {
+                extended: true,
+                duration: days * 86400,
+                reason: reason,
+                by: byUserId
+            })).data
+            if (suspension) {
+                message.reply(`Successfully cancelled **${username}**'s suspension.`)
+            } else {
+                message.reply(`Couldn't cancel **${username}**'s suspension.`)
+            }
+        } catch (err) {
+            message.reply(err.message)
+        }
     }
 }

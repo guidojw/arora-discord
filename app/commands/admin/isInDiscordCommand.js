@@ -1,5 +1,6 @@
 'use strict'
 const Command = require('../../controllers/command')
+const discordService = require('../../services/discord')
 
 module.exports = class IsInDiscordCommand extends Command {
     constructor (client) {
@@ -20,7 +21,18 @@ module.exports = class IsInDiscordCommand extends Command {
         })
     }
 
-    execute (message, { username }) {
-
+    execute (message, { username }, guild) {
+        const member = discordService.getMemberByName(guild.guild, username)
+        if (member) {
+            message.replyEmbed(discordService.compileRichEmbed([{
+                title: message.command.name,
+                message: `Yes, **${member.nickname || member.user.username}** is in this server`,
+            }]))
+        } else {
+            message.replyEmbed(discordService.compileRichEmbed([{
+                title: message.command.name,
+                message: `No, **${username}** is not in this server.`,
+            }]))
+        }
     }
 }

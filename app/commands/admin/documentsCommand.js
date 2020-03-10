@@ -1,4 +1,6 @@
 'use strict'
+require('dotenv').config()
+
 const Command = require('../../controllers/command')
 
 module.exports = class DocumentsCommand extends Command {
@@ -13,7 +15,15 @@ module.exports = class DocumentsCommand extends Command {
         })
     }
 
-    execute (message) {
+    hasPermission (message) {
+        const guild = this.client.bot.guilds[message.guild.id]
+        return message.channel.id === guild.getData('channels').hrChannel ? super.hasPermission(message) : 'Wrong ' +
+            'channel.'
+    }
 
+    execute (message) {
+        message.reply(`<${process.env.TP_DOC}>`)
+        message.reply(`<${process.env.TL_DOC}>`)
+        message.reply(`<${process.env.MS_DOC}>`)
     }
 }

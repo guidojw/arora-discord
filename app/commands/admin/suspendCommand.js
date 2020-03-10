@@ -1,5 +1,9 @@
 'use strict'
 const Command = require('../../controllers/command')
+const userService = require('../../services/user')
+const discordService = require('../../services/discord')
+const applicationConfig = require('../../../config/application')
+const applicationAdapter = require('../../adapters/application')
 
 module.exports = class SuspendCommand extends Command {
     constructor (client) {
@@ -21,7 +25,12 @@ module.exports = class SuspendCommand extends Command {
                 {
                     key: 'days',
                     type: 'integer',
-                    prompt: 'How long would you like this suspension to be?'
+                    prompt: 'How long would you like this suspension to be?',
+                    validate: val => {
+                        if (val < 1) return 'Insufficient amount of days.'
+                        if (val > 7) return 'Too many days.'
+                        return true
+                    }
                 },
                 {
                     key: 'rankBack',
@@ -38,7 +47,23 @@ module.exports = class SuspendCommand extends Command {
         })
     }
 
-    execute (message, { username, days, rankBack, reason}) {
-
+    async execute (message, { username, days, rankBack, reason}) {
+        const byUsername = message.member.nickname || message.author.username
+        try {
+            const userId = await userService.getIdFromUsername(username)
+            const byUserId = await userService.getIdFromUsername(byUsername)
+            await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId}/suspensions`,
+                {
+                userId: userId,
+                rankback: rankBack,
+                duration: days * 86400,
+                by: byUserId,
+                reason: reason
+            })
+            message.replyEmbed(discordService.getEmbed(message.command.name, `Successfully suspended **${username
+            }**.`))
+        } catch (err) {
+            message.reply(err.message)
+        }
     }
 }

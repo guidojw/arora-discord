@@ -1,5 +1,8 @@
 'use strict'
 const Command = require('../../controllers/command')
+const applicationAdapter = require('../../adapters/application')
+const applicationConfig = require('../../../config/application')
+const discordService = require('../../services/discord')
 
 module.exports = class AnnounceTrainingCommand extends Command {
     constructor (client) {
@@ -29,7 +32,20 @@ module.exports = class AnnounceTrainingCommand extends Command {
         })
     }
 
-    execute (message, { trainingId, medium }) {
-
+    async execute (message, { trainingId, medium }) {
+        try {
+            const content = (await applicationAdapter('post', `/v1/groups/${applicationConfig
+                .groupId}/trainings/${trainingId}/announce`, {
+                medium: medium
+            })).data
+            if (medium === 'both' || medium === 'discord') {
+                message.replyEmbed(discordService.getEmbed('Successfully announced', content.announcement))
+            }
+            if (medium === 'both' || medium === 'roblox') {
+                message.replyEmbed(discordService.getEmbed('Successfully shouted', content.shout))
+            }
+        } catch (err) {
+            message.reply(err.message)
+        }
     }
 }

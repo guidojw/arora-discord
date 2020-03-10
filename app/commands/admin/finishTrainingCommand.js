@@ -1,5 +1,7 @@
 'use strict'
 const Command = require('../../controllers/command')
+const applicationAdapter = require('../../adapters/application')
+const applicationConfig = require('../../../config/application')
 
 module.exports = class FinishTrainingCommand extends Command {
     constructor (client) {
@@ -21,7 +23,21 @@ module.exports = class FinishTrainingCommand extends Command {
         })
     }
 
-    execute (message, { trainingId }) {
-
+    async execute (message, { trainingId }) {
+        const username = message.member.nickname || message.author.username
+        try {
+            const training = (await applicationAdapter('put', `/v1/groups/${applicationConfig
+                .groupId}/trainings/${trainingId}`, {
+                finished: true,
+                by: username
+            })).data
+            if (training) {
+                message.reply(`Successfully finished Training ID **${trainingId}**.`)
+            } else {
+                message.reply(`Couldn't finish Training ID **${trainingId}**.`)
+            }
+        } catch (err) {
+            message.reply(err.message)
+        }
     }
 }

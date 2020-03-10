@@ -1,5 +1,9 @@
 'use strict'
 const Command = require('../../controllers/command')
+const userService = require('../../services/user')
+const discordService = require('../../services/discord')
+const applicationConfig = require('../../../config/application')
+const applicationAdapter = require('../../adapters/application')
 
 module.exports = class ShoutCommand extends Command {
     constructor (client) {
@@ -14,13 +18,31 @@ module.exports = class ShoutCommand extends Command {
                 {
                     key: 'shout',
                     type: 'string',
-                    prompt: 'What would you like to shout?'
+                    prompt: 'What would you like to shout?',
+                    validate: val => {
+                        return val.length <= 255 || 'Can\'t post shout, it\'s too long.'
+                    }
                 }
             ]
         })
     }
 
-    execute (message, { shout }) {
-
+    async execute (message, { shout }) {
+        const byUsername = message.member.nickname || message.author.username
+        try {
+            const byUserId = await userService.getIdFromUsername(byUsername)
+            await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId}/shout`, {
+                by: byUserId,
+                message: shout
+            })
+            if (shout === 'clear') {
+                message.replyEmbed(discordService.getEmbed(message.command.name, 'Successfully cleared shout.'))
+            } else {
+                message.replyEmbed(discordService.getEmbed(message.command.name, `Successfully shouted *"${message
+                }"*`))
+            }
+        } catch (err) {
+            message.reply(err.message)
+        }
     }
 }
