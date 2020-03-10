@@ -20,7 +20,7 @@ module.exports = class SuspendCommand extends Command {
                 {
                     key: 'username',
                     type: 'string',
-                    prompt: 'Who would you like to unban?'
+                    prompt: 'Who would you like to suspend?'
                 },
                 {
                     key: 'days',
@@ -53,7 +53,7 @@ module.exports = class SuspendCommand extends Command {
             await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId}/suspensions`,
                 {
                     userId: userId,
-                    rankback: rankBack,
+                    rankback: rankBack ? 1 : 0,
                     duration: days * 86400,
                     by: byUserId,
                     reason: reason
