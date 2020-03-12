@@ -45,7 +45,7 @@ module.exports = class ChangeSuspensionCommand extends Command {
             } else if (key === 'rankBack') {
                 if (data !== 'true' && data !== 'false') return message.reply(`**${data}** is not a valid value for ` +
                     'rankBack.')
-                data.rankback = data === 'true'
+                data.rankback = data === 'true' ? 1 : 0
             }
             const userId = await userService.getIdFromUsername(username)
             const suspension = (await applicationAdapter('put', `/v1/groups/${applicationConfig
