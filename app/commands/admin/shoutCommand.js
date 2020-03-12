@@ -33,7 +33,7 @@ module.exports = class ShoutCommand extends Command {
             const byUserId = await userService.getIdFromUsername(byUsername)
             await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId}/shout`, {
                 by: byUserId,
-                message: shout
+                message: shout === 'clear' ? '' : shout
             })
             const embed = new BotEmbed()
             if (shout === 'clear') {
