@@ -102,7 +102,7 @@ exports.getTrainingEmbeds = trainings => {
     let sum = 0
     const addField = message => {
         message = message.trim()
-        fields.push({name: 'Upcoming trainings', value: message})
+        fields.push({ name: 'Upcoming trainings', value: message })
     }
     const addEmbed = () => {
         const embed = new BotEmbed()
@@ -156,7 +156,7 @@ exports.getBanEmbeds = bans => {
     let sum = 0
     const addField = message => {
         message = message.trim()
-        fields.push({name: 'Bans', value: message})
+        fields.push({ name: 'Bans', value: message })
     }
     const addEmbed = () => {
         const embed = new BotEmbed()
