@@ -14,7 +14,7 @@ module.exports = class UpTimeCommand extends Command {
     }
 
     execute (message) {
-        message.replyEmbed(discordService.getEmbed('NSadmin has been online for', `${timeHelper.getUnix() -
-        Math.round(this.client.bot.uptime / 1000)}s`))
+        message.replyEmbed(discordService.getEmbed('NSadmin has been online for', `${Math.round(this
+            .client.uptime / 1000)}s`))
     }
 }
