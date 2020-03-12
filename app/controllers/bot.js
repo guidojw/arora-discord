@@ -4,7 +4,7 @@ require('dotenv').config()
 const path = require('path')
 const Guild = require('./guild')
 const Commando = require('discord.js-commando')
-const { RichEmbed } = require('discord.js')
+const { MessageEmbed } = require('discord.js')
 const SettingProvider = require('./settingProvider')
 const { stripIndents } = require('common-tags')
 const { getRandomInt } = require('../helpers/random')
@@ -19,7 +19,8 @@ module.exports = class Bot {
             commandPrefix: applicationConfig.defaultPrefix,
             owner: applicationConfig.owner,
             unknownCommandResponse: false,
-            disableEveryone: true
+            disableEveryone: true,
+            partias: ['MESSAGE', 'GUILD_MEMBER']
         })
         this.client.bot = this
         this.client.setProvider(new SettingProvider())
@@ -51,10 +52,9 @@ module.exports = class Bot {
     }
 
     async fetch () {
-        for (const guild of this.client.guilds.values()) {
-            const newGuild = new Guild(this, guild.id)
-            await newGuild.loadData()
-            this.guilds[guild.id] = newGuild
+        for (const guildId of this.client.guilds.cache.keys()) {
+            this.guilds[guildId] = new Guild(this, guildId)
+            await this.guilds[guildId].loadData()
         }
     }
 
@@ -69,30 +69,31 @@ module.exports = class Bot {
 
     ready () {
         this.fetch()
-        console.log(`Ready to serve on ${this.client.guilds.size} servers, for ${this.client.users.size} users.`)
+        console.log(`Ready to serve on ${this.client.guilds.cache.size} servers, for ${this.client.users.cache.size} ` +
+            'users.')
         this.setActivity()
     }
 
-    guildMemberAdd (member) {
+    async guildMemberAdd (member) {
+        if (member.partial) await member.fetch()
         if (member.user.bot) return
-        const embed = new RichEmbed()
+        const embed = new MessageEmbed()
             .setTitle(`Hey ${member.user.tag},`)
             .setDescription(`You're the **${member.guild.memberCount}th** member on **${member.guild.name}**!`)
-            .setThumbnail(member.user.displayAvatarURL)
+            .setThumbnail(member.user.displayAvatarURL())
         const guild = this.guilds[member.guild.id]
-        guild.guild.channels.find(channel => channel.id === guild.getData('channels').welcomeChannel).send(
-            embed)
+        guild.guild.channels.cache.get(guild.getData('channels').welcomeChannel).send(embed)
     }
 
     async commandRun (command, promise, message) {
         if (!message.guild) return
         await promise
-        const embed = new RichEmbed()
-            .setAuthor(message.author.tag, message.author.displayAvatarURL)
+        const embed = new MessageEmbed()
+            .setAuthor(message.author.tag, message.author.displayAvatarURL())
             .setDescription(stripIndents`${message.author} **used** \`${command.name}\` **command in** ${message
-                .channel} [Jump to Message](${message.message.url})
-                ${message.message}`)
+                .channel} [Jump to Message](${message.url})
+                ${message.content}`)
         const guild = this.guilds[message.guild.id]
-        guild.guild.channels.find(channel => channel.id === guild.getData('channels').logsChannel).send(embed)
+        guild.guild.channels.cache.get(guild.getData('channels').logsChannel).send(embed)
     }
 }

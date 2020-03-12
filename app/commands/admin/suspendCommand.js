@@ -1,9 +1,9 @@
 'use strict'
 const Command = require('../../controllers/command')
 const userService = require('../../services/user')
-const discordService = require('../../services/discord')
 const applicationConfig = require('../../../config/application')
 const applicationAdapter = require('../../adapters/application')
+const BotEmbed = require('../../views/botEmbed')
 
 module.exports = class SuspendCommand extends Command {
     constructor (client) {
@@ -58,8 +58,9 @@ module.exports = class SuspendCommand extends Command {
                     by: byUserId,
                     reason: reason
                 })
-            message.replyEmbed(discordService.getEmbed(message.command.name, `Successfully suspended **${username
-            }**.`))
+            const embed = new BotEmbed()
+                .addField(message.command.name, `Successfully suspended **${username}**.`)
+            message.replyEmbed(embed)
         } catch (err) {
             message.reply(err.message)
         }

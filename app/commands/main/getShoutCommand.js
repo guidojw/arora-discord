@@ -2,7 +2,7 @@
 const Command = require('../../controllers/command')
 const applicationAdapter = require('../../adapters/application')
 const applicationConfig = require('../../../config/application')
-const discordService = require('../../services/discord')
+const BotEmbed = require('../../views/botEmbed')
 
 module.exports = class GetShoutCommand extends Command {
     constructor (client) {
@@ -18,10 +18,10 @@ module.exports = class GetShoutCommand extends Command {
         const shout = (await applicationAdapter('get', `/v1/groups/${applicationConfig.groupId}/` +
             'shout')).data
         if (shout.body) {
-            message.replyEmbed(discordService.compileRichEmbed([{
-                title: `Current shout by ${shout.poster.username}`,
-                message: shout.body,
-            }], {timestamp: shout.updated}))
+            const embed = new BotEmbed()
+                .addField(`Current shout by ${shout.poster.username}`, shout.body)
+                .setTimestamp(shout.updated)
+            message.replyEmbed(embed)
         } else {
             message.reply('There currently is no shout.')
         }

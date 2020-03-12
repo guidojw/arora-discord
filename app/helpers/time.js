@@ -35,9 +35,9 @@ exports.getPlaceFromTimezone = abbreviation => {
     )
 }
 
-exports.getTimeInTimezone = timezone => {
+exports.getTimeInPlace = place => {
     return new Date(new Date().toLocaleString('en-US', {
-        timeZone: timezone
+        timeZone: place
     }))
 }
 

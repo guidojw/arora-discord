@@ -4,7 +4,7 @@ const groupService = require('../../services/group')
 const timeHelper = require('../../helpers/time')
 const applicationAdapter = require('../../adapters/application')
 const applicationConfig = require('../../../config/application')
-const discordService = require('../../services/discord')
+const BotEmbed = require('../../views/botEmbed')
 
 module.exports = class HostTrainingCommand extends Command {
     constructor (client) {
@@ -64,13 +64,10 @@ module.exports = class HostTrainingCommand extends Command {
                 date: dateUnix,
                 specialnotes: specialNotes || undefined
             })).data
-            message.replyEmbed(discordService.compileRichEmbed([{
-                title: 'Successfully hosted',
-                message: `**${role}** training on **${date}** at **${time}**.`,
-            }, {
-                title: 'Training ID:',
-                message: trainingId.toString()
-            }]))
+            const embed = new BotEmbed()
+                .addField('Successfully hosted', `**${role}** training on **${date}** at **${time}**.`)
+                .addField('Training ID:', trainingId.toString())
+            message.replyEmbed(embed)
         } catch (err) {
             message.reply(err.message)
         }

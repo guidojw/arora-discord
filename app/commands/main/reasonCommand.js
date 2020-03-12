@@ -5,6 +5,7 @@ const applicationConfig = require('../../../config/application')
 const userService = require('../../services/user')
 const discordService = require('../../services/discord')
 const pluralize = require('pluralize')
+const BotEmbed = require('../../views/botEmbed')
 
 module.exports = class ReasonCommand extends Command {
     constructor (client) {
@@ -38,13 +39,11 @@ module.exports = class ReasonCommand extends Command {
                 .groupId}/suspensions/${userId}`)).data
             if (suspension) {
                 const days = suspension.duration / 86400
-                await message.replyEmbed(discordService.compileRichEmbed([{
-                    title: message.argString ? `${username} is suspended for` : 'You\'re suspended for',
-                    message: `${days} ${pluralize('day', days)}`
-                }, {
-                    title: 'Reason',
-                    message: `*"${suspension.reason}"*`
-                }]))
+                const embed = new BotEmbed()
+                    .addField(message.argString ? `${username} is suspended for` : 'You\'re suspended for',
+                        `${days} ${pluralize('day', days)}`)
+                    .addField('Reason', `*"${suspension.reason}"*`)
+                message.replyEmbed(embed)
             } else {
                 message.reply('Couldn\'t find suspension!')
             }

@@ -1,6 +1,7 @@
 'use strict'
 const Command = require('../../controllers/command')
 const discordService = require('../../services/discord')
+const BotEmbed = require('../../views/botEmbed')
 
 module.exports = class PollCommand extends Command {
     constructor (client) {
@@ -30,8 +31,10 @@ module.exports = class PollCommand extends Command {
             }
         }
         const username = message.member.nickname || message.author.username
-        const newMessage = await message.channel.send(discordService.getEmbed(`Poll by ${username}:`, poll)
-            .setFooter('Vote using the reactions!'))
+        const embed = new BotEmbed()
+            .addField(`Poll by ${username}:`, poll)
+            .setFooter('Vote using the reactions!')
+        const newMessage = await message.channel.send(embed)
         if (options.length > 0) {
             for (const option of options) {
                 await newMessage.react(discordService.getEmojiFromNumber(option))

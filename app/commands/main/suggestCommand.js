@@ -1,6 +1,6 @@
 'use strict'
 const Command = require('../../controllers/command')
-const { RichEmbed } = require('discord.js')
+const { MessageEmbed } = require('discord.js')
 
 module.exports = class SuggestCommand extends Command {
     constructor (client) {
@@ -27,15 +27,15 @@ module.exports = class SuggestCommand extends Command {
 
     async execute (message, { suggestion }, guild) {
         const authorUrl = `https://discordapp.com/users/${message.author.id}`
-        const embed = new RichEmbed()
+        const embed = new MessageEmbed()
             .setDescription(suggestion)
-            .setAuthor(message.author.tag, message.author.displayAvatarURL, authorUrl)
+            .setAuthor(message.author.tag, message.author.displayAvatarURL(), authorUrl)
         if (message.attachments.size > 0) {
             const attachment = message.attachments.first()
             if (attachment.height) embed.setImage(attachment.url)
         }
         const channels = guild.getData('channels')
-        const newMessage = await guild.guild.channels.get(channels.suggestionsChannel).send(embed)
+        const newMessage = await guild.guild.channels.cache.get(channels.suggestionsChannel).send(embed)
         await newMessage.react('✔')
         await newMessage.react('✖')
         await newMessage.react('❔')

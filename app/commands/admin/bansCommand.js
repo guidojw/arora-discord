@@ -17,8 +17,9 @@ module.exports = class BansCommand extends Command {
     async execute (message) {
         try {
             const bans = (await applicationAdapter('get', '/v1/bans')).data
-            const banEmbeds = discordService.getBanEmbeds(bans)
-            for (const embed of banEmbeds) {
+            const embeds = discordService.getBanEmbeds(bans)
+            embeds[0].setTitle('Bans')
+            for (const embed of embeds) {
                 await message.author.send(embed)
             }
         } catch (err) {

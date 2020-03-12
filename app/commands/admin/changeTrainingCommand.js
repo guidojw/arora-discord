@@ -46,8 +46,9 @@ module.exports = class ChangeTrainingCommand extends Command {
                 newData.specialnotes = data
             } else if (key === 'type') {
                 const type = data.toUpperCase()
-                if (!groupService.getRoleByAbbreviation(type)) return message.reply(`Role abbreviaton **${type}** does ` +
-                    'not exist.')
+                if (!groupService.getRoleByAbbreviation(type)) {
+                    return message.reply(`Role abbreviaton **${type}** does not exist.`)
+                }
                 newData.type = type
             } else if (key === 'date' || key === 'time') {
                 const training = await groupService.getTrainingById(trainingId)
@@ -63,11 +64,11 @@ module.exports = class ChangeTrainingCommand extends Command {
                     dateInfo = timeHelper.getDateInfo(timeHelper.getDate(unix))
                     timeInfo = timeHelper.getTimeInfo(data)
                 }
-                newData.date = timeHelper.getUnix(new Date(dateInfo.year, dateInfo.month - 1, dateInfo.day, timeInfo
-                    .hours, timeInfo.minutes))
+                newData.date = timeHelper.getUnix(new Date(dateInfo.year, dateInfo.month - 1, dateInfo.day,
+                    timeInfo.hours, timeInfo.minutes))
             }
-            const training = (await applicationAdapter('put', `/v1/groups/${applicationConfig.groupId}` +
-                `/trainings/${trainingId}`, newData)).data
+            const training = (await applicationAdapter('put', `/v1/groups/${applicationConfig
+                .groupId}/trainings/${trainingId}`, newData)).data
             if (training) {
                 message.reply(`Successfully changed training with ID **${trainingId}**.`)
             } else {

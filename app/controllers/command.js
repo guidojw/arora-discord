@@ -18,8 +18,7 @@ module.exports = class Command extends Commando.Command {
         return true
     }
 
-    // eslint-disable-next-line no-unused-vars
-    async run (message, args, _fromPattern) {
+    async run (message, args) {
         const guild = this.client.bot.guilds[message.guild.id]
         return this.execute(message, args, guild)
     }
