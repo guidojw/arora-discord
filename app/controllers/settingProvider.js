@@ -1,6 +1,6 @@
 'use strict'
 module.exports = class SettingProvider {
-    init = async client => {
+    async init (client) {
         this.bot = client.bot
 
         client.on('commandPrefixChange', (guild, prefix) => {
