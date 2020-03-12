@@ -2,9 +2,9 @@
 const Command = require('../../controllers/command')
 const applicationAdapter = require('../../adapters/application')
 const userService = require('../../services/user')
-const discordService = require('../../services/discord')
 const timeHelper = require('../../helpers/time')
 const pluralize = require('pluralize')
+const BotEmbed = require('../../views/botEmbed')
 
 module.exports = class AgeCommand extends Command {
     constructor (client) {
@@ -34,8 +34,10 @@ module.exports = class AgeCommand extends Command {
             const joinDate = new Date((await applicationAdapter('get', `/v1/users/${userId}/join-` +
                 'date')).data)
             const age = Math.floor((timeHelper.getUnix() - timeHelper.getUnix(joinDate)) / 86400)
-            message.replyEmbed(discordService.getEmbed(message.command.name, `${message.argString ? '**' +
-                username + '**\'s' : 'Your'} Roblox account is **${age} ${pluralize('day', age)}** old.`))
+            const embed = new BotEmbed()
+                .addField(message.command.name, `${message.argString ? '**' + username + '**\'s' : 'Your'} ` +
+                    `Roblox account is **${age} ${pluralize('day', age)}** old.`)
+            message.replyEmbed(embed)
         } catch (err) {
             message.reply(err.message)
         }

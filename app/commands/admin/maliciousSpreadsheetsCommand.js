@@ -9,7 +9,7 @@ module.exports = class MaliciousSpreadsheetsCommand extends Command {
             group: 'admin',
             name: 'maliciousspreadsheets',
             details: 'This command can only be run in the #hr channel.',
-            aliases: ['ml'],
+            aliases: ['ms'],
             description: 'Posts a link of the Malicious Spreadsheets.',
             clientPermissions: ['MANAGE_MESSAGES', 'SEND_MESSAGES']
         })

@@ -2,7 +2,7 @@
 const Command = require('../../controllers/command')
 const applicationAdapter = require('../../adapters/application')
 const applicationConfig = require('../../../config/application')
-const discordService = require('../../services/discord')
+const BotEmbed = require('../../views/botEmbed')
 
 module.exports = class AnnounceTrainingCommand extends Command {
     constructor (client) {
@@ -39,12 +39,14 @@ module.exports = class AnnounceTrainingCommand extends Command {
                 .groupId}/trainings/${trainingId}/announce`, {
                 medium: medium
             })).data
+            const embed = new BotEmbed()
             if (medium === 'both' || medium === 'discord') {
-                message.replyEmbed(discordService.getEmbed('Successfully announced', content.announcement))
+                embed.addField('Successfully announced', content.announcement)
             }
             if (medium === 'both' || medium === 'roblox') {
-                message.replyEmbed(discordService.getEmbed('Successfully shouted', content.shout))
+                embed.addField('Successfully shouted', content.shout)
             }
+            message.replyEmbed(embed)
         } catch (err) {
             message.reply(err.message)
         }

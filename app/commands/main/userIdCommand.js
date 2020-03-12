@@ -1,7 +1,7 @@
 'use strict'
 const Command = require('../../controllers/command')
 const userService = require('../../services/user')
-const discordService = require('../../services/discord')
+const BotEmbed = require('../../views/botEmbed')
 
 module.exports = class UserIdCommand extends Command {
     constructor (client) {
@@ -28,8 +28,9 @@ module.exports = class UserIdCommand extends Command {
         username = username || message.member.nickname || message.author.username
         try {
             const userId = await userService.getIdFromUsername(username)
-            message.replyEmbed(discordService.getEmbed(message.command.name, `**${username}** has userId **${
-                userId}**.`))
+            const embed = new BotEmbed()
+                .addField(message.command.name, `**${username}** has userId **${userId}**.`)
+            message.replyEmbed(embed)
         } catch (err) {
             message.reply(err.message)
         }

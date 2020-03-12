@@ -2,6 +2,7 @@
 require('dotenv').config()
 
 const Command = require('../../controllers/command')
+const { stripIndents } = require('common-tags')
 
 module.exports = class DocumentsCommand extends Command {
     constructor (client) {
@@ -22,8 +23,8 @@ module.exports = class DocumentsCommand extends Command {
     }
 
     execute (message) {
-        message.reply(`<${process.env.TP_DOC}>`)
-        message.reply(`<${process.env.TL_DOC}>`)
-        message.reply(`<${process.env.MS_DOC}>`)
+        message.reply(stripIndents`Training Protocols: <${process.env.TP_DOC}>
+            Training Logs: <${process.env.TL_DOC}>
+            Malicious Spreadsheets: <${process.env.MS_DOC}>`)
     }
 }

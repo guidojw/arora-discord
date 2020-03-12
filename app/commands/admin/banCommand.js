@@ -3,7 +3,7 @@ const Command = require('../../controllers/command')
 const userService = require('../../services/user')
 const applicationAdapter = require('../../adapters/application')
 const applicationConfig = require('../../../config/application')
-const discordService = require('../../services/discord')
+const BotEmbed = require('../../views/botEmbed')
 
 module.exports = class BanCommand extends Command {
     constructor (client) {
@@ -41,8 +41,9 @@ module.exports = class BanCommand extends Command {
                 reason: reason,
                 groupId: applicationConfig.groupId
             })
-            message.replyEmbed(discordService.getEmbed(message.command.name, `Successfully banned **${username}` +
-                '**.'))
+            const embed = new BotEmbed()
+                .addField(message.command.name, `Successfully banned **${username}**.`)
+            message.replyEmbed(embed)
         } catch (err) {
             message.reply(err.message)
         }

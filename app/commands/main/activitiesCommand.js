@@ -2,6 +2,7 @@
 const Command = require('../../controllers/command')
 const activities = require('../../content/activities')
 const discordService = require('../../services/discord')
+const BotEmbed = require('../../views/botEmbed')
 
 module.exports = class ActivitiesCommand extends Command {
     constructor (client) {
@@ -16,9 +17,11 @@ module.exports = class ActivitiesCommand extends Command {
     execute (message) {
         let activitiesString = ''
         for (const [index, activity] of Object.entries(activities)) {
-            activitiesString += `${index + 1}. **${discordService.getActivityFromNumber(activity.options.type)}** ` +
-                `${activity.name}\n`
+            activitiesString += `${parseInt(index) + 1}. **${discordService.getActivityFromNumber(activity.options.type)
+            }** ${activity.name}\n`
         }
-        message.replyEmbed(discordService.getEmbed('Activities', activitiesString))
+        const embed = new BotEmbed()
+            .addField('Activities', activitiesString)
+        message.replyEmbed(embed)
     }
 }

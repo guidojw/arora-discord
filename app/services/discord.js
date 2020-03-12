@@ -1,8 +1,7 @@
 'use strict'
-const discord = require('discord.js')
-
 const groupService = require('./group')
 const timeHelper = require('../helpers/time')
+const BotEmbed = require('../views/botEmbed')
 
 exports.getActivityFromNumber = num => {
     return num === 0 && 'Playing' || num === 1 && 'Streaming' || num === 2 && 'Listening to' || num === 3 && 'Watching'
@@ -20,121 +19,79 @@ exports.getMemberByName = (guild, name) => {
     return foundMember
 }
 
-exports.getEmbed = (title, text) => {
-    return exports.compileRichEmbed([{title: title, message: text}])
-}
-
-exports.compileRichEmbed = (fields, opts) => {
-    fields = fields || []
-    opts = opts || {}
-    let embed = opts.original
-    if (!embed) {
-        embed = new discord.RichEmbed()
-            .setAuthor('NSadmin', 'https://image.prntscr.com/image/ltRs7okBRVGs8KLf4a-fCw.png')
-            .setColor([255, 174, 12])
-    }
-    if (opts.timestamp) {
-        embed.setTimestamp(opts.timestamp)
-    } else {
-        embed.setTimestamp()
-    }
-    if (opts.title) embed.setTitle(opts.title)
-    for (let i = 0; i < Math.min(fields.length, 25); i++) {
-        let title = fields[i].title
-        let message = fields[i].message
-        if (title && title.length > 256) {
-            title = title.substring(0, 253) + '...'
-            console.log(`Shortened title ${title}, 256 characters is max.`)
-        }
-        if (message && message.length > 2048) {
-            message = message.substring(0, 2045) + '...'
-            console.log(`Shortened message ${message}, 2048 characters is max.`)
-        }
-        embed.addField(fields[i].title || '?', fields[i].message || '-')
-    }
-    if (fields.length > 25) {
-        console.log(`Ignored ${fields.length - 25} fields, 25 is max.`)
-    }
-    return embed
-}
-
-exports.hasRole = (member, name) => {
-    return member.roles.some(role => role.name === name)
-}
-
 exports.isAdmin = (member, adminRoles) => {
     for (const roleId of adminRoles) {
-        if (member.roles.has(roleId)) return true
+        if (member.roles.cache.has(roleId)) return true
     }
     return false
 }
 
-exports.updateRoles = async (guild, member, rank) => {
+exports.updateRoles = async (member, rank, roles) => {
     if (rank === 2) {
-        if (!exports.hasRole(member, 'Suspended')) {
-            await member.addRole(guild.roles.find(role => role.name === 'Suspended'))
+        if (!member.roles.cache.has(roles.suspendedRole)) {
+            await member.roles.add(roles.suspendedRole)
         }
-        if (exports.hasRole(member, 'MR')) {
-            await member.removeRole(guild.roles.find(role => role.name === 'MR'))
+        if (member.roles.cache.has(roles.mrRole)) {
+            await member.roles.remove(roles.mrRole)
         }
-        if (exports.hasRole(member, 'Representative')) {
-            await member.removeRole(guild.roles.find(role => role.name === 'Representative'))
+        if (member.roles.cache.has(roles.representativeRole)) {
+            await member.roles.remove(roles.representativeRole)
         }
-        if (exports.hasRole(member, 'Staff Coordinator')) {
-            await member.removeRole(guild.roles.find(role => role.name === 'Staff Coordinator'))
+        if (member.roles.cache.has(roles.staffCoordinatorRole)) {
+            await member.roles.remove(roles.staffCoordinatorRole)
         }
-        if (exports.hasRole(member, 'Operations Coordinator')) {
-            await member.removeRole(guild.roles.find(role => role.name === 'Operations Coordinator'))
+        if (member.roles.cache.has(roles.operationsCoordinatorRole)) {
+            await member.roles.remove(roles.operationsCoordinatorRole)
         }
-        if (exports.hasRole(member, 'Train Driver')) {
-            await member.removeRole(guild.roles.find(role => role.name === 'Train Driver'))
+        if (member.roles.cache.has(roles.trainDriverRole)) {
+            await member.roles.remove(roles.trainDriverRole)
         }
-        if (exports.hasRole(member, 'Conductor')) {
-            await member.removeRole(guild.roles.find(role => role.name === 'Conductor'))
+        if (member.roles.cache.has(roles.conductorRole)) {
+            await member.roles.remove(roles.conductorRole)
         }
-        if (exports.hasRole(member, 'Customer Service Representative')) {
-            await member.removeRole(guild.roles.find(role => role.name === 'Customer Service Representative'))
+        if (member.roles.cache.has(roles.customerServiceRepresentativeRole)) {
+            await member.roles.remove(roles.customerServiceRepresentativeRole)
         }
     } else {
-        if (exports.hasRole(member, 'Suspended')) {
-            await member.removeRole(guild.roles.find(role => role.name === 'Suspended'))
+        if (member.roles.cache.has(roles.suspendedRole)) {
+            await member.roles.remove(roles.suspendedRole)
         }
-        if (rank < 100 && exports.hasRole(member, 'MR')) {
-            await member.removeRole(guild.roles.find(role => role.name === 'MR'))
+        if (rank < 100 && member.roles.cache.has(roles.mrRole)) {
+            await member.roles.remove(roles.mrRole)
         }
-        if (rank !== 100 && exports.hasRole(member, 'Representative')) {
-            await member.removeRole(guild.roles.find(role => role.name === 'Representative'))
+        if (rank !== 100 && member.roles.cache.has(roles.representativeRole)) {
+            await member.roles.remove(roles.representativeRole)
         }
-        if (rank !== 101 && exports.hasRole(member, 'Staff Coordinator')) {
-            await member.removeRole(guild.roles.find(role => role.name === 'Staff Coordinator'))
+        if (rank !== 101 && member.roles.cache.has(roles.staffCoordinatorRole)) {
+            await member.roles.remove(roles.staffCoordinatorRole)
         }
-        if (rank !== 102 && exports.hasRole(member, 'Operations Coordinator')) {
-            await member.removeRole(guild.roles.find(role => role.name === 'Operations Coordinator'))
+        if (rank !== 102 && member.roles.cache.has(roles.operationsCoordinatorRole)) {
+            await member.roles.remove(roles.operationsCoordinatorRole)
         }
-        if (rank !== 3 && exports.hasRole(member, 'Train Driver')){
-            await member.removeRole(guild.roles.find(role => role.name === 'Train Driver'))
+        if (rank !== 3 && member.roles.cache.has(roles.trainDriverRole)) {
+            await member.roles.remove(roles.trainDriverRole)
         }
-        if (rank !== 4 && exports.hasRole(member, 'Conductor')){
-            await member.removeRole(guild.roles.find(role => role.name === 'Conductor'))
+        if (rank !== 4 && member.roles.cache.has(roles.conductorRole)) {
+            await member.roles.remove(roles.conductorRole)
         }
-        if (rank !== 5 && exports.hasRole(member, 'Customer Service Representative')){
-            await member.removeRole(guild.roles.find(role => role.name === 'Customer Service Representative'))
+        if (rank !== 5 && member.roles.cache.has(roles.customerServiceRepresentativeRole)) {
+            await member.roles.remove(roles.customerServiceRepresentativeRole)
         }
-        if (rank >= 100 && rank <= 102 && !exports.hasRole(member, 'MR')) {
-            await member.addRole(guild.roles.find(role => role.name === 'MR'))
+        if (rank >= 100 && rank <= 102 && !member.roles.cache.has(roles.mrRole)) {
+            await member.roles.add(roles.mrRole)
         }
-        if (rank === 100 && !exports.hasRole(member, 'Representative')) {
-            await member.addRole(guild.roles.find(role => role.name === 'Representative'))
-        } else if (rank === 101 && !exports.hasRole(member, 'Staff Coordinator')) {
-            await member.addRole(guild.roles.find(role => role.name === 'Staff Coordinator'))
-        } else if (rank === 102 && !exports.hasRole(member, 'Operations Coordinator')) {
-            await member.addRole(guild.roles.find(role => role.name === 'Operations Coordinator'))
-        } else if (rank === 3 && !exports.hasRole(member, 'Train Driver')) {
-            await member.addRole(guild.roles.find(role => role.name === 'Train Driver'))
-        } else if (rank === 4 && !exports.hasRole(member, 'Conductor')) {
-            await member.addRole(guild.roles.find(role => role.name === 'Conductor'))
-        } else if (rank === 5 && !exports.hasRole(member, 'Customer Service Representative')) {
-            await member.addRole(guild.roles.find(role => role.name === 'Customer Service Representative'))
+        if (rank === 100 && !member.roles.cache.has(roles.representativeRole)) {
+            await member.roles.add(roles.representativeRole)
+        } else if (rank === 101 && !member.roles.cache.has(roles.staffCoordinatorRole)) {
+            await member.roles.add(roles.staffCoordinatorRole)
+        } else if (rank === 102 && !member.roles.cache.has(roles.operationsCoordinatorRole)) {
+            await member.roles.add(roles.operationsCoordinatorRole)
+        } else if (rank === 3 && !member.roles.cache.has(roles.trainDriverRole)) {
+            await member.roles.add(roles.trainDriverRole)
+        } else if (rank === 4 && !member.roles.cache.has(roles.conductorRole)) {
+            await member.roles.add(roles.conductorRole)
+        } else if (rank === 5 && !member.roles.cache.has(roles.customerServiceRepresentativeRole)) {
+            await member.roles.add(roles.customerServiceRepresentativeRole)
         }
     }
 }
@@ -145,10 +102,12 @@ exports.getTrainingEmbeds = trainings => {
     let sum = 0
     const addField = message => {
         message = message.trim()
-        fields.push({title: 'Upcoming trainings', message: message})
+        fields.push({ name: 'Upcoming trainings', value: message })
     }
     const addEmbed = () => {
-        embeds.push(exports.compileRichEmbed(fields, {title: 'Trainings'}))
+        const embed = new BotEmbed()
+            .addFields(fields)
+        embeds.push(embed)
         fields = []
         sum = 0
     }
@@ -197,10 +156,12 @@ exports.getBanEmbeds = bans => {
     let sum = 0
     const addField = message => {
         message = message.trim()
-        fields.push({title: 'Bans', message: message})
+        fields.push({ name: 'Bans', value: message })
     }
     const addEmbed = () => {
-        embeds.push(exports.compileRichEmbed(fields, {title: 'Bans'}))
+        const embed = new BotEmbed()
+            .addFields(fields)
+        embeds.push(embed)
         fields = []
         sum = 0
     }

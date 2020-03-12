@@ -8,8 +8,8 @@ module.exports = class SetActivityCommand extends Command {
             group: 'admin',
             name: 'setactivity',
             details: 'Activity type must be playing, listening, watching or streaming. The activity argument must be ' +
-                'encapsulated in quotes. When the activity type is streaming, you have to add a YouTube/Twitch url as '+
-                'last argument.',
+                'encapsulated in quotes. When the activity type is streaming, you have to add a YouTube/Twitch url as' +
+                ' last argument.',
             aliases: ['activity'],
             description: 'Sets the current activity of the bot.',
             examples: ['activity playing "Roblox"', 'activity streaming "Game Development" https://twitch.tv/guidojw'],

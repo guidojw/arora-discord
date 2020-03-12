@@ -1,9 +1,9 @@
 'use strict'
 const Command = require('../../controllers/command')
 const userService = require('../../services/user')
-const discordService = require('../../services/discord')
 const applicationConfig = require('../../../config/application')
 const applicationAdapter = require('../../adapters/application')
+const BotEmbed = require('../../views/botEmbed')
 
 module.exports = class ShoutCommand extends Command {
     constructor (client) {
@@ -35,12 +35,13 @@ module.exports = class ShoutCommand extends Command {
                 by: byUserId,
                 message: shout
             })
+            const embed = new BotEmbed()
             if (shout === 'clear') {
-                message.replyEmbed(discordService.getEmbed(message.command.name, 'Successfully cleared shout.'))
+                embed.addField(message.command.name, 'Successfully cleared shout.')
             } else {
-                message.replyEmbed(discordService.getEmbed(message.command.name, `Successfully shouted *"${message
-                }"*`))
+                embed.addField(message.command.name, `Successfully shouted *"${message}"*`)
             }
+            message.replyEmbed(embed)
         } catch (err) {
             message.reply(err.message)
         }

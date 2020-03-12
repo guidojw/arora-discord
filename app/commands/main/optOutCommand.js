@@ -12,8 +12,9 @@ module.exports = class OptOutCommand extends Command {
     }
 
     execute (message, _args, guild) {
-        if (!message.member.roles.has('No Training Announcements')) {
-            message.member.addRole(guild.getData('roles').noTrainingAnnouncementsRole)
+        const noTrainingAnnouncementsRoleId = guild.getData('roles').noTrainingAnnouncementsRole
+        if (!message.member.roles.cache.has(noTrainingAnnouncementsRoleId)) {
+            message.member.roles.add(noTrainingAnnouncementsRoleId)
             message.reply('Successfully opted out.')
         } else {
             message.reply('You\'re already opted out.')
