@@ -1,9 +1,8 @@
 'use strict'
 const Command = require('../../controllers/command')
-const timeHelper = require('../../helpers/time')
 const discordService = require('../../services/discord')
 
-module.exports = class UpTimeCommand extends Command {
+module.exports = class UptimeCommand extends Command {
     constructor (client) {
         super(client, {
             group: 'bot',
