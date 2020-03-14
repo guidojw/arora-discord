@@ -55,11 +55,10 @@ module.exports = class HostTrainingCommand extends Command {
         const nowUnix = timeHelper.getUnix()
         const afterNow = dateUnix - nowUnix > 0
         if (!afterNow) return message.reply('Please give a date and time that\'s after now.')
-        const username = message.member.nickname || message.author.username
         try {
             const trainingId = (await applicationAdapter('post', `/v1/groups/${applicationConfig
                 .groupId}/trainings`, {
-                by: username,
+                by: message.member.displayName,
                 type: type,
                 date: dateUnix,
                 specialnotes: specialNotes || undefined

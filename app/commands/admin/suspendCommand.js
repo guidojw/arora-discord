@@ -46,10 +46,9 @@ module.exports = class SuspendCommand extends Command {
     }
 
     async execute (message, { username, days, reason, rankBack}) {
-        const byUsername = message.member.nickname || message.author.username
         try {
             const userId = await userService.getIdFromUsername(username)
-            const byUserId = await userService.getIdFromUsername(byUsername)
+            const byUserId = await userService.getIdFromUsername(message.member.displayName)
             await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId}/suspensions`,
                 {
                     userId: userId,

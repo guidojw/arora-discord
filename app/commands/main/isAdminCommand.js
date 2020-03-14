@@ -26,7 +26,7 @@ module.exports = class IsAdminCommand extends Command {
 
     execute (message, { member }, guild) {
         member = member || message.member
-        const username = member.nickname || member.user.username
+        const username = member.displayName
         const embed = new BotEmbed()
         if (discordService.isAdmin(member, guild.getData('adminRoles'))) {
             embed.addField(message.command.name, `Yes, ${message.argString ? '**' + username + '** is' : 'you ' +

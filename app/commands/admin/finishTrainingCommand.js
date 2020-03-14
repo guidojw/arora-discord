@@ -24,12 +24,11 @@ module.exports = class FinishTrainingCommand extends Command {
     }
 
     async execute (message, { trainingId }) {
-        const username = message.member.nickname || message.author.username
         try {
             const training = (await applicationAdapter('put', `/v1/groups/${applicationConfig
                 .groupId}/trainings/${trainingId}`, {
                 finished: true,
-                by: username
+                by: message.member.displayName
             })).data
             if (training) {
                 message.reply(`Successfully finished Training ID **${trainingId}**.`)

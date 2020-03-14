@@ -26,8 +26,7 @@ module.exports = class IsInDiscordCommand extends Command {
         const member = discordService.getMemberByName(guild.guild, username)
         const embed = new BotEmbed()
         if (member) {
-            embed.addField(message.command.name, `Yes, **${member.nickname || member.user.username}** is in ` +
-                'this server')
+            embed.addField(message.command.name, `Yes, **${member.displayName}** is in this server.`)
         } else {
             embed.addField(message.command.name, `No, **${username}** is not in this server.`)
         }

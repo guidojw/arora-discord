@@ -30,9 +30,8 @@ module.exports = class PollCommand extends Command {
                 options.push(num)
             }
         }
-        const username = message.member.nickname || message.author.username
         const embed = new BotEmbed()
-            .addField(`Poll by ${username}:`, poll)
+            .addField(`Poll by ${message.member.displayName}:`, poll)
             .setFooter('Vote using the reactions!')
         const newMessage = await message.channel.send(embed)
         if (options.length > 0) {

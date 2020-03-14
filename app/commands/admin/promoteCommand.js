@@ -25,10 +25,9 @@ module.exports = class PromoteCommand extends Command {
     }
 
     async execute (message, { username }) {
-        const byUsername = message.member.nickname || message.author.username
         try {
             const userId = await userService.getIdFromUsername(username)
-            const byUserId = await userService.getIdFromUsername(byUsername)
+            const byUserId = await userService.getIdFromUsername(message.member.displayName)
             await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId}/promote/${
                 userId}`, {
                 by: byUserId

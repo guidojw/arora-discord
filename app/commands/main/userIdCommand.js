@@ -25,7 +25,7 @@ module.exports = class UserIdCommand extends Command {
     }
 
     async execute (message, { username }) {
-        username = username || message.member.nickname || message.author.username
+        username = username || message.member.displayName
         try {
             const userId = await userService.getIdFromUsername(username)
             const embed = new BotEmbed()

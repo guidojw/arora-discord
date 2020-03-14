@@ -30,7 +30,7 @@ module.exports = class UpdateCommand extends Command {
             return message.reply('Insufficient powers!')
         }
         member = member || message.member
-        const username = member.nickname || member.user.username
+        const username = member.displayName
         try {
             const userId = await userService.getIdFromUsername(username)
             const rank = (await applicationAdapter('get', `/v1/groups/${applicationConfig.groupId}/` +

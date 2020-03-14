@@ -28,9 +28,8 @@ module.exports = class ShoutCommand extends Command {
     }
 
     async execute (message, { shout }) {
-        const byUsername = message.member.nickname || message.author.username
         try {
-            const byUserId = await userService.getIdFromUsername(byUsername)
+            const byUserId = await userService.getIdFromUsername(message.member.displayName)
             await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId}/shout`, {
                 by: byUserId,
                 message: shout === 'clear' ? '' : shout
