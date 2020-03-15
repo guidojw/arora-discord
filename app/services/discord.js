@@ -1,7 +1,7 @@
 'use strict'
 const groupService = require('./group')
 const timeHelper = require('../helpers/time')
-const BotEmbed = require('../views/botEmbed')
+const BotEmbed = require('../views/bot-embed')
 
 exports.getActivityFromNumber = num => {
     return num === 0 && 'Playing' || num === 1 && 'Streaming' || num === 2 && 'Listening to' || num === 3 && 'Watching'

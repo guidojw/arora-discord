@@ -3,7 +3,7 @@ const Command = require('../../controllers/command')
 const applicationAdapter = require('../../adapters/application')
 const applicationConfig = require('../../../config/application')
 const userService = require('../../services/user')
-const BotEmbed = require('../../views/botEmbed')
+const BotEmbed = require('../../views/bot-embed')
 
 module.exports = class RankCommand extends Command {
     constructor (client) {
