@@ -28,7 +28,7 @@ module.exports = class SetActivityCommand extends Command {
                 },
                 {
                     key: 'url',
-                    prompt: '',
+                    prompt: 'What url would you like the bot to stream on?',
                     type: 'string',
                     default: '',
                     validate: urlHelper.validUrl
@@ -37,10 +37,17 @@ module.exports = class SetActivityCommand extends Command {
         })
     }
 
-    execute (message, { type, activity, url }) {
+    async execute (message, { type, activity, url }) {
         type = type.toUpperCase()
         if (type === 'STREAMING' && !url) {
-            return message.reply('You haven\'t provided an url. Please try again.')
+            this.argsCollector.args[2].default = null
+            const result = await this.argsCollector.obtain(message, [type, activity])
+            this.argsCollector.args[2].default = ''
+            if (!result.cancelled) {
+                url = result.values.url
+            } else {
+                return message.reply('Invalid url.')
+            }
         }
         this.client.bot.setActivity(activity, { type: type, url: url || undefined })
     }
