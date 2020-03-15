@@ -25,10 +25,9 @@ module.exports = class UnbanCommand extends Command {
     }
 
     async execute (message, { username }) {
-        const byUsername = message.member.nickname || message.author.username
         try {
             const userId = await userService.getIdFromUsername(username)
-            const byUserId = await userService.getIdFromUsername(byUsername)
+            const byUserId = await userService.getIdFromUsername(message.member.displayName)
             await applicationAdapter('put', `/v1/bans/${userId}`, {
                 unbanned: true,
                 by: byUserId

@@ -28,8 +28,8 @@ module.exports = class TrainingsCommand extends Command {
 
     async execute (message, { trainingId }) {
         try {
-            const trainings = (await applicationAdapter('get', `/v1/groups/${applicationConfig.groupId}` +
-                '/trainings')).data
+            const trainings = (await applicationAdapter('get', `/v1/groups/${applicationConfig
+                .groupId}` + '/trainings')).data
             if (trainings.length === 0) return message.reply('There are currently no hosted trainings.')
             if (trainingId) {
                 for await (const training of trainings) {

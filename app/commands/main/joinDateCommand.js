@@ -26,7 +26,7 @@ module.exports = class JoinDateCommand extends Command {
     }
 
     async execute (message, { username }) {
-        username = username || message.member.nickname || message.author.username
+        username = username || message.member.displayName
         try {
             const userId = await userService.getIdFromUsername(username)
             const joinDate = new Date((await applicationAdapter('get', `/v1/users/${userId}/join-` +

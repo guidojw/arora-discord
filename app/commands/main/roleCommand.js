@@ -27,7 +27,7 @@ module.exports = class RoleCommand extends Command {
     }
 
     async execute (message, { username }) {
-        username = username || message.member.nickname || message.author.username
+        username = username || message.member.displayName
         try {
             const userId = await userService.getIdFromUsername(username)
             const role = (await applicationAdapter('get', `/v1/groups/${applicationConfig.groupId}/` +

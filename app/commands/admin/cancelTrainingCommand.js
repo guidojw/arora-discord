@@ -28,13 +28,12 @@ module.exports = class CancelTrainingCommand extends Command {
     }
 
     async execute (message, { trainingId, reason }) {
-        const username = message.member.nickname || message.author.username
         try {
             const training = (await applicationAdapter('put', `/v1/groups/${applicationConfig
                 .groupId}/trainings/${trainingId}`, {
                 cancelled: true,
                 reason: reason,
-                by: username
+                by: message.member.displayName
             })).data
             if (training) {
                 message.reply(`Successfully cancelled Training ID **${trainingId}**.`)
