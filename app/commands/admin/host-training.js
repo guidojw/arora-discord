@@ -22,7 +22,7 @@ module.exports = class HostTrainingCommand extends Command {
                     key: 'type',
                     type: 'string',
                     prompt: 'What kind of training is this?',
-                    oneOf: ['CD', 'CSR']
+                    oneOf: ['cd', 'csr']
                 },
                 {
                     key: 'date',
