@@ -5,7 +5,7 @@ const path = require('path')
 const Guild = require('./guild')
 const Commando = require('discord.js-commando')
 const { MessageEmbed } = require('discord.js')
-const SettingProvider = require('./settingProvider')
+const SettingProvider = require('./setting-provider')
 const { stripIndents } = require('common-tags')
 const { getRandomInt } = require('../helpers/random')
 

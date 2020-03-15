@@ -5,7 +5,7 @@ const applicationConfig = require('../../../config/application')
 const userService = require('../../services/user')
 const discordService = require('../../services/discord')
 const pluralize = require('pluralize')
-const BotEmbed = require('../../views/botEmbed')
+const BotEmbed = require('../../views/bot-embed')
 
 module.exports = class ReasonCommand extends Command {
     constructor (client) {

@@ -1,6 +1,6 @@
 'use strict'
 const Command = require('../../controllers/command')
-const BotEmbed = require('../../views/botEmbed')
+const BotEmbed = require('../../views/bot-embed')
 
 module.exports = class UptimeCommand extends Command {
     constructor (client) {

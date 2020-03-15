@@ -1,7 +1,7 @@
 'use strict'
 const Command = require('../../controllers/command')
 const timeHelper = require('../../helpers/time')
-const BotEmbed = require('../../views/botEmbed')
+const BotEmbed = require('../../views/bot-embed')
 
 module.exports = class UnixCommand extends Command {
     constructor (client) {
