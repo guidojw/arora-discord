@@ -64,8 +64,8 @@ module.exports = class ChangeTrainingCommand extends Command {
                     dateInfo = timeHelper.getDateInfo(timeHelper.getDate(unix))
                     timeInfo = timeHelper.getTimeInfo(data)
                 }
-                newData.date = timeHelper.getUnix(new Date(dateInfo.year, dateInfo.month - 1, dateInfo.day,
-                    timeInfo.hours, timeInfo.minutes))
+                newData.date = Math.floor(new Date(dateInfo.year, dateInfo.month - 1, dateInfo.day,
+                    timeInfo.hours, timeInfo.minutes).getTime() / 1000)
             }
             const training = (await applicationAdapter('put', `/v1/groups/${applicationConfig
                 .groupId}/trainings/${trainingId}`, newData)).data

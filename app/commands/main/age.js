@@ -2,7 +2,6 @@
 const Command = require('../../controllers/command')
 const applicationAdapter = require('../../adapters/application')
 const userService = require('../../services/user')
-const timeHelper = require('../../helpers/time')
 const pluralize = require('pluralize')
 const BotEmbed = require('../../views/bot-embed')
 
@@ -33,7 +32,8 @@ module.exports = class AgeCommand extends Command {
             const userId = await userService.getIdFromUsername(username)
             const joinDate = new Date((await applicationAdapter('get', `/v1/users/${userId}/join-` +
                 'date')).data)
-            const age = Math.floor((timeHelper.getUnix() - timeHelper.getUnix(joinDate)) / 86400)
+            const age = Math.floor((Math.floor(Date.now() / 1000) - Math.floor(joinDate.getTime() / 1000)) /
+                86400)
             const embed = new BotEmbed()
                 .addField(message.command.name, `${message.argString ? '**' + username + '**\'s' : 'Your'} ` +
                     `Roblox account is **${age} ${pluralize('day', age)}** old.`)
