@@ -14,13 +14,6 @@ function getReadableTime(opts) {
     return opts.hours + ':' + opts.minutes
 }
 
-exports.getUnix = date => {
-    if (!date) {
-        date = new Date()
-    }
-    return Math.round(date.getTime() / 1000)
-}
-
 exports.getPlaceFromTimezone = abbreviation => {
     return new Promise(
         resolve => {
@@ -36,9 +29,7 @@ exports.getPlaceFromTimezone = abbreviation => {
 }
 
 exports.getTimeInPlace = place => {
-    return new Date(new Date().toLocaleString('en-US', {
-        timeZone: place
-    }))
+    return new Date(new Date().toLocaleString('en-US', { timeZone: place }))
 }
 
 exports.convertTimezones = () => {
@@ -75,14 +66,14 @@ exports.getDate = unix => {
     const day = String(dateObject.getDate())
     const month = String(dateObject.getMonth() + 1)
     const year = String(dateObject.getFullYear())
-    return getReadableDate({day: day, month: month, year: year})
+    return getReadableDate({ day: day, month: month, year: year })
 }
 
 exports.getTime = unix => {
     const dateObject = new Date(unix)
     const hours = String(dateObject.getHours())
     const minutes = String(dateObject.getMinutes())
-    return getReadableTime({hours: hours, minutes: minutes})
+    return getReadableTime({ hours: hours, minutes: minutes })
 }
 
 exports.isDst = unix => {
@@ -136,11 +127,11 @@ exports.getDateInfo = dateString => {
     const day = dateString.substring(0, dateString.indexOf('-'))
     const month = dateString.substring(dateString.indexOf('-') + 1, dateString.lastIndexOf('-'))
     const year = dateString.substring(dateString.lastIndexOf('-') + 1, dateString.length)
-    return {day: day, month: month, year: year}
+    return { day: day, month: month, year: year }
 }
 
 exports.getTimeInfo = timeString => {
     const hours = timeString.substring(0, timeString.indexOf(':'))
     const minutes = timeString.substring(timeString.indexOf(':') + 1, timeString.length)
-    return {hours: hours, minutes: minutes}
+    return { hours: hours, minutes: minutes }
 }

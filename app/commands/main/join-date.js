@@ -33,7 +33,7 @@ module.exports = class JoinDateCommand extends Command {
                 'date')).data)
             const embed = new BotEmbed()
                 .addField(message.command.name, `${message.argString ? '**' + username + '**' : 'You'} joined ` +
-                    `Roblox on **${timeHelper.getDate(timeHelper.getUnix(joinDate) * 1000)}**.`)
+                    `Roblox on **${timeHelper.getDate(Math.floor(joinDate.getTime() / 1000) * 1000)}**.`)
             message.replyEmbed(embed)
         } catch (err) {
             message.reply(err.message)

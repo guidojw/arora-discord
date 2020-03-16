@@ -13,6 +13,6 @@ module.exports = class IsDstCommand extends Command {
     }
 
     async execute (message) {
-        message.reply(timeHelper.isDst(timeHelper.getUnix()))
+        message.reply(timeHelper.isDst(Date.now()))
     }
 }

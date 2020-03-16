@@ -1,6 +1,5 @@
 'use strict'
 const Command = require('../../controllers/command')
-const timeHelper = require('../../helpers/time')
 const BotEmbed = require('../../views/bot-embed')
 
 module.exports = class UnixCommand extends Command {
@@ -16,7 +15,7 @@ module.exports = class UnixCommand extends Command {
 
     execute (message) {
         const embed = new BotEmbed()
-            .addField(message.command.name, timeHelper.getUnix())
+            .addField(message.command.name, Math.round(Date.now() / 1000))
         message.replyEmbed(embed)
     }
 }
