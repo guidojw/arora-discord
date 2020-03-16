@@ -45,8 +45,10 @@ module.exports = class SetActivityCommand extends Command {
             this.argsCollector.args[2].default = ''
             if (!result.cancelled) {
                 url = result.values.url
-            } else {
+            } else if (result.cancelled === 'promptLimit') {
                 return message.reply('Invalid url.')
+            } else if (result.cancelled === 'user' || result.cancelled === 'time') {
+                return message.reply('Cancelled command.')
             }
         }
         this.client.bot.setActivity(activity, { type: type, url: url || undefined })
