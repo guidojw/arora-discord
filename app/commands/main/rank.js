@@ -30,8 +30,8 @@ module.exports = class RankCommand extends Command {
         username = username || message.member.displayName
         try {
             const userId = await userService.getIdFromUsername(username)
-            const role = (await applicationAdapter('get', `/v1/groups/${applicationConfig.groupId}/` +
-                `rank/${userId}`)).data
+            const role = (await applicationAdapter('get', `/v1/users/${userId}/rank/${
+                applicationConfig.groupId}`)).data
             const embed = new BotEmbed()
                 .addField(message.command.name, `**${username}** has rank **${role}**.`)
             message.replyEmbed(embed)
