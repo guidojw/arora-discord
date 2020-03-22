@@ -40,13 +40,13 @@ module.exports = class ChangeSuspensionCommand extends Command {
         const newData = {}
         try {
             if (key === 'by') {
-                newData.by = await us-erService.getIdFromUsername(data)
+                newData.by = await userService.getIdFromUsername(data)
             } else if (key === 'reason') {
                 newData.reason = data
             } else if (key === 'rankback') {
                 if (data !== 'true' && data !== 'false') return message.reply(`**${data}** is not a valid value for ` +
                     'rankBack.')
-                data.rankback = data === 'true' ? 1 : 0
+                newData.rankback = data === 'true' ? 1 : 0
             }
             const userId = await userService.getIdFromUsername(username)
             const suspension = (await applicationAdapter('put', `/v1/groups/${applicationConfig
