@@ -26,7 +26,7 @@ module.exports = class ChangeTrainingCommand extends Command {
                     key: 'key',
                     type: 'string',
                     prompt: 'What key would you like to change?',
-                    oneOf: ['type', 'date', 'time', 'specialNotes']
+                    oneOf: ['type', 'date', 'time', 'specialnotes']
                 },
                 {
                     key: 'data',
@@ -38,11 +38,12 @@ module.exports = class ChangeTrainingCommand extends Command {
     }
 
     async execute (message, { trainingId, key, data }) {
+        key = key.toLowerCase()
         const newData = {}
         try {
             if (key === 'by') {
                 newData.by = await userService.getIdFromUsername(data)
-            } else if (key === 'specialNotes') {
+            } else if (key === 'specialnotes') {
                 newData.specialnotes = data
             } else if (key === 'type') {
                 const type = data.toUpperCase()

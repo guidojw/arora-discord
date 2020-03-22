@@ -24,7 +24,7 @@ module.exports = class ChangeSuspensionCommand extends Command {
                     key: 'key',
                     type: 'string',
                     prompt: 'What key would you like to change?',
-                    oneOf: ['by', 'reason', 'rankBack']
+                    oneOf: ['by', 'reason', 'rankback']
                 },
                 {
                     key: 'data',
@@ -36,13 +36,14 @@ module.exports = class ChangeSuspensionCommand extends Command {
     }
 
     async execute (message, { username, key, data }) {
+        key = key.toLowerCase()
         const newData = {}
         try {
             if (key === 'by') {
-                newData.by = await userService.getIdFromUsername(data)
+                newData.by = await us-erService.getIdFromUsername(data)
             } else if (key === 'reason') {
                 newData.reason = data
-            } else if (key === 'rankBack') {
+            } else if (key === 'rankback') {
                 if (data !== 'true' && data !== 'false') return message.reply(`**${data}** is not a valid value for ` +
                     'rankBack.')
                 data.rankback = data === 'true' ? 1 : 0
