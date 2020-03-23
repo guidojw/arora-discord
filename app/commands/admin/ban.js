@@ -3,7 +3,6 @@ const Command = require('../../controllers/command')
 const userService = require('../../services/user')
 const applicationAdapter = require('../../adapters/application')
 const applicationConfig = require('../../../config/application')
-const BotEmbed = require('../../views/bot-embed')
 
 module.exports = class BanCommand extends Command {
     constructor (client) {
@@ -24,7 +23,7 @@ module.exports = class BanCommand extends Command {
                 {
                     key: 'reason',
                     type: 'string',
-                    prompt: 'With what reason would you like to unban this person?'
+                    prompt: 'With what reason would you like to ban this person?'
                 }
             ]
         })
@@ -40,9 +39,7 @@ module.exports = class BanCommand extends Command {
                 reason: reason,
                 groupId: applicationConfig.groupId
             })
-            const embed = new BotEmbed()
-                .addField(message.command.name, `Successfully banned **${username}**.`)
-            message.replyEmbed(embed)
+            message.reply(`Successfully banned **${username}**.`)
         } catch (err) {
             message.reply(err.message)
         }

@@ -2,7 +2,7 @@
 const Command = require('../../controllers/command')
 const applicationAdapter = require('../../adapters/application')
 const applicationConfig = require('../../../config/application')
-const BotEmbed = require('../../views/bot-embed')
+const { MessageEmbed } = require('discord.js')
 
 module.exports = class AnnounceTrainingCommand extends Command {
     constructor (client) {
@@ -36,10 +36,8 @@ module.exports = class AnnounceTrainingCommand extends Command {
         medium = medium.toLowerCase()
         try {
             const content = (await applicationAdapter('post', `/v1/groups/${applicationConfig
-                .groupId}/trainings/${trainingId}/announce`, {
-                medium: medium
-            })).data
-            const embed = new BotEmbed()
+                .groupId}/trainings/${trainingId}/announce`, { medium })).data
+            const embed = new MessageEmbed()
             if (medium === 'both' || medium === 'discord') {
                 embed.addField('Successfully announced', content.announcement)
             }

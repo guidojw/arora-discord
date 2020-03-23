@@ -3,7 +3,6 @@ const Command = require('../../controllers/command')
 const userService = require('../../services/user')
 const applicationConfig = require('../../../config/application')
 const applicationAdapter = require('../../adapters/application')
-const BotEmbed = require('../../views/bot-embed')
 
 module.exports = class PromoteCommand extends Command {
     constructor (client) {
@@ -32,9 +31,7 @@ module.exports = class PromoteCommand extends Command {
                 userId}`, {
                 by: byUserId
             })
-            const embed = new BotEmbed()
-                .addField(message.command.name, `Successfully promoted **${username}**.`)
-            message.replyEmbed(embed)
+            message.reply(`Successfully promoted **${username}**.`)
         } catch (err) {
             message.reply(err.message)
         }

@@ -2,7 +2,7 @@
 const Command = require('../../controllers/command')
 const applicationAdapter = require('../../adapters/application')
 const applicationConfig = require('../../../config/application')
-const BotEmbed = require('../../views/bot-embed')
+const { MessageEmbed } = require('discord.js')
 
 module.exports = class GetShoutCommand extends Command {
     constructor (client) {
@@ -18,7 +18,7 @@ module.exports = class GetShoutCommand extends Command {
         const shout = (await applicationAdapter('get', `/v1/groups/${applicationConfig.groupId}/` +
             'shout')).data
         if (shout.body) {
-            const embed = new BotEmbed()
+            const embed = new MessageEmbed()
                 .addField(`Current shout by ${shout.poster.username}`, shout.body)
                 .setTimestamp(shout.updated)
             message.replyEmbed(embed)

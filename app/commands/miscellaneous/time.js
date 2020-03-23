@@ -1,7 +1,7 @@
 'use strict'
 const Command = require('../../controllers/command')
 const timeHelper = require('../../helpers/time')
-const BotEmbed = require('../../views/bot-embed')
+const { MessageEmbed } = require('discord.js')
 
 module.exports = class TimeCommand extends Command {
     constructor (client) {
@@ -30,8 +30,8 @@ module.exports = class TimeCommand extends Command {
         const hours = ('0' + date.getHours()).slice(-2)
         const minutes = ('0' + date.getMinutes()).slice(-2)
         const timeString = hours + ':' + minutes
-        const embed = new BotEmbed()
-            .addField('time', timeString)
+        const embed = new MessageEmbed()
+            .addField('Current time', timeString)
         message.replyEmbed(embed)
     }
 }

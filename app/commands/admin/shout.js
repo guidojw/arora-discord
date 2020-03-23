@@ -3,7 +3,7 @@ const Command = require('../../controllers/command')
 const userService = require('../../services/user')
 const applicationConfig = require('../../../config/application')
 const applicationAdapter = require('../../adapters/application')
-const BotEmbed = require('../../views/bot-embed')
+const { MessageEmbed } = require('discord.js')
 
 module.exports = class ShoutCommand extends Command {
     constructor (client) {
@@ -34,13 +34,13 @@ module.exports = class ShoutCommand extends Command {
                 by: byUserId,
                 message: shout === 'clear' ? '' : shout
             })
-            const embed = new BotEmbed()
             if (shout === 'clear') {
-                embed.addField(message.command.name, 'Successfully cleared shout.')
+                message.reply('Successfully cleared shout.')
             } else {
-                embed.addField(message.command.name, `Successfully shouted *"${message}"*`)
+                const embed = new MessageEmbed()
+                    .addField('Successfully shouted', shout)
+                message.replyEmbed(embed)
             }
-            message.replyEmbed(embed)
         } catch (err) {
             message.reply(err.message)
         }

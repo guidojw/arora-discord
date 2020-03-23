@@ -2,7 +2,7 @@
 const Command = require('../../controllers/command')
 const applicationAdapter = require('../../adapters/application')
 const applicationConfig = require('../../../config/application')
-const BotEmbed = require('../../views/bot-embed')
+const { MessageEmbed } = require('discord.js')
 
 module.exports = class MemberCountCommand extends Command {
     constructor (client) {
@@ -24,8 +24,8 @@ module.exports = class MemberCountCommand extends Command {
 
     async execute (message, { groupId }) {
         const group = (await applicationAdapter('get', `/v1/groups/${groupId}`)).data
-        const embed = new BotEmbed()
-            .addField(`${group.name} has`, `**${group.memberCount}** members.`)
+        const embed = new MessageEmbed()
+            .addField(`${group.name}'s member count`, group.memberCount)
         message.replyEmbed(embed)
     }
 }

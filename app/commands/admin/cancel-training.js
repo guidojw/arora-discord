@@ -36,9 +36,9 @@ module.exports = class CancelTrainingCommand extends Command {
                 by: message.member.displayName
             })).data
             if (training) {
-                message.reply(`Successfully cancelled Training ID **${trainingId}**.`)
+                message.reply(`Successfully cancelled training with ID **${trainingId}**.`)
             } else {
-                message.reply(`Couldn't cancel Training ID **${trainingId}**.`)
+                message.reply(`Couldn't cancel training with ID **${trainingId}**.`)
             }
         } catch (err) {
             message.reply(err.message)

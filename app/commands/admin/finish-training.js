@@ -31,9 +31,9 @@ module.exports = class FinishTrainingCommand extends Command {
                 by: message.member.displayName
             })).data
             if (training) {
-                message.reply(`Successfully finished Training ID **${trainingId}**.`)
+                message.reply(`Successfully finished training with ID **${trainingId}**.`)
             } else {
-                message.reply(`Couldn't finish Training ID **${trainingId}**.`)
+                message.reply(`Couldn't finish training with ID **${trainingId}**.`)
             }
         } catch (err) {
             message.reply(err.message)

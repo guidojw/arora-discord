@@ -4,7 +4,7 @@ const groupService = require('../../services/group')
 const timeHelper = require('../../helpers/time')
 const applicationAdapter = require('../../adapters/application')
 const applicationConfig = require('../../../config/application')
-const BotEmbed = require('../../views/bot-embed')
+const { MessageEmbed } = require('discord.js')
 
 module.exports = class HostTrainingCommand extends Command {
     constructor (client) {
@@ -39,8 +39,7 @@ module.exports = class HostTrainingCommand extends Command {
                 {
                     key: 'specialNotes',
                     type: 'string',
-                    prompt: 'Do you want to add any special notes?',
-                    default: ''
+                    prompt: 'What notes would you like to add? Reply with "none" if you don\'t want to add any.',
                 }
             ]
         })
@@ -53,18 +52,18 @@ module.exports = class HostTrainingCommand extends Command {
         const dateUnix = Math.floor(new Date(dateInfo.year, dateInfo.month - 1, dateInfo.day, timeInfo.hours,
             timeInfo.minutes).getTime() / 1000)
         const afterNow = dateUnix - Math.floor(Date.now() / 1000) > 0
-        if (!afterNow) return message.reply('Please give a date and time that\'s after now.')
+        if (!afterNow) return message.reply('Please give a date and time that are after now.')
         try {
             const trainingId = (await applicationAdapter('post', `/v1/groups/${applicationConfig
                 .groupId}/trainings`, {
                 by: message.member.displayName,
-                type: type,
+                type,
                 date: dateUnix,
-                specialnotes: specialNotes || undefined
+                specialnotes: specialNotes.toLowerCase() === 'none' ? undefined : specialNotes
             })).data
-            const embed = new BotEmbed()
-                .addField('Successfully hosted', `**${role}** training on **${date}** at **${time}**.`)
-                .addField('Training ID:', trainingId.toString())
+            const embed = new MessageEmbed()
+                .addField('Successfully scheduled', `**${role}** training on **${date}** at **${time}**.`)
+                .addField('Training ID', trainingId.toString())
             message.replyEmbed(embed)
         } catch (err) {
             message.reply(err.message)

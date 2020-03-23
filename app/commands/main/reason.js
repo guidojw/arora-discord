@@ -5,7 +5,8 @@ const applicationConfig = require('../../../config/application')
 const userService = require('../../services/user')
 const discordService = require('../../services/discord')
 const pluralize = require('pluralize')
-const BotEmbed = require('../../views/bot-embed')
+const { MessageEmbed } = require('discord.js')
+const timeHelper = require('../../helpers/time')
 
 module.exports = class ReasonCommand extends Command {
     constructor (client) {
@@ -39,10 +40,13 @@ module.exports = class ReasonCommand extends Command {
                 .groupId}/suspensions/${userId}`)).data
             if (suspension) {
                 const days = suspension.duration / 86400
-                const embed = new BotEmbed()
-                    .addField(message.argString ? `${username} is suspended for` : 'You\'re suspended for',
-                        `${days} ${pluralize('day', days)}`)
-                    .addField('Reason', `*"${suspension.reason}"*`)
+                const embed = new MessageEmbed()
+                    .setTitle(`${message.argString ? `${username}'s` : 'Your'} suspension`)
+                    .addField('Start date', timeHelper.getDate(suspension.at * 1000), true)
+                    .addField('Start time', timeHelper.getTime(suspension.at * 1000), true)
+                    .addField('Duration', `${days} ${pluralize('day', days)}`, true)
+                    .addField('Rank back', suspension.rankback ? 'yes' : 'no', true)
+                    .addField('Reason', suspension.reason)
                 message.replyEmbed(embed)
             } else {
                 message.reply('Couldn\'t find suspension!')

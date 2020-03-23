@@ -3,7 +3,7 @@ const Command = require('../../controllers/command')
 const applicationAdapter = require('../../adapters/application')
 const applicationConfig = require('../../../config/application')
 const userService = require('../../services/user')
-const BotEmbed = require('../../views/bot-embed')
+const { MessageEmbed } = require('discord.js')
 
 module.exports = class RoleCommand extends Command {
     constructor (client) {
@@ -32,8 +32,8 @@ module.exports = class RoleCommand extends Command {
             const userId = await userService.getIdFromUsername(username)
             const role = (await applicationAdapter('get', `/v1/groups/${applicationConfig.groupId}/` +
                 `role/${userId}`)).data
-            const embed = new BotEmbed()
-                .addField(message.command.name, `**${username}** has role **${role}**.`)
+            const embed = new MessageEmbed()
+                .addField(`${message.argString ? username + '\'s' : 'Your'} role`, role)
             message.replyEmbed(embed)
         } catch (err) {
             message.reply(err.message)
