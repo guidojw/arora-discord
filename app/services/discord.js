@@ -1,21 +1,18 @@
 'use strict'
 const groupService = require('./group')
 const timeHelper = require('../helpers/time')
-const BotEmbed = require('../views/bot-embed')
+const userService = require('./user')
+const { MessageEmbed } = require('discord.js')
 
 exports.getActivityFromNumber = num => {
     return num === 0 && 'Playing' || num === 1 && 'Streaming' || num === 2 && 'Listening to' || num === 3 && 'Watching'
 }
 
-exports.getMemberByName = (guild, name) => {
-    const members = guild.members.array()
-    let foundMember = null
-    members.forEach(member => {
-        if (member.displayName.toLowerCase() === name.toLowerCase()) {
-            foundMember = member
-        }
-    })
-    return foundMember
+exports.getMemberByName = async (guild, name) => {
+    const members = await guild.members.fetch()
+    for (const member of members.values()) {
+        if (member.displayName.toLowerCase() === name.toLowerCase()) return member
+    }
 }
 
 exports.isAdmin = (member, adminRoles) => {
@@ -101,17 +98,17 @@ exports.getTrainingEmbeds = trainings => {
     let sum = 0
     const addField = message => {
         message = message.trim()
-        fields.push({ name: 'Upcoming trainings', value: message })
+        fields.push({ name: '\u200b', value: message })
     }
     const addEmbed = () => {
-        const embed = new BotEmbed()
+        const embed = new MessageEmbed()
             .addFields(fields)
         embeds.push(embed)
         fields = []
         sum = 0
     }
     let message = ''
-    trainings.forEach(training => {
+    for (const training of trainings) {
         const line = training.id + '. ' + groupService.getTrainingSentence(training)
         const addition = line.length + 8 // TODO: tweak additions
         if (sum + addition <= 6000) {
@@ -128,52 +125,44 @@ exports.getTrainingEmbeds = trainings => {
             addEmbed()
         }
         message += (line + '\n')
-    })
+    }
     const addition = message.length + 8
     if (sum + addition > 6000) {
         addEmbed()
     }
     addField(message)
     addEmbed()
+    embeds[0].setTitle('Upcoming Trainings')
     return embeds
 }
 
-exports.getTrainingAnnouncement = (training, guild) => {
-    const role = groupService.getRoleByAbbreviation(training.type)
-    const dateString = timeHelper.getDate(training.date * 1000)
-    const timeString = timeHelper.getTime(training.date * 1000)
-    const by = training.by
-    const specialNotes = training.specialnotes
-    return `${guild.emojis.get('248922413599817728')} **TRAINING**\nThere will be a *${role}* training on **` +
-        `${dateString}**.\nTime: **${timeString} ${timeHelper.isDst(training.date * 1000) && 'CEST' || 'CET'}**.` +
-        `\n${specialNotes && specialNotes + '\n' || ''}Hosted by **${by}**.\n@everyone`
-}
-
-exports.getBanEmbeds = bans => {
+exports.getBanEmbeds = async bans => {
+    const userIds = bans.map(ban => ban.userId)
+    const byUserIds = bans.map(ban => ban.by)
+    const users = await userService.getUsers(userIds)
+    const byUsers = await userService.getUsers(byUserIds)
     const embeds = []
     let fields = []
     let sum = 0
     const addField = message => {
         message = message.trim()
-        fields.push({ name: 'Bans', value: message })
+        fields.push({ name: '\u200b', value: message })
     }
     const addEmbed = () => {
-        const embed = new BotEmbed()
+        const embed = new MessageEmbed()
             .addFields(fields)
         embeds.push(embed)
         fields = []
         sum = 0
     }
     let message = ''
-    bans.forEach(ban => {
-        const userId = parseInt(ban.userId)
-        const rank = ban.rank
-        const byId = ban.by !== 0 ? ban.by : '??'
-        const at = ban.at
-        const reason = ban.reason ? ban.reason : '??'
-        const role = rank ? groupService.getAbbreviationByRank(rank) : '??'
-        const dateString = at ? timeHelper.getDate(at * 1000) : '??'
-        const line = `**${userId}** (**${role}**) by **${byId}** at **${dateString}** with reason "*${reason}*"`
+    for (const ban of bans) {
+        const username = users.data.find(user => user.id === ban.userId).name
+        const byUser = ban.by ? byUsers.data.find(user => user.id === ban.by) : undefined
+        const role = ban.rank ? groupService.getAbbreviationByRank(ban.rank) : undefined
+        const dateString = ban.at ? timeHelper.getDate(ban.at * 1000) : undefined
+        const line = `**${username}**${role ? ' (' + role + ')' : ''}${byUser ? ' by **' + byUser.name + '**' : ''}${
+            dateString ? ' at **' + dateString + '**' : ''}${ban.reason ? ' with reason:\n*' + ban.reason + '*' : ''}`
         const addition = line.length + 16 // TODO: tweak additions
         if (sum + addition <= 6000) {
             if (message.length + line.length <= 1024) {
@@ -188,14 +177,15 @@ exports.getBanEmbeds = bans => {
             message = ''
             addEmbed()
         }
-        message += (line + '\n')
-    })
+        message += line + '\n'
+    }
     const addition = message.length + 8
     if (sum + addition > 6000) {
         addEmbed()
     }
     addField(message)
     addEmbed()
+    embeds[0].setTitle('Banlist')
     return embeds
 }
 
