@@ -3,7 +3,7 @@ const Command = require('../../controllers/command')
 const applicationAdapter = require('../../adapters/application')
 const userService = require('../../services/user')
 const pluralize = require('pluralize')
-const BotEmbed = require('../../views/bot-embed')
+const { MessageEmbed } = require('discord.js')
 
 module.exports = class AgeCommand extends Command {
     constructor (client) {
@@ -34,9 +34,9 @@ module.exports = class AgeCommand extends Command {
                 'date')).data)
             const age = Math.floor((Math.floor(Date.now() / 1000) - Math.floor(joinDate.getTime() / 1000)) /
                 86400)
-            const embed = new BotEmbed()
-                .addField(message.command.name, `${message.argString ? '**' + username + '**\'s' : 'Your'} ` +
-                    `Roblox account is **${age} ${pluralize('day', age)}** old.`)
+            const embed = new MessageEmbed()
+                .addField(`${message.argString ? username + '\'s' : 'Your'} age`,
+                    `${age} ${pluralize('day', age)}`)
             message.replyEmbed(embed)
         } catch (err) {
             message.reply(err.message)

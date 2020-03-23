@@ -1,7 +1,7 @@
 'use strict'
 const Command = require('../../controllers/command')
 const discordService = require('../../services/discord')
-const BotEmbed = require('../../views/bot-embed')
+const { MessageEmbed } = require('discord.js')
 
 module.exports = class PollCommand extends Command {
     constructor (client) {
@@ -30,9 +30,9 @@ module.exports = class PollCommand extends Command {
                 options.push(num)
             }
         }
-        const embed = new BotEmbed()
-            .addField(`Poll by ${message.member.displayName}:`, poll)
-            .setFooter('Vote using the reactions!')
+        const embed = new MessageEmbed()
+            .setDescription(poll)
+            .setAuthor(message.author.tag, message.author.displayAvatarURL())
         const newMessage = await message.channel.send(embed)
         if (options.length > 0) {
             for (const option of options) {

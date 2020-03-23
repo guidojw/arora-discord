@@ -51,9 +51,9 @@ module.exports = class ExtendSuspensionCommand extends Command {
                 by: byUserId
             })).data
             if (suspension) {
-                message.reply(`Successfully cancelled **${username}**'s suspension.`)
+                message.reply(`Successfully extended **${username}**'s suspension.`)
             } else {
-                message.reply(`Couldn't cancel **${username}**'s suspension.`)
+                message.reply(`Couldn't extend **${username}**'s suspension.`)
             }
         } catch (err) {
             message.reply(err.message)

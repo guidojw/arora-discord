@@ -1,7 +1,7 @@
 'use strict'
 const Command = require('../../controllers/command')
 const timeHelper = require('../../helpers/time')
-const BotEmbed = require('../../views/bot-embed')
+const { MessageEmbed } = require('discord.js')
 
 module.exports = class DateCommand extends Command {
     constructor (client) {
@@ -27,8 +27,8 @@ module.exports = class DateCommand extends Command {
         const place = await timeHelper.getPlaceFromTimezone(timezone)
         if (!place) return message.reply(`Unknown timezone: ${timezone}`)
         const date = timeHelper.getTimeInPlace(place)
-        const embed = new BotEmbed()
-            .addField(message.command.name, date.toString())
+        const embed = new MessageEmbed()
+            .addField('Current date', date.toString())
         message.replyEmbed(embed)
     }
 }

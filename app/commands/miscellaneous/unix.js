@@ -1,6 +1,6 @@
 'use strict'
 const Command = require('../../controllers/command')
-const BotEmbed = require('../../views/bot-embed')
+const { MessageEmbed } = require('discord.js')
 
 module.exports = class UnixCommand extends Command {
     constructor (client) {
@@ -14,8 +14,8 @@ module.exports = class UnixCommand extends Command {
     }
 
     execute (message) {
-        const embed = new BotEmbed()
-            .addField(message.command.name, Math.round(Date.now() / 1000))
+        const embed = new MessageEmbed()
+            .addField('Current Unix time', Math.round(Date.now() / 1000))
         message.replyEmbed(embed)
     }
 }

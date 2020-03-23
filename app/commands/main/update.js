@@ -10,7 +10,7 @@ module.exports = class UpdateCommand extends Command {
         super(client, {
             group: 'main',
             name: 'update',
-            details: 'Username must be a existing nickname in the Discord guild.',
+            details: 'Username must be a existing nickname in the Discord server.',
             description: 'Updates the roles of given nickname/you.',
             examples: ['update', 'update @Happywalker'],
             clientPermissions: ['MANAGE_MESSAGES', 'MANAGE_ROLES', 'SEND_MESSAGES'],

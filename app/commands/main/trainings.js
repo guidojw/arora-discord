@@ -4,7 +4,7 @@ const applicationAdapter = require('../../adapters/application')
 const applicationConfig = require('../../../config/application')
 const discordService = require('../../services/discord')
 const groupService = require('../../services/group')
-const BotEmbed = require('../../views/bot-embed')
+const { MessageEmbed } = require('discord.js')
 
 module.exports = class TrainingsCommand extends Command {
     constructor (client) {
@@ -34,18 +34,18 @@ module.exports = class TrainingsCommand extends Command {
             if (trainingId) {
                 for await (const training of trainings) {
                     if (training.id === trainingId) {
-                        const embed = new BotEmbed()
-                            .addField(`Training ID: ${training.id}`, groupService.getTrainingSentence(training))
+                        const embed = new MessageEmbed()
+                            .addField(`Training ${training.id}`, groupService.getTrainingSentence(training))
                         return message.replyEmbed(embed)
                     }
                 }
                 message.reply(`Couldn't find info for Training ID **${trainingId}**.`)
             } else {
                 const embeds = discordService.getTrainingEmbeds(trainings)
-                embeds[0].setTitle('Trainings')
                 for (const embed of embeds) {
                     await message.author.send(embed)
                 }
+                message.reply('Sent you a DM with the upcoming trainings.')
             }
         } catch (err) {
             message.reply(err.message)

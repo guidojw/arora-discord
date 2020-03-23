@@ -17,11 +17,11 @@ module.exports = class BansCommand extends Command {
     async execute (message) {
         try {
             const bans = (await applicationAdapter('get', '/v1/bans')).data
-            const embeds = discordService.getBanEmbeds(bans)
-            embeds[0].setTitle('Bans')
+            const embeds = await discordService.getBanEmbeds(bans)
             for (const embed of embeds) {
                 await message.author.send(embed)
             }
+            message.reply('Sent you a DM with the banlist.')
         } catch (err) {
             message.reply(err.message)
         }

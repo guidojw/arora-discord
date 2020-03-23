@@ -28,7 +28,7 @@ module.exports = class ClearCommand extends Command {
         const suggestionsChannelId = channels.suggestionsChannel
         const reportsChannelId = channels.reportsChannel
         if (channel.id !== suggestionsChannelId && channel.id !== reportsChannelId) {
-            return message.reply(`I can only clear <#${suggestionsChannelId}> or <#${reportsChannelId}>.`)
+            return message.reply(`Can only clear <#${suggestionsChannelId}> or <#${reportsChannelId}>.`)
         }
         const choice = await discordService.prompt(message.channel, message.author, await message.reply('Are you sure' +
             ` you would like to clear ${channel}?`))

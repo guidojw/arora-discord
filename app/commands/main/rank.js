@@ -3,7 +3,7 @@ const Command = require('../../controllers/command')
 const applicationAdapter = require('../../adapters/application')
 const applicationConfig = require('../../../config/application')
 const userService = require('../../services/user')
-const BotEmbed = require('../../views/bot-embed')
+const { MessageEmbed } = require('discord.js')
 
 module.exports = class RankCommand extends Command {
     constructor (client) {
@@ -30,10 +30,10 @@ module.exports = class RankCommand extends Command {
         username = username || message.member.displayName
         try {
             const userId = await userService.getIdFromUsername(username)
-            const role = (await applicationAdapter('get', `/v1/groups/${applicationConfig.groupId}/` +
+            const rank = (await applicationAdapter('get', `/v1/groups/${applicationConfig.groupId}/` +
                 `rank/${userId}`)).data
-            const embed = new BotEmbed()
-                .addField(message.command.name, `**${username}** has rank **${role}**.`)
+            const embed = new MessageEmbed()
+                .addField(`${message.argString ? username + '\'s' : 'Your'} rank`, rank)
             message.replyEmbed(embed)
         } catch (err) {
             message.reply(err.message)

@@ -3,7 +3,6 @@ const Command = require('../../controllers/command')
 const userService = require('../../services/user')
 const applicationConfig = require('../../../config/application')
 const applicationAdapter = require('../../adapters/application')
-const BotEmbed = require('../../views/bot-embed')
 
 module.exports = class SuspendCommand extends Command {
     constructor (client) {
@@ -51,15 +50,13 @@ module.exports = class SuspendCommand extends Command {
             const byUserId = await userService.getIdFromUsername(message.member.displayName)
             await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId}/suspensions`,
                 {
-                    userId: userId,
+                    userId,
                     rankback: rankBack ? 1 : 0,
                     duration: days * 86400,
                     by: byUserId,
-                    reason: reason
+                    reason
                 })
-            const embed = new BotEmbed()
-                .addField(message.command.name, `Successfully suspended **${username}**.`)
-            message.replyEmbed(embed)
+            message.reply(`Successfully suspended **${username}**.`)
         } catch (err) {
             message.reply(err.message)
         }

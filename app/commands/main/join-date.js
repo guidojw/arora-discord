@@ -3,7 +3,7 @@ const Command = require('../../controllers/command')
 const userService = require('../../services/user')
 const timeHelper = require('../../helpers/time')
 const applicationAdapter = require('../../adapters/application')
-const BotEmbed = require('../../views/bot-embed')
+const { MessageEmbed } = require('discord.js')
 
 module.exports = class JoinDateCommand extends Command {
     constructor (client) {
@@ -31,9 +31,9 @@ module.exports = class JoinDateCommand extends Command {
             const userId = await userService.getIdFromUsername(username)
             const joinDate = new Date((await applicationAdapter('get', `/v1/users/${userId}/join-` +
                 'date')).data)
-            const embed = new BotEmbed()
-                .addField(message.command.name, `${message.argString ? '**' + username + '**' : 'You'} joined ` +
-                    `Roblox on **${timeHelper.getDate(Math.floor(joinDate.getTime() / 1000) * 1000)}**.`)
+            const embed = new MessageEmbed()
+                .addField(`${message.argString ? username: 'Your'} join date`, `${timeHelper
+                    .getDate(Math.floor(joinDate.getTime() / 1000) * 1000)}`)
             message.replyEmbed(embed)
         } catch (err) {
             message.reply(err.message)

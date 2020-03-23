@@ -1,7 +1,6 @@
 'use strict'
 const Command = require('../../controllers/command')
 const discordService = require('../../services/discord')
-const BotEmbed = require('../../views/bot-embed')
 
 module.exports = class IsInDiscordCommand extends Command {
     constructor (client) {
@@ -9,27 +8,25 @@ module.exports = class IsInDiscordCommand extends Command {
             group: 'admin',
             name: 'isindiscord',
             details: 'Username must be a username that is being used on Roblox.',
-            description: 'Checks if given username is in the Discord guild.',
+            description: 'Checks if given username is in the Discord server.',
             examples: ['isindiscord Happywalker'],
             clientPermissions: ['MANAGE_MESSAGES', 'SEND_MESSAGES'],
             args: [
                 {
                     key: 'username',
-                    prompt: 'Who would you like to check is the Discord guild?',
+                    prompt: 'Who would you like to check is the Discord server?',
                     type: 'string'
                 }
             ]
         })
     }
 
-    execute (message, { username }, guild) {
-        const member = discordService.getMemberByName(guild.guild, username)
-        const embed = new BotEmbed()
+    async execute (message, { username }, guild) {
+        const member = await discordService.getMemberByName(guild.guild, username)
         if (member) {
-            embed.addField(message.command.name, `Yes, **${member.displayName}** is in this server.`)
+            message.reply( `Yes, **${member.displayName}** is in this server.`)
         } else {
-            embed.addField(message.command.name, `No, **${username}** is not in this server.`)
+            message.reply(`No, **${username}** is not in this server.`)
         }
-        message.replyEmbed(embed)
     }
 }

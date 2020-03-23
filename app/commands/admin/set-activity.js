@@ -52,5 +52,6 @@ module.exports = class SetActivityCommand extends Command {
             }
         }
         this.client.bot.setActivity(activity, { type: type, url: url || undefined })
+        return message.reply('Successfully set activity.')
     }
 }

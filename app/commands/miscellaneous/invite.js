@@ -8,7 +8,7 @@ module.exports = class InviteCommand extends Command {
             group: 'miscellaneous',
             name: 'invite',
             aliases: ['discord'],
-            description: 'Posts the invite to the Dutch Railways Discord guild.',
+            description: 'Posts the invite to the Dutch Railways Discord server.',
             clientPermissions: ['MANAGE_MESSAGES', 'SEND_MESSAGES']
         })
     }
