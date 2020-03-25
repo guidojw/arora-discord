@@ -79,7 +79,7 @@ module.exports = class Bot {
             .setTitle(`Hey ${member.user.tag},`)
             .setDescription(`You're the **${member.guild.memberCount}th** member on **${member.guild.name}**!`)
             .setThumbnail(member.user.displayAvatarURL())
-        const guild = this.guilds[member.guild.id]
+        const guild = this.getGuild(member.guild.id)
         guild.guild.channels.cache.get(guild.getData('channels').welcomeChannel).send(embed)
     }
 
@@ -91,7 +91,7 @@ module.exports = class Bot {
             .setDescription(stripIndents`${message.author} **used** \`${command.name}\` **command in** ${message
                 .channel} [Jump to Message](${message.url})
                 ${message.content}`)
-        const guild = this.guilds[message.guild.id]
+        const guild = this.getGuild(message.guild.id)
         guild.guild.channels.cache.get(guild.getData('channels').logsChannel).send(embed)
     }
 
