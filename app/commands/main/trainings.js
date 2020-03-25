@@ -31,6 +31,9 @@ module.exports = class TrainingsCommand extends Command {
             const trainings = (await applicationAdapter('get', `/v1/groups/${applicationConfig
                 .groupId}` + '/trainings')).data
             if (trainings.length === 0) return message.reply('There are currently no hosted trainings.')
+            trainings.sort((a, b) => {
+                return a.date - b.date
+            })
             if (trainingId) {
                 for await (const training of trainings) {
                     if (training.id === trainingId) {
