@@ -5,10 +5,6 @@ const userService = require('./user')
 const { MessageEmbed } = require('discord.js')
 const pluralize = require('pluralize')
 
-exports.getActivityFromNumber = num => {
-    return num === 0 && 'Playing' || num === 1 && 'Streaming' || num === 2 && 'Listening to' || num === 3 && 'Watching'
-}
-
 exports.getMemberByName = async (guild, name) => {
     const members = await guild.members.fetch()
     for (const member of members.values()) {
