@@ -7,11 +7,8 @@ const Commando = require('discord.js-commando')
 const { MessageEmbed } = require('discord.js')
 const SettingProvider = require('./setting-provider')
 const { stripIndents } = require('common-tags')
-const { getRandomInt } = require('../helpers/random')
 
 const applicationConfig = require('../../config/application')
-
-const activities = require('../content/activities')
 
 module.exports = class Bot {
     constructor () {
@@ -23,6 +20,7 @@ module.exports = class Bot {
             partias: ['MESSAGE', 'GUILD_MEMBER']
         })
         this.client.bot = this
+        this.currentActivity = 0
 
         this.client.registry
             .registerGroup('admin', 'Admin')
@@ -52,7 +50,7 @@ module.exports = class Bot {
 
     setActivity (name, options) {
         if (!name) {
-            const activity = activities[getRandomInt(activities.length)]
+            const activity = this.getNextActivity()
             name = activity.name
             options = activity.options
         }
@@ -70,6 +68,7 @@ module.exports = class Bot {
             'users.')
 
         this.setActivity()
+        setInterval(() => this.setActivity(), 60 * 1000)
     }
 
     async guildMemberAdd (member) {
@@ -94,8 +93,26 @@ module.exports = class Bot {
         const guild = this.getGuild(message.guild.id)
         guild.guild.channels.cache.get(guild.getData('channels').logsChannel).send(embed)
     }
-
+  
     getGuild (id) {
         return this.guilds[id]
+    }
+
+    getNextActivity () {
+        this.currentActivity++
+        if (this.currentActivity === 3) this.currentActivity = 0
+        switch (this.currentActivity) {
+            case 0:
+                return { name: `${this.client.commandPrefix}help`, options: { type: 'LISTENING' }}
+            case 1:
+                return { name: 'Project Railrunner', options: { type: 'PLAYING' }}
+            case 2: {
+                let totalMemberCount = 0
+                for (const guild of Object.values(this.guilds)) {
+                    totalMemberCount += guild.guild.memberCount
+                }
+                return { name: `${totalMemberCount} users`, options: { type: 'WATCHING' }}
+            }
+        }
     }
 }
