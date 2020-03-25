@@ -12,14 +12,14 @@ module.exports = class Command extends Commando.Command {
 
     hasPermission (message) {
         if (this.group.name.toLowerCase() === 'admin') {
-            const guild = this.client.bot.guilds[message.guild.id]
+            const guild = this.client.bot.getGuild(message.guild.id)
             return discordService.isAdmin(message.member, guild.getData('adminRoles'))
         }
         return true
     }
 
     async run (message, args) {
-        const guild = this.client.bot.guilds[message.guild.id]
+        const guild = this.client.bot.getGuild(message.guild.id)
         return this.execute(message, args, guild)
     }
 }

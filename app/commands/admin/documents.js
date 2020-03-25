@@ -17,7 +17,7 @@ module.exports = class DocumentsCommand extends Command {
     }
 
     hasPermission (message) {
-        const guild = this.client.bot.guilds[message.guild.id]
+        const guild = this.client.bot.getGuild(message.guild.id)
         return message.channel.id === guild.getData('channels').hrChannel ? super.hasPermission(message) : 'Wrong ' +
             'channel.'
     }
