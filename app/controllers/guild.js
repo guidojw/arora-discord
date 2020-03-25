@@ -15,9 +15,7 @@ module.exports = class Guild {
         try {
             await fs.promises.access(this.dataPath)
         } catch (err) {
-            await fs.promises.writeFile(this.dataPath, JSON.stringify({
-
-            }))
+            await fs.promises.writeFile(this.dataPath, JSON.stringify({})) // TODO: default settings
         }
         this.data = JSON.parse(await fs.promises.readFile(this.dataPath))
     }
