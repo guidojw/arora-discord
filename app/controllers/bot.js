@@ -17,7 +17,7 @@ module.exports = class Bot {
             owner: applicationConfig.owner,
             unknownCommandResponse: false,
             disableEveryone: true,
-            partias: ['MESSAGE', 'GUILD_MEMBER']
+            partias: ['REACTION', 'MESSAGE']
         })
         this.client.bot = this
         this.currentActivity = 0
@@ -44,6 +44,8 @@ module.exports = class Bot {
         this.client.once('ready', this.ready.bind(this))
         this.client.on('guildMemberAdd', this.guildMemberAdd.bind(this))
         this.client.on('commandRun', this.commandRun.bind(this))
+        this.client.on('messageReactionAdd', this.messageReactionAdd.bind(this))
+        this.client.on('messageReactionRemove', this.messageReactionRemove.bind(this))
 
         this.client.login(process.env.DISCORD_TOKEN)
     }
@@ -72,7 +74,6 @@ module.exports = class Bot {
     }
 
     async guildMemberAdd (member) {
-        if (member.partial) await member.fetch()
         if (member.user.bot) return
         const embed = new MessageEmbed()
             .setTitle(`Hey ${member.user.tag},`)
@@ -92,6 +93,41 @@ module.exports = class Bot {
                 ${message.content}`)
         const guild = this.getGuild(message.guild.id)
         guild.guild.channels.cache.get(guild.getData('channels').logsChannel).send(embed)
+    }
+
+    async messageReactionAdd (reaction, user) {
+        if (user.bot) return
+        if (reaction.message.partial) await reaction.message.fetch()
+        if (!reaction.message.guild) return
+        const guild = this.getGuild(reaction.message.guild.id)
+        const member = guild.guild.member(user)
+
+        const roleMessages = guild.getData('roleMessages')
+        const roleMessage = roleMessages[reaction.message.id]
+        if (roleMessage) {
+            if (reaction.partial) await reaction.fetch()
+            const emoji = reaction.emoji.id || reaction.emoji.name
+            for (const binding of roleMessage) {
+                if (binding.emoji === emoji) return member.roles.add(binding.role)
+            }
+        }
+    }
+
+    async messageReactionRemove (reaction, user) {
+        if (user.bot) return
+        if (reaction.message.partial) await reaction.message.fetch()
+        if (!reaction.message.guild) return
+        const guild = this.getGuild(reaction.message.guild.id)
+        const member = guild.guild.member(user)
+
+        const roleMessages = guild.getData('roleMessages')
+        const roleMessage = roleMessages[reaction.message.id]
+        if (roleMessage) {
+            const emoji = reaction.emoji.id || reaction.emoji.name
+            for (const binding of roleMessage) {
+                if (binding.emoji === emoji) return member.roles.remove(binding.role)
+            }
+        }
     }
   
     getGuild (id) {
