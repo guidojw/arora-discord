@@ -3,6 +3,7 @@ const groupService = require('./group')
 const timeHelper = require('../helpers/time')
 const userService = require('./user')
 const { MessageEmbed } = require('discord.js')
+const pluralize = require('pluralize')
 
 exports.getActivityFromNumber = num => {
     return num === 0 && 'Playing' || num === 1 && 'Streaming' || num === 2 && 'Listening to' || num === 3 && 'Watching'
@@ -186,6 +187,61 @@ exports.getBanEmbeds = async bans => {
     addField(message)
     addEmbed()
     embeds[0].setTitle('Banlist')
+    return embeds
+}
+
+exports.getSuspensionEmbeds = async suspensions => {
+    const userIds = suspensions.map(suspension => suspension.userId)
+    const byUserIds = suspensions.map(suspension => suspension.by)
+    const users = await userService.getUsers(userIds)
+    const byUsers = await userService.getUsers(byUserIds)
+    const embeds = []
+    let fields = []
+    let sum = 0
+    const addField = message => {
+        message = message.trim()
+        fields.push({ name: '\u200b', value: message })
+    }
+    const addEmbed = () => {
+        const embed = new MessageEmbed()
+            .addFields(fields)
+        embeds.push(embed)
+        fields = []
+        sum = 0
+    }
+    let message = ''
+    for (const suspension of suspensions) {
+        const username = users.data.find(user => user.id === suspension.userId).name
+        const byUser = byUsers.data.find(user => user.id === suspension.by)
+        const role = groupService.getAbbreviationByRank(suspension.rank)
+        const rankback = suspension.rankback === 1 ? 'yes' : 'no'
+        const dateString = timeHelper.getDate(suspension.at * 1000)
+        const duration = suspension.duration / 86400
+        const line = `**${username}** (${role}, rankback **${rankback}**) by **${byUser.name}** at **${dateString}** ` +
+        `for **${duration} ${pluralize('day', duration)}** with reason:\n*${suspension.reason}*`
+        const addition = line.length + 16 // TODO: tweak additions
+        if (sum + addition <= 6000) {
+            if (message.length + line.length <= 1024) {
+                sum += line.length
+            } else {
+                addField(message)
+                message = ''
+                sum += addition
+            }
+        } else {
+            addField(message)
+            message = ''
+            addEmbed()
+        }
+        message += line + '\n'
+    }
+    const addition = message.length + 8
+    if (sum + addition > 6000) {
+        addEmbed()
+    }
+    addField(message)
+    addEmbed()
+    embeds[0].setTitle('Current Suspensions')
     return embeds
 }
 
