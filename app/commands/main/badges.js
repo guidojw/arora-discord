@@ -32,7 +32,7 @@ module.exports = class BadgesCommand extends Command {
             const hasPtdt = await userService.hasBadge(userId, applicationConfig.ptdtId)
             const hasTcdt = await userService.hasBadge(userId, applicationConfig.tcdtId)
             const embed = new MessageEmbed()
-                .setTitle(`${message.argString ? username + '\'s' : 'Your'} badges:`)
+                .setTitle(`${message.argString ? username + '\'s' : 'Your'} badges`)
                 .addField('TTDT', hasTtdt ? 'yes' : 'no', true)
                 .addField('PTDT', hasPtdt ? 'yes' : 'no', true)
                 .addField('TCDT', hasTcdt ? 'yes' : 'no', true)

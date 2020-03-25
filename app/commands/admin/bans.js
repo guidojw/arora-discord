@@ -17,6 +17,7 @@ module.exports = class BansCommand extends Command {
     async execute (message) {
         try {
             const bans = (await applicationAdapter('get', '/v1/bans')).data
+            if (bans.length === 0) return message.reply('There are currently no bans.')
             const embeds = await discordService.getBanEmbeds(bans)
             for (const embed of embeds) {
                 await message.author.send(embed)
