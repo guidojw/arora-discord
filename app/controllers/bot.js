@@ -23,7 +23,6 @@ module.exports = class Bot {
             partias: ['MESSAGE', 'GUILD_MEMBER']
         })
         this.client.bot = this
-        this.client.setProvider(new SettingProvider())
 
         this.client.registry
             .registerGroup('admin', 'Admin')
@@ -51,13 +50,6 @@ module.exports = class Bot {
         this.client.login(process.env.DISCORD_TOKEN)
     }
 
-    async fetch () {
-        for (const guildId of this.client.guilds.cache.keys()) {
-            this.guilds[guildId] = new Guild(this, guildId)
-            await this.guilds[guildId].loadData()
-        }
-    }
-
     setActivity (name, options) {
         if (!name) {
             const activity = activities[getRandomInt(activities.length)]
@@ -67,10 +59,16 @@ module.exports = class Bot {
         this.client.user.setActivity(name, options)
     }
 
-    ready () {
-        this.fetch()
+    async ready () {
+        for (const guildId of this.client.guilds.cache.keys()) {
+            this.guilds[guildId] = new Guild(this, guildId)
+            await this.guilds[guildId].loadData()
+        }
+        this.client.setProvider(new SettingProvider())
+
         console.log(`Ready to serve on ${this.client.guilds.cache.size} servers, for ${this.client.users.cache.size} ` +
             'users.')
+
         this.setActivity()
     }
 
@@ -95,5 +93,9 @@ module.exports = class Bot {
                 ${message.content}`)
         const guild = this.guilds[message.guild.id]
         guild.guild.channels.cache.get(guild.getData('channels').logsChannel).send(embed)
+    }
+
+    getGuild (id) {
+        return this.guilds[id]
     }
 }
