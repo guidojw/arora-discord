@@ -28,7 +28,8 @@ module.exports = class FinishTrainingCommand extends Command {
             const training = (await applicationAdapter('put', `/v1/groups/${applicationConfig
                 .groupId}/trainings/${trainingId}`, {
                 finished: true,
-                by: message.member.displayName
+                by: message.member.displayName,
+                byUserId: await userService.getIdFromUsername(message.member.displayName)
             })).data
             if (training) {
                 message.reply(`Successfully finished training with ID **${trainingId}**.`)

@@ -47,8 +47,9 @@ module.exports = class ExtendSuspensionCommand extends Command {
                 .groupId}/suspensions/${userId}`, {
                 extended: true,
                 duration: days * 86400,
-                reason: reason,
-                by: byUserId
+                reason,
+                by: byUserId,
+                byUserId
             })).data
             if (suspension) {
                 message.reply(`Successfully extended **${username}**'s suspension.`)

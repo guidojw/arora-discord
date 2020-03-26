@@ -35,8 +35,9 @@ module.exports = class CancelSuspensionCommand extends Command {
             const suspension = (await applicationAdapter('put', `/v1/groups/${applicationConfig
                 .groupId}/suspensions/${userId}`, {
                 cancelled: true,
-                reason: reason,
-                by: byUserId
+                reason,
+                by: byUserId,
+                byUserId
             })).data
             if (suspension) {
                 message.reply(`Successfully cancelled **${username}**'s suspension.`)
