@@ -37,20 +37,21 @@ module.exports = class ChangeSuspensionCommand extends Command {
 
     async execute (message, { username, key, data }) {
         key = key.toLowerCase()
-        const newData = {}
+        const changes = {}
         try {
             if (key === 'by') {
-                newData.by = await userService.getIdFromUsername(data)
+                changes.by = await userService.getIdFromUsername(data)
             } else if (key === 'reason') {
-                newData.reason = data
+                changes.reason = data
             } else if (key === 'rankback') {
                 if (data !== 'true' && data !== 'false') return message.reply(`**${data}** is not a valid value for ` +
                     'rankBack.')
-                newData.rankback = data === 'true' ? 1 : 0
+                changes.rankback = data === 'true' ? 1 : 0
             }
+            changes.byUserId = await userService.getIdFromUsername(message.member.displayName)
             const userId = await userService.getIdFromUsername(username)
             const suspension = (await applicationAdapter('put', `/v1/groups/${applicationConfig
-                .groupId}/suspensions/${userId}`, newData)).data
+                .groupId}/suspensions/${userId}`, changes)).data
             if (suspension) {
                 message.reply(`Successfully changed **${username}**'s suspension.`)
             } else {

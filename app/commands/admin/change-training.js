@@ -39,18 +39,18 @@ module.exports = class ChangeTrainingCommand extends Command {
 
     async execute (message, { trainingId, key, data }) {
         key = key.toLowerCase()
-        const newData = {}
+        const changes = {}
         try {
             if (key === 'by') {
-                newData.by = await userService.getIdFromUsername(data)
+                changes.by = await userService.getIdFromUsername(data)
             } else if (key === 'specialnotes') {
-                newData.specialnotes = data
+                changes.specialnotes = data
             } else if (key === 'type') {
                 const type = data.toUpperCase()
                 if (!groupService.getRoleByAbbreviation(type)) {
                     return message.reply(`Role abbreviaton **${type}** does not exist.`)
                 }
-                newData.type = type
+                changes.type = type
             } else if (key === 'date' || key === 'time') {
                 const training = await groupService.getTrainingById(trainingId)
                 const unix = training.date * 1000
@@ -65,11 +65,12 @@ module.exports = class ChangeTrainingCommand extends Command {
                     dateInfo = timeHelper.getDateInfo(timeHelper.getDate(unix))
                     timeInfo = timeHelper.getTimeInfo(data)
                 }
-                newData.date = Math.floor(new Date(dateInfo.year, dateInfo.month - 1, dateInfo.day,
-                    timeInfo.hours, timeInfo.minutes).getTime() / 1000)
+                changes.date = Math.floor(new Date(dateInfo.year, dateInfo.month - 1, dateInfo.day, timeInfo
+                    .hours, timeInfo.minutes).getTime() / 1000)
             }
-            const training = (await applicationAdapter('put', `/v1/groups/${applicationConfig
-                .groupId}/trainings/${trainingId}`, newData)).data
+            changes.byUserId = await userService.getIdFromUsername(message.member.displayName)
+            const training = (await applicationAdapter('put', `/v1/groups/${applicationConfig.groupId
+            }/trainings/${trainingId}`, changes)).data
             if (training) {
                 message.reply(`Successfully changed training with ID **${trainingId}**.`)
             } else {
