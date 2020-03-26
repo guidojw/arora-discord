@@ -2,6 +2,7 @@
 const Command = require('../../controllers/command')
 const applicationAdapter = require('../../adapters/application')
 const applicationConfig = require('../../../config/application')
+const userService = require('../../services/user')
 
 module.exports = class FinishTrainingCommand extends Command {
     constructor (client) {
