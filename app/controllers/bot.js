@@ -17,7 +17,7 @@ module.exports = class Bot {
             owner: applicationConfig.owner,
             unknownCommandResponse: false,
             disableEveryone: true,
-            partias: ['REACTION', 'MESSAGE']
+            partials: ['REACTION', 'MESSAGE']
         })
         this.client.bot = this
         this.currentActivity = 0
@@ -129,7 +129,7 @@ module.exports = class Bot {
             }
         }
     }
-  
+
     getGuild (id) {
         return this.guilds[id]
     }
