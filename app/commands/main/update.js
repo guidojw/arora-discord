@@ -33,8 +33,8 @@ module.exports = class UpdateCommand extends Command {
         const username = member.displayName
         try {
             const userId = await userService.getIdFromUsername(username)
-            const rank = (await applicationAdapter('get', `/v1/groups/${applicationConfig.groupId}/` +
-                `rank/${userId}`)).data
+            const rank = (await applicationAdapter('get', `/v1/users/${userId}/rank/${
+                applicationConfig.groupId}`)).data
             await discordService.updateRoles(member, rank, guild.getData('roles'))
             message.reply(`Successfully checked ${message.argString ? '**' + username + '**\'s' : 'your'} roles.`)
         } catch (err) {
