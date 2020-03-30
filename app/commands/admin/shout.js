@@ -12,7 +12,7 @@ module.exports = class ShoutCommand extends Command {
             name: 'shout',
             details: 'Shout can be either a message or "clear". When it\'s clear, the group shout will be cleared.',
             description: 'Posts shout with given shout to the group.',
-            examples: ['shout Happywalker is awesome', 'shout clear'],
+            examples: ['shout Happywalker is awesome', 'shout "Happywalker is awesome"', 'shout clear'],
             clientPermissions: ['MANAGE_MESSAGES', 'SEND_MESSAGES'],
             args: [
                 {
@@ -30,15 +30,16 @@ module.exports = class ShoutCommand extends Command {
     async execute (message, { shout }) {
         try {
             const byUserId = await userService.getIdFromUsername(message.member.displayName)
-            await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId}/shout`, {
+            const shouted = (await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId
+            }/shout`, {
                 by: byUserId,
                 message: shout === 'clear' ? '' : shout
-            })
-            if (shout === 'clear') {
+            })).data
+            if (shouted === '') {
                 message.reply('Successfully cleared shout.')
             } else {
                 const embed = new MessageEmbed()
-                    .addField('Successfully shouted', shout)
+                    .addField('Successfully shouted', shouted)
                 message.replyEmbed(embed)
             }
         } catch (err) {

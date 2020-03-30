@@ -27,11 +27,10 @@ module.exports = class PromoteCommand extends Command {
         try {
             const userId = await userService.getIdFromUsername(username)
             const byUserId = await userService.getIdFromUsername(message.member.displayName)
-            await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId}/promote/${
-                userId}`, {
-                by: byUserId
-            })
-            message.reply(`Successfully promoted **${username}**.`)
+            const roles = (await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId
+            }/promote/${userId}`, { by: byUserId })).data
+            message.reply(`Successfully promoted **${username}** from **${roles.oldRole.name}** to **${roles.newRole
+                .name}**.`)
         } catch (err) {
             message.reply(err.message)
         }
