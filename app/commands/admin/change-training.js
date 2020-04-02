@@ -26,7 +26,7 @@ module.exports = class ChangeTrainingCommand extends Command {
                     key: 'key',
                     type: 'string',
                     prompt: 'What key would you like to change?',
-                    oneOf: ['type', 'date', 'time', 'specialnotes']
+                    oneOf: ['type', 'date', 'time', 'specialnotes', 'key']
                 },
                 {
                     key: 'data',
