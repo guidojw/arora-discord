@@ -5,7 +5,7 @@ const discordService = require('../services/discord')
 module.exports = class Command extends Commando.Command {
     constructor(client, info) {
         info.memberName = info.name
-        info.argsPromptLimit = info.argsPromptLimit || 1
+        info.argsPromptLimit = info.argsPromptLimit || info.group === 'admin' ? 3 : 1
         info.guildOnly = info.guildOnly !== undefined ? info.guildOnly : true
         super(client, info)
     }
