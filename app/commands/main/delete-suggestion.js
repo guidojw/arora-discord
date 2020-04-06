@@ -9,7 +9,7 @@ module.exports = class DeleteSuggestionCommand extends Command {
             name: 'deletesuggestion',
             aliases: ['delete'],
             description: 'Deletes your last suggested suggestion.',
-            clientPermissions: ['MANAGE_MESSAGES', 'ADD_REACTIONS', 'VIEW_CHANNEL', 'SEND_MESSAGES']
+            clientPermissions: ['ADD_REACTIONS', 'SEND_MESSAGES']
         })
     }
 
@@ -20,8 +20,8 @@ module.exports = class DeleteSuggestionCommand extends Command {
         const messages = await channel.messages.fetch()
         const authorUrl = `https://discordapp.com/users/${message.author.id}`
         for (const suggestion of messages.values()) {
-            if (suggestion.embeds.length === 1 && suggestion.embeds[0].author.url === authorUrl && suggestion.id !==
-                guildMessages.firstSsuggestionMessage) {
+            if (suggestion.embeds.length === 1 && suggestion.embeds[0].author && suggestion.embeds[0].author.url ===
+                authorUrl && suggestion.id !== guildMessages.firstSsuggestionMessage) {
                 const choice = await discordService.prompt(message.channel, message.author, await message.replyEmbed(
                     suggestion.embeds[0], 'Are you sure would like to delete this suggestion?'))
                 if (choice) {
