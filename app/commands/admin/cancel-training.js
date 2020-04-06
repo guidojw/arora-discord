@@ -12,7 +12,7 @@ module.exports = class CancelTrainingCommand extends Command {
             details: 'TrainingId must be the ID of a currently scheduled training.',
             description: 'Cancels training with trainingId.',
             examples: ['canceltraining 1 Weird circumstances.'],
-            clientPermissions: ['MANAGE_MESSAGES', 'SEND_MESSAGES'],
+            clientPermissions: ['SEND_MESSAGES'],
             args: [
                 {
                     key: 'trainingId',
@@ -30,18 +30,14 @@ module.exports = class CancelTrainingCommand extends Command {
 
     async execute (message, { trainingId, reason }) {
         try {
-            const training = (await applicationAdapter('put', `/v1/groups/${applicationConfig
-                .groupId}/trainings/${trainingId}`, {
+            await applicationAdapter('put', `/v1/groups/${applicationConfig.groupId}/trainings/${
+                trainingId}`, {
                 cancelled: true,
                 reason,
                 by: message.member.displayName,
                 byUserId: await userService.getIdFromUsername(message.member.displayName)
-            })).data
-            if (training) {
-                message.reply(`Successfully cancelled training with ID **${trainingId}**.`)
-            } else {
-                message.reply(`Couldn't cancel training with ID **${trainingId}**.`)
-            }
+            })
+            message.reply(`Successfully cancelled training with ID **${trainingId}**.`)
         } catch (err) {
             message.reply(err.message)
         }

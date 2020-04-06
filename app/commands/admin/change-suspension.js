@@ -13,7 +13,7 @@ module.exports = class ChangeSuspensionCommand extends Command {
             'must be by, reason or rankBack. You can only change the by key of suspensions you created.',
             description: 'Changes given username\'s suspension\'s key to given data.',
             examples: ['changesuspension Happywalker rankBack false'],
-            clientPermissions: ['MANAGE_MESSAGES', 'SEND_MESSAGES'],
+            clientPermissions: ['SEND_MESSAGES'],
             args: [
                 {
                     key: 'username',
@@ -50,13 +50,9 @@ module.exports = class ChangeSuspensionCommand extends Command {
             }
             changes.byUserId = await userService.getIdFromUsername(message.member.displayName)
             const userId = await userService.getIdFromUsername(username)
-            const suspension = (await applicationAdapter('put', `/v1/groups/${applicationConfig
-                .groupId}/suspensions/${userId}`, changes)).data
-            if (suspension) {
-                message.reply(`Successfully changed **${username}**'s suspension.`)
-            } else {
-                message.reply(`Couldn't change **${username}**'s suspension.`)
-            }
+            await applicationAdapter('put', `/v1/groups/${applicationConfig.groupId}/suspensions/${
+                userId}`, changes)
+            message.reply(`Successfully changed **${username}**'s suspension.`)
         } catch (err) {
             message.reply(err.message)
         }

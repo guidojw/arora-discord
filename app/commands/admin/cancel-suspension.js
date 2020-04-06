@@ -12,7 +12,7 @@ module.exports = class CancelSuspensionCommand extends Command {
             details: 'Username must be a username that is being used on Roblox.',
             description: 'Cancels given username\'s suspension.',
             examples: ['cancelsuspension Happywalker Good boy.'],
-            clientPermissions: ['MANAGE_MESSAGES', 'SEND_MESSAGES'],
+            clientPermissions: ['SEND_MESSAGES'],
             args: [
                 {
                     key: 'username',
@@ -32,18 +32,14 @@ module.exports = class CancelSuspensionCommand extends Command {
         try {
             const userId = await userService.getIdFromUsername(username)
             const byUserId = await userService.getIdFromUsername(message.member.displayName)
-            const suspension = (await applicationAdapter('put', `/v1/groups/${applicationConfig
-                .groupId}/suspensions/${userId}`, {
+            await applicationAdapter('put', `/v1/groups/${applicationConfig.groupId}/suspensions/${
+                userId}`, {
                 cancelled: true,
                 reason,
                 by: byUserId,
                 byUserId
-            })).data
-            if (suspension) {
-                message.reply(`Successfully cancelled **${username}**'s suspension.`)
-            } else {
-                message.reply(`Couldn't cancel **${username}**'s suspension.`)
-            }
+            })
+            message.reply(`Successfully cancelled **${username}**'s suspension.`)
         } catch (err) {
             message.reply(err.message)
         }

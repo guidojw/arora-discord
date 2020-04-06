@@ -10,10 +10,9 @@ module.exports = class BanCommand extends Command {
             group: 'admin',
             name: 'ban',
             details: 'Username must be a username that is being used on Roblox.',
-            aliases: ['pban'],
             description: 'Bans given username.',
             examples: ['unban Happywalker He apologized.'],
-            clientPermissions: ['MANAGE_MESSAGES', 'SEND_MESSAGES'],
+            clientPermissions: ['SEND_MESSAGES'],
             args: [
                 {
                     key: 'username',

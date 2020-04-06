@@ -45,12 +45,8 @@ module.exports = class ChangeBanCommand extends Command {
             }
             changes.byUserId = await userService.getIdFromUsername(message.member.displayName)
             const userId = await userService.getIdFromUsername(username)
-            const ban = (await applicationAdapter('put', `/v1/bans/${userId}`, changes)).data
-            if (ban) {
-                message.reply(`Successfully changed **${username}**'s ban.`)
-            } else {
-                message.reply(`Couldn't change **${username}**'s ban.`)
-            }
+            await applicationAdapter('put', `/v1/bans/${userId}`, changes)
+            message.reply(`Successfully changed **${username}**'s ban.`)
         } catch (err) {
             message.reply(err.message)
         }
