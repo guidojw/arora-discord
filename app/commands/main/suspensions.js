@@ -11,10 +11,11 @@ const pluralize = require('pluralize')
 module.exports = class SuspensionsCommand extends Command {
     constructor (client) {
         super(client, {
-            group: 'admin',
+            group: 'main',
             name: 'suspensions',
-            aliases: ['suspensionlist', 'suspensioninfo'],
-            description: 'Lists info of current suspensions/given username\'s suspension.',
+            aliases: ['suspensionlist', 'suspensioninfo', 'reason'],
+            description: 'Lists info of current suspensions/given username\'s suspension. Only admins can see the ' +
+                'suspensions of others.',
             details: 'Username must be a username that is being used on Roblox.',
             clientPermissions: ['SEND_MESSAGES'],
             args: [
@@ -28,12 +29,20 @@ module.exports = class SuspensionsCommand extends Command {
         })
     }
 
-    async execute (message, { username }) {
+    async execute (message, { username }, guild) {
+        if (!discordService.isAdmin(message.member, guild.getData('adminRoles'))) {
+            if (!username) {
+                username = message.member.displayName
+            } else {
+                return message.reply('You do not have permission to use the `suspensions` command.')
+            }
+        }
+
         try {
             if (username) {
                 const userId = await userService.getIdFromUsername(username)
                 const suspension = (await applicationAdapter('get', `/v1/groups/${applicationConfig
-                        .groupId}/suspensions/${userId}`)).data
+                    .groupId}/suspensions/${userId}`)).data
                 if (suspension) {
                     const days = suspension.duration / 86400
                     const embed = new MessageEmbed()
