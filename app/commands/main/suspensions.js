@@ -13,7 +13,7 @@ module.exports = class SuspensionsCommand extends Command {
         super(client, {
             group: 'main',
             name: 'suspensions',
-            aliases: ['suspensionlist', 'suspensioninfo'],
+            aliases: ['suspensionlist', 'suspensioninfo', 'suspension'],
             description: 'Lists info of current suspensions/given username\'s suspension. Only admins can see the ' +
                 'suspensions of others.',
             details: 'Username must be a username that is being used on Roblox.',

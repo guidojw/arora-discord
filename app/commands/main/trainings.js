@@ -13,7 +13,7 @@ module.exports = class TrainingsCommand extends Command {
             name: 'trainings',
             aliases: ['traininglist', 'training', 'traininginfo'],
             description: 'Lists info of all trainings/training with given ID.',
-            clientPermissions: ['MANAGE_MESSAGES', 'SEND_MESSAGES'],
+            clientPermissions: ['SEND_MESSAGES'],
             details: 'TrainingId must be the ID of a currently scheduled training.',
             args: [
                 {
@@ -28,22 +28,19 @@ module.exports = class TrainingsCommand extends Command {
 
     async execute (message, { trainingId }) {
         try {
-            const trainings = (await applicationAdapter('get', `/v1/groups/${applicationConfig
-                .groupId}` + '/trainings')).data
-            if (trainings.length === 0) return message.reply('There are currently no hosted trainings.')
-            trainings.sort((a, b) => {
-                return a.date - b.date
-            })
             if (trainingId) {
-                for await (const training of trainings) {
-                    if (training.id === trainingId) {
-                        const embed = new MessageEmbed()
-                            .addField(`Training ${training.id}`, groupService.getTrainingSentence(training))
-                        return message.replyEmbed(embed)
-                    }
-                }
-                message.reply(`Couldn't find info for Training ID **${trainingId}**.`)
+                const training = (await applicationAdapter('get', `/v1/groups/${applicationConfig
+                    .groupId}/trainings/${trainingId}`)).data
+                const embed = new MessageEmbed()
+                    .addField(`Training ${training.id}`, groupService.getTrainingSentence(training))
+                message.replyEmbed(embed)
             } else {
+                const trainings = (await applicationAdapter('get', `/v1/groups/${applicationConfig
+                    .groupId}/trainings`)).data
+                if (trainings.length === 0) return message.reply('There are currently no hosted trainings.')
+                trainings.sort((a, b) => {
+                    return a.date - b.date
+                })
                 const embeds = discordService.getTrainingEmbeds(trainings)
                 for (const embed of embeds) {
                     await message.author.send(embed)
