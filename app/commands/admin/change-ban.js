@@ -2,29 +2,28 @@
 const Command = require('../../controllers/command')
 const userService = require('../../services/user')
 const applicationAdapter = require('../../adapters/application')
-const applicationConfig = require('../../../config/application')
 
-module.exports = class ChangeSuspensionCommand extends Command {
+module.exports = class ChangeBanCommand extends Command {
     constructor (client) {
         super(client, {
             group: 'admin',
-            name: 'changesuspension',
-            details: 'Username must be a username that is being used on Roblox. RankBack must be true or false. Key ' +
-            'must be by, reason or rankBack. You can only change the by key of suspensions you created.',
-            description: 'Changes given username\'s suspension\'s key to given data.',
-            examples: ['changesuspension Happywalker rankBack false'],
+            name: 'changeban',
+            details: 'Username must be a username that is being used on Roblox. Key must be by or reason. You can ' +
+                'only change the by key of bans you created.',
+            description: 'Changes given username\'s ban\'s key to given data.',
+            examples: ['changeban Happywalker by builderman'],
             clientPermissions: ['SEND_MESSAGES'],
             args: [
                 {
                     key: 'username',
                     type: 'string',
-                    prompt: 'Whose suspension would you like to change?'
+                    prompt: 'Whose ban would you like to change?'
                 },
                 {
                     key: 'key',
                     type: 'string',
                     prompt: 'What key would you like to change?',
-                    oneOf: ['by', 'reason', 'rankback']
+                    oneOf: ['by', 'reason']
                 },
                 {
                     key: 'data',
@@ -43,16 +42,11 @@ module.exports = class ChangeSuspensionCommand extends Command {
                 changes.by = await userService.getIdFromUsername(data)
             } else if (key === 'reason') {
                 changes.reason = data
-            } else if (key === 'rankback') {
-                if (data !== 'true' && data !== 'false') return message.reply(`**${data}** is not a valid value for ` +
-                    'rankBack.')
-                changes.rankback = data === 'true' ? 1 : 0
             }
             changes.byUserId = await userService.getIdFromUsername(message.member.displayName)
             const userId = await userService.getIdFromUsername(username)
-            await applicationAdapter('put', `/v1/groups/${applicationConfig.groupId}/suspensions/${
-                userId}`, changes)
-            message.reply(`Successfully changed **${username}**'s suspension.`)
+            await applicationAdapter('put', `/v1/bans/${userId}`, changes)
+            message.reply(`Successfully changed **${username}**'s ban.`)
         } catch (err) {
             message.reply(err.message)
         }

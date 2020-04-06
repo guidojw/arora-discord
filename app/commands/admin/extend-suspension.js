@@ -43,19 +43,15 @@ module.exports = class ExtendSuspensionCommand extends Command {
         try {
             const userId = await userService.getIdFromUsername(username)
             const byUserId = await userService.getIdFromUsername(message.member.displayName)
-            const suspension = (await applicationAdapter('put', `/v1/groups/${applicationConfig
-                .groupId}/suspensions/${userId}`, {
+            await applicationAdapter('put', `/v1/groups/${applicationConfig.groupId}/suspensions/${
+                userId}`, {
                 extended: true,
                 duration: days * 86400,
                 reason,
                 by: byUserId,
                 byUserId
-            })).data
-            if (suspension) {
-                message.reply(`Successfully extended **${username}**'s suspension.`)
-            } else {
-                message.reply(`Couldn't extend **${username}**'s suspension.`)
-            }
+            })
+            message.reply(`Successfully extended **${username}**'s suspension.`)
         } catch (err) {
             message.reply(err.message)
         }

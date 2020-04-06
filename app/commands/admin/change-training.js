@@ -15,7 +15,7 @@ module.exports = class ChangeTrainingCommand extends Command {
             'specialNotes.',
             description: 'Changes training with trainingId\'s key to given data.',
             examples: ['changetraining 1 date 5-3-2020'],
-            clientPermissions: ['MANAGE_MESSAGES', 'SEND_MESSAGES'],
+            clientPermissions: ['SEND_MESSAGES'],
             args: [
                 {
                     key: 'trainingId',
@@ -69,13 +69,9 @@ module.exports = class ChangeTrainingCommand extends Command {
                     .hours, timeInfo.minutes).getTime() / 1000)
             }
             changes.byUserId = await userService.getIdFromUsername(message.member.displayName)
-            const training = (await applicationAdapter('put', `/v1/groups/${applicationConfig.groupId
-            }/trainings/${trainingId}`, changes)).data
-            if (training) {
-                message.reply(`Successfully changed training with ID **${trainingId}**.`)
-            } else {
-                message.reply(`Couldn't change training with ID **${trainingId}**.`)
-            }
+            await applicationAdapter('put', `/v1/groups/${applicationConfig.groupId}/trainings/${
+                trainingId}`, changes)
+            message.reply(`Successfully changed training with ID **${trainingId}**.`)
         } catch (err) {
             message.reply(err.message)
         }

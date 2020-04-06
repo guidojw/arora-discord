@@ -9,10 +9,9 @@ module.exports = class UnbanCommand extends Command {
             group: 'admin',
             name: 'unban',
             details: 'Username must be a username that is being used on Roblox.',
-            aliases: ['unpban'],
             description: 'Unbans given username.',
             examples: ['unban Happywalker'],
-            clientPermissions: ['MANAGE_MESSAGES', 'SEND_MESSAGES'],
+            clientPermissions: ['SEND_MESSAGES'],
             ownerOnly: true,
             args: [
                 {
@@ -28,10 +27,7 @@ module.exports = class UnbanCommand extends Command {
         try {
             const userId = await userService.getIdFromUsername(username)
             const byUserId = await userService.getIdFromUsername(message.member.displayName)
-            await applicationAdapter('put', `/v1/bans/${userId}`, {
-                unbanned: true,
-                by: byUserId
-            })
+            await applicationAdapter('put', `/v1/bans/${userId}`, { unbanned: true, byUserId })
             message.reply(`Successfully unbanned **${username}**.`)
         } catch (err) {
             message.reply(err.message)

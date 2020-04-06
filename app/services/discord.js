@@ -154,8 +154,8 @@ exports.getBanEmbeds = async bans => {
     }
     let message = ''
     for (const ban of bans) {
-        const username = users.data.find(user => user.id === ban.userId).name
-        const byUser = ban.by ? byUsers.data.find(user => user.id === ban.by) : undefined
+        const username = users.find(user => user.id === ban.userId).name
+        const byUser = ban.by ? byUsers.find(user => user.id === ban.by) : undefined
         const role = ban.rank ? groupService.getAbbreviationByRank(ban.rank) : undefined
         const dateString = ban.at ? timeHelper.getDate(ban.at * 1000) : undefined
         const line = `**${username}**${role ? ' (' + role + ')' : ''}${byUser ? ' by **' + byUser.name + '**' : ''}${
@@ -207,8 +207,8 @@ exports.getSuspensionEmbeds = async suspensions => {
     }
     let message = ''
     for (const suspension of suspensions) {
-        const username = users.data.find(user => user.id === suspension.userId).name
-        const byUser = byUsers.data.find(user => user.id === suspension.by)
+        const username = users.find(user => user.id === suspension.userId).name
+        const byUser = byUsers.find(user => user.id === suspension.by)
         const role = groupService.getAbbreviationByRank(suspension.rank)
         const rankback = suspension.rankback === 1 ? 'yes' : 'no'
         const dateString = timeHelper.getDate(suspension.at * 1000)
