@@ -10,7 +10,7 @@ module.exports = class ChangeSuspensionCommand extends Command {
             group: 'admin',
             name: 'changesuspension',
             details: 'Username must be a username that is being used on Roblox. RankBack must be true or false. Key ' +
-            'must be by, reason or rankBack. You can only the by key of suspensions you created.',
+            'must be by, reason or rankBack. You can only change the by key of suspensions you created.',
             description: 'Changes given username\'s suspension\'s key to given data.',
             examples: ['changesuspension Happywalker rankBack false'],
             clientPermissions: ['MANAGE_MESSAGES', 'SEND_MESSAGES'],
