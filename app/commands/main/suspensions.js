@@ -13,7 +13,7 @@ module.exports = class SuspensionsCommand extends Command {
         super(client, {
             group: 'main',
             name: 'suspensions',
-            aliases: ['suspensionlist', 'suspensioninfo', 'reason'],
+            aliases: ['suspensionlist', 'suspensioninfo'],
             description: 'Lists info of current suspensions/given username\'s suspension. Only admins can see the ' +
                 'suspensions of others.',
             details: 'Username must be a username that is being used on Roblox.',
@@ -43,19 +43,15 @@ module.exports = class SuspensionsCommand extends Command {
                 const userId = await userService.getIdFromUsername(username)
                 const suspension = (await applicationAdapter('get', `/v1/groups/${applicationConfig
                     .groupId}/suspensions/${userId}`)).data
-                if (suspension) {
-                    const days = suspension.duration / 86400
-                    const embed = new MessageEmbed()
-                        .setTitle(`${message.argString ? `${username}'s` : 'Your'} suspension`)
-                        .addField('Start date', timeHelper.getDate(suspension.at * 1000), true)
-                        .addField('Start time', timeHelper.getTime(suspension.at * 1000), true)
-                        .addField('Duration', `${days} ${pluralize('day', days)}`, true)
-                        .addField('Rank back', suspension.rankback ? 'yes' : 'no', true)
-                        .addField('Reason', suspension.reason)
-                    message.replyEmbed(embed)
-                } else {
-                    message.reply('Couldn\'t find suspension!')
-                }
+                const days = suspension.duration / 86400
+                const embed = new MessageEmbed()
+                    .setTitle(`${message.argString ? `${username}'s` : 'Your'} suspension`)
+                    .addField('Start date', timeHelper.getDate(suspension.at * 1000), true)
+                    .addField('Start time', timeHelper.getTime(suspension.at * 1000), true)
+                    .addField('Duration', `${days} ${pluralize('day', days)}`, true)
+                    .addField('Rank back', suspension.rankback ? 'yes' : 'no', true)
+                    .addField('Reason', suspension.reason)
+                message.replyEmbed(embed)
             } else {
                 const suspensions = (await applicationAdapter('get', `/v1/groups/${applicationConfig
                     .groupId}/suspensions`)).data
