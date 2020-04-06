@@ -4,6 +4,7 @@ const applicationAdapter = require('../../adapters/application')
 const discordService = require('../../services/discord')
 const userService = require('../../services/user')
 const timeHelper = require('../../helpers/time')
+const { MessageEmbed } = require('discord.js')
 
 module.exports = class BansCommand extends Command {
     constructor (client) {
