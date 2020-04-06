@@ -26,17 +26,13 @@ module.exports = class FinishTrainingCommand extends Command {
 
     async execute (message, { trainingId }) {
         try {
-            const training = (await applicationAdapter('put', `/v1/groups/${applicationConfig
-                .groupId}/trainings/${trainingId}`, {
+            await applicationAdapter('put', `/v1/groups/${applicationConfig.groupId}/trainings/${
+                trainingId}`, {
                 finished: true,
                 by: message.member.displayName,
                 byUserId: await userService.getIdFromUsername(message.member.displayName)
-            })).data
-            if (training) {
-                message.reply(`Successfully finished training with ID **${trainingId}**.`)
-            } else {
-                message.reply(`Couldn't finish training with ID **${trainingId}**.`)
-            }
+            })
+            message.reply(`Successfully finished training with ID **${trainingId}**.`)
         } catch (err) {
             message.reply(err.message)
         }
