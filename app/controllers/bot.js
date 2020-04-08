@@ -7,8 +7,8 @@ const Commando = require('discord.js-commando')
 const { MessageEmbed } = require('discord.js')
 const SettingProvider = require('./setting-provider')
 const { stripIndents } = require('common-tags')
-
 const applicationConfig = require('../../config/application')
+const WebSocketController = require('./web-socket')
 
 module.exports = class Bot {
     constructor () {
@@ -46,6 +46,9 @@ module.exports = class Bot {
         this.client.on('commandRun', this.commandRun.bind(this))
         this.client.on('messageReactionAdd', this.messageReactionAdd.bind(this))
         this.client.on('messageReactionRemove', this.messageReactionRemove.bind(this))
+
+        this.webSocketController = new WebSocketController(process.env.HOST)
+        this.webSocketController.on('rankChanged', this.rankChanged.bind(this))
 
         this.client.login(process.env.DISCORD_TOKEN)
     }
@@ -128,6 +131,10 @@ module.exports = class Bot {
                 if (binding.emoji === emoji) return member.roles.remove(binding.role)
             }
         }
+    }
+
+    async rankChanged (groupId, userId, rank) {
+
     }
 
     getGuild (id) {
