@@ -7,8 +7,11 @@ const Commando = require('discord.js-commando')
 const { MessageEmbed } = require('discord.js')
 const SettingProvider = require('./setting-provider')
 const { stripIndents } = require('common-tags')
-
 const applicationConfig = require('../../config/application')
+const WebSocketController = require('./web-socket')
+const discordService = require('../services/discord')
+const userService = require('../services/user')
+const stringHelper = require('../helpers/string')
 
 module.exports = class Bot {
     constructor () {
@@ -46,6 +49,9 @@ module.exports = class Bot {
         this.client.on('commandRun', this.commandRun.bind(this))
         this.client.on('messageReactionAdd', this.messageReactionAdd.bind(this))
         this.client.on('messageReactionRemove', this.messageReactionRemove.bind(this))
+
+        this.webSocketController = new WebSocketController(process.env.HOST)
+        this.webSocketController.on('rankChanged', this.rankChanged.bind(this))
 
         this.client.login(process.env.DISCORD_TOKEN)
     }
@@ -126,6 +132,24 @@ module.exports = class Bot {
             const emoji = reaction.emoji.id || reaction.emoji.name
             for (const binding of roleMessage) {
                 if (binding.emoji === emoji) return member.roles.remove(binding.role)
+            }
+        }
+    }
+
+    async rankChanged (groupId, userId, rank) {
+        const username = (await userService.getUser(userId)).name
+        for (const guild of Object.values(this.guilds)) {
+            const member = await discordService.getMemberByName(guild.guild, username)
+            if (member) {
+                const roles = guild.getData('roles')
+                for (const [binding, role] of Object.entries(roles[groupId])) {
+                    const ranks = stringHelper.convertBinding(binding)
+                    if (ranks.includes(rank)) {
+                        member.roles.add(role)
+                    } else {
+                        member.roles.remove(role)
+                    }
+                }
             }
         }
     }
