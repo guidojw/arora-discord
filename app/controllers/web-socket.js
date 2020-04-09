@@ -6,14 +6,13 @@ module.exports = class WebSocketController extends EventEmitter {
     constructor (host) {
         super()
         this.host = host
-
         this.connect()
     }
 
     connect () {
         this.connection = new WebSocket(this.host + '/v1')
         this.connection.on('open', this.open.bind(this))
-        this.connection.on('error', this.error.bind(this))
+        this.connection.on('error', console.error)
         this.connection.on('close', this.close.bind(this))
         this.connection.on('ping', this.ping.bind(this))
         this.connection.on('message', this.message.bind(this))
@@ -23,20 +22,18 @@ module.exports = class WebSocketController extends EventEmitter {
         clearTimeout(this.pingTimeout)
         this.pingTimeout = setTimeout(() => {
             this.connection.terminate()
-        }, 60000 + 1000)
+        }, 30000 + 1000)
     }
 
     open () {
+        console.log('Connected!')
         this.heartbeat()
     }
 
-    error (err) {
-        console.error(err)
-    }
-
     close () {
+        console.log('Disconnected!')
         clearTimeout(this.pingTimeout)
-        this.connect()
+        setTimeout(this.connect.bind(this), 30000)
     }
 
     ping () {

@@ -1,10 +1,15 @@
 'use strict'
-exports.extractText = (str, delimiter) => {
-    if (str && delimiter) {
-        if (str.indexOf(delimiter) !== str.lastIndexOf(delimiter)) {
-            const firstIndex = str.indexOf(delimiter) + 1
-            const lastIndex = str.lastIndexOf(delimiter)
-            return str.substring(firstIndex, lastIndex)
+exports.convertBinding = binding => {
+    if (binding.indexOf('-') !== -1) {
+        const [min, max] = binding.split('-').map(value => parseInt(value))
+        const values = []
+        for (let value = min; value <= max; value++) {
+            values.push(value)
         }
+        return values
+    } else if (binding.indexOf(',') !== -1) {
+        return binding.split(',').map(value => parseInt(value))
+    } else {
+        return [parseInt(binding)]
     }
 }

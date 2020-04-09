@@ -9,6 +9,9 @@ const SettingProvider = require('./setting-provider')
 const { stripIndents } = require('common-tags')
 const applicationConfig = require('../../config/application')
 const WebSocketController = require('./web-socket')
+const discordService = require('../services/discord')
+const userService = require('../services/user')
+const stringHelper = require('../helpers/string')
 
 module.exports = class Bot {
     constructor () {
@@ -134,7 +137,21 @@ module.exports = class Bot {
     }
 
     async rankChanged (groupId, userId, rank) {
-
+        const username = (await userService.getUser(userId)).name
+        for (const guild of Object.values(this.guilds)) {
+            const member = await discordService.getMemberByName(guild.guild, username)
+            if (member) {
+                const roles = guild.getData('roles')
+                for (const [binding, role] of Object.entries(roles[groupId])) {
+                    const ranks = stringHelper.convertBinding(binding)
+                    if (ranks.includes(rank)) {
+                        member.roles.add(role)
+                    } else {
+                        member.roles.remove(role)
+                    }
+                }
+            }
+        }
     }
 
     getGuild (id) {
