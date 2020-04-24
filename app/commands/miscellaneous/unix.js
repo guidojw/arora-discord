@@ -9,7 +9,7 @@ module.exports = class UnixCommand extends Command {
             name: 'unix',
             aliases: ['epoch'],
             description: 'Posts the current UNIX time.',
-            clientPermissions: ['MANAGE_MESSAGES', 'SEND_MESSAGES'],
+            clientPermissions: ['SEND_MESSAGES'],
         })
     }
 

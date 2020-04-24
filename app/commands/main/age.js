@@ -14,7 +14,7 @@ module.exports = class AgeCommand extends Command {
             aliases: ['accountage'],
             description: 'Posts the age of given/your username.',
             examples: ['age', 'age Happywalker'],
-            clientPermissions: ['MANAGE_MESSAGES', 'SEND_MESSAGES'],
+            clientPermissions: ['SEND_MESSAGES'],
             args: [
                 {
                     key: 'username',

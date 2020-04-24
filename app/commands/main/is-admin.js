@@ -11,7 +11,7 @@ module.exports = class IsAdminCommand extends Command {
             aliases: ['amiadmin'],
             description: 'Checks if you/given nickname is admin.',
             examples: ['isadmin', 'isadmin @Happywalker'],
-            clientPermissions: ['MANAGE_MESSAGES', 'SEND_MESSAGES'],
+            clientPermissions: ['SEND_MESSAGES'],
             args: [
                 {
                     key: 'member',

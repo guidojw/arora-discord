@@ -9,7 +9,7 @@ module.exports = class UpdatesWorkplaceCommand extends Command {
             name: 'updatesworkplace',
             aliases: ['uw'],
             description: 'Posts a link of the Updates Workplace.',
-            clientPermissions: ['MANAGE_MESSAGES', 'SEND_MESSAGES']
+            clientPermissions: ['SEND_MESSAGES']
         })
     }
 

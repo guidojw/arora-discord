@@ -13,7 +13,7 @@ module.exports = class JoinDateCommand extends Command {
             details: 'Username must be a username that is being used on Roblox.',
             description: 'Posts the join date of given/your username.',
             examples: ['joindate', 'joindate Happywalker'],
-            clientPermissions: ['MANAGE_MESSAGES', 'SEND_MESSAGES'],
+            clientPermissions: ['SEND_MESSAGES'],
             args: [
                 {
                     key: 'username',

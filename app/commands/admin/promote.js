@@ -12,7 +12,7 @@ module.exports = class PromoteCommand extends Command {
             details: 'Username must be a username that is being used on Roblox.',
             description: 'Promotes given username in the group.',
             examples: ['promote Happywalker'],
-            clientPermissions: ['MANAGE_MESSAGES', 'SEND_MESSAGES'],
+            clientPermissions: ['SEND_MESSAGES'],
             args: [
                 {
                     key: 'username',

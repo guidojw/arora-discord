@@ -12,7 +12,7 @@ module.exports = class UserIdCommand extends Command {
             aliases: ['getuserid'],
             description: 'Posts the user ID of given/your username.',
             examples: ['userid', 'userid Happywalker'],
-            clientPermissions: ['MANAGE_MESSAGES', 'SEND_MESSAGES'],
+            clientPermissions: ['SEND_MESSAGES'],
             args: [
                 {
                     key: 'username',

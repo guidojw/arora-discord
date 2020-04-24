@@ -8,7 +8,7 @@ module.exports = class AddRoleMessageCommand extends Command {
             name: 'addrolemessage',
             aliases: ['addrolemsg'],
             description: 'Adds a new role message.',
-            clientPermissions: ['MANAGE_MESSAGES', 'SEND_MESSAGES'],
+            clientPermissions: ['SEND_MESSAGES'],
             args: [
                 {
                     key: 'messageId',

@@ -14,7 +14,7 @@ module.exports = class SuspendCommand extends Command {
             description: 'Suspends username in the group.',
             examples: ['suspend Happywalker 3 "Spamming the group wall." false', 'suspend Happywalker 3 "Ignoring ' +
             'rules."'],
-            clientPermissions: ['MANAGE_MESSAGES', 'SEND_MESSAGES'],
+            clientPermissions: ['SEND_MESSAGES'],
             args: [
                 {
                     key: 'username',

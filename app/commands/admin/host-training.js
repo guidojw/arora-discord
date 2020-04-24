@@ -17,7 +17,7 @@ module.exports = class HostTrainingCommand extends Command {
             aliases: ['host'],
             description: 'Schedules a new training.',
             examples: ['host CD 4-3-2020 1:00 Be on time!', 'Host CSR 4-3-2020 2:00'],
-            clientPermissions: ['MANAGE_MESSAGES', 'SEND_MESSAGES'],
+            clientPermissions: ['SEND_MESSAGES'],
             args: [
                 {
                     key: 'type',

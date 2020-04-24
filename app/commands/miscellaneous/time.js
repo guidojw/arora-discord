@@ -11,7 +11,7 @@ module.exports = class TimeCommand extends Command {
             details: 'Timezone has to be an abbreviation of a existing timezone.',
             description: 'Posts the current time.',
             examples: ['time CET', 'time CEST'],
-            clientPermissions: ['MANAGE_MESSAGES', 'SEND_MESSAGES'],
+            clientPermissions: ['SEND_MESSAGES'],
             args: [
                 {
                     key: 'timezone',

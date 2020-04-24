@@ -12,7 +12,7 @@ module.exports = class PollCommand extends Command {
             'emojis of these numbers on the poll. If not provided, the bot will react with a checkmark and crossmark.',
             description: 'Posts a poll of given poll to the current channel.',
             examples: ['poll Dogs (1) or cats (2)?'],
-            clientPermissions: ['MANAGE_MESSAGES', 'ADD_REACTIONS', 'SEND_MESSAGES'],
+            clientPermissions: ['ADD_REACTIONS', 'SEND_MESSAGES'],
             args: [
                 {
                     key: 'poll',

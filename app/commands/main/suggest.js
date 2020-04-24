@@ -10,7 +10,7 @@ module.exports = class SuggestCommand extends Command {
             description: 'Suggests given suggestion.',
             details: 'Suggestion can be encapsulated in quotes (but this is not necessary).',
             examples: ['suggest Add cool new thing', 'suggest "Add cool new thing"'],
-            clientPermissions: ['MANAGE_MESSAGES', 'ADD_REACTIONS', 'SEND_MESSAGES', 'USE_EXTERNAL_EMOJIS'],
+            clientPermissions: ['ADD_REACTIONS', 'SEND_MESSAGES', 'USE_EXTERNAL_EMOJIS'],
             args: [
                 {
                     key: 'suggestion',

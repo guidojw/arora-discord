@@ -14,7 +14,7 @@ module.exports = class RankCommand extends Command {
             aliases: ['getrank'],
             description: 'Posts the group rank of given username/you.',
             examples: ['rank', 'rank Happywalker'],
-            clientPermissions: ['MANAGE_MESSAGES', 'SEND_MESSAGES'],
+            clientPermissions: ['SEND_MESSAGES'],
             args: [
                 {
                     key: 'username',
