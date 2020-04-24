@@ -32,8 +32,8 @@ module.exports = class JoinDateCommand extends Command {
             const joinDate = new Date((await applicationAdapter('get', `/v1/users/${userId}/join-` +
                 'date')).data)
             const embed = new MessageEmbed()
-                .addField(`${message.argString ? username: 'Your'} join date`, `${timeHelper
-                    .getDate(Math.floor(joinDate.getTime() / 1000) * 1000)}`)
+                .addField(`${message.argString ? username: 'Your'} join date`, `${timeHelper.getDate(
+                    joinDate)}`)
             message.replyEmbed(embed)
         } catch (err) {
             message.reply(err.message)

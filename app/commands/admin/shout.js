@@ -29,11 +29,11 @@ module.exports = class ShoutCommand extends Command {
 
     async execute (message, { body }) {
         try {
-            const byUserId = await userService.getIdFromUsername(message.member.displayName)
+            const authorId = await userService.getIdFromUsername(message.member.displayName)
             const shout = (await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId
             }/shout`, {
-                by: byUserId,
-                message: body === 'clear' ? '' : body
+                message: body === 'clear' ? '' : body,
+                authorId
             })).data
             if (shout.body === '') {
                 message.reply('Successfully cleared shout.')

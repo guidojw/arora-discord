@@ -53,16 +53,16 @@ module.exports = class ChangeTrainingCommand extends Command {
                 changes.type = type
             } else if (key === 'date' || key === 'time') {
                 const training = await groupService.getTrainingById(trainingId)
-                const unix = training.date
+                const date = new Date(training.date)
                 let dateInfo
                 let timeInfo
                 if (key === 'date') {
                     if (!timeHelper.validDate(data)) return message.reply('Please enter a valid date.')
-                    timeInfo = timeHelper.getTimeInfo(timeHelper.getTime(unix))
+                    timeInfo = timeHelper.getTimeInfo(timeHelper.getTime(date))
                     dateInfo = timeHelper.getDateInfo(data)
                 } else {
                     if (!timeHelper.validTime(data)) return message.reply('Please enter a valid time.')
-                    dateInfo = timeHelper.getDateInfo(timeHelper.getDate(unix))
+                    dateInfo = timeHelper.getDateInfo(timeHelper.getDate(date))
                     timeInfo = timeHelper.getTimeInfo(data)
                 }
                 changes.date = Math.floor(new Date(dateInfo.year, dateInfo.month - 1, dateInfo.day, timeInfo

@@ -32,13 +32,12 @@ module.exports = class BansCommand extends Command {
                 const ban = (await applicationAdapter('get', `/v1/bans/${userId}`)).data
                 const embed = new MessageEmbed()
                     .setTitle(`${message.argString ? `${username}'s` : 'Your'} ban`)
-                if (ban.at) {
-                    embed.addField('Start date', timeHelper.getDate(ban.at * 1000), true)
-                    embed.addField('Start time', timeHelper.getTime(ban.at * 1000), true)
+                if (ban.date) {
+                    const date = new Date(ban.date)
+                    embed.addField('Start date', timeHelper.getDate(date), true)
+                    embed.addField('Start time', timeHelper.getTime(date), true)
                 }
-                if (ban.reason) {
-                    embed.addField('Reason', ban.reason)
-                }
+                if (ban.reason) embed.addField('Reason', ban.reason)
                 message.replyEmbed(embed)
             } else {
                 const bans = (await applicationAdapter('get', '/v1/bans')).data

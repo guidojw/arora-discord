@@ -19,7 +19,7 @@ exports.isAdmin = (member, adminRoles) => {
     return false
 }
 
-exports.getTrainingEmbeds = trainings => {
+exports.getTrainingEmbeds = async trainings => {
     const embeds = []
     let fields = []
     let sum = 0
@@ -36,7 +36,7 @@ exports.getTrainingEmbeds = trainings => {
     }
     let message = ''
     for (const training of trainings) {
-        const line = training.id + '. ' + groupService.getTrainingSentence(training)
+        const line = training.id + '. ' + await groupService.getTrainingSentence(training)
         const addition = line.length + 8 // TODO: tweak additions
         if (sum + addition <= 6000) {
             if (message.length + line.length <= 1024) {
@@ -65,9 +65,9 @@ exports.getTrainingEmbeds = trainings => {
 
 exports.getBanEmbeds = async bans => {
     const userIds = bans.map(ban => ban.userId)
-    const byUserIds = bans.map(ban => ban.by)
+    const authorIds = bans.map(ban => ban.authorId)
     const users = await userService.getUsers(userIds)
-    const byUsers = await userService.getUsers(byUserIds)
+    const authors = await userService.getUsers(authorIds)
     const embeds = []
     let fields = []
     let sum = 0
@@ -85,10 +85,10 @@ exports.getBanEmbeds = async bans => {
     let message = ''
     for (const ban of bans) {
         const username = users.find(user => user.id === ban.userId).name
-        const byUser = ban.by ? byUsers.find(user => user.id === ban.by) : undefined
+        const author = ban.authorId ? authors.find(user => user.id === ban.authorId) : undefined
         const role = ban.rank ? groupService.getAbbreviationByRank(ban.rank) : undefined
-        const dateString = ban.at ? timeHelper.getDate(ban.at * 1000) : undefined
-        const line = `**${username}**${role ? ' (' + role + ')' : ''}${byUser ? ' by **' + byUser.name + '**' : ''}${
+        const dateString = ban.date ? timeHelper.getDate(new Date(ban.date)) : undefined
+        const line = `**${username}**${role ? ' (' + role + ')' : ''}${author ? ' by **' + author.name + '**' : ''}${
             dateString ? ' at **' + dateString + '**' : ''}${ban.reason ? ' with reason:\n*' + ban.reason + '*' : ''}`
         const addition = line.length + 16 // TODO: tweak additions
         if (sum + addition <= 6000) {
@@ -118,9 +118,9 @@ exports.getBanEmbeds = async bans => {
 
 exports.getSuspensionEmbeds = async suspensions => {
     const userIds = suspensions.map(suspension => suspension.userId)
-    const byUserIds = suspensions.map(suspension => suspension.by)
+    const authorIds = suspensions.map(suspension => suspension.authorId)
     const users = await userService.getUsers(userIds)
-    const byUsers = await userService.getUsers(byUserIds)
+    const authors = await userService.getUsers(authorIds)
     const embeds = []
     let fields = []
     let sum = 0
@@ -138,12 +138,12 @@ exports.getSuspensionEmbeds = async suspensions => {
     let message = ''
     for (const suspension of suspensions) {
         const username = users.find(user => user.id === suspension.userId).name
-        const byUser = byUsers.find(user => user.id === suspension.by)
+        const author = authors.find(user => user.id === suspension.authorId)
         const role = groupService.getAbbreviationByRank(suspension.rank)
-        const rankback = suspension.rankback === 1 ? 'yes' : 'no'
-        const dateString = timeHelper.getDate(suspension.at * 1000)
+        const rankBack = suspension.rankBack ? 'yes' : 'no'
+        const dateString = timeHelper.getDate(new Date(suspension.date))
         const duration = suspension.duration / 86400
-        const line = `**${username}** (${role}, rankback **${rankback}**) by **${byUser.name}** at **${dateString}** ` +
+        const line = `**${username}** (${role}, rankback **${rankBack}**) by **${author.name}** at **${dateString}** ` +
         `for **${duration} ${pluralize('day', duration)}** with reason:\n*${suspension.reason}*`
         const addition = line.length + 16 // TODO: tweak additions
         if (sum + addition <= 6000) {

@@ -15,7 +15,7 @@ module.exports = class AnnounceTrainingCommand extends Command {
             aliases: ['announce'],
             description: 'Announces training with trainingId.',
             examples: ['announce 1', 'announce 1 discord'],
-            clientPermissions: ['MANAGE_MESSAGES', 'SEND_MESSAGES'],
+            clientPermissions: ['SEND_MESSAGES'],
             args: [
                 {
                     key: 'trainingId',
@@ -36,9 +36,9 @@ module.exports = class AnnounceTrainingCommand extends Command {
     async execute (message, { trainingId, medium }) {
         medium = medium.toLowerCase()
         try {
-            const byUserId = await userService.getIdFromUsername(message.member.displayName)
+            const authorId = await userService.getIdFromUsername(message.member.displayName)
             const content = (await applicationAdapter('post', `/v1/groups/${applicationConfig
-                .groupId}/trainings/${trainingId}/announce`, { medium, byUserId })).data
+                .groupId}/trainings/${trainingId}/announce`, { medium, authorId })).data
             const embed = new MessageEmbed()
             if (medium === 'both' || medium === 'discord') {
                 embed.addField('Successfully announced', content.announcement)
