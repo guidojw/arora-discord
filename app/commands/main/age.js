@@ -32,8 +32,7 @@ module.exports = class AgeCommand extends Command {
             const userId = await userService.getIdFromUsername(username)
             const joinDate = new Date((await applicationAdapter('get', `/v1/users/${userId}/join-` +
                 'date')).data)
-            const age = Math.floor((Math.floor(Date.now() / 1000) - Math.floor(joinDate.getTime() / 1000)) /
-                86400)
+            const age = Math.floor((Date.now() - joinDate.getTime()) / 86400000)
             const embed = new MessageEmbed()
                 .addField(`${message.argString ? username + '\'s' : 'Your'} age`,
                     `${age} ${pluralize('day', age)}`)

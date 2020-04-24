@@ -142,7 +142,7 @@ exports.getSuspensionEmbeds = async suspensions => {
         const role = groupService.getAbbreviationByRank(suspension.rank)
         const rankBack = suspension.rankBack ? 'yes' : 'no'
         const dateString = timeHelper.getDate(new Date(suspension.date))
-        const duration = suspension.duration / 86400
+        const duration = suspension.duration / 86400000
         const line = `**${username}** (${role}, rankback **${rankBack}**) by **${author.name}** at **${dateString}** ` +
         `for **${duration} ${pluralize('day', duration)}** with reason:\n*${suspension.reason}*`
         const addition = line.length + 16 // TODO: tweak additions
