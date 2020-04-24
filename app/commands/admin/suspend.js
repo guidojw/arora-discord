@@ -37,23 +37,22 @@ module.exports = class SuspendCommand extends Command {
                 {
                     key: 'rankBack',
                     type: 'boolean',
-                    prompt: 'Should this person get his old rank back when the suspension finishes?',
-                    default: true
+                    prompt: 'Should this person get his old rank back when the suspension finishes?'
                 }
             ]
         })
     }
 
-    async execute (message, { username, days, reason, rankBack}) {
+    async execute (message, { username, days, reason, rankBack }) {
         try {
-            const userId = await userService.getIdFromUsername(username)
-            const byUserId = await userService.getIdFromUsername(message.member.displayName)
+            const [userId, authorId] = await Promise.all([userService.getIdFromUsername(username), userService
+                .getIdFromUsername(message.member.displayName)])
             await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId}/suspensions`,
                 {
+                    duration: days * 86400000,
+                    rankBack,
+                    authorId,
                     userId,
-                    rankback: rankBack ? 1 : 0,
-                    duration: days * 86400,
-                    by: byUserId,
                     reason
                 })
             message.reply(`Successfully suspended **${username}**.`)

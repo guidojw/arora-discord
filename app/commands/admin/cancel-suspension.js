@@ -30,14 +30,12 @@ module.exports = class CancelSuspensionCommand extends Command {
 
     async execute (message, { username, reason }) {
         try {
-            const userId = await userService.getIdFromUsername(username)
-            const byUserId = await userService.getIdFromUsername(message.member.displayName)
+            const [userId, authorId] = await Promise.all([userService.getIdFromUsername(username), userService
+                .getIdFromUsername(message.member.displayName)])
             await applicationAdapter('put', `/v1/groups/${applicationConfig.groupId}/suspensions/${
-                userId}`, {
-                cancelled: true,
-                reason,
-                by: byUserId,
-                byUserId
+                userId}/cancel`, {
+                authorId,
+                reason
             })
             message.reply(`Successfully cancelled **${username}**'s suspension.`)
         } catch (err) {

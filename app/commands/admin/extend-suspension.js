@@ -13,7 +13,7 @@ module.exports = class ExtendSuspensionCommand extends Command {
             aliases: ['extend'],
             description: 'Extends the suspension of given username.',
             examples: ['extend Happywalker 3 He still doesn\'t understand.'],
-            clientPermissions: ['MANAGE_MESSAGES', 'SEND_MESSAGES'],
+            clientPermissions: ['SEND_MESSAGES'],
             args: [
                 {
                     key: 'username',
@@ -41,15 +41,13 @@ module.exports = class ExtendSuspensionCommand extends Command {
 
     async execute (message, { username, days, reason }) {
         try {
-            const userId = await userService.getIdFromUsername(username)
-            const byUserId = await userService.getIdFromUsername(message.member.displayName)
+            const [userId, authorId] = await Promise.all([userService.getIdFromUsername(username), userService
+                .getIdFromUsername(message.member.displayName)])
             await applicationAdapter('put', `/v1/groups/${applicationConfig.groupId}/suspensions/${
-                userId}`, {
-                extended: true,
-                duration: days * 86400,
-                reason,
-                by: byUserId,
-                byUserId
+                userId}/extend`, {
+                duration: days * 86400000,
+                authorId,
+                reason
             })
             message.reply(`Successfully extended **${username}**'s suspension.`)
         } catch (err) {
