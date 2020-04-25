@@ -34,8 +34,8 @@ module.exports = class AgeCommand extends Command {
                 'date')).data)
             const age = Math.floor((Date.now() - joinDate.getTime()) / 86400000)
             const embed = new MessageEmbed()
-                .addField(`${message.argString ? username + '\'s' : 'Your'} age`,
-                    `${age} ${pluralize('day', age)}`)
+                .addField(`${message.argString ? username + '\'s' : 'Your'} age`,`${age} ${pluralize('day', 
+                    age)}`)
             message.replyEmbed(embed)
         } catch (err) {
             message.reply(err.message)
