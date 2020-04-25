@@ -12,7 +12,7 @@ module.exports = class IsSuspendedCommand extends Command {
             details: 'Username must be a username that is being used on Roblox.',
             description: 'Checks if you/given username is suspended.',
             examples: ['issuspended Happywalker'],
-            clientPermissions: ['MANAGE_MESSAGES', 'SEND_MESSAGES'],
+            clientPermissions: ['SEND_MESSAGES'],
             args: [
                 {
                     key: 'username',

@@ -13,7 +13,7 @@ module.exports = class JoinDateCommand extends Command {
             details: 'Username must be a username that is being used on Roblox.',
             description: 'Posts the join date of given/your username.',
             examples: ['joindate', 'joindate Happywalker'],
-            clientPermissions: ['MANAGE_MESSAGES', 'SEND_MESSAGES'],
+            clientPermissions: ['SEND_MESSAGES'],
             args: [
                 {
                     key: 'username',
@@ -32,8 +32,8 @@ module.exports = class JoinDateCommand extends Command {
             const joinDate = new Date((await applicationAdapter('get', `/v1/users/${userId}/join-` +
                 'date')).data)
             const embed = new MessageEmbed()
-                .addField(`${message.argString ? username: 'Your'} join date`, `${timeHelper
-                    .getDate(Math.floor(joinDate.getTime() / 1000) * 1000)}`)
+                .addField(`${message.argString ? username: 'Your'} join date`, `${timeHelper.getDate(
+                    joinDate)}`)
             message.replyEmbed(embed)
         } catch (err) {
             message.reply(err.message)

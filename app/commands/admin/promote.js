@@ -12,7 +12,7 @@ module.exports = class PromoteCommand extends Command {
             details: 'Username must be a username that is being used on Roblox.',
             description: 'Promotes given username in the group.',
             examples: ['promote Happywalker'],
-            clientPermissions: ['MANAGE_MESSAGES', 'SEND_MESSAGES'],
+            clientPermissions: ['SEND_MESSAGES'],
             args: [
                 {
                     key: 'username',
@@ -25,10 +25,10 @@ module.exports = class PromoteCommand extends Command {
 
     async execute (message, { username }) {
         try {
-            const userId = await userService.getIdFromUsername(username)
-            const byUserId = await userService.getIdFromUsername(message.member.displayName)
+            const [userId, authorId] = await Promise.all([userService.getIdFromUsername(username), userService
+                .getIdFromUsername(message.member.displayName)])
             const roles = (await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId
-            }/promote/${userId}`, { by: byUserId })).data
+            }/promote/${userId}`, { authorId })).data
             message.reply(`Successfully promoted **${username}** from **${roles.oldRole.name}** to **${roles.newRole
                 .name}**.`)
         } catch (err) {

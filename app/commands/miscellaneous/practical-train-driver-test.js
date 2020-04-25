@@ -8,7 +8,7 @@ module.exports = class PracticalTrainDriverTestCommand extends Command {
             group: 'miscellaneous',
             name: 'ptdt',
             description: 'Posts a link of the Practical Train Driver Test II.',
-            clientPermissions: ['MANAGE_MESSAGES', 'SEND_MESSAGES']
+            clientPermissions: ['SEND_MESSAGES']
         })
     }
 

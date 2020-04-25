@@ -18,16 +18,21 @@ module.exports = class UnbanCommand extends Command {
                     key: 'username',
                     type: 'string',
                     prompt: 'Who would you like to unban?'
+                },
+                {
+                    key: 'reason',
+                    type: 'string',
+                    prompt: 'With what reason would you like to unban this person?'
                 }
             ]
         })
     }
 
-    async execute (message, { username }) {
+    async execute (message, { username, reason }) {
         try {
-            const userId = await userService.getIdFromUsername(username)
-            const byUserId = await userService.getIdFromUsername(message.member.displayName)
-            await applicationAdapter('put', `/v1/bans/${userId}`, { unbanned: true, byUserId })
+            const [userId, authorId] = await Promise.all([userService.getIdFromUsername(username), userService
+                .getIdFromUsername(message.member.displayName)])
+            await applicationAdapter('put', `/v1/bans/${userId}/cancel`, { authorId, reason })
             message.reply(`Successfully unbanned **${username}**.`)
         } catch (err) {
             message.reply(err.message)

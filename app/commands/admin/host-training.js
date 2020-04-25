@@ -5,6 +5,7 @@ const timeHelper = require('../../helpers/time')
 const applicationAdapter = require('../../adapters/application')
 const applicationConfig = require('../../../config/application')
 const { MessageEmbed } = require('discord.js')
+const userService = require('../../services/user')
 
 module.exports = class HostTrainingCommand extends Command {
     constructor (client) {
@@ -16,7 +17,7 @@ module.exports = class HostTrainingCommand extends Command {
             aliases: ['host'],
             description: 'Schedules a new training.',
             examples: ['host CD 4-3-2020 1:00 Be on time!', 'Host CSR 4-3-2020 2:00'],
-            clientPermissions: ['MANAGE_MESSAGES', 'SEND_MESSAGES'],
+            clientPermissions: ['SEND_MESSAGES'],
             args: [
                 {
                     key: 'type',
@@ -37,7 +38,7 @@ module.exports = class HostTrainingCommand extends Command {
                     validate: timeHelper.validTime
                 },
                 {
-                    key: 'specialNotes',
+                    key: 'notes',
                     type: 'string',
                     prompt: 'What notes would you like to add? Reply with "none" if you don\'t want to add any.',
                 }
@@ -45,25 +46,26 @@ module.exports = class HostTrainingCommand extends Command {
         })
     }
 
-    async execute (message, { type, date, time, specialNotes }) {
+    async execute (message, { type, date, time, notes }) {
         const role = groupService.getRoleByAbbreviation(type)
         const dateInfo = timeHelper.getDateInfo(date)
         const timeInfo = timeHelper.getTimeInfo(time)
         const dateUnix = Math.floor(new Date(dateInfo.year, dateInfo.month - 1, dateInfo.day, timeInfo.hours,
-            timeInfo.minutes).getTime() / 1000)
-        const afterNow = dateUnix - Math.floor(Date.now() / 1000) > 0
+            timeInfo.minutes).getTime())
+        const afterNow = dateUnix - Math.floor(Date.now()) > 0
         if (!afterNow) return message.reply('Please give a date and time that are after now.')
         try {
-            const trainingId = (await applicationAdapter('post', `/v1/groups/${applicationConfig
+            const authorId = await userService.getIdFromUsername(message.member.displayName)
+            const training = (await applicationAdapter('post', `/v1/groups/${applicationConfig
                 .groupId}/trainings`, {
-                by: message.member.displayName,
-                type,
+                notes: notes.toLowerCase() === 'none' ? undefined : notes,
                 date: dateUnix,
-                specialnotes: specialNotes.toLowerCase() === 'none' ? undefined : specialNotes
+                authorId,
+                type
             })).data
             const embed = new MessageEmbed()
                 .addField('Successfully scheduled', `**${role}** training on **${date}** at **${time}**.`)
-                .addField('Training ID', trainingId.toString())
+                .addField('Training ID', training.id.toString())
             message.replyEmbed(embed)
         } catch (err) {
             message.reply(err.message)

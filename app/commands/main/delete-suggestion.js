@@ -9,7 +9,7 @@ module.exports = class DeleteSuggestionCommand extends Command {
             name: 'deletesuggestion',
             aliases: ['delete'],
             description: 'Deletes your last suggested suggestion.',
-            clientPermissions: ['ADD_REACTIONS', 'SEND_MESSAGES']
+            clientPermissions: ['MANAGE_MESSAGES', 'ADD_REACTIONS', 'SEND_MESSAGES']
         })
     }
 

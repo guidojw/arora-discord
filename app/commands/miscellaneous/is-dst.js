@@ -8,11 +8,11 @@ module.exports = class IsDstCommand extends Command {
             group: 'miscellaneous',
             name: 'isdst',
             description: 'Checks if it is daylight savings time.',
-            clientPermissions: ['MANAGE_MESSAGES', 'SEND_MESSAGES']
+            clientPermissions: ['SEND_MESSAGES']
         })
     }
 
     async execute (message) {
-        message.reply(timeHelper.isDst(Date.now()))
+        message.reply(timeHelper.isDst(new Date()))
     }
 }

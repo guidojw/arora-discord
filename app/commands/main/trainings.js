@@ -32,7 +32,7 @@ module.exports = class TrainingsCommand extends Command {
                 const training = (await applicationAdapter('get', `/v1/groups/${applicationConfig
                     .groupId}/trainings/${trainingId}`)).data
                 const embed = new MessageEmbed()
-                    .addField(`Training ${training.id}`, groupService.getTrainingSentence(training))
+                    .addField(`Training ${training.id}`, await groupService.getTrainingSentence(training))
                 message.replyEmbed(embed)
             } else {
                 const trainings = (await applicationAdapter('get', `/v1/groups/${applicationConfig
@@ -41,7 +41,7 @@ module.exports = class TrainingsCommand extends Command {
                 trainings.sort((a, b) => {
                     return a.date - b.date
                 })
-                const embeds = discordService.getTrainingEmbeds(trainings)
+                const embeds = await discordService.getTrainingEmbeds(trainings)
                 for (const embed of embeds) {
                     await message.author.send(embed)
                 }

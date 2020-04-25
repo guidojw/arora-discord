@@ -11,7 +11,7 @@ module.exports = class TrainingProtocolsCommand extends Command {
             details: 'This command can only be run in the #hr channel.',
             aliases: ['tp'],
             description: 'Posts a link of the Training Protocols.',
-            clientPermissions: ['MANAGE_MESSAGES', 'SEND_MESSAGES']
+            clientPermissions: ['SEND_MESSAGES']
         })
     }
 

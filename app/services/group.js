@@ -1,22 +1,22 @@
 'use strict'
-const base = require('path').resolve('.')
-
 const timeHelper = require('../helpers/time')
-
 const applicationAdapter = require('../adapters/application')
+const userService = require('../services/user')
+
+const base = require('path').resolve('.')
 
 const config = require(base + '/config/application')
 
 exports.defaultTrainingShout = '[TRAININGS] There are new trainings being hosted soon, check out the Training ' +
     'Scheduler in the Group Center for more info!'
 
-exports.getTrainingSentence = training => {
+exports.getTrainingSentence = async training => {
     const role = training.type.toUpperCase()
-    const dateUnix = training.date
-    const readableDate = timeHelper.getDate(dateUnix * 1000)
-    const readableTime = timeHelper.getTime(dateUnix * 1000)
-    return `**${role}** training on **${readableDate}** at **${readableTime} ${timeHelper.isDst(dateUnix * 1000) &&
-    'CEST' || 'CET'}**, hosted by **${training.by}**.`
+    const date = new Date(training.date)
+    const readableDate = timeHelper.getDate(date)
+    const readableTime = timeHelper.getTime(date)
+    return `**${role}** training on **${readableDate}** at **${readableTime} ${timeHelper.isDst(date) && 'CEST' || 
+    'CET'}**, hosted by **${(await userService.getUser(training.authorId)).name}**.`
 }
 
 exports.getRoleByAbbreviation = str => {

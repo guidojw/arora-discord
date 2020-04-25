@@ -8,7 +8,7 @@ module.exports = class TheoreticalConductorTestCommand extends Command {
             group: 'miscellaneous',
             name: 'tcdt',
             description: 'Posts a link of the Theoretical Conductor Test.',
-            clientPermissions: ['MANAGE_MESSAGES', 'SEND_MESSAGES']
+            clientPermissions: ['SEND_MESSAGES']
         })
     }
 

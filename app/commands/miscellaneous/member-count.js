@@ -10,7 +10,7 @@ module.exports = class MemberCountCommand extends Command {
             group: 'miscellaneous',
             name: 'membercount',
             description: 'Posts the current member count of the group.',
-            clientPermissions: ['MANAGE_MESSAGES', 'SEND_MESSAGES'],
+            clientPermissions: ['SEND_MESSAGES'],
             args: [
                 {
                     key: 'groupId',

@@ -43,13 +43,23 @@ module.exports = class SuspensionsCommand extends Command {
                 const userId = await userService.getIdFromUsername(username)
                 const suspension = (await applicationAdapter('get', `/v1/groups/${applicationConfig
                     .groupId}/suspensions/${userId}`)).data
-                const days = suspension.duration / 86400
+                const days = suspension.duration / 86400000
+                const date = new Date(suspension.date)
+                let extensionDays = 0
+                if (suspension.extensions) {
+                    for (const extension of suspension.extensions) {
+                        extensionDays += extension.duration / 86400000
+                    }
+                }
+                const extensionString = extensionDays < 0 ? ` (${extensionDays})` : extensionDays > 0 ? ` (+${
+                    extensionDays})` : ''
                 const embed = new MessageEmbed()
                     .setTitle(`${message.argString ? `${username}'s` : 'Your'} suspension`)
-                    .addField('Start date', timeHelper.getDate(suspension.at * 1000), true)
-                    .addField('Start time', timeHelper.getTime(suspension.at * 1000), true)
-                    .addField('Duration', `${days} ${pluralize('day', days)}`, true)
-                    .addField('Rank back', suspension.rankback ? 'yes' : 'no', true)
+                    .addField('Start date', timeHelper.getDate(date), true)
+                    .addField('Start time', timeHelper.getTime(date), true)
+                    .addField('Duration', `${days}${extensionString} ${pluralize('day', days + 
+                        extensionDays)}`, true)
+                    .addField('Rank back', suspension.rankBack ? 'yes' : 'no', true)
                     .addField('Reason', suspension.reason)
                 message.replyEmbed(embed)
             } else {

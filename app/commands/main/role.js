@@ -14,7 +14,7 @@ module.exports = class RoleCommand extends Command {
             aliases: ['getrole'],
             description: 'Posts the group role of given username/you.',
             examples: ['role', 'role Happywalker'],
-            clientPermissions: ['MANAGE_MESSAGES', 'SEND_MESSAGES'],
+            clientPermissions: ['SEND_MESSAGES'],
             args: [
                 {
                     key: 'username',

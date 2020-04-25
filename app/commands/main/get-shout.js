@@ -10,7 +10,7 @@ module.exports = class GetShoutCommand extends Command {
             group: 'main',
             name: 'getshout',
             description: 'Gets the current group shout.',
-            clientPermissions: ['MANAGE_MESSAGES', 'SEND_MESSAGES']
+            clientPermissions: ['SEND_MESSAGES']
         })
     }
 

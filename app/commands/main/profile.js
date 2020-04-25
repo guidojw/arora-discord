@@ -11,7 +11,7 @@ module.exports = class ProfileCommand extends Command {
             aliases: ['playerurl', 'userurl', 'url'],
             description: 'Posts the Roblox profile of given/your username.',
             examples: ['profile', 'profile Happywalker'],
-            clientPermissions: ['MANAGE_MESSAGES', 'SEND_MESSAGES'],
+            clientPermissions: ['SEND_MESSAGES'],
             args: [
                 {
                     key: 'username',

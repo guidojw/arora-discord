@@ -9,8 +9,8 @@ module.exports = class ChangeSuspensionCommand extends Command {
         super(client, {
             group: 'admin',
             name: 'changesuspension',
-            details: 'Username must be a username that is being used on Roblox. RankBack must be true or false. Key ' +
-            'must be by, reason or rankBack. You can only change the by key of suspensions you created.',
+            details: 'Username must be a username that is being used on Roblox. Key must be author, reason or ' +
+                'rankBack. RankBack must be true or false. You can only change the author of suspensions you created.',
             description: 'Changes given username\'s suspension\'s key to given data.',
             examples: ['changesuspension Happywalker rankBack false'],
             clientPermissions: ['SEND_MESSAGES'],
@@ -24,11 +24,11 @@ module.exports = class ChangeSuspensionCommand extends Command {
                     key: 'key',
                     type: 'string',
                     prompt: 'What key would you like to change?',
-                    oneOf: ['by', 'reason', 'rankback']
+                    oneOf: ['author', 'reason', 'rankback']
                 },
                 {
                     key: 'data',
-                    type: 'string',
+                    type: 'boolean|string',
                     prompt: 'What would you like to change this key\'s data to?'
                 }
             ]
@@ -39,19 +39,20 @@ module.exports = class ChangeSuspensionCommand extends Command {
         key = key.toLowerCase()
         const changes = {}
         try {
-            if (key === 'by') {
-                changes.by = await userService.getIdFromUsername(data)
+            if (key === 'author') {
+                changes.authorId = await userService.getIdFromUsername(data)
             } else if (key === 'reason') {
                 changes.reason = data
             } else if (key === 'rankback') {
-                if (data !== 'true' && data !== 'false') return message.reply(`**${data}** is not a valid value for ` +
-                    'rankBack.')
-                changes.rankback = data === 'true' ? 1 : 0
+                if (data !== true && data !== false) {
+                    return message.reply(`**${data}** is not a valid value for rankBack.`)
+                }
+                changes.rankBack = data
             }
-            changes.byUserId = await userService.getIdFromUsername(message.member.displayName)
-            const userId = await userService.getIdFromUsername(username)
+            const [userId, editorId] = await Promise.all([userService.getIdFromUsername(username), userService
+                .getIdFromUsername(message.member.displayName)])
             await applicationAdapter('put', `/v1/groups/${applicationConfig.groupId}/suspensions/${
-                userId}`, changes)
+                userId}`, { changes, editorId })
             message.reply(`Successfully changed **${username}**'s suspension.`)
         } catch (err) {
             message.reply(err.message)

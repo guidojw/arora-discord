@@ -11,8 +11,8 @@ module.exports = class ChangeTrainingCommand extends Command {
         super(client, {
             group: 'admin',
             name: 'changetraining',
-            details: 'TrainingId must be the ID of a currently scheduled training. Key must be type, date, time or ' +
-            'specialNotes.',
+            details: 'TrainingId must be the ID of a currently scheduled training. Key must be author, type, date, ' +
+            'time or notes.',
             description: 'Changes training with trainingId\'s key to given data.',
             examples: ['changetraining 1 date 5-3-2020'],
             clientPermissions: ['SEND_MESSAGES'],
@@ -26,7 +26,7 @@ module.exports = class ChangeTrainingCommand extends Command {
                     key: 'key',
                     type: 'string',
                     prompt: 'What key would you like to change?',
-                    oneOf: ['type', 'date', 'time', 'specialnotes', 'key']
+                    oneOf: ['author', 'type', 'date', 'time', 'notes']
                 },
                 {
                     key: 'data',
@@ -41,10 +41,10 @@ module.exports = class ChangeTrainingCommand extends Command {
         key = key.toLowerCase()
         const changes = {}
         try {
-            if (key === 'by') {
-                changes.by = await userService.getIdFromUsername(data)
-            } else if (key === 'specialnotes') {
-                changes.specialnotes = data
+            if (key === 'author') {
+                changes.authorId = await userService.getIdFromUsername(data)
+            } else if (key === 'notes') {
+                changes.notes = data
             } else if (key === 'type') {
                 const type = data.toUpperCase()
                 if (!groupService.getRoleByAbbreviation(type)) {
@@ -53,24 +53,24 @@ module.exports = class ChangeTrainingCommand extends Command {
                 changes.type = type
             } else if (key === 'date' || key === 'time') {
                 const training = await groupService.getTrainingById(trainingId)
-                const unix = training.date * 1000
+                const date = new Date(training.date)
                 let dateInfo
                 let timeInfo
                 if (key === 'date') {
                     if (!timeHelper.validDate(data)) return message.reply('Please enter a valid date.')
-                    timeInfo = timeHelper.getTimeInfo(timeHelper.getTime(unix))
+                    timeInfo = timeHelper.getTimeInfo(timeHelper.getTime(date))
                     dateInfo = timeHelper.getDateInfo(data)
                 } else {
                     if (!timeHelper.validTime(data)) return message.reply('Please enter a valid time.')
-                    dateInfo = timeHelper.getDateInfo(timeHelper.getDate(unix))
+                    dateInfo = timeHelper.getDateInfo(timeHelper.getDate(date))
                     timeInfo = timeHelper.getTimeInfo(data)
                 }
                 changes.date = Math.floor(new Date(dateInfo.year, dateInfo.month - 1, dateInfo.day, timeInfo
-                    .hours, timeInfo.minutes).getTime() / 1000)
+                    .hours, timeInfo.minutes).getTime())
             }
-            changes.byUserId = await userService.getIdFromUsername(message.member.displayName)
+            const editorId = await userService.getIdFromUsername(message.member.displayName)
             await applicationAdapter('put', `/v1/groups/${applicationConfig.groupId}/trainings/${
-                trainingId}`, changes)
+                trainingId}`, { changes, editorId })
             message.reply(`Successfully changed training with ID **${trainingId}**.`)
         } catch (err) {
             message.reply(err.message)

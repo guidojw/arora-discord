@@ -10,7 +10,7 @@ module.exports = class IsInDiscordCommand extends Command {
             details: 'Username must be a username that is being used on Roblox.',
             description: 'Checks if given username is in the Discord server.',
             examples: ['isindiscord Happywalker'],
-            clientPermissions: ['MANAGE_MESSAGES', 'SEND_MESSAGES'],
+            clientPermissions: ['SEND_MESSAGES'],
             args: [
                 {
                     key: 'username',
