@@ -142,9 +142,18 @@ exports.getSuspensionEmbeds = async suspensions => {
         const role = groupService.getAbbreviationByRank(suspension.rank)
         const rankBack = suspension.rankBack ? 'yes' : 'no'
         const dateString = timeHelper.getDate(new Date(suspension.date))
-        const duration = suspension.duration / 86400000
+        const days = suspension.duration / 86400000
+        let extensionDays = 0
+        if (suspension.extensions) {
+            for (const extension of suspension.extensions) {
+                extensionDays += extension.duration / 86400000
+            }
+        }
+        const extensionString = extensionDays < 0 ? ` (${extensionDays})` : extensionDays > 0 ? ` (+${
+            extensionDays})` : ''
         const line = `**${username}** (${role}, rankback **${rankBack}**) by **${author.name}** at **${dateString}** ` +
-        `for **${duration} ${pluralize('day', duration)}** with reason:\n*${suspension.reason}*`
+        `for **${days}${extensionString} ${pluralize('day', days + extensionDays)}** with reason:\n*${suspension
+            .reason}*`
         const addition = line.length + 16 // TODO: tweak additions
         if (sum + addition <= 6000) {
             if (message.length + line.length <= 1024) {
