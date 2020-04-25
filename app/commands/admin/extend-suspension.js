@@ -18,7 +18,7 @@ module.exports = class ExtendSuspensionCommand extends Command {
                 {
                     key: 'username',
                     type: 'string',
-                    prompt: 'Who would you like to suspend?'
+                    prompt: 'Whose suspension would you like to extend?'
                 },
                 {
                     key: 'days',
@@ -43,7 +43,7 @@ module.exports = class ExtendSuspensionCommand extends Command {
         try {
             const [userId, authorId] = await Promise.all([userService.getIdFromUsername(username), userService
                 .getIdFromUsername(message.member.displayName)])
-            await applicationAdapter('put', `/v1/groups/${applicationConfig.groupId}/suspensions/${
+            await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId}/suspensions/${
                 userId}/extend`, {
                 duration: days * 86400000,
                 authorId,

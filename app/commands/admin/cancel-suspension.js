@@ -32,7 +32,7 @@ module.exports = class CancelSuspensionCommand extends Command {
         try {
             const [userId, authorId] = await Promise.all([userService.getIdFromUsername(username), userService
                 .getIdFromUsername(message.member.displayName)])
-            await applicationAdapter('put', `/v1/groups/${applicationConfig.groupId}/suspensions/${
+            await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId}/suspensions/${
                 userId}/cancel`, {
                 authorId,
                 reason

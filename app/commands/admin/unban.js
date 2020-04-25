@@ -32,7 +32,7 @@ module.exports = class UnbanCommand extends Command {
         try {
             const [userId, authorId] = await Promise.all([userService.getIdFromUsername(username), userService
                 .getIdFromUsername(message.member.displayName)])
-            await applicationAdapter('put', `/v1/bans/${userId}/cancel`, { authorId, reason })
+            await applicationAdapter('post', `/v1/bans/${userId}/cancel`, { authorId, reason })
             message.reply(`Successfully unbanned **${username}**.`)
         } catch (err) {
             message.reply(err.message)
