@@ -31,7 +31,7 @@ module.exports = class CancelTrainingCommand extends Command {
     async execute (message, { trainingId, reason }) {
         try {
             const authorId = await userService.getIdFromUsername(message.member.displayName)
-            await applicationAdapter('put', `/v1/groups/${applicationConfig.groupId}/trainings/${
+            await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId}/trainings/${
                 trainingId}/cancel`, {
                 authorId,
                 reason
