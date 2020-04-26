@@ -7,11 +7,13 @@ const Commando = require('discord.js-commando')
 const { MessageEmbed } = require('discord.js')
 const SettingProvider = require('./setting-provider')
 const { stripIndents } = require('common-tags')
-const applicationConfig = require('../../config/application')
 const WebSocketController = require('./web-socket')
 const discordService = require('../services/discord')
 const userService = require('../services/user')
 const stringHelper = require('../helpers/string')
+const pluralize = require('pluralize')
+
+const applicationConfig = require('../../config/application')
 
 module.exports = class Bot {
     constructor () {
@@ -53,6 +55,7 @@ module.exports = class Bot {
 
         this.webSocketController = new WebSocketController(process.env.HOST)
         this.webSocketController.on('rankChanged', this.rankChanged.bind(this))
+        this.webSocketController.on('trainDeveloperPayoutReport', this.trainDeveloperPayoutReport.bind(this))
 
         this.client.login(process.env.DISCORD_TOKEN)
     }
@@ -188,5 +191,25 @@ module.exports = class Bot {
                 return { name: `${totalMemberCount} users`, options: { type: 'WATCHING' }}
             }
         }
+    }
+
+    async trainDeveloperPayoutReport (developersSales) {
+        const developerIds = Object.keys(developersSales)
+        const developers = await userService.getUsers(developerIds)
+        let emoji
+        const masterGuild = this.getGuild(applicationConfig.masterGuildId)
+        if (masterGuild) {
+            const emojis = masterGuild.getData('emojis')
+            emoji = masterGuild.guild.emojis.cache.find(emoji => emoji.ids === emojis.robuxEmoji)
+        }
+        const embed = new MessageEmbed()
+            .setTitle('Train Developers Payout Report')
+        for (const [id, developerSales] of Object.entries(developersSales)) {
+            const username = developers.find(developer => developer.id === parseInt(id)).name
+            embed.addField(username, `Has sold **${developerSales.total.amount}** ${pluralize('train', 
+                developerSales.total.amount)} and earned ${emoji ? emoji: ''}${emoji ? ' ': ''}**${Math
+                .ceil(developerSales.total.robux)}**${!emoji ? ' Robux' : ''}.`)
+        }
+        this.client.owners[0].send(embed)
     }
 }
