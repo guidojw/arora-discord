@@ -200,7 +200,7 @@ module.exports = class Bot {
         const masterGuild = this.getGuild(applicationConfig.masterGuildId)
         if (masterGuild) {
             const emojis = masterGuild.getData('emojis')
-            emoji = masterGuild.guild.emojis.cache.find(emoji => emoji.ids === emojis.robuxEmoji)
+            emoji = masterGuild.guild.emojis.cache.find(emoji => emoji.id === emojis.robuxEmoji)
         }
         const embed = new MessageEmbed()
             .setTitle('Train Developers Payout Report')
