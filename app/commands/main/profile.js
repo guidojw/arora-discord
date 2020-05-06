@@ -24,11 +24,7 @@ module.exports = class ProfileCommand extends Command {
     }
 
     async execute (message, { username }) {
-        try {
-            const userId = await userService.getIdFromUsername(username || message.member.displayName)
-            message.reply(`https://www.roblox.com/users/${userId}/profile`)
-        } catch (err) {
-            message.reply(err.message)
-        }
+        const userId = await userService.getIdFromUsername(username || message.member.displayName)
+        message.reply(`https://www.roblox.com/users/${userId}/profile`)
     }
 }

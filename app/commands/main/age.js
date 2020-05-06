@@ -28,17 +28,13 @@ module.exports = class AgeCommand extends Command {
 
     async execute (message, { username }) {
         username = username || message.member.displayName
-        try {
-            const userId = await userService.getIdFromUsername(username)
-            const joinDate = new Date((await applicationAdapter('get', `/v1/users/${userId}/join-` +
-                'date')).data)
-            const age = Math.floor((Date.now() - joinDate.getTime()) / 86400000)
-            const embed = new MessageEmbed()
-                .addField(`${message.argString ? username + '\'s' : 'Your'} age`,`${age} ${pluralize('day', 
-                    age)}`)
-            message.replyEmbed(embed)
-        } catch (err) {
-            message.reply(err.message)
-        }
+        const userId = await userService.getIdFromUsername(username)
+        const joinDate = new Date((await applicationAdapter('get', `/v1/users/${userId}/join-` +
+            'date')).data)
+        const age = Math.floor((Date.now() - joinDate.getTime()) / 86400000)
+        const embed = new MessageEmbed()
+            .addField(`${message.argString ? username + '\'s' : 'Your'} age`,`${age} ${pluralize('day', 
+                age)}`)
+        message.replyEmbed(embed)
     }
 }
