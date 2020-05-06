@@ -2,6 +2,7 @@
 const Command = require('../../controllers/command')
 const { MessageEmbed } = require('discord.js')
 const userService = require('../../services/user')
+
 const applicationConfig = require('../../../config/application')
 
 module.exports = class BadgesCommand extends Command {
@@ -35,6 +36,7 @@ module.exports = class BadgesCommand extends Command {
             .addField('TTDT', hasTtdt ? 'yes' : 'no', true)
             .addField('PTDT', hasPtdt ? 'yes' : 'no', true)
             .addField('TCDT', hasTcdt ? 'yes' : 'no', true)
+            .setColor(applicationConfig.primaryColor)
         message.replyEmbed(embed)
     }
 }

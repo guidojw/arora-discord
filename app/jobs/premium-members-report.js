@@ -27,6 +27,7 @@ module.exports = async guild => {
     if (monthlyPremiumMembers.length > 0) {
         const embed = new MessageEmbed()
             .setTitle('Server Booster Report')
+            .setColor(0xff73fa)
         const emojis = guild.getData('emojis')
         const emoji = guild.guild.emojis.cache.find(emoji => emoji.id === emojis.boostEmoji)
         for (const { member, months } of monthlyPremiumMembers) {

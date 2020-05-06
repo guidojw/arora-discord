@@ -1,9 +1,10 @@
 'use strict'
 const Command = require('../../controllers/command')
 const applicationAdapter = require('../../adapters/application')
-const applicationConfig = require('../../../config/application')
 const { MessageEmbed } = require('discord.js')
 const userService = require('../../services/user')
+
+const applicationConfig = require('../../../config/application')
 
 module.exports = class AnnounceTrainingCommand extends Command {
     constructor (client) {
@@ -39,6 +40,7 @@ module.exports = class AnnounceTrainingCommand extends Command {
         const content = (await applicationAdapter('post', `/v1/groups/${applicationConfig
             .groupId}/trainings/${trainingId}/announce`, { medium, authorId })).data
         const embed = new MessageEmbed()
+            .setColor(applicationConfig.primaryColor)
         if (medium === 'both' || medium === 'discord') {
             embed.addField('Successfully announced', content.announcement)
         }

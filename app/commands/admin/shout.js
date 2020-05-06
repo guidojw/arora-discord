@@ -1,9 +1,10 @@
 'use strict'
 const Command = require('../../controllers/command')
 const userService = require('../../services/user')
-const applicationConfig = require('../../../config/application')
 const applicationAdapter = require('../../adapters/application')
 const { MessageEmbed } = require('discord.js')
+
+const applicationConfig = require('../../../config/application')
 
 module.exports = class ShoutCommand extends Command {
     constructor (client) {
@@ -39,6 +40,7 @@ module.exports = class ShoutCommand extends Command {
         } else {
             const embed = new MessageEmbed()
                 .addField('Successfully shouted', shout.body)
+                .setColor(applicationConfig.primaryColor)
             message.replyEmbed(embed)
         }
     }

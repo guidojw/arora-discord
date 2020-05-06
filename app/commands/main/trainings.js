@@ -1,10 +1,11 @@
 'use strict'
 const Command = require('../../controllers/command')
 const applicationAdapter = require('../../adapters/application')
-const applicationConfig = require('../../../config/application')
 const discordService = require('../../services/discord')
 const groupService = require('../../services/group')
 const { MessageEmbed } = require('discord.js')
+
+const applicationConfig = require('../../../config/application')
 
 module.exports = class TrainingsCommand extends Command {
     constructor (client) {
@@ -32,6 +33,7 @@ module.exports = class TrainingsCommand extends Command {
                 .groupId}/trainings/${trainingId}`)).data
             const embed = new MessageEmbed()
                 .addField(`Training ${training.id}`, await groupService.getTrainingSentence(training))
+                .setColor(applicationConfig.primaryColor)
             message.replyEmbed(embed)
         } else {
             const trainings = (await applicationAdapter('get', `/v1/groups/${applicationConfig

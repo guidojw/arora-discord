@@ -5,6 +5,8 @@ const userService = require('../../services/user')
 const pluralize = require('pluralize')
 const { MessageEmbed } = require('discord.js')
 
+const applicationConfig = require('../../../config/application')
+
 module.exports = class AgeCommand extends Command {
     constructor (client) {
         super(client, {
@@ -35,6 +37,7 @@ module.exports = class AgeCommand extends Command {
         const embed = new MessageEmbed()
             .addField(`${message.argString ? username + '\'s' : 'Your'} age`,`${age} ${pluralize('day', 
                 age)}`)
+            .setColor(applicationConfig.primaryColor)
         message.replyEmbed(embed)
     }
 }

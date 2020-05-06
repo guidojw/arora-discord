@@ -5,6 +5,8 @@ const timeHelper = require('../../helpers/time')
 const applicationAdapter = require('../../adapters/application')
 const { MessageEmbed } = require('discord.js')
 
+const applicationConfig = require('../../../config/application')
+
 module.exports = class JoinDateCommand extends Command {
     constructor (client) {
         super(client, {
@@ -33,6 +35,7 @@ module.exports = class JoinDateCommand extends Command {
         const embed = new MessageEmbed()
             .addField(`${message.argString ? username: 'Your'} join date`, `${timeHelper.getDate(
                 joinDate)}`)
+            .setColor(applicationConfig.primaryColor)
         message.replyEmbed(embed)
     }
 }

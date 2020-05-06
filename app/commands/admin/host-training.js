@@ -3,9 +3,10 @@ const Command = require('../../controllers/command')
 const groupService = require('../../services/group')
 const timeHelper = require('../../helpers/time')
 const applicationAdapter = require('../../adapters/application')
-const applicationConfig = require('../../../config/application')
 const { MessageEmbed } = require('discord.js')
 const userService = require('../../services/user')
+
+const applicationConfig = require('../../../config/application')
 
 module.exports = class HostTrainingCommand extends Command {
     constructor (client) {
@@ -65,6 +66,7 @@ module.exports = class HostTrainingCommand extends Command {
         const embed = new MessageEmbed()
             .addField('Successfully scheduled', `**${role}** training on **${date}** at **${time}**.`)
             .addField('Training ID', training.id.toString())
+            .setColor(applicationConfig.primaryColor)
         message.replyEmbed(embed)
     }
 }

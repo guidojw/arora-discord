@@ -6,6 +6,8 @@ const userService = require('../../services/user')
 const timeHelper = require('../../helpers/time')
 const { MessageEmbed } = require('discord.js')
 
+const applicationConfig = require('../../../config/application')
+
 module.exports = class BansCommand extends Command {
     constructor (client) {
         super(client, {
@@ -31,6 +33,7 @@ module.exports = class BansCommand extends Command {
             const ban = (await applicationAdapter('get', `/v1/bans/${userId}`)).data
             const embed = new MessageEmbed()
                 .setTitle(`${message.argString ? `${username}'s` : 'Your'} ban`)
+                .setColor(applicationConfig.primaryColor)
             if (ban.date) {
                 const date = new Date(ban.date)
                 embed.addField('Start date', timeHelper.getDate(date), true)
