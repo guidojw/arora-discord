@@ -26,7 +26,8 @@ module.exports = class UserIdCommand extends Command {
     }
 
     async execute (message, { username }) {
-        username = username ? typeof user === 'string' ? username : username.displayName : message.member.displayName
+        username = username ? typeof username === 'string' ? username : username.displayName : message.member
+            .displayName
         const userId = await userService.getIdFromUsername(username)
         const embed = new MessageEmbed()
             .addField(`${message.argString ? username + '\'s' : 'Your'} user ID`, userId)

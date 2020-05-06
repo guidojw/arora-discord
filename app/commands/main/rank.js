@@ -27,7 +27,8 @@ module.exports = class RankCommand extends Command {
     }
 
     async execute (message, { username }) {
-        username = username ? typeof user === 'string' ? username : username.displayName : message.member.displayName
+        username = username ? typeof username === 'string' ? username : username.displayName : message.member
+            .displayName
         const userId = await userService.getIdFromUsername(username)
         const rank = (await applicationAdapter('get', `/v1/users/${userId}/rank/${
             applicationConfig.groupId}`)).data

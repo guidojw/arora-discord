@@ -29,7 +29,7 @@ module.exports = class BansCommand extends Command {
 
     async execute (message, { username }) {
         if (username) {
-            username = typeof user === 'string' ? username : username.displayName
+            username = typeof username === 'string' ? username : username.displayName
             const userId = await userService.getIdFromUsername(username)
             const ban = (await applicationAdapter('get', `/v1/bans/${userId}`)).data
             const embed = new MessageEmbed()

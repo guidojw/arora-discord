@@ -41,7 +41,7 @@ module.exports = class ChangeBanCommand extends Command {
         } else if (key === 'reason') {
             changes.reason = data
         }
-        username = typeof user === 'string' ? username : username.displayName
+        username = typeof username === 'string' ? username : username.displayName
         const [userId, editorId] = await Promise.all([userService.getIdFromUsername(username), userService
             .getIdFromUsername(message.member.displayName)])
         await applicationAdapter('put', `/v1/bans/${userId}`, { changes, editorId })

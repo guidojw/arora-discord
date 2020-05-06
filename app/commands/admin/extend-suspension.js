@@ -41,7 +41,7 @@ module.exports = class ExtendSuspensionCommand extends Command {
     }
 
     async execute (message, { username, days, reason }) {
-        username = typeof user === 'string' ? username : username.displayName
+        username = typeof username === 'string' ? username : username.displayName
         const [userId, authorId] = await Promise.all([userService.getIdFromUsername(username), userService
             .getIdFromUsername(message.member.displayName)])
         await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId}/suspensions/${

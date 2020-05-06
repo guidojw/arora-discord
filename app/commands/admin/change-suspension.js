@@ -49,7 +49,7 @@ module.exports = class ChangeSuspensionCommand extends Command {
             }
             changes.rankBack = data
         }
-        username = typeof user === 'string' ? username : username.displayName
+        username = typeof username === 'string' ? username : username.displayName
         const [userId, editorId] = await Promise.all([userService.getIdFromUsername(username), userService
             .getIdFromUsername(message.member.displayName)])
         await applicationAdapter('put', `/v1/groups/${applicationConfig.groupId}/suspensions/${

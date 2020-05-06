@@ -39,7 +39,7 @@ module.exports = class SuspensionsCommand extends Command {
         }
 
         if (username) {
-            username = typeof user === 'string' ? username : username.displayName
+            username = typeof username === 'string' ? username : username.displayName
             const userId = await userService.getIdFromUsername(username)
             const suspension = (await applicationAdapter('get', `/v1/groups/${applicationConfig
                 .groupId}/suspensions/${userId}`)).data
