@@ -2,11 +2,12 @@
 const Command = require('../../controllers/command')
 const applicationAdapter = require('../../adapters/application')
 const discordService = require('../../services/discord')
-const applicationConfig = require('../../../config/application')
 const userService = require('../../services/user')
 const timeHelper = require('../../helpers/time')
 const { MessageEmbed } = require('discord.js')
 const pluralize = require('pluralize')
+
+const applicationConfig = require('../../../config/application')
 
 module.exports = class SuspensionsCommand extends Command {
     constructor (client) {
@@ -61,6 +62,7 @@ module.exports = class SuspensionsCommand extends Command {
                         extensionDays)}`, true)
                     .addField('Rank back', suspension.rankBack ? 'yes' : 'no', true)
                     .addField('Reason', suspension.reason)
+                    .setColor(applicationConfig.primaryColor)
                 message.replyEmbed(embed)
             } else {
                 const suspensions = (await applicationAdapter('get', `/v1/groups/${applicationConfig

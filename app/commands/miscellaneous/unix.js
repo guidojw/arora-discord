@@ -2,6 +2,8 @@
 const Command = require('../../controllers/command')
 const { MessageEmbed } = require('discord.js')
 
+const applicationConfig = require('../../../config/application')
+
 module.exports = class UnixCommand extends Command {
     constructor (client) {
         super(client, {
@@ -16,6 +18,7 @@ module.exports = class UnixCommand extends Command {
     execute (message) {
         const embed = new MessageEmbed()
             .addField('Current Unix time', Math.round(Date.now() / 1000))
+            .setColor(applicationConfig.primaryColor)
         message.replyEmbed(embed)
     }
 }

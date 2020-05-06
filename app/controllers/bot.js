@@ -89,6 +89,7 @@ module.exports = class Bot {
             .setTitle(`Hey ${member.user.tag},`)
             .setDescription(`You're the **${member.guild.memberCount}th** member on **${member.guild.name}**!`)
             .setThumbnail(member.user.displayAvatarURL())
+            .setColor(applicationConfig.primaryColor)
         const guild = this.getGuild(member.guild.id)
         guild.guild.channels.cache.get(guild.getData('channels').welcomeChannel).send(embed)
     }
@@ -101,6 +102,7 @@ module.exports = class Bot {
             .setDescription(stripIndents`${message.author} **used** \`${command.name}\` **command in** ${message
                 .channel} [Jump to Message](${message.url})
                 ${message.content}`)
+            .setColor(applicationConfig.primaryColor)
         const guild = this.getGuild(message.guild.id)
         guild.guild.channels.cache.get(guild.getData('channels').logsChannel).send(embed)
     }
@@ -204,6 +206,7 @@ module.exports = class Bot {
         }
         const embed = new MessageEmbed()
             .setTitle('Train Developers Payout Report')
+            .setColor(0xfff)
         for (const [id, developerSales] of Object.entries(developersSales)) {
             const username = developers.find(developer => developer.id === parseInt(id)).name
             embed.addField(username, `Has sold **${developerSales.total.amount}** ${pluralize('train', 

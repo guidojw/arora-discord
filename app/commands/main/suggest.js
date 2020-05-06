@@ -30,6 +30,7 @@ module.exports = class SuggestCommand extends Command {
         const embed = new MessageEmbed()
             .setDescription(suggestion)
             .setAuthor(message.author.tag, message.author.displayAvatarURL(), authorUrl)
+            .setColor(0x000af43)
         if (message.attachments.size > 0) {
             const attachment = message.attachments.first()
             if (attachment.height) embed.setImage(attachment.url)

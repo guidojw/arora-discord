@@ -3,6 +3,8 @@ const Command = require('../../controllers/command')
 const timeHelper = require('../../helpers/time')
 const { MessageEmbed } = require('discord.js')
 
+const applicationConfig = require('../../../config/application')
+
 module.exports = class TimeCommand extends Command {
     constructor (client) {
         super(client, {
@@ -32,6 +34,7 @@ module.exports = class TimeCommand extends Command {
         const timeString = hours + ':' + minutes
         const embed = new MessageEmbed()
             .addField('Current time', timeString)
+            .setColor(applicationConfig.primaryColor)
         message.replyEmbed(embed)
     }
 }

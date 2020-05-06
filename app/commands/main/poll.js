@@ -3,6 +3,8 @@ const Command = require('../../controllers/command')
 const discordService = require('../../services/discord')
 const { MessageEmbed } = require('discord.js')
 
+const applicationConfig = require('../../../config/application')
+
 module.exports = class PollCommand extends Command {
     constructor (client) {
         super(client, {
@@ -33,6 +35,7 @@ module.exports = class PollCommand extends Command {
         const embed = new MessageEmbed()
             .setDescription(poll)
             .setAuthor(message.author.tag, message.author.displayAvatarURL())
+            .setColor(applicationConfig.primaryColor)
         const newMessage = await message.channel.send(embed)
         if (options.length > 0) {
             for (const option of options) {

@@ -21,6 +21,7 @@ module.exports = class GetShoutCommand extends Command {
             const embed = new MessageEmbed()
                 .addField(`Current shout by ${shout.poster.username}`, shout.body)
                 .setTimestamp(shout.updated)
+                .setColor(applicationConfig.primaryColor)
             message.replyEmbed(embed)
         } else {
             message.reply('There currently is no shout.')

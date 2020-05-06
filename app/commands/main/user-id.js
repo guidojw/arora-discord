@@ -3,6 +3,8 @@ const Command = require('../../controllers/command')
 const userService = require('../../services/user')
 const { MessageEmbed } = require('discord.js')
 
+const applicationConfig = require('../../../config/application')
+
 module.exports = class UserIdCommand extends Command {
     constructor (client) {
         super(client, {
@@ -30,6 +32,7 @@ module.exports = class UserIdCommand extends Command {
             const userId = await userService.getIdFromUsername(username)
             const embed = new MessageEmbed()
                 .addField(`${message.argString ? username + '\'s' : 'Your'} user ID`, userId)
+                .setColor(applicationConfig.primaryColor)
             message.replyEmbed(embed)
         } catch (err) {
             message.reply(err.message)
