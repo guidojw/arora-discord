@@ -2,11 +2,9 @@
 const applicationAdapter = require('../adapters/application')
 
 exports.getIdFromUsername = async username => {
-    try {
-        return (await applicationAdapter('get', `/v1/users/${username}/user-id`)).data
-    } catch (err) {
-        throw new Error(`**${username}** doesn't exist on Roblox.`)
-    }
+    const userId = (await applicationAdapter('get', `/v1/users/${username}/user-id`)).data
+    if (!userId) throw new Error(`**${username}** doesn't exist on Roblox.`)
+    return userId
 }
 
 exports.hasBadge = async (userId, badgeId) => {

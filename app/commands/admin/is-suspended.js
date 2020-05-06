@@ -24,17 +24,13 @@ module.exports = class IsSuspendedCommand extends Command {
     }
 
     async execute (message, { username }) {
-        try {
-            const userId = await userService.getIdFromUsername(username)
-            const suspension = (await applicationAdapter('get', `/v1/groups/${applicationConfig
-                .groupId}/suspensions/${userId}`)).data
-            if (suspension) {
-                message.reply(`Yes, **${username}** is suspended.`)
-            } else {
-                message.reply(`No, **${username}** is not suspended.`)
-            }
-        } catch (err) {
-            message.reply(err.message)
+        const userId = await userService.getIdFromUsername(username)
+        const suspension = (await applicationAdapter('get', `/v1/groups/${applicationConfig
+            .groupId}/suspensions/${userId}`)).data
+        if (suspension) {
+            message.reply(`Yes, **${username}** is suspended.`)
+        } else {
+            message.reply(`No, **${username}** is not suspended.`)
         }
     }
 }

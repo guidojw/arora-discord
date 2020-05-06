@@ -27,16 +27,12 @@ module.exports = class JoinDateCommand extends Command {
 
     async execute (message, { username }) {
         username = username || message.member.displayName
-        try {
-            const userId = await userService.getIdFromUsername(username)
-            const joinDate = new Date((await applicationAdapter('get', `/v1/users/${userId}/join-` +
-                'date')).data)
-            const embed = new MessageEmbed()
-                .addField(`${message.argString ? username: 'Your'} join date`, `${timeHelper.getDate(
-                    joinDate)}`)
-            message.replyEmbed(embed)
-        } catch (err) {
-            message.reply(err.message)
-        }
+        const userId = await userService.getIdFromUsername(username)
+        const joinDate = new Date((await applicationAdapter('get', `/v1/users/${userId}/join-` +
+            'date')).data)
+        const embed = new MessageEmbed()
+            .addField(`${message.argString ? username: 'Your'} join date`, `${timeHelper.getDate(
+                joinDate)}`)
+        message.replyEmbed(embed)
     }
 }

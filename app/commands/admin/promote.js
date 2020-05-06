@@ -24,15 +24,11 @@ module.exports = class PromoteCommand extends Command {
     }
 
     async execute (message, { username }) {
-        try {
-            const [userId, authorId] = await Promise.all([userService.getIdFromUsername(username), userService
-                .getIdFromUsername(message.member.displayName)])
-            const roles = (await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId
-            }/promote/${userId}`, { authorId })).data
-            message.reply(`Successfully promoted **${username}** from **${roles.oldRole.name}** to **${roles.newRole
-                .name}**.`)
-        } catch (err) {
-            message.reply(err.message)
-        }
+        const [userId, authorId] = await Promise.all([userService.getIdFromUsername(username), userService
+            .getIdFromUsername(message.member.displayName)])
+        const roles = (await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId
+        }/promote/${userId}`, { authorId })).data
+        message.reply(`Successfully promoted **${username}** from **${roles.oldRole.name}** to **${roles.newRole
+            .name}**.`)
     }
 }

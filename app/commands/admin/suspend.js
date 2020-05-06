@@ -44,20 +44,16 @@ module.exports = class SuspendCommand extends Command {
     }
 
     async execute (message, { username, days, reason, rankBack }) {
-        try {
-            const [userId, authorId] = await Promise.all([userService.getIdFromUsername(username), userService
-                .getIdFromUsername(message.member.displayName)])
-            await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId}/suspensions`,
-                {
-                    duration: days * 86400000,
-                    rankBack,
-                    authorId,
-                    userId,
-                    reason
-                })
-            message.reply(`Successfully suspended **${username}**.`)
-        } catch (err) {
-            message.reply(err.message)
-        }
+        const [userId, authorId] = await Promise.all([userService.getIdFromUsername(username), userService
+            .getIdFromUsername(message.member.displayName)])
+        await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId}/suspensions`,
+            {
+                duration: days * 86400000,
+                rankBack,
+                authorId,
+                userId,
+                reason
+            })
+        message.reply(`Successfully suspended **${username}**.`)
     }
 }
