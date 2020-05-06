@@ -1,24 +1,24 @@
 'use strict'
 const Command = require('../../controllers/command')
 const userService = require('../../services/user')
-const applicationConfig = require('../../../config/application')
 const applicationAdapter = require('../../adapters/application')
+
+const applicationConfig = require('../../../config/application')
 
 module.exports = class SuspendCommand extends Command {
     constructor (client) {
         super(client, {
             group: 'admin',
             name: 'suspend',
-            details: 'Username must be a username that is being used on Roblox. Days can be max 7 and rankBack must ' +
-            'be true or false. The reason must be encapsulated in quotes.',
-            description: 'Suspends username in the group.',
+            details: 'Days can be max 7 and rankBack must be true or false. The reason must be encapsulated in quotes.',
+            description: 'Suspends given user in the group.',
             examples: ['suspend Happywalker 3 "Spamming the group wall." false', 'suspend Happywalker 3 "Ignoring ' +
             'rules."'],
             clientPermissions: ['SEND_MESSAGES'],
             args: [
                 {
                     key: 'username',
-                    type: 'string',
+                    type: 'member|string',
                     prompt: 'Who would you like to suspend?'
                 },
                 {
@@ -44,6 +44,7 @@ module.exports = class SuspendCommand extends Command {
     }
 
     async execute (message, { username, days, reason, rankBack }) {
+        username = typeof user === 'string' ? username : username.displayName
         const [userId, authorId] = await Promise.all([userService.getIdFromUsername(username), userService
             .getIdFromUsername(message.member.displayName)])
         await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId}/suspensions`,

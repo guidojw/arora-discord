@@ -8,15 +8,14 @@ module.exports = class ChangeBanCommand extends Command {
         super(client, {
             group: 'admin',
             name: 'changeban',
-            details: 'Username must be a username that is being used on Roblox. Key must be author or reason. You can' +
-                ' only change the author of bans you created.',
-            description: 'Changes given username\'s ban\'s key to given data.',
+            details: 'Key must be author or reason. You can only change the author of bans you created.',
+            description: 'Changes given user\'s ban\'s key to given data.',
             examples: ['changeban Happywalker author builderman'],
             clientPermissions: ['SEND_MESSAGES'],
             args: [
                 {
                     key: 'username',
-                    type: 'string',
+                    type: 'member|string',
                     prompt: 'Whose ban would you like to change?'
                 },
                 {
@@ -42,6 +41,7 @@ module.exports = class ChangeBanCommand extends Command {
         } else if (key === 'reason') {
             changes.reason = data
         }
+        username = typeof user === 'string' ? username : username.displayName
         const [userId, editorId] = await Promise.all([userService.getIdFromUsername(username), userService
             .getIdFromUsername(message.member.displayName)])
         await applicationAdapter('put', `/v1/bans/${userId}`, { changes, editorId })

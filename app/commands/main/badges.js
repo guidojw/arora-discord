@@ -10,14 +10,13 @@ module.exports = class BadgesCommand extends Command {
         super(client, {
             group: 'main',
             name: 'badges',
-            details: 'Username must be a username that is being used on Roblox.',
-            description: 'Checks if given username/you has the training badges.',
+            description: 'Checks if given user/you has the training badges.',
             examples: ['badges', 'badges Happywalker'],
             clientPermissions: ['SEND_MESSAGES'],
             args: [
                 {
                     key: 'username',
-                    type: 'string',
+                    type: 'member|string',
                     prompt: 'Of who would you like to know the suspend reason?',
                     default: ''
                 }
@@ -26,7 +25,7 @@ module.exports = class BadgesCommand extends Command {
     }
 
     async execute (message, { username }) {
-        username = username || message.member.displayName
+        username = username ? typeof user === 'string' ? username : message.member.displayName
         const userId = await userService.getIdFromUsername(username)
         const hasTtdt = await userService.hasBadge(userId, applicationConfig.ttdtId)
         const hasPtdt = await userService.hasBadge(userId, applicationConfig.ptdtId)

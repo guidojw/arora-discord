@@ -10,7 +10,7 @@ module.exports = class CancelTrainingCommand extends Command {
             group: 'admin',
             name: 'canceltraining',
             details: 'TrainingId must be the ID of a currently scheduled training.',
-            description: 'Cancels training with trainingId.',
+            description: 'Cancels given training.',
             examples: ['canceltraining 1 Weird circumstances.'],
             clientPermissions: ['SEND_MESSAGES'],
             args: [

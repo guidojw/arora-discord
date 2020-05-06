@@ -15,14 +15,13 @@ module.exports = class SuspensionsCommand extends Command {
             group: 'main',
             name: 'suspensions',
             aliases: ['suspensionlist', 'suspensioninfo', 'suspension'],
-            description: 'Lists info of current suspensions/given username\'s suspension. Only admins can see the ' +
-                'suspensions of others.',
-            details: 'Username must be a username that is being used on Roblox.',
+            description: 'Lists info of current suspensions/given user\'s suspension.',
+            details: 'Only admins can see the suspensions of others.',
             clientPermissions: ['SEND_MESSAGES'],
             args: [
                 {
                     key: 'username',
-                    type: 'string',
+                    type: 'member|string',
                     prompt: 'Of whose suspension would you like to know the information?',
                     default: ''
                 }
@@ -40,6 +39,7 @@ module.exports = class SuspensionsCommand extends Command {
         }
 
         if (username) {
+            username = typeof user === 'string' ? username : username.displayName
             const userId = await userService.getIdFromUsername(username)
             const suspension = (await applicationAdapter('get', `/v1/groups/${applicationConfig
                 .groupId}/suspensions/${userId}`)).data

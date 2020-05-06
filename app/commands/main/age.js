@@ -12,24 +12,23 @@ module.exports = class AgeCommand extends Command {
         super(client, {
             group: 'main',
             name: 'age',
-            details: 'Username must be a username that is being used on Roblox.',
             aliases: ['accountage'],
-            description: 'Posts the age of given/your username.',
+            description: 'Posts the age of given user/you.',
             examples: ['age', 'age Happywalker'],
             clientPermissions: ['SEND_MESSAGES'],
             args: [
                 {
                     key: 'username',
-                    prompt: 'Of which username would you like to know the age?',
+                    prompt: 'Of which user would you like to know the age?',
                     default: '',
-                    type: 'string'
+                    type: 'member|string'
                 }
             ]
         })
     }
 
     async execute (message, { username }) {
-        username = username || message.member.displayName
+        username = username ? typeof user === 'string' ? username : message.member.displayName
         const userId = await userService.getIdFromUsername(username)
         const joinDate = new Date((await applicationAdapter('get', `/v1/users/${userId}/join-` +
             'date')).data)

@@ -8,15 +8,14 @@ module.exports = class UnbanCommand extends Command {
         super(client, {
             group: 'admin',
             name: 'unban',
-            details: 'Username must be a username that is being used on Roblox.',
-            description: 'Unbans given username.',
+            description: 'Unbans given user.',
             examples: ['unban Happywalker'],
             clientPermissions: ['SEND_MESSAGES'],
             ownerOnly: true,
             args: [
                 {
                     key: 'username',
-                    type: 'string',
+                    type: 'member|string',
                     prompt: 'Who would you like to unban?'
                 },
                 {
@@ -29,6 +28,7 @@ module.exports = class UnbanCommand extends Command {
     }
 
     async execute (message, { username, reason }) {
+        username = typeof user === 'string' ? username : username.displayName
         const [userId, authorId] = await Promise.all([userService.getIdFromUsername(username), userService
             .getIdFromUsername(message.member.displayName)])
         await applicationAdapter('post', `/v1/bans/${userId}/cancel`, { authorId, reason })

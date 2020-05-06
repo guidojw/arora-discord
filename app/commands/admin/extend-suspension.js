@@ -1,23 +1,24 @@
 'use strict'
 const Command = require('../../controllers/command')
 const applicationAdapter = require('../../adapters/application')
-const applicationConfig = require('../../../config/application')
 const userService = require('../../services/user')
+
+const applicationConfig = require('../../../config/application')
 
 module.exports = class ExtendSuspensionCommand extends Command {
     constructor (client) {
         super(client, {
             group: 'admin',
             name: 'extendsuspension',
-            details: 'Username must be a username that is being used on Roblox. A suspension can be max 7 days long.',
+            details: 'A suspension can be max 7 days long.',
             aliases: ['extend'],
-            description: 'Extends the suspension of given username.',
+            description: 'Extends the suspension of given user.',
             examples: ['extend Happywalker 3 He still doesn\'t understand.'],
             clientPermissions: ['SEND_MESSAGES'],
             args: [
                 {
                     key: 'username',
-                    type: 'string',
+                    type: 'member|string',
                     prompt: 'Whose suspension would you like to extend?'
                 },
                 {
@@ -40,6 +41,7 @@ module.exports = class ExtendSuspensionCommand extends Command {
     }
 
     async execute (message, { username, days, reason }) {
+        username = typeof user === 'string' ? username : username.displayName
         const [userId, authorId] = await Promise.all([userService.getIdFromUsername(username), userService
             .getIdFromUsername(message.member.displayName)])
         await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId}/suspensions/${
