@@ -28,14 +28,10 @@ module.exports = class UserIdCommand extends Command {
 
     async execute (message, { username }) {
         username = username || message.member.displayName
-        try {
-            const userId = await userService.getIdFromUsername(username)
-            const embed = new MessageEmbed()
-                .addField(`${message.argString ? username + '\'s' : 'Your'} user ID`, userId)
-                .setColor(applicationConfig.primaryColor)
-            message.replyEmbed(embed)
-        } catch (err) {
-            message.reply(err.message)
-        }
+        const userId = await userService.getIdFromUsername(username)
+        const embed = new MessageEmbed()
+            .addField(`${message.argString ? username + '\'s' : 'Your'} user ID`, userId)
+            .setColor(applicationConfig.primaryColor)
+        message.replyEmbed(embed)
     }
 }

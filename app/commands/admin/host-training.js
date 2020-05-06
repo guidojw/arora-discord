@@ -55,22 +55,18 @@ module.exports = class HostTrainingCommand extends Command {
             timeInfo.minutes).getTime())
         const afterNow = dateUnix - Math.floor(Date.now()) > 0
         if (!afterNow) return message.reply('Please give a date and time that are after now.')
-        try {
-            const authorId = await userService.getIdFromUsername(message.member.displayName)
-            const training = (await applicationAdapter('post', `/v1/groups/${applicationConfig
-                .groupId}/trainings`, {
-                notes: notes.toLowerCase() === 'none' ? undefined : notes,
-                date: dateUnix,
-                authorId,
-                type
-            })).data
-            const embed = new MessageEmbed()
-                .addField('Successfully scheduled', `**${role}** training on **${date}** at **${time}**.`)
-                .addField('Training ID', training.id.toString())
-                .setColor(applicationConfig.primaryColor)
-            message.replyEmbed(embed)
-        } catch (err) {
-            message.reply(err.message)
-        }
+        const authorId = await userService.getIdFromUsername(message.member.displayName)
+        const training = (await applicationAdapter('post', `/v1/groups/${applicationConfig
+            .groupId}/trainings`, {
+            notes: notes.toLowerCase() === 'none' ? undefined : notes,
+            date: dateUnix,
+            authorId,
+            type
+        })).data
+        const embed = new MessageEmbed()
+            .addField('Successfully scheduled', `**${role}** training on **${date}** at **${time}**.`)
+            .addField('Training ID', training.id.toString())
+            .setColor(applicationConfig.primaryColor)
+        message.replyEmbed(embed)
     }
 }

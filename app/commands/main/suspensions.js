@@ -39,43 +39,39 @@ module.exports = class SuspensionsCommand extends Command {
             }
         }
 
-        try {
-            if (username) {
-                const userId = await userService.getIdFromUsername(username)
-                const suspension = (await applicationAdapter('get', `/v1/groups/${applicationConfig
-                    .groupId}/suspensions/${userId}`)).data
-                const days = suspension.duration / 86400000
-                const date = new Date(suspension.date)
-                let extensionDays = 0
-                if (suspension.extensions) {
-                    for (const extension of suspension.extensions) {
-                        extensionDays += extension.duration / 86400000
-                    }
+        if (username) {
+            const userId = await userService.getIdFromUsername(username)
+            const suspension = (await applicationAdapter('get', `/v1/groups/${applicationConfig
+                .groupId}/suspensions/${userId}`)).data
+            const days = suspension.duration / 86400000
+            const date = new Date(suspension.date)
+            let extensionDays = 0
+            if (suspension.extensions) {
+                for (const extension of suspension.extensions) {
+                    extensionDays += extension.duration / 86400000
                 }
-                const extensionString = extensionDays < 0 ? ` (${extensionDays})` : extensionDays > 0 ? ` (+${
-                    extensionDays})` : ''
-                const embed = new MessageEmbed()
-                    .setTitle(`${message.argString ? `${username}'s` : 'Your'} suspension`)
-                    .addField('Start date', timeHelper.getDate(date), true)
-                    .addField('Start time', timeHelper.getTime(date), true)
-                    .addField('Duration', `${days}${extensionString} ${pluralize('day', days + 
-                        extensionDays)}`, true)
-                    .addField('Rank back', suspension.rankBack ? 'yes' : 'no', true)
-                    .addField('Reason', suspension.reason)
-                    .setColor(applicationConfig.primaryColor)
-                message.replyEmbed(embed)
-            } else {
-                const suspensions = (await applicationAdapter('get', `/v1/groups/${applicationConfig
-                    .groupId}/suspensions`)).data
-                if (suspensions.length === 0) return message.reply('There are currently no suspensions.')
-                const embeds = await discordService.getSuspensionEmbeds(suspensions)
-                for (const embed of embeds) {
-                    await message.author.send(embed)
-                }
-                message.reply('Sent you a DM with the current suspensions.')
             }
-        } catch (err) {
-            message.reply(err.message)
+            const extensionString = extensionDays < 0 ? ` (${extensionDays})` : extensionDays > 0 ? ` (+${
+                extensionDays})` : ''
+            const embed = new MessageEmbed()
+                .setTitle(`${message.argString ? `${username}'s` : 'Your'} suspension`)
+                .addField('Start date', timeHelper.getDate(date), true)
+                .addField('Start time', timeHelper.getTime(date), true)
+                .addField('Duration', `${days}${extensionString} ${pluralize('day', days + 
+                    extensionDays)}`, true)
+                .addField('Rank back', suspension.rankBack ? 'yes' : 'no', true)
+                .addField('Reason', suspension.reason)
+                .setColor(applicationConfig.primaryColor)
+            message.replyEmbed(embed)
+        } else {
+            const suspensions = (await applicationAdapter('get', `/v1/groups/${applicationConfig
+                .groupId}/suspensions`)).data
+            if (suspensions.length === 0) return message.reply('There are currently no suspensions.')
+            const embeds = await discordService.getSuspensionEmbeds(suspensions)
+            for (const embed of embeds) {
+                await message.author.send(embed)
+            }
+            message.reply('Sent you a DM with the current suspensions.')
         }
     }
 }

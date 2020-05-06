@@ -40,18 +40,14 @@ module.exports = class ExtendSuspensionCommand extends Command {
     }
 
     async execute (message, { username, days, reason }) {
-        try {
-            const [userId, authorId] = await Promise.all([userService.getIdFromUsername(username), userService
-                .getIdFromUsername(message.member.displayName)])
-            await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId}/suspensions/${
-                userId}/extend`, {
-                duration: days * 86400000,
-                authorId,
-                reason
-            })
-            message.reply(`Successfully extended **${username}**'s suspension.`)
-        } catch (err) {
-            message.reply(err.message)
-        }
+        const [userId, authorId] = await Promise.all([userService.getIdFromUsername(username), userService
+            .getIdFromUsername(message.member.displayName)])
+        await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId}/suspensions/${
+            userId}/extend`, {
+            duration: days * 86400000,
+            authorId,
+            reason
+        })
+        message.reply(`Successfully extended **${username}**'s suspension.`)
     }
 }

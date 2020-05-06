@@ -27,20 +27,16 @@ module.exports = class BadgesCommand extends Command {
 
     async execute (message, { username }) {
         username = username || message.member.displayName
-        try {
-            const userId = await userService.getIdFromUsername(username)
-            const hasTtdt = await userService.hasBadge(userId, applicationConfig.ttdtId)
-            const hasPtdt = await userService.hasBadge(userId, applicationConfig.ptdtId)
-            const hasTcdt = await userService.hasBadge(userId, applicationConfig.tcdtId)
-            const embed = new MessageEmbed()
-                .setTitle(`${message.argString ? username + '\'s' : 'Your'} badges`)
-                .addField('TTDT', hasTtdt ? 'yes' : 'no', true)
-                .addField('PTDT', hasPtdt ? 'yes' : 'no', true)
-                .addField('TCDT', hasTcdt ? 'yes' : 'no', true)
-                .setColor(applicationConfig.primaryColor)
-            message.replyEmbed(embed)
-        } catch (err) {
-            message.reply(err.message)
-        }
+        const userId = await userService.getIdFromUsername(username)
+        const hasTtdt = await userService.hasBadge(userId, applicationConfig.ttdtId)
+        const hasPtdt = await userService.hasBadge(userId, applicationConfig.ptdtId)
+        const hasTcdt = await userService.hasBadge(userId, applicationConfig.tcdtId)
+        const embed = new MessageEmbed()
+            .setTitle(`${message.argString ? username + '\'s' : 'Your'} badges`)
+            .addField('TTDT', hasTtdt ? 'yes' : 'no', true)
+            .addField('PTDT', hasPtdt ? 'yes' : 'no', true)
+            .addField('TCDT', hasTcdt ? 'yes' : 'no', true)
+            .setColor(applicationConfig.primaryColor)
+        message.replyEmbed(embed)
     }
 }

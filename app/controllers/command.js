@@ -21,6 +21,18 @@ module.exports = class Command extends Commando.Command {
 
     async run (message, args) {
         const guild = this.client.bot.getGuild(message.guild.id)
-        return this.execute(message, args, guild)
+        try {
+            return await this.execute(message, args, guild)
+        } catch (err) {
+            return this.handleError(err, message)
+        }
+    }
+
+    handleError(err, message) {
+        if (err.response && err.response.data.errors && err.response.data.errors.length > 0) {
+            return message.reply(err.response.data.errors[0].message)
+        } else {
+            return message.reply(err.message)
+        }
     }
 }
