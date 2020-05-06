@@ -9,15 +9,14 @@ module.exports = class PromoteCommand extends Command {
         super(client, {
             group: 'admin',
             name: 'promote',
-            details: 'Username must be a username that is being used on Roblox.',
-            description: 'Promotes given username in the group.',
+            description: 'Promotes given user in the group.',
             examples: ['promote Happywalker'],
             clientPermissions: ['SEND_MESSAGES'],
             args: [
                 {
                     key: 'username',
                     prompt: 'Who would you like to promote?',
-                    type: 'string'
+                    type: 'member|string'
                 }
             ]
         })
@@ -25,6 +24,7 @@ module.exports = class PromoteCommand extends Command {
 
     async execute (message, { username }) {
         try {
+            username = typeof user === 'string' ? username : username.displayName
             const [userId, authorId] = await Promise.all([userService.getIdFromUsername(username), userService
                 .getIdFromUsername(message.member.displayName)])
             const roles = (await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId

@@ -10,23 +10,22 @@ module.exports = class JoinDateCommand extends Command {
         super(client, {
             group: 'main',
             name: 'joindate',
-            details: 'Username must be a username that is being used on Roblox.',
-            description: 'Posts the join date of given/your username.',
+            description: 'Posts the join date of given user/you.',
             examples: ['joindate', 'joindate Happywalker'],
             clientPermissions: ['SEND_MESSAGES'],
             args: [
                 {
                     key: 'username',
-                    prompt: 'Of which username would you like to know the join date?',
+                    prompt: 'Of which user would you like to know the join date?',
                     default: '',
-                    type: 'string'
+                    type: 'member|string'
                 }
             ]
         })
     }
 
     async execute (message, { username }) {
-        username = username || message.member.displayName
+        username = username ? typeof user === 'string' ? username : username.displayName : message.member.displayName
         try {
             const userId = await userService.getIdFromUsername(username)
             const joinDate = new Date((await applicationAdapter('get', `/v1/users/${userId}/join-` +

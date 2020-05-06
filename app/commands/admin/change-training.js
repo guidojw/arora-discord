@@ -13,7 +13,7 @@ module.exports = class ChangeTrainingCommand extends Command {
             name: 'changetraining',
             details: 'TrainingId must be the ID of a currently scheduled training. Key must be author, type, date, ' +
             'time or notes.',
-            description: 'Changes training with trainingId\'s key to given data.',
+            description: 'Changes given training\'s key to given data.',
             examples: ['changetraining 1 date 5-3-2020'],
             clientPermissions: ['SEND_MESSAGES'],
             args: [

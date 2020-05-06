@@ -9,14 +9,13 @@ module.exports = class CancelSuspensionCommand extends Command {
         super(client, {
             group: 'admin',
             name: 'cancelsuspension',
-            details: 'Username must be a username that is being used on Roblox.',
-            description: 'Cancels given username\'s suspension.',
+            description: 'Cancels given user\'s suspension.',
             examples: ['cancelsuspension Happywalker Good boy.'],
             clientPermissions: ['SEND_MESSAGES'],
             args: [
                 {
                     key: 'username',
-                    type: 'string',
+                    type: 'member|string',
                     prompt: 'Whose suspension would you like to cancel?'
                 },
                 {
@@ -30,6 +29,7 @@ module.exports = class CancelSuspensionCommand extends Command {
 
     async execute (message, { username, reason }) {
         try {
+            username = typeof user === 'string' ? username : username.displayName
             const [userId, authorId] = await Promise.all([userService.getIdFromUsername(username), userService
                 .getIdFromUsername(message.member.displayName)])
             await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId}/suspensions/${

@@ -7,25 +7,25 @@ module.exports = class ProfileCommand extends Command {
         super(client, {
             group: 'main',
             name: 'profile',
-            details: 'Username must be a username that is being used on Roblox.',
             aliases: ['playerurl', 'userurl', 'url'],
-            description: 'Posts the Roblox profile of given/your username.',
+            description: 'Posts the Roblox profile of given user/you.',
             examples: ['profile', 'profile Happywalker'],
             clientPermissions: ['SEND_MESSAGES'],
             args: [
                 {
                     key: 'username',
-                    prompt: 'Of which username would you like to know the profile?',
+                    prompt: 'Of which user would you like to know the profile?',
                     default: '',
-                    type: 'string'
+                    type: 'member|string'
                 }
             ]
         })
     }
 
     async execute (message, { username }) {
+        username = username ? typeof user === 'string' ? username : username.displayName : message.member.displayName
         try {
-            const userId = await userService.getIdFromUsername(username || message.member.displayName)
+            const userId = await userService.getIdFromUsername(username)
             message.reply(`https://www.roblox.com/users/${userId}/profile`)
         } catch (err) {
             message.reply(err.message)

@@ -13,7 +13,7 @@ module.exports = class AnnounceTrainingCommand extends Command {
             details: 'TrainingId must be the ID of a currently scheduled training. Medium must be both, roblox or ' +
             'discord.',
             aliases: ['announce'],
-            description: 'Announces training with trainingId.',
+            description: 'Announces given training.',
             examples: ['announce 1', 'announce 1 discord'],
             clientPermissions: ['SEND_MESSAGES'],
             args: [

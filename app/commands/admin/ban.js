@@ -9,14 +9,13 @@ module.exports = class BanCommand extends Command {
         super(client, {
             group: 'admin',
             name: 'ban',
-            details: 'Username must be a username that is being used on Roblox.',
-            description: 'Bans given username.',
+            description: 'Bans given user.',
             examples: ['unban Happywalker He apologized.'],
             clientPermissions: ['SEND_MESSAGES'],
             args: [
                 {
                     key: 'username',
-                    type: 'string',
+                    type: 'member|string',
                     prompt: 'Who would you like to ban?'
                 },
                 {
@@ -30,6 +29,7 @@ module.exports = class BanCommand extends Command {
 
     async execute (message, { username, reason }) {
         try {
+            username = typeof user === 'string' ? username : username.displayName
             const [userId, authorId] = await Promise.all([userService.getIdFromUsername(username), userService
                 .getIdFromUsername(message.member.displayName)])
             await applicationAdapter('post', `/v1/bans`, {

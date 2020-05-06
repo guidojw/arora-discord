@@ -7,10 +7,9 @@ module.exports = class IsAdminCommand extends Command {
         super(client, {
             group: 'main',
             name: 'isadmin',
-            details: 'Nickname must be a existing nickname in the Discord guild.',
             aliases: ['amiadmin'],
-            description: 'Checks if you/given nickname is admin.',
-            examples: ['isadmin', 'isadmin @Happywalker'],
+            description: 'Checks if you/given member is admin.',
+            examples: ['isadmin', 'isadmin Happywalker'],
             clientPermissions: ['SEND_MESSAGES'],
             args: [
                 {

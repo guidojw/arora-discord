@@ -9,15 +9,15 @@ module.exports = class ChangeSuspensionCommand extends Command {
         super(client, {
             group: 'admin',
             name: 'changesuspension',
-            details: 'Username must be a username that is being used on Roblox. Key must be author, reason or ' +
-                'rankBack. RankBack must be true or false. You can only change the author of suspensions you created.',
-            description: 'Changes given username\'s suspension\'s key to given data.',
+            details: 'Key must be author, reason or rankBack. RankBack must be true or false. You can only change the' +
+                ' author of suspensions you created.',
+            description: 'Changes given user\'s suspension\'s key to given data.',
             examples: ['changesuspension Happywalker rankBack false'],
             clientPermissions: ['SEND_MESSAGES'],
             args: [
                 {
                     key: 'username',
-                    type: 'string',
+                    type: 'member|string',
                     prompt: 'Whose suspension would you like to change?'
                 },
                 {
@@ -49,6 +49,7 @@ module.exports = class ChangeSuspensionCommand extends Command {
                 }
                 changes.rankBack = data
             }
+            username = typeof user === 'string' ? username : username.displayName
             const [userId, editorId] = await Promise.all([userService.getIdFromUsername(username), userService
                 .getIdFromUsername(message.member.displayName)])
             await applicationAdapter('put', `/v1/groups/${applicationConfig.groupId}/suspensions/${

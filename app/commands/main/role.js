@@ -10,16 +10,15 @@ module.exports = class RoleCommand extends Command {
         super(client, {
             group: 'main',
             name: 'role',
-            details: 'Username must be a username that is being used on Roblox.',
             aliases: ['getrole'],
-            description: 'Posts the group role of given username/you.',
+            description: 'Posts the group role of given user/you.',
             examples: ['role', 'role Happywalker'],
             clientPermissions: ['SEND_MESSAGES'],
             args: [
                 {
                     key: 'username',
-                    type: 'string',
-                    prompt: 'Of which username would you like to know the group role?',
+                    type: 'member|string',
+                    prompt: 'Of which user would you like to know the group role?',
                     default: ''
                 }
             ]
@@ -27,7 +26,7 @@ module.exports = class RoleCommand extends Command {
     }
 
     async execute (message, { username }) {
-        username = username || message.member.displayName
+        username = username ? typeof user === 'string' ? username : username.displayName : message.member.displayName
         try {
             const userId = await userService.getIdFromUsername(username)
             const role = (await applicationAdapter('get', `/v1/users/${userId}/role/${

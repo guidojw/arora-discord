@@ -8,24 +8,23 @@ module.exports = class UserIdCommand extends Command {
         super(client, {
             group: 'main',
             name: 'userid',
-            details: 'Username must be a username that is being used on Roblox.',
             aliases: ['getuserid'],
-            description: 'Posts the user ID of given/your username.',
+            description: 'Posts the user ID of given user/you.',
             examples: ['userid', 'userid Happywalker'],
             clientPermissions: ['SEND_MESSAGES'],
             args: [
                 {
                     key: 'username',
-                    prompt: 'Of which username would you like to know the user ID?',
+                    prompt: 'Of which user would you like to know the user ID?',
                     default: '',
-                    type: 'string'
+                    type: 'member|string'
                 }
             ]
         })
     }
 
     async execute (message, { username }) {
-        username = username || message.member.displayName
+        username = username ? typeof user === 'string' ? username : username.displayName : message.member.displayName
         try {
             const userId = await userService.getIdFromUsername(username)
             const embed = new MessageEmbed()

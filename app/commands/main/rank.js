@@ -10,16 +10,15 @@ module.exports = class RankCommand extends Command {
         super(client, {
             group: 'main',
             name: 'rank',
-            details: 'Username must be a username that is being used on Roblox.',
             aliases: ['getrank'],
-            description: 'Posts the group rank of given username/you.',
+            description: 'Posts the group rank of given user/you.',
             examples: ['rank', 'rank Happywalker'],
             clientPermissions: ['SEND_MESSAGES'],
             args: [
                 {
                     key: 'username',
-                    type: 'string',
-                    prompt: 'Of which username would you like to know the group rank?',
+                    type: 'member|string',
+                    prompt: 'Of which user would you like to know the group rank?',
                     default: ''
                 }
             ]
@@ -27,7 +26,7 @@ module.exports = class RankCommand extends Command {
     }
 
     async execute (message, { username }) {
-        username = username || message.member.displayName
+        username = username ? typeof user === 'string' ? username : username.displayName : message.member.displayName
         try {
             const userId = await userService.getIdFromUsername(username)
             const rank = (await applicationAdapter('get', `/v1/users/${userId}/rank/${
