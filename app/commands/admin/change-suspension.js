@@ -2,6 +2,7 @@
 const Command = require('../../controllers/command')
 const userService = require('../../services/user')
 const applicationAdapter = require('../../adapters/application')
+
 const applicationConfig = require('../../../config/application')
 
 module.exports = class ChangeSuspensionCommand extends Command {
@@ -38,25 +39,21 @@ module.exports = class ChangeSuspensionCommand extends Command {
     async execute (message, { username, key, data }) {
         key = key.toLowerCase()
         const changes = {}
-        try {
-            if (key === 'author') {
-                changes.authorId = await userService.getIdFromUsername(data)
-            } else if (key === 'reason') {
-                changes.reason = data
-            } else if (key === 'rankback') {
-                if (data !== true && data !== false) {
-                    return message.reply(`**${data}** is not a valid value for rankBack.`)
-                }
-                changes.rankBack = data
+        if (key === 'author') {
+            changes.authorId = await userService.getIdFromUsername(data)
+        } else if (key === 'reason') {
+            changes.reason = data
+        } else if (key === 'rankback') {
+            if (data !== true && data !== false) {
+                return message.reply(`**${data}** is not a valid value for rankBack.`)
             }
-            username = typeof user === 'string' ? username : username.displayName
-            const [userId, editorId] = await Promise.all([userService.getIdFromUsername(username), userService
-                .getIdFromUsername(message.member.displayName)])
-            await applicationAdapter('put', `/v1/groups/${applicationConfig.groupId}/suspensions/${
-                userId}`, { changes, editorId })
-            message.reply(`Successfully changed **${username}**'s suspension.`)
-        } catch (err) {
-            message.reply(err.message)
+            changes.rankBack = data
         }
+        username = typeof user === 'string' ? username : username.displayName
+        const [userId, editorId] = await Promise.all([userService.getIdFromUsername(username), userService
+            .getIdFromUsername(message.member.displayName)])
+        await applicationAdapter('put', `/v1/groups/${applicationConfig.groupId}/suspensions/${
+            userId}`, { changes, editorId })
+        message.reply(`Successfully changed **${username}**'s suspension.`)
     }
 }

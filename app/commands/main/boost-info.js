@@ -43,6 +43,7 @@ module.exports = class BoostInfoCommand extends Command {
             .setThumbnail(member.user.displayAvatarURL())
             .setDescription(`Has been boosting this server for **${months}** ${pluralize('month', months)} and **${days
             }** ${pluralize('day', days)}!`)
+            .setColor(0xff73fa)
         message.replyEmbed(embed)
     }
 }

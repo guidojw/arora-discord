@@ -28,14 +28,10 @@ module.exports = class UnbanCommand extends Command {
     }
 
     async execute (message, { username, reason }) {
-        try {
-            username = typeof user === 'string' ? username : username.displayName
-            const [userId, authorId] = await Promise.all([userService.getIdFromUsername(username), userService
-                .getIdFromUsername(message.member.displayName)])
-            await applicationAdapter('post', `/v1/bans/${userId}/cancel`, { authorId, reason })
-            message.reply(`Successfully unbanned **${username}**.`)
-        } catch (err) {
-            message.reply(err.message)
-        }
+        username = typeof user === 'string' ? username : username.displayName
+        const [userId, authorId] = await Promise.all([userService.getIdFromUsername(username), userService
+            .getIdFromUsername(message.member.displayName)])
+        await applicationAdapter('post', `/v1/bans/${userId}/cancel`, { authorId, reason })
+        message.reply(`Successfully unbanned **${username}**.`)
     }
 }

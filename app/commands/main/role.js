@@ -1,9 +1,10 @@
 'use strict'
 const Command = require('../../controllers/command')
 const applicationAdapter = require('../../adapters/application')
-const applicationConfig = require('../../../config/application')
 const userService = require('../../services/user')
 const { MessageEmbed } = require('discord.js')
+
+const applicationConfig = require('../../../config/application')
 
 module.exports = class RoleCommand extends Command {
     constructor (client) {
@@ -27,15 +28,12 @@ module.exports = class RoleCommand extends Command {
 
     async execute (message, { username }) {
         username = username ? typeof user === 'string' ? username : username.displayName : message.member.displayName
-        try {
-            const userId = await userService.getIdFromUsername(username)
-            const role = (await applicationAdapter('get', `/v1/users/${userId}/role/${
-                applicationConfig.groupId}`)).data
-            const embed = new MessageEmbed()
-                .addField(`${message.argString ? username + '\'s' : 'Your'} role`, role)
-            message.replyEmbed(embed)
-        } catch (err) {
-            message.reply(err.message)
-        }
+        const userId = await userService.getIdFromUsername(username)
+        const role = (await applicationAdapter('get', `/v1/users/${userId}/role/${
+            applicationConfig.groupId}`)).data
+        const embed = new MessageEmbed()
+            .addField(`${message.argString ? username + '\'s' : 'Your'} role`, role)
+            .setColor(applicationConfig.primaryColor)
+        message.replyEmbed(embed)
     }
 }

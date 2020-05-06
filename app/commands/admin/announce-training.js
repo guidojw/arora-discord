@@ -1,9 +1,10 @@
 'use strict'
 const Command = require('../../controllers/command')
 const applicationAdapter = require('../../adapters/application')
-const applicationConfig = require('../../../config/application')
 const { MessageEmbed } = require('discord.js')
 const userService = require('../../services/user')
+
+const applicationConfig = require('../../../config/application')
 
 module.exports = class AnnounceTrainingCommand extends Command {
     constructor (client) {
@@ -35,20 +36,17 @@ module.exports = class AnnounceTrainingCommand extends Command {
 
     async execute (message, { trainingId, medium }) {
         medium = medium.toLowerCase()
-        try {
-            const authorId = await userService.getIdFromUsername(message.member.displayName)
-            const content = (await applicationAdapter('post', `/v1/groups/${applicationConfig
-                .groupId}/trainings/${trainingId}/announce`, { medium, authorId })).data
-            const embed = new MessageEmbed()
-            if (medium === 'both' || medium === 'discord') {
-                embed.addField('Successfully announced', content.announcement)
-            }
-            if (medium === 'both' || medium === 'roblox') {
-                embed.addField('Successfully shouted', content.shout)
-            }
-            message.replyEmbed(embed)
-        } catch (err) {
-            message.reply(err.message)
+        const authorId = await userService.getIdFromUsername(message.member.displayName)
+        const content = (await applicationAdapter('post', `/v1/groups/${applicationConfig
+            .groupId}/trainings/${trainingId}/announce`, { medium, authorId })).data
+        const embed = new MessageEmbed()
+            .setColor(applicationConfig.primaryColor)
+        if (medium === 'both' || medium === 'discord') {
+            embed.addField('Successfully announced', content.announcement)
         }
+        if (medium === 'both' || medium === 'roblox') {
+            embed.addField('Successfully shouted', content.shout)
+        }
+        message.replyEmbed(embed)
     }
 }

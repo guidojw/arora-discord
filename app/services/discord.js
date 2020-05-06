@@ -5,6 +5,8 @@ const userService = require('./user')
 const { MessageEmbed, MessageAttachment } = require('discord.js')
 const pluralize = require('pluralize')
 
+const applicationConfig = require('../../config/application')
+
 exports.getMemberByName = async (guild, name) => {
     const members = await guild.members.fetch()
     for (const member of members.values()) {
@@ -30,6 +32,7 @@ exports.getTrainingEmbeds = async trainings => {
     const addEmbed = () => {
         const embed = new MessageEmbed()
             .addFields(fields)
+            .setColor(applicationConfig.primaryColor)
         embeds.push(embed)
         fields = []
         sum = 0
@@ -78,6 +81,7 @@ exports.getBanEmbeds = async bans => {
     const addEmbed = () => {
         const embed = new MessageEmbed()
             .addFields(fields)
+            .setColor(applicationConfig.primaryColor)
         embeds.push(embed)
         fields = []
         sum = 0
@@ -131,6 +135,7 @@ exports.getSuspensionEmbeds = async suspensions => {
     const addEmbed = () => {
         const embed = new MessageEmbed()
             .addFields(fields)
+            .setColor(applicationConfig.primaryColor)
         embeds.push(embed)
         fields = []
         sum = 0

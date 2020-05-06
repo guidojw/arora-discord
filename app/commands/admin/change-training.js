@@ -40,40 +40,36 @@ module.exports = class ChangeTrainingCommand extends Command {
     async execute (message, { trainingId, key, data }) {
         key = key.toLowerCase()
         const changes = {}
-        try {
-            if (key === 'author') {
-                changes.authorId = await userService.getIdFromUsername(data)
-            } else if (key === 'notes') {
-                changes.notes = data
-            } else if (key === 'type') {
-                const type = data.toUpperCase()
-                if (!groupService.getRoleByAbbreviation(type)) {
-                    return message.reply(`Role abbreviaton **${type}** does not exist.`)
-                }
-                changes.type = type
-            } else if (key === 'date' || key === 'time') {
-                const training = await groupService.getTrainingById(trainingId)
-                const date = new Date(training.date)
-                let dateInfo
-                let timeInfo
-                if (key === 'date') {
-                    if (!timeHelper.validDate(data)) return message.reply('Please enter a valid date.')
-                    timeInfo = timeHelper.getTimeInfo(timeHelper.getTime(date))
-                    dateInfo = timeHelper.getDateInfo(data)
-                } else {
-                    if (!timeHelper.validTime(data)) return message.reply('Please enter a valid time.')
-                    dateInfo = timeHelper.getDateInfo(timeHelper.getDate(date))
-                    timeInfo = timeHelper.getTimeInfo(data)
-                }
-                changes.date = Math.floor(new Date(dateInfo.year, dateInfo.month - 1, dateInfo.day, timeInfo
-                    .hours, timeInfo.minutes).getTime())
+        if (key === 'author') {
+            changes.authorId = await userService.getIdFromUsername(data)
+        } else if (key === 'notes') {
+            changes.notes = data
+        } else if (key === 'type') {
+            const type = data.toUpperCase()
+            if (!groupService.getRoleByAbbreviation(type)) {
+                return message.reply(`Role abbreviaton **${type}** does not exist.`)
             }
-            const editorId = await userService.getIdFromUsername(message.member.displayName)
-            await applicationAdapter('put', `/v1/groups/${applicationConfig.groupId}/trainings/${
-                trainingId}`, { changes, editorId })
-            message.reply(`Successfully changed training with ID **${trainingId}**.`)
-        } catch (err) {
-            message.reply(err.message)
+            changes.type = type
+        } else if (key === 'date' || key === 'time') {
+            const training = await groupService.getTrainingById(trainingId)
+            const date = new Date(training.date)
+            let dateInfo
+            let timeInfo
+            if (key === 'date') {
+                if (!timeHelper.validDate(data)) return message.reply('Please enter a valid date.')
+                timeInfo = timeHelper.getTimeInfo(timeHelper.getTime(date))
+                dateInfo = timeHelper.getDateInfo(data)
+            } else {
+                if (!timeHelper.validTime(data)) return message.reply('Please enter a valid time.')
+                dateInfo = timeHelper.getDateInfo(timeHelper.getDate(date))
+                timeInfo = timeHelper.getTimeInfo(data)
+            }
+            changes.date = Math.floor(new Date(dateInfo.year, dateInfo.month - 1, dateInfo.day, timeInfo
+                .hours, timeInfo.minutes).getTime())
         }
+        const editorId = await userService.getIdFromUsername(message.member.displayName)
+        await applicationAdapter('put', `/v1/groups/${applicationConfig.groupId}/trainings/${
+            trainingId}`, { changes, editorId })
+        message.reply(`Successfully changed training with ID **${trainingId}**.`)
     }
 }

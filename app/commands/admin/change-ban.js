@@ -36,19 +36,15 @@ module.exports = class ChangeBanCommand extends Command {
     async execute (message, { username, key, data }) {
         key = key.toLowerCase()
         const changes = {}
-        try {
-            if (key === 'author') {
-                changes.authorId = await userService.getIdFromUsername(data)
-            } else if (key === 'reason') {
-                changes.reason = data
-            }
-            username = typeof user === 'string' ? username : username.displayName
-            const [userId, editorId] = await Promise.all([userService.getIdFromUsername(username), userService
-                .getIdFromUsername(message.member.displayName)])
-            await applicationAdapter('put', `/v1/bans/${userId}`, { changes, editorId })
-            message.reply(`Successfully changed **${username}**'s ban.`)
-        } catch (err) {
-            message.reply(err.message)
+        if (key === 'author') {
+            changes.authorId = await userService.getIdFromUsername(data)
+        } else if (key === 'reason') {
+            changes.reason = data
         }
+        username = typeof user === 'string' ? username : username.displayName
+        const [userId, editorId] = await Promise.all([userService.getIdFromUsername(username), userService
+            .getIdFromUsername(message.member.displayName)])
+        await applicationAdapter('put', `/v1/bans/${userId}`, { changes, editorId })
+        message.reply(`Successfully changed **${username}**'s ban.`)
     }
 }

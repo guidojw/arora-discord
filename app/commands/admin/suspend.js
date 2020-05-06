@@ -1,8 +1,9 @@
 'use strict'
 const Command = require('../../controllers/command')
 const userService = require('../../services/user')
-const applicationConfig = require('../../../config/application')
 const applicationAdapter = require('../../adapters/application')
+
+const applicationConfig = require('../../../config/application')
 
 module.exports = class SuspendCommand extends Command {
     constructor (client) {
@@ -43,21 +44,17 @@ module.exports = class SuspendCommand extends Command {
     }
 
     async execute (message, { username, days, reason, rankBack }) {
-        try {
-            username = typeof user === 'string' ? username : username.displayName
-            const [userId, authorId] = await Promise.all([userService.getIdFromUsername(username), userService
-                .getIdFromUsername(message.member.displayName)])
-            await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId}/suspensions`,
-                {
-                    duration: days * 86400000,
-                    rankBack,
-                    authorId,
-                    userId,
-                    reason
-                })
-            message.reply(`Successfully suspended **${username}**.`)
-        } catch (err) {
-            message.reply(err.message)
-        }
+        username = typeof user === 'string' ? username : username.displayName
+        const [userId, authorId] = await Promise.all([userService.getIdFromUsername(username), userService
+            .getIdFromUsername(message.member.displayName)])
+        await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId}/suspensions`,
+            {
+                duration: days * 86400000,
+                rankBack,
+                authorId,
+                userId,
+                reason
+            })
+        message.reply(`Successfully suspended **${username}**.`)
     }
 }

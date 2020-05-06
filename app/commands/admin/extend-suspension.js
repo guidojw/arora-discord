@@ -1,8 +1,9 @@
 'use strict'
 const Command = require('../../controllers/command')
 const applicationAdapter = require('../../adapters/application')
-const applicationConfig = require('../../../config/application')
 const userService = require('../../services/user')
+
+const applicationConfig = require('../../../config/application')
 
 module.exports = class ExtendSuspensionCommand extends Command {
     constructor (client) {
@@ -40,19 +41,15 @@ module.exports = class ExtendSuspensionCommand extends Command {
     }
 
     async execute (message, { username, days, reason }) {
-        try {
-            username = typeof user === 'string' ? username : username.displayName
-            const [userId, authorId] = await Promise.all([userService.getIdFromUsername(username), userService
-                .getIdFromUsername(message.member.displayName)])
-            await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId}/suspensions/${
-                userId}/extend`, {
-                duration: days * 86400000,
-                authorId,
-                reason
-            })
-            message.reply(`Successfully extended **${username}**'s suspension.`)
-        } catch (err) {
-            message.reply(err.message)
-        }
+        username = typeof user === 'string' ? username : username.displayName
+        const [userId, authorId] = await Promise.all([userService.getIdFromUsername(username), userService
+            .getIdFromUsername(message.member.displayName)])
+        await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId}/suspensions/${
+            userId}/extend`, {
+            duration: days * 86400000,
+            authorId,
+            reason
+        })
+        message.reply(`Successfully extended **${username}**'s suspension.`)
     }
 }

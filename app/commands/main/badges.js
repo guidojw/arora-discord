@@ -2,6 +2,7 @@
 const Command = require('../../controllers/command')
 const { MessageEmbed } = require('discord.js')
 const userService = require('../../services/user')
+
 const applicationConfig = require('../../../config/application')
 
 module.exports = class BadgesCommand extends Command {
@@ -24,20 +25,17 @@ module.exports = class BadgesCommand extends Command {
     }
 
     async execute (message, { username }) {
-        username = username ? typeof user === 'string' ? username : username.displayName : message.member.displayName
-        try {
-            const userId = await userService.getIdFromUsername(username)
-            const hasTtdt = await userService.hasBadge(userId, applicationConfig.ttdtId)
-            const hasPtdt = await userService.hasBadge(userId, applicationConfig.ptdtId)
-            const hasTcdt = await userService.hasBadge(userId, applicationConfig.tcdtId)
-            const embed = new MessageEmbed()
-                .setTitle(`${message.argString ? username + '\'s' : 'Your'} badges`)
-                .addField('TTDT', hasTtdt ? 'yes' : 'no', true)
-                .addField('PTDT', hasPtdt ? 'yes' : 'no', true)
-                .addField('TCDT', hasTcdt ? 'yes' : 'no', true)
-            message.replyEmbed(embed)
-        } catch (err) {
-            message.reply(err.message)
-        }
+        username = username ? typeof user === 'string' ? username : message.member.displayName
+        const userId = await userService.getIdFromUsername(username)
+        const hasTtdt = await userService.hasBadge(userId, applicationConfig.ttdtId)
+        const hasPtdt = await userService.hasBadge(userId, applicationConfig.ptdtId)
+        const hasTcdt = await userService.hasBadge(userId, applicationConfig.tcdtId)
+        const embed = new MessageEmbed()
+            .setTitle(`${message.argString ? username + '\'s' : 'Your'} badges`)
+            .addField('TTDT', hasTtdt ? 'yes' : 'no', true)
+            .addField('PTDT', hasPtdt ? 'yes' : 'no', true)
+            .addField('TCDT', hasTcdt ? 'yes' : 'no', true)
+            .setColor(applicationConfig.primaryColor)
+        message.replyEmbed(embed)
     }
 }
