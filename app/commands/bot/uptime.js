@@ -1,6 +1,7 @@
 'use strict'
 const Command = require('../../controllers/command')
 const { MessageEmbed } = require('discord.js')
+const { getDurationString } = require('../../helpers/time')
 
 const applicationConfig = require('../../../config/application')
 
@@ -16,7 +17,7 @@ module.exports = class UptimeCommand extends Command {
 
     execute (message) {
         const embed = new MessageEmbed()
-            .addField('NSadmin has been online for', `${Math.round(this.client.uptime / 1000)}s`)
+            .addField('NSadmin has been online for', getDurationString(this.client.uptime))
             .setColor(applicationConfig.primaryColor)
         message.replyEmbed(embed)
     }
