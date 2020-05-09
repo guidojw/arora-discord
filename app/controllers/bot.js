@@ -206,7 +206,7 @@ module.exports = class Bot {
         }
         const embed = new MessageEmbed()
             .setTitle('Train Developers Payout Report')
-            .setColor(0xfff)
+            .setColor(0xffffff)
         for (const [id, developerSales] of Object.entries(developersSales)) {
             const username = developers.find(developer => developer.id === parseInt(id)).name
             embed.addField(username, `Has sold **${developerSales.total.amount}** ${pluralize('train', 
