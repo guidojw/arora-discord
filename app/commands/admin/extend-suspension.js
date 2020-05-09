@@ -2,6 +2,7 @@
 const Command = require('../../controllers/command')
 const applicationAdapter = require('../../adapters/application')
 const userService = require('../../services/user')
+const { getChannels, getTags, getUrls } = require('../../helpers/string')
 
 const applicationConfig = require('../../../config/application')
 
@@ -25,16 +26,14 @@ module.exports = class ExtendSuspensionCommand extends Command {
                     key: 'days',
                     type: 'integer',
                     prompt: 'With how many days would you like to extend this person\'s suspension?',
-                    validate: val => {
-                        if (val < 1) return 'Insufficient amount of days.'
-                        if (val > 7) return 'Too many days.'
-                        return true
-                    }
+                    validate: val => val < 1 ? 'Insufficient amount of days.' : val > 7 ? 'Too many days.' : true
                 },
                 {
                     key: 'reason',
                     type: 'string',
-                    prompt: 'With what reason are you extending this person\'s suspension?'
+                    prompt: 'With what reason are you extending this person\'s suspension?',
+                    validate: val => getChannels(val) ? 'Reason contains channels.' : getTags(val) ? 'Reason contains' +
+                        ' tags.' : getUrls(val) ? 'Reason contains URLs.' : true
                 }
             ]
         })

@@ -2,6 +2,7 @@
 const Command = require('../../controllers/command')
 const userService = require('../../services/user')
 const applicationAdapter = require('../../adapters/application')
+const { getChannels, getTags, getUrls } = require('../../helpers/string')
 
 const applicationConfig = require('../../../config/application')
 
@@ -22,7 +23,9 @@ module.exports = class BanCommand extends Command {
                 {
                     key: 'reason',
                     type: 'string',
-                    prompt: 'With what reason would you like to ban this person?'
+                    prompt: 'With what reason would you like to ban this person?',
+                    validate: val => getChannels(val) ? 'Reason contains channels.' : getTags(val) ? 'Reason contains' +
+                        ' tags.' : getUrls(val) ? 'Reason contains URLs.' : true
                 }
             ]
         })

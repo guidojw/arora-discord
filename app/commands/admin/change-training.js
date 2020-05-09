@@ -2,9 +2,11 @@
 const Command = require('../../controllers/command')
 const groupService = require('../../services/group')
 const applicationAdapter = require('../../adapters/application')
-const applicationConfig = require('../../../config/application')
 const timeHelper = require('../../helpers/time')
 const userService = require('../../services/user')
+const { getChannels, getTags, getUrls } = require('../../helpers/string')
+
+const applicationConfig = require('../../../config/application')
 
 module.exports = class ChangeTrainingCommand extends Command {
     constructor (client) {
@@ -43,6 +45,9 @@ module.exports = class ChangeTrainingCommand extends Command {
         if (key === 'author') {
             changes.authorId = await userService.getIdFromUsername(data)
         } else if (key === 'notes') {
+            const error = getChannels(data) ? 'Notes contain channels.' : getTags(data) ? 'Notes contain tags.' :
+                getUrls(data) ? 'Notes contain URLs.' : undefined
+            if (error) return message.reply(error)
             changes.notes = data
         } else if (key === 'type') {
             const type = data.toUpperCase()

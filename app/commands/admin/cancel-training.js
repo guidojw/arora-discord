@@ -1,8 +1,10 @@
 'use strict'
 const Command = require('../../controllers/command')
 const applicationAdapter = require('../../adapters/application')
-const applicationConfig = require('../../../config/application')
 const userService = require('../../services/user')
+const { getChannels, getTags, getUrls } = require('../../helpers/string')
+
+const applicationConfig = require('../../../config/application')
 
 module.exports = class CancelTrainingCommand extends Command {
     constructor (client) {
@@ -22,7 +24,9 @@ module.exports = class CancelTrainingCommand extends Command {
                 {
                     key: 'reason',
                     type: 'string',
-                    prompt: 'With what reason would you like to cancel this training?'
+                    prompt: 'With what reason would you like to cancel this training?',
+                    validate: val => getChannels(val) ? 'Reason contains channels.' : getTags(val) ? 'Reason contains' +
+                        ' tags.' : getUrls(val) ? 'Reason contains URLs.' : true
                 }
             ]
         })
