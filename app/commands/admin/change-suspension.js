@@ -2,6 +2,7 @@
 const Command = require('../../controllers/command')
 const userService = require('../../services/user')
 const applicationAdapter = require('../../adapters/application')
+const { getChannels, getTags, getUrls } = require('../../helpers/string')
 
 const applicationConfig = require('../../../config/application')
 
@@ -42,6 +43,9 @@ module.exports = class ChangeSuspensionCommand extends Command {
         if (key === 'author') {
             changes.authorId = await userService.getIdFromUsername(data)
         } else if (key === 'reason') {
+            const error = getChannels(data) ? 'Reason contains channels.' : getTags(data) ? 'Reason contains tags.' :
+                getUrls(data) ? 'Reason contains URLs.' : undefined
+            if (error) return message.reply(error)
             changes.reason = data
         } else if (key === 'rankback') {
             if (data !== true && data !== false) {

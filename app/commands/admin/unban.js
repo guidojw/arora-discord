@@ -2,6 +2,7 @@
 const Command = require('../../controllers/command')
 const userService = require('../../services/user')
 const applicationAdapter = require('../../adapters/application')
+const { getChannels, getTags, getUrls } = require('../../helpers/string')
 
 module.exports = class UnbanCommand extends Command {
     constructor (client) {
@@ -21,7 +22,9 @@ module.exports = class UnbanCommand extends Command {
                 {
                     key: 'reason',
                     type: 'string',
-                    prompt: 'With what reason would you like to unban this person?'
+                    prompt: 'With what reason would you like to unban this person?',
+                    validate: val => getChannels(val) ? 'Reason contains channels.' : getTags(val) ? 'Reason contains' +
+                        ' tags.' : getUrls(val) ? 'Reason contains URLs.' : true
                 }
             ]
         })

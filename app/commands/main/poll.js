@@ -2,6 +2,7 @@
 const Command = require('../../controllers/command')
 const discordService = require('../../services/discord')
 const { MessageEmbed } = require('discord.js')
+const { getTags } = require('../../helpers/string')
 
 const applicationConfig = require('../../../config/application')
 
@@ -19,7 +20,8 @@ module.exports = class PollCommand extends Command {
                 {
                     key: 'poll',
                     type: 'string',
-                    prompt: 'What would you like the question to be?'
+                    prompt: 'What would you like the question to be?',
+                    validate: val => getTags(val) ? 'Poll contains tags.' : true
                 }
             ]
         })

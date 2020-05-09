@@ -5,6 +5,7 @@ const timeHelper = require('../../helpers/time')
 const applicationAdapter = require('../../adapters/application')
 const { MessageEmbed } = require('discord.js')
 const userService = require('../../services/user')
+const { getChannels, getTags, getUrls } = require('../../helpers/string')
 
 const applicationConfig = require('../../../config/application')
 
@@ -42,6 +43,8 @@ module.exports = class HostTrainingCommand extends Command {
                     key: 'notes',
                     type: 'string',
                     prompt: 'What notes would you like to add? Reply with "none" if you don\'t want to add any.',
+                    validate: val => getChannels(val) ? 'Notes contain channels.' : getTags(val) ? 'Notes contain ' +
+                        'tags.' : getUrls(val) ? 'Notes contain URLs.' : true
                 }
             ]
         })

@@ -1,6 +1,7 @@
 'use strict'
 const Command = require('../../controllers/command')
 const { MessageEmbed } = require('discord.js')
+const { getTags } = require('../../helpers/string')
 
 module.exports = class SuggestCommand extends Command {
     constructor (client) {
@@ -15,7 +16,8 @@ module.exports = class SuggestCommand extends Command {
                 {
                     key: 'suggestion',
                     prompt: 'What would you like to suggest?',
-                    type: 'string'
+                    type: 'string',
+                    validate: val => getTags(val) ? 'Suggestion contains tags.' : true
                 }
             ],
             throttling: {

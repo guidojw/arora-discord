@@ -3,6 +3,7 @@ const Command = require('../../controllers/command')
 const userService = require('../../services/user')
 const applicationAdapter = require('../../adapters/application')
 const { MessageEmbed } = require('discord.js')
+const { getChannels, getTags, getUrls } = require('../../helpers/string')
 
 const applicationConfig = require('../../../config/application')
 
@@ -20,9 +21,9 @@ module.exports = class ShoutCommand extends Command {
                     key: 'body',
                     type: 'string',
                     prompt: 'What would you like to shout?',
-                    validate: val => {
-                        return val.length <= 255 || 'Can\'t post shout, it\'s too long.'
-                    }
+                    validate: val => val.length > 255 ? 'Shout is too long.' : getChannels(val) ? 'Shout contains ' +
+                        'channels.' : getTags(val) ? 'Shout contains tags.' : getUrls(val) ? 'Shout contains URLs.' :
+                        true
                 }
             ]
         })
