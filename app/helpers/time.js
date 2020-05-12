@@ -44,9 +44,7 @@ exports.validDate = dateString => {
     return false
 }
 
-exports.validTime = timeString => {
-    return timeRegex.test(timeString)
-}
+exports.validTime = timeRegex.test
 
 exports.getDateInfo = dateString => {
     const day = parseInt(dateString.substring(0, dateString.indexOf('-')))
