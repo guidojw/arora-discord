@@ -1,8 +1,4 @@
 'use strict'
-const fs = require('fs')
-
-const timezones = require('../content/timezones')
-
 function getReadableDate(opts) {
     return opts.day + '-' + opts.month + '-' + opts.year
 }
@@ -10,49 +6,6 @@ function getReadableDate(opts) {
 function getReadableTime(opts) {
     if (opts.minutes.length === 1) opts.minutes = '0' + opts.minutes
     return opts.hours + ':' + opts.minutes
-}
-
-exports.getPlaceFromTimezone = abbreviation => {
-    return new Promise(
-        resolve => {
-            abbreviation = abbreviation.toUpperCase()
-            Object.keys(timezones).forEach(key => {
-                if (timezones[key].includes(abbreviation)) resolve(key)
-            })
-            resolve(null)
-        }
-    )
-}
-
-exports.getTimeInPlace = place => {
-    return new Date(new Date().toLocaleString('en-US', { timeZone: place }))
-}
-
-exports.convertTimezones = () => {
-    fs.readFile('../content/timezones.txt', (err, data) => {
-        let timezones = {}
-        let count = 0
-        let currentPlace
-        data.toString().split('\n').forEach(line => {
-            if (count % 4 === 0) {
-                if (currentPlace) timezones[currentPlace] = Array.from(new Set(timezones[currentPlace]))
-                if (line.indexOf('posix/') > -1 || line.indexOf('right/') > -1) {
-                    currentPlace = line.substring(line.indexOf('/usr/share/zoneinfo/') + 26, line.length - 1)
-                } else {
-                    currentPlace = line.substring(line.indexOf('/usr/share/zoneinfo/') + 20, line.length - 1)
-                }
-                timezones[currentPlace] = []
-            } else if ((count - 1) % 4 === 0 || (count - 2) % 4 === 0) {
-                let abbreviation = line.substring(line.lastIndexOf(' ') + 2, line.length - 2)
-                timezones[currentPlace].push(abbreviation)
-            }
-            count++
-        })
-        fs.writeFile('../content/timezones.json', JSON.stringify(timezones), err => {
-            if (err) throw err
-            console.log('Successfully written to file!')
-        })
-    })
 }
 
 exports.getDate = date => {
