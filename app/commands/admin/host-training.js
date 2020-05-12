@@ -54,8 +54,8 @@ module.exports = class HostTrainingCommand extends Command {
         const role = groupService.getRoleByAbbreviation(type)
         const dateInfo = timeHelper.getDateInfo(date)
         const timeInfo = timeHelper.getTimeInfo(time)
-        const dateUnix = Math.floor(new Date(dateInfo.year, dateInfo.month - 1, dateInfo.day, timeInfo.hours,
-            timeInfo.minutes).getTime())
+        const dateUnix = Math.floor(new Date(dateInfo.year, dateInfo.month, dateInfo.day, timeInfo.hours, timeInfo
+            .minutes).getTime())
         const afterNow = dateUnix - Math.floor(Date.now()) > 0
         if (!afterNow) return message.reply('Please give a date and time that are after now.')
         const authorId = await userService.getIdFromUsername(message.member.displayName)
