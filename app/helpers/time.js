@@ -1,24 +1,26 @@
 'use strict'
+const timeRegex = /^(2[0-3]|[0-1]?[\d]):[0-5][\d]$/
+const dateRegex = /(|([0-2]{1}[0-9]{1}|3[0-1]{1})[-]([1-9]|0[1-9]|1[0-2])[-][0-9]{4})/
+
 function getReadableDate(opts) {
-    return opts.day + '-' + opts.month + '-' + opts.year
+    return `${opts.day}-${opts.month}-${opts.year}`
 }
 
 function getReadableTime(opts) {
-    if (opts.minutes.length === 1) opts.minutes = '0' + opts.minutes
-    return opts.hours + ':' + opts.minutes
+    return `${opts.hours}:${'0'.repeat(2 - String(opts.minutes).length)}${opts.minutes}`
 }
 
 exports.getDate = date => {
-    const day = String(date.getDate())
-    const month = String(date.getMonth() + 1)
-    const year = String(date.getFullYear())
-    return getReadableDate({ day: day, month: month, year: year })
+    const day = date.getDate()
+    const month = date.getMonth() + 1
+    const year = date.getFullYear()
+    return getReadableDate({ day, month, year })
 }
 
 exports.getTime = date => {
-    const hours = String(date.getHours())
-    const minutes = String(date.getMinutes())
-    return getReadableTime({ hours: hours, minutes: minutes })
+    const hours = date.getHours()
+    const minutes = date.getMinutes()
+    return getReadableTime({ hours, minutes })
 }
 
 exports.isDst = date => {
@@ -28,56 +30,35 @@ exports.isDst = date => {
 }
 
 exports.validDate = dateString => {
-    if (dateString) {
-        if (dateString.length >= 8 && dateString.length <= 10) {
-            if (dateString.indexOf('-') !== dateString.lastIndexOf('-')) {
-                const day = parseInt(dateString.substring(0, dateString.indexOf('-')))
-                const month = parseInt(dateString.substring(dateString.indexOf('-') + 1, dateString.lastIndexOf('-')))
-                const year = parseInt(dateString.substring(dateString.lastIndexOf('-') + 1, dateString.length))
-                if (day && month && year) {
-                    const leapYear = year % 4 === 0
-                    if (month === 1 || month === 3 || month === 5 || month === 7 || month === 8 || month === 10 || month
-                        === 12) {
-                        return day <= 31
-                    } else if (month === 4 || month === 6 || month === 9 || month === 11) {
-                        return day <= 30
-                    } else if (month === 2) {
-                        if (leapYear) {
-                            return day <= 29
-                        } else {
-                            return day <= 28
-                        }
-                    }
-                }
-            }
+    if (dateRegex.test(dateString)) {
+        const { day, month, year } = exports.getDateInfo(dateString)
+        const leapYear = year % 4 === 0
+        if (month === 0 || month === 2 || month === 4 || month === 6 || month === 7 || month === 9 || month === 11) {
+            return day <= 31
+        } else if (month === 3 || month === 5 || month === 8 || month === 10) {
+            return day <= 30
+        } else if (month === 1) {
+            return leapYear ? day <= 29 : day <= 28
         }
     }
     return false
 }
 
 exports.validTime = timeString => {
-    if (timeString) {
-        if (timeString.length === 5) {
-            const hours = parseInt(timeString.substring(0, 2))
-            const minutes = parseInt(timeString.substring(3, 5))
-            return ((hours && minutes || hours === 0 && minutes || hours === 0 && minutes === 0 || hours && minutes ===
-                0) && (hours >= 0 && hours < 24 && minutes >= 0 && minutes < 60))
-        }
-    }
-    return false
+    return timeRegex.test(timeString)
 }
 
 exports.getDateInfo = dateString => {
-    const day = dateString.substring(0, dateString.indexOf('-'))
-    const month = dateString.substring(dateString.indexOf('-') + 1, dateString.lastIndexOf('-'))
-    const year = dateString.substring(dateString.lastIndexOf('-') + 1, dateString.length)
-    return { day: day, month: month, year: year }
+    const day = parseInt(dateString.substring(0, dateString.indexOf('-')))
+    const month = parseInt(dateString.substring(dateString.indexOf('-') + 1, dateString.lastIndexOf('-')))
+    const year = parseInt(dateString.substring(dateString.lastIndexOf('-') + 1, dateString.length))
+    return { day, month: month - 1, year }
 }
 
 exports.getTimeInfo = timeString => {
-    const hours = timeString.substring(0, timeString.indexOf(':'))
-    const minutes = timeString.substring(timeString.indexOf(':') + 1, timeString.length)
-    return { hours: hours, minutes: minutes }
+    const hours = parseInt(timeString.substring(0, timeString.indexOf(':')))
+    const minutes = parseInt(timeString.substring(timeString.indexOf(':') + 1, timeString.length))
+    return { hours, minutes }
 }
 
 exports.getDurationString = milliseconds => {
@@ -88,6 +69,6 @@ exports.getDurationString = milliseconds => {
     const minutes = Math.floor(hoursMilliseconds / (60 * 1000))
     const minutesMilliseconds = milliseconds % (60 * 1000)
     const seconds = Math.floor(minutesMilliseconds / (1000))
-    return (days > 0 ? days + 'd ' : '') + (hours > 0 ? hours + 'h ' : '') + (minutes > 0 ? minutes + 'm ' : '') +
-        seconds + 's'
+    return `${days > 0 ? days + 'd ' : ''}${hours > 0 ? hours + 'h ' : ''}${minutes > 0 ? minutes + 'm ' : ''}${seconds 
+    > 0 ? seconds + 's ' : ''}`
 }

@@ -57,14 +57,5 @@ exports.getAbbreviationByRank = (rank, group) => {
 }
 
 exports.getTrainingById = async id => {
-    if (!id) throw new Error('Please enter a training ID.')
-    const trainings = (await applicationAdapter('get', `/v1/groups/${config.groupId}/trainings`))
-        .data
-    if (trainings.length === 0) throw new Error('There are currently no hosted trainings.')
-    for await (const training of trainings) {
-        if (training.id === id) {
-            return training
-        }
-    }
-    throw new Error(`Couldn't find info for Training ID **${id}**.`)
+    return (await applicationAdapter('get', `/v1/groups/${config.groupId}/trainings/${id}`)).data
 }

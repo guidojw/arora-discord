@@ -69,8 +69,8 @@ module.exports = class ChangeTrainingCommand extends Command {
                 dateInfo = timeHelper.getDateInfo(timeHelper.getDate(date))
                 timeInfo = timeHelper.getTimeInfo(data)
             }
-            changes.date = Math.floor(new Date(dateInfo.year, dateInfo.month - 1, dateInfo.day, timeInfo
-                .hours, timeInfo.minutes).getTime())
+            changes.date = Math.floor(new Date(dateInfo.year, dateInfo.month, dateInfo.day, timeInfo.hours, timeInfo
+                .minutes).getTime())
         }
         const editorId = await userService.getIdFromUsername(message.member.displayName)
         await applicationAdapter('put', `/v1/groups/${applicationConfig.groupId}/trainings/${
