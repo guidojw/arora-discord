@@ -6,10 +6,10 @@ const { stripIndents } = require('common-tags')
 const applicationConfig = require('../../config/application')
 
 module.exports = [{
-    names: ['game', 'gamepage'],
+    names: ['game'],
     tag: applicationConfig.gameLink
 }, {
-    names: ['group', 'grouplink', 'grouppage'],
+    names: ['group'],
     tag: applicationConfig.groupLink
 }, {
     names: ['groupcenter', 'gc'],
