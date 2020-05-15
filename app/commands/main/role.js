@@ -1,6 +1,5 @@
 'use strict'
 const Command = require('../../controllers/command')
-const applicationAdapter = require('../../adapters/application')
 const userService = require('../../services/user')
 const { MessageEmbed } = require('discord.js')
 
@@ -30,8 +29,7 @@ module.exports = class RoleCommand extends Command {
         username = username ? typeof username === 'string' ? username : username.displayName : message.member
             .displayName
         const userId = await userService.getIdFromUsername(username)
-        const role = (await applicationAdapter('get', `/v1/users/${userId}/role/${
-            applicationConfig.groupId}`)).data
+        const role = await userService.getRole(userId, applicationConfig.groupId)
         const embed = new MessageEmbed()
             .addField(`${message.argString ? username + '\'s' : 'Your'} role`, role)
             .setColor(applicationConfig.primaryColor)

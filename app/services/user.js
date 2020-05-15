@@ -22,3 +22,11 @@ exports.getUser = async userId => {
         throw new Error(`**${userId}** doesn't exist on Roblox.`)
     }
 }
+
+exports.getRank = async (userId, groupId) => {
+    return (await applicationAdapter('get', `/v1/users/${userId}/rank/${groupId}`)).data
+}
+
+exports.getRole = async (userId, groupId) => {
+    return (await applicationAdapter('get', `/v1/users/${userId}/role/${groupId}`)).data
+}
