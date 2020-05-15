@@ -1,6 +1,5 @@
 'use strict'
 const Command = require('../../controllers/command')
-const applicationAdapter = require('../../adapters/application')
 const userService = require('../../services/user')
 const pluralize = require('pluralize')
 const { MessageEmbed } = require('discord.js')
@@ -31,9 +30,8 @@ module.exports = class AgeCommand extends Command {
         username = username ? typeof username === 'string' ? username : username.displayName : message.member
             .displayName
         const userId = await userService.getIdFromUsername(username)
-        const joinDate = new Date((await applicationAdapter('get', `/v1/users/${userId}/join-` +
-            'date')).data)
-        const age = Math.floor((Date.now() - joinDate.getTime()) / 86400000)
+        const user = await userService.getUser(userId)
+        const age = Math.floor((Date.now() - new Date(user.created).getTime()) / 86400000)
         const embed = new MessageEmbed()
             .addField(`${message.argString ? username + '\'s' : 'Your'} age`,`${age} ${pluralize('day', 
                 age)}`)
