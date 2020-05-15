@@ -31,7 +31,7 @@ module.exports = class DemoteCommand extends Command {
         const rank = await userService.getRank(userId, applicationConfig.groupId)
         const roles = (await applicationAdapter('put', `/v1/groups/${applicationConfig.groupId}/` +
             `users/${userId}`, { authorId, rank: rank > 100 && rank <= 102 ? rank - 1 : rank === 100 ? 5 : rank >
-            3 && rank <= 5 ? rank - 1 : rank === 3 ? 1 : 0 })).data
+            3 && rank <= 5 ? rank - 1 : rank === 3 ? 1 : undefined })).data
         message.reply(`Successfully demoted **${username}** from **${roles.oldRole.name}** to **${roles.newRole.name}` +
             '**.')
     }
