@@ -29,6 +29,11 @@ module.exports = class DemoteCommand extends Command {
         const [userId, authorId] = await Promise.all([userService.getIdFromUsername(username), userService
             .getIdFromUsername(message.member.displayName)])
         const rank = await userService.getRank(userId, applicationConfig.groupId)
+        if (rank === 0) return message.reply('Can\'t change rank of non members.')
+        if (rank === 1) return message.reply('Can\'t change rank of customers.')
+        if (rank === 2) return message.reply('Can\'t change rank of suspended members.')
+        if (rank === 99) return message.reply('Can\'t change rank of partners.')
+        if (rank >= 200) return message.reply('Can\'t change rank of HRs.')
         const roles = (await applicationAdapter('put', `/v1/groups/${applicationConfig.groupId}/` +
             `users/${userId}`, { authorId, rank: rank > 100 && rank <= 102 ? rank - 1 : rank === 100 ? 5 : rank >
             3 && rank <= 5 ? rank - 1 : rank === 3 ? 1 : undefined })).data
