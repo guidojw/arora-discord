@@ -30,9 +30,9 @@ module.exports = class Command extends Commando.Command {
 
     handleError(err, message) {
         if (err.response && err.response.data.errors && err.response.data.errors.length > 0) {
-            return message.reply(err.response.data.errors[0].message)
+            return message.reply(err.response.data.errors[0].message || err.response.data.errors[0].msg)
         } else {
-            return message.reply(err.message)
+            return message.reply(err.message || err.msg)
         }
     }
 }
