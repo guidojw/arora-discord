@@ -13,6 +13,7 @@ module.exports = class ClearCommand extends Command {
             'important information ones.',
             examples: ['clear #suggestions'],
             clientPermissions: ['MANAGE_MESSAGES', 'ADD_REACTIONS', 'VIEW_CHANNEL', 'SEND_MESSAGES'],
+            ownerOnly: true,
             args: [
                 {
                     key: 'channel',
