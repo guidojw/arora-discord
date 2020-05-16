@@ -161,12 +161,14 @@ module.exports = class Bot {
             const member = await discordService.getMemberByName(guild.guild, username)
             if (member) {
                 const roles = guild.getData('roles')
-                for (const [binding, role] of Object.entries(roles[groupId])) {
-                    const ranks = stringHelper.convertBinding(binding)
-                    if (ranks.includes(rank)) {
-                        member.roles.add(role)
-                    } else {
-                        member.roles.remove(role)
+                if (roles[groupId]) {
+                    for (const [binding, role] of Object.entries(roles[groupId])) {
+                        const ranks = stringHelper.convertBinding(binding)
+                        if (ranks.includes(rank)) {
+                            member.roles.add(role)
+                        } else {
+                            member.roles.remove(role)
+                        }
                     }
                 }
             }
