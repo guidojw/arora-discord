@@ -28,7 +28,7 @@ module.exports = class Command extends Commando.Command {
         }
     }
 
-    handleError(err, message) {
+    handleError (err, message) {
         if (err.response && err.response.data.errors && err.response.data.errors.length > 0) {
             return message.reply(err.response.data.errors[0].message || err.response.data.errors[0].msg)
         } else {
