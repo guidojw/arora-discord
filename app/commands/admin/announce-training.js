@@ -32,7 +32,7 @@ module.exports = class AnnounceTrainingCommand extends Command {
             .groupId}/trainings/${trainingId}/announce`, { authorId })).data
         const embed = new MessageEmbed()
             .setColor(applicationConfig.primaryColor)
-        embed.addField('Successfully announced', announcement)
+            .addField('Successfully announced', announcement)
         message.replyEmbed(embed)
     }
 }
