@@ -4,20 +4,12 @@
   "description": "Discord bot for the NSadmin Roblox group bot.",
   "private": true,
   "repository": "github:guidojw/nsadmin-discord",
-  "main": "main.js",
+  "main": "app.js",
   "scripts": {
-    "start": "node main.js",
-    "start:dev": "nodemon main.js",
+    "start": "node app.js",
+    "start:dev": "nodemon app.js",
     "lint": "eslint app"
   },
-  "keywords": [
-    "discord-bot",
-    "discord-js",
-    "javascript",
-    "roblox",
-    "chatbot",
-    "bot"
-  ],
   "author": "Guido de Jong",
   "license": "MIT",
   "dependencies": {
@@ -27,6 +19,7 @@
     "discord.js": "^12.2.0",
     "discord.js-commando": "github:discordjs/Commando",
     "dotenv": "^8.2.0",
+    "lodash": "^4.17.15",
     "node-cron": "^2.0.3",
     "pluralize": "^8.0.0",
     "ws": "^7.3.0"

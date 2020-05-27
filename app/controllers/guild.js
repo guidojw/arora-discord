@@ -50,6 +50,7 @@ module.exports = class Guild extends EventEmitter {
         }
 
         this.scheduleJob('premiumMembersReportJob')
+        this.scheduleJob('announceTrainingsJob')
     }
 
     scheduleJob (name) {
