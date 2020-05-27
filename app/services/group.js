@@ -17,7 +17,7 @@ exports.getTrainingSentence = async training => {
 exports.getRoleByAbbreviation = str => {
     if (str) {
         str = str.toUpperCase()
-        return str === 'G' & 'Guest' || str === 'C' && 'Customer' || str === 'S' && 'Suspended' || str === 'TD' &&
+        return str === 'G' && 'Guest' || str === 'C' && 'Customer' || str === 'S' && 'Suspended' || str === 'TD' &&
             'Train Driver' || str === 'CD' && 'Conductor' || str === 'CSR' && 'Customer Service Representative' || str
             === 'CS' && 'Customer Service' || str === 'LC' && 'Line Controller' || str === 'PR' &&
             'Partner Representative' || str === 'R' && 'Representative' || str === 'MC' && 'Management Coordinator' ||
