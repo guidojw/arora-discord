@@ -29,7 +29,8 @@
     "dotenv": "^8.2.0",
     "node-cron": "^2.0.3",
     "pluralize": "^8.0.0",
-    "ws": "^7.2.5"
+    "ws": "^7.2.5",
+    "lodash": "latest"
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",
