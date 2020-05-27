@@ -46,8 +46,8 @@ function getTrainingsEmbed (trainings, authors) {
                 const dateString = trainingDay === today ? 'Today' : trainingDay === today + 1 ? 'Tomorrow' : timeHelper
                     .getDate(date)
                 const author = authors.find(author => author.id === training.authorId)
-                result += `**${dateString} at ${timeString}** hosted by ${author.name})`
-                const hourDifference = training.getHours() - now.getHours()
+                result += `**${dateString}** at **${timeString}** hosted by ${author.name}`
+                const hourDifference = date.getHours() - now.getHours()
                 if (trainingDay === today && hourDifference <= 5) {
                     result += `\n> :alarm_clock: Starts in: **${hourDifference} hours**`
                 }
