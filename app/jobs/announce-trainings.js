@@ -5,6 +5,7 @@ const { MessageEmbed } = require('discord.js')
 const groupService = require('../services/group')
 const timeHelper = require('../helpers/time')
 const lodash = require('lodash')
+const pluralize = require('pluralize')
 
 const applicationConfig = require('../../config/application')
 
@@ -49,7 +50,19 @@ function getTrainingsEmbed (trainings, authors) {
                 result += `**${dateString}** at **${timeString}** hosted by ${author.name}`
                 const hourDifference = date.getHours() - now.getHours()
                 if (trainingDay === today && hourDifference <= 5) {
-                    result += `\n> :alarm_clock: Starts in: **${hourDifference} hours**`
+                    if (hourDifference === 0) {
+                        const minuteDifference = date.getMinutes() - now.getMinutes()
+                        if (minuteDifference >= 0) {
+                            result += `\n> :alarm_clock: Starts in: **${minuteDifference} ${pluralize('minute', 
+                                minuteDifference)}**`
+                        } else {
+                            result += `\n> :alarm_clock: Started **${-1 * minuteDifference} ${pluralize('minute', 
+                                hourDifference)}** ago`
+                        }
+                    } else {
+                        result += `\n> :alarm_clock: Starts in: **${hourDifference} ${pluralize('hour', 
+                            hourDifference)}**`
+                    }
                 }
                 if (training.notes) result += `\n> ${training.notes}`
                 if (j < typeTrainings.length) result += '\n'
