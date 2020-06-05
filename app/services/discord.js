@@ -1,4 +1,8 @@
 'use strict'
+const { MessageEmbed } = require('discord.js')
+
+const applicationConfig = require('../../config/application')
+
 exports.getMemberByName = async (guild, name) => {
     const members = await guild.members.fetch()
     for (const member of members.values()) {
@@ -29,8 +33,8 @@ exports.getEmojiFromNumber = number => {
 }
 
 exports.prompt = async (channel, author, message) => {
-    const filter = (reaction, user) => (reaction.emoji.name === '✅' || reaction.emoji.name === '🚫') && user.id
-        === author.id
+    const filter = (reaction, user) => (reaction.emoji.name === '✅' || reaction.emoji.name === '🚫') && user.id ===
+        author.id
     const collector = message.createReactionCollector(filter, { time: 60000 })
     const promise = new Promise(resolve => {
         collector.on('end', collected => {
@@ -42,4 +46,33 @@ exports.prompt = async (channel, author, message) => {
     await message.react('✅')
     await message.react('🚫')
     return promise
+}
+
+exports.getListEmbeds = async (title, values, getRow, data) => {
+    const embeds = []
+    let embed = new MessageEmbed()
+        .setTitle(title)
+        .setColor(applicationConfig.primaryColor)
+    for (const value of values) {
+        const row = await getRow(value, data)
+        const currentField = embed.fields.length - 1
+        if (currentField === -1) {
+            embed.addField('\u200b', `${row}\n`)
+        } else {
+            const fieldLength = embed.fields.length >= 0 ? embed.fields[currentField].value.length : 0
+            const addition = row.length + 2 // +2 for \n
+            if (embed.length + addition <= 6000 && fieldLength + addition <= 1024) {
+                embed.fields[currentField].value += `${row}\n`
+            } else {
+                if (embed.length + addition + 6 > 6000) { // +6 for \u200b
+                    embeds.push(embed)
+                    embed = new MessageEmbed()
+                        .setColor(applicationConfig.primaryColor)
+                }
+                embed.addField('\u200b', `${row}\n`)
+            }
+        }
+    }
+    embeds.push(embed)
+    return embeds
 }

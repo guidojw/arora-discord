@@ -1,6 +1,6 @@
 'use strict'
 const timeRegex = /^(2[0-3]|[0-1]?[\d]):[0-5][\d]$/
-const dateRegex = /(([0-2][0-9]|3[0-1])[-]([1-9]|0[1-9]|1[0-2])[-][0-9]{4})/
+const dateRegex = /(([0-2]?[0-9]|3[0-1])[-](0?[1-9]|1[0-2])[-][0-9]{4})/
 
 function getReadableDate(opts) {
     return `${opts.day}-${opts.month}-${opts.year}`
