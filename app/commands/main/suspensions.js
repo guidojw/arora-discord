@@ -6,6 +6,7 @@ const userService = require('../../services/user')
 const timeHelper = require('../../helpers/time')
 const { MessageEmbed } = require('discord.js')
 const pluralize = require('pluralize')
+const groupService = require('../../services/group')
 
 const applicationConfig = require('../../../config/application')
 
@@ -65,9 +66,9 @@ module.exports = class SuspensionsCommand extends Command {
             message.replyEmbed(embed)
         } else {
             const suspensions = (await applicationAdapter('get', `/v1/groups/${applicationConfig
-                .groupId}/suspensions`)).data
+                .groupId}/suspensions?sort=date`)).data
             if (suspensions.length === 0) return message.reply('There are currently no suspensions.')
-            const embeds = await discordService.getSuspensionEmbeds(suspensions)
+            const embeds = await groupService.getSuspensionEmbeds(suspensions)
             for (const embed of embeds) {
                 await message.author.send(embed)
             }

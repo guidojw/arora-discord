@@ -1,9 +1,13 @@
 'use strict'
 const timeHelper = require('../helpers/time')
-const applicationAdapter = require('../adapters/application')
 const userService = require('../services/user')
+const { MessageEmbed } = require('discord.js')
+const pluralize = require('pluralize')
+const lodash = require('lodash')
 
 const applicationConfig = require('../../config/application')
+
+const trainingTypes = { 'Conductor': [], 'Customer Service Representative': [] }
 
 exports.getTrainingSentence = async training => {
     const role = training.type.toUpperCase()
@@ -46,7 +50,122 @@ exports.getAbbreviationByRank = (rank, group) => {
     }
 }
 
-exports.getTrainingById = async id => {
-    return (await applicationAdapter('get', `/v1/groups/${applicationConfig.groupId}/trainings/${
-        id}`)).data
+exports.getTrainingEmbeds = async trainings => {
+    const embeds = []
+    let fields = []
+    let sum = 0
+    const addField = message => {
+        message = message.trim()
+        fields.push({ name: '\u200b', value: message })
+    }
+    const addEmbed = () => {
+        const embed = new MessageEmbed()
+            .addFields(fields)
+            .setColor(applicationConfig.primaryColor)
+        embeds.push(embed)
+        fields = []
+        sum = 0
+    }
+    let message = ''
+    for (const training of trainings) {
+        const line = training.id + '. ' + await exports.getTrainingSentence(training)
+        const addition = line.length + 8 // TODO: tweak additions
+        if (sum + addition <= 6000) {
+            if (message.length + line.length <= 1024) {
+                sum += line.length
+            } else {
+                addField(message)
+                message = ''
+                sum += addition
+            }
+        } else {
+            addField(message)
+            message = ''
+            addEmbed()
+        }
+        message += (line + '\n')
+    }
+    const addition = message.length + 8
+    if (sum + addition > 6000) {
+        addEmbed()
+    }
+    addField(message)
+    addEmbed()
+    embeds[0].setTitle('Upcoming Trainings')
+    return embeds
+}
+
+exports.getSuspensionEmbeds = async suspensions => {
+    const userIds = suspensions.map(suspension => suspension.userId)
+    const authorIds = suspensions.map(suspension => suspension.authorId)
+    const users = await userService.getUsers(userIds)
+    const authors = await userService.getUsers(authorIds)
+    const embeds = []
+    let fields = []
+    let sum = 0
+    const addField = message => {
+        message = message.trim()
+        fields.push({ name: '\u200b', value: message })
+    }
+    const addEmbed = () => {
+        const embed = new MessageEmbed()
+            .addFields(fields)
+            .setColor(applicationConfig.primaryColor)
+        embeds.push(embed)
+        fields = []
+        sum = 0
+    }
+    let message = ''
+    for (const suspension of suspensions) {
+        const username = users.find(user => user.id === suspension.userId).name
+        const author = authors.find(user => user.id === suspension.authorId)
+        const role = exports.getAbbreviationByRank(suspension.rank)
+        const rankBack = suspension.rankBack ? 'yes' : 'no'
+        const dateString = timeHelper.getDate(new Date(suspension.date))
+        const days = suspension.duration / 86400000
+        let extensionDays = 0
+        if (suspension.extensions) {
+            for (const extension of suspension.extensions) {
+                extensionDays += extension.duration / 86400000
+            }
+        }
+        const extensionString = extensionDays < 0 ? ` (${extensionDays})` : extensionDays > 0 ? ` (+${
+            extensionDays})` : ''
+        const line = `**${username}** (${role}, rankback **${rankBack}**) by **${author.name}** at **${dateString}** ` +
+            `for **${days}${extensionString} ${pluralize('day', days + extensionDays)}** with reason:\n*${suspension
+                .reason}*`
+        const addition = line.length + 16 // TODO: tweak additions
+        if (sum + addition <= 6000) {
+            if (message.length + line.length <= 1024) {
+                sum += line.length
+            } else {
+                addField(message)
+                message = ''
+                sum += addition
+            }
+        } else {
+            addField(message)
+            message = ''
+            addEmbed()
+        }
+        message += line + '\n'
+    }
+    const addition = message.length + 8
+    if (sum + addition > 6000) {
+        addEmbed()
+    }
+    addField(message)
+    addEmbed()
+    embeds[0].setTitle('Current Suspensions')
+    return embeds
+}
+
+exports.groupTrainingsByType = trainings => {
+    const result = {}
+    for (const training of trainings) {
+        const type = exports.getRoleByAbbreviation(training.type)
+        if (!result[type]) result[type] = []
+        result[type].push(training)
+    }
+    return lodash.assign({}, trainingTypes, result)
 }

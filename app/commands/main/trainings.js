@@ -1,7 +1,6 @@
 'use strict'
 const Command = require('../../controllers/command')
 const applicationAdapter = require('../../adapters/application')
-const discordService = require('../../services/discord')
 const groupService = require('../../services/group')
 const { MessageEmbed } = require('discord.js')
 
@@ -37,12 +36,9 @@ module.exports = class TrainingsCommand extends Command {
             message.replyEmbed(embed)
         } else {
             const trainings = (await applicationAdapter('get', `/v1/groups/${applicationConfig
-                .groupId}/trainings`)).data
+                .groupId}/trainings?sort=date`)).data
             if (trainings.length === 0) return message.reply('There are currently no hosted trainings.')
-            trainings.sort((a, b) => {
-                return a.date - b.date
-            })
-            const embeds = await discordService.getTrainingEmbeds(trainings)
+            const embeds = await groupService.getTrainingEmbeds(trainings)
             for (const embed of embeds) {
                 await message.author.send(embed)
             }

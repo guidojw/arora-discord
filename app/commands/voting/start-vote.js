@@ -1,7 +1,7 @@
 'use strict'
 const Command = require('../../controllers/command')
 const timeHelper = require('../../helpers/time')
-const discordService = require('../../services/discord')
+const votingService = require('../../services/voting')
 
 module.exports = class StartVoteCommand extends Command {
     constructor (client) {
@@ -43,7 +43,7 @@ module.exports = class StartVoteCommand extends Command {
 
         voteData.channel = channel.id
         voteData.timer = { end: dateUnix }
-        const messages = await discordService.getVoteMessages(voteData, this.client)
+        const messages = await votingService.getVoteMessages(voteData, this.client)
         await channel.send(messages.intro.content, messages.intro.options)
         for (const [id, option] of Object.entries(messages.options)) {
             const optionMessage = await channel.send(option.content, option.options)
