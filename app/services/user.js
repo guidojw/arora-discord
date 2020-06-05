@@ -1,4 +1,6 @@
 'use strict'
+const dataHelper = require('../helpers/data')
+
 const applicationAdapter = require('../adapters/application')
 
 exports.getIdFromUsername = async username => {
@@ -12,7 +14,17 @@ exports.hasBadge = async (userId, badgeId) => {
 }
 
 exports.getUsers = async userIds => {
-    return (await applicationAdapter('post', '/v1/users', { userIds })).data
+    if (userIds.length <= 100) {
+        return (await applicationAdapter('post', '/v1/users', { userIds })).data
+    } else {
+        let result = []
+        const chunks = dataHelper.split(userIds, 100)
+        for (const chunk of chunks) {
+            result = result.concat((await applicationAdapter('post', '/v1/users', { userIds:
+                chunk })).data)
+        }
+        return result
+    }
 }
 
 exports.getUser = async userId => {
