@@ -4,6 +4,7 @@ const userService = require('../services/user')
 const { MessageEmbed } = require('discord.js')
 const groupService = require('../services/group')
 const timeHelper = require('../helpers/time')
+const pluralize = require('pluralize')
 
 const applicationConfig = require('../../config/application')
 
@@ -11,6 +12,7 @@ module.exports = async guild  => {
     const channels = guild.getData('channels')
     const messages = guild.getData('messages')
     const channel = guild.guild.channels.cache.get(channels.trainingsChannel)
+
     const message = await channel.messages.fetch(messages.trainingsMessage)
     const trainings = (await applicationAdapter('get', `/v1/groups/${applicationConfig
         .groupId}/trainings?sort=date`)).data

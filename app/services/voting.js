@@ -1,5 +1,5 @@
 'use strict'
-const { MessageAttachment } = require('discord.js')
+const { MessageAttachment, MessageEmbed } = require('discord.js')
 const timeHelper = require('../helpers/time')
 
 exports.getVoteMessages = async (voteData, client) => {

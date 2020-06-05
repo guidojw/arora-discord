@@ -40,9 +40,9 @@ module.exports = class ClearCommand extends Command {
             const guildMessages = guild.getData('messages')
             let messages
             do {
-                messages = await channel.messages.fetch({ after: channel.id === suggestionsChannelId ? guildMessages
-                    .firstSuggestionMessage : channel.id === reportsChannelId ? guildMessages.firstReportMessage :
-                        guildMessages.trainingsMessage })
+                const after = channel.id === suggestionsChannelId ? guildMessages.firstSuggestionMessage : channel
+                    .id === reportsChannelId ? guildMessages.firstReportMessage : guildMessages.trainingsMessage
+                messages = await channel.messages.fetch({ after })
                 if (messages.size > 0) {
                     try {
                         await channel.bulkDelete(messages)
