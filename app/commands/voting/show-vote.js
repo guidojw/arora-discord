@@ -1,6 +1,6 @@
 'use strict'
 const Command = require('../../controllers/command')
-const discordService = require('../../services/discord')
+const votingService = require('../../services/voting')
 
 module.exports = class ShowVoteCommand extends Command {
     constructor (client) {
@@ -17,7 +17,7 @@ module.exports = class ShowVoteCommand extends Command {
         const voteData = guild.getData('vote')
         if (!voteData) return message.reply('There\'s no vote created yet, create one using the createvote command.')
 
-        const messages = await discordService.getVoteMessages(voteData, this.client)
+        const messages = await votingService.getVoteMessages(voteData, this.client)
         await message.reply('The vote will look like this:')
         await message.channel.send(messages.intro.content, messages.intro.options)
         for (const option of Object.values(messages.options)) {

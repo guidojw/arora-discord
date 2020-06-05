@@ -1,7 +1,7 @@
 'use strict'
 const Command = require('../../controllers/command')
 const applicationAdapter = require('../../adapters/application')
-const discordService = require('../../services/discord')
+const banService = require('../../services/ban')
 const userService = require('../../services/user')
 const timeHelper = require('../../helpers/time')
 const { MessageEmbed } = require('discord.js')
@@ -43,9 +43,9 @@ module.exports = class BansCommand extends Command {
             if (ban.reason) embed.addField('Reason', ban.reason)
             message.replyEmbed(embed)
         } else {
-            const bans = (await applicationAdapter('get', '/v1/bans')).data
+            const bans = (await applicationAdapter('get', '/v1/bans?sort=date')).data
             if (bans.length === 0) return message.reply('There are currently no bans.')
-            const embeds = await discordService.getBanEmbeds(bans)
+            const embeds = await banService.getBanEmbeds(bans)
             for (const embed of embeds) {
                 await message.author.send(embed)
             }

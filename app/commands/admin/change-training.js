@@ -56,7 +56,8 @@ module.exports = class ChangeTrainingCommand extends Command {
             }
             changes.type = type
         } else if (key === 'date' || key === 'time') {
-            const training = await groupService.getTrainingById(trainingId)
+            const training = (await applicationAdapter('get', `/v1/groups/${applicationConfig
+                .groupId}/trainings/${trainingId}`)).data
             const date = new Date(training.date)
             let dateInfo
             let timeInfo

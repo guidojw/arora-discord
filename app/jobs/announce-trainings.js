@@ -4,12 +4,8 @@ const userService = require('../services/user')
 const { MessageEmbed } = require('discord.js')
 const groupService = require('../services/group')
 const timeHelper = require('../helpers/time')
-const lodash = require('lodash')
-const pluralize = require('pluralize')
 
 const applicationConfig = require('../../config/application')
-
-const trainingTypes = {'Conductor': [], 'Customer Service Representative': []}
 
 module.exports = async guild  => {
     const channels = guild.getData('channels')
@@ -32,7 +28,7 @@ module.exports = async guild  => {
 }
 
 function getTrainingsEmbed (trainings, authors) {
-    const groupedTrainings = groupTrainingsByType(trainings)
+    const groupedTrainings = groupService.groupTrainingsByType(trainings)
     const types = Object.keys(groupedTrainings)
     const embed = new MessageEmbed()
         .setColor(applicationConfig.primaryColor)
@@ -97,14 +93,4 @@ function getNextTrainingMessage (training, authors) {
     let result = `${training.type.toUpperCase()} **${dateString}** at **${timeString}** hosted by ${author.name}`
     if (training.notes) result += `\n${training.notes}`
     return result
-}
-
-function groupTrainingsByType (trainings) {
-    const result = {}
-    for (const training of trainings) {
-        const type = groupService.getRoleByAbbreviation(training.type)
-        if (!result[type]) result[type] = []
-        result[type].push(training)
-    }
-    return lodash.assign({}, trainingTypes, result)
 }
