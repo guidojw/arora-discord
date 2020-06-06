@@ -28,8 +28,6 @@ module.exports = class BoostInfoCommand extends Command {
         const now = new Date()
         const premiumDate = member.premiumSince
         let months = now.getMonth() - premiumDate.getMonth() + (now.getFullYear() - premiumDate.getFullYear()) * 12
-        const years = Math.floor(months / 12)
-        months %= 12
         let days = now.getDate() - premiumDate.getDate()
         if (days < 0) {
             const daysInMonth = new Date(premiumDate.getFullYear(), premiumDate.getMonth() + 1, 0)
@@ -37,6 +35,8 @@ module.exports = class BoostInfoCommand extends Command {
             days += daysInMonth
             months--
         }
+        const years = Math.floor(months / 12)
+        months %= 12
         const emojis = guild.getData('emojis')
         const emoji = guild.guild.emojis.cache.find(emoji => emoji.id === emojis.boostEmoji)
         if (member.user.partial) await member.user.partial.fetch()
