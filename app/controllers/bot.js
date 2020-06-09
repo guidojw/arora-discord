@@ -211,9 +211,25 @@ module.exports = class Bot {
             .setColor(0xffffff)
         for (const [id, developerSales] of Object.entries(developersSales)) {
             const username = developers.find(developer => developer.id === parseInt(id)).name
+            const total = Math.ceil(developerSales.total.robux)
             embed.addField(username, `Has sold **${developerSales.total.amount}** ${pluralize('train', 
-                developerSales.total.amount)} and earned ${emoji ? emoji: ''}${emoji ? ' ': ''}**${Math
-                .ceil(developerSales.total.robux)}**${!emoji ? ' Robux' : ''}.`)
+                developerSales.total.amount)} and earned ${emoji ? emoji: ''}${emoji ? ' ': ''}**${total}**${!emoji ? 
+                ' Robux' : ''}.`)
+            try {
+                const user = this.users.fetch(developerSales.discordId)
+                if (user) {
+                    const userEmbed = new MessageEmbed()
+                        .setTitle('Weekly Train Payout Report')
+                        .setColor(0xffffff)
+                    for (const productSales of developerSales.sales) {
+                        userEmbed.addField(productSales.name, `Sold **${productSales.amount}** ${pluralize('time', 
+                            productSales.amount)} and earned ${emoji ? emoji: ''}${emoji ? ' ': ''}**${Math.floorl}**${!emoji ? ' Robux' : ''}.`)
+                    }
+                    userEmbed.addField('Total', )
+                }
+            } catch (err) {
+
+            }
         }
         this.client.owners[0].send(embed)
     }
