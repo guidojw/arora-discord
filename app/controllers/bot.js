@@ -210,25 +210,30 @@ module.exports = class Bot {
             .setTitle('Train Developers Payout Report')
             .setColor(0xffffff)
         for (const [id, developerSales] of Object.entries(developersSales)) {
+            // Add new field with developer totals to the main embed.
             const username = developers.find(developer => developer.id === parseInt(id)).name
             const total = Math.ceil(developerSales.total.robux)
             embed.addField(username, `Has sold **${developerSales.total.amount}** ${pluralize('train', 
                 developerSales.total.amount)} and earned ${emoji ? emoji: ''}${emoji ? ' ': ''}**${total}**${!emoji ? 
                 ' Robux' : ''}.`)
-            try {
-                const user = this.users.fetch(developerSales.discordId)
-                if (user) {
-                    const userEmbed = new MessageEmbed()
-                        .setTitle('Weekly Train Payout Report')
-                        .setColor(0xffffff)
-                    for (const productSales of developerSales.sales) {
-                        userEmbed.addField(productSales.name, `Sold **${productSales.amount}** ${pluralize('time', 
-                            productSales.amount)} and earned ${emoji ? emoji: ''}${emoji ? ' ': ''}**${Math.floorl}**${!emoji ? ' Robux' : ''}.`)
-                    }
-                    userEmbed.addField('Total', )
-                }
-            } catch (err) {
 
+            // Message developers individually.
+            try {
+                const user = this.client.users.fetch(developerSales.discordId)
+                const userEmbed = new MessageEmbed()
+                    .setTitle('Weekly Train Payout Report')
+                    .setColor(0xffffff)
+                for (const productSales of developerSales.sales) {
+                    userEmbed.addField(productSales.name, `Sold **${productSales.amount}** ${pluralize('time', 
+                        productSales.amount)} and earned ${emoji ? emoji: ''}${emoji ? ' ': ''}**${Math
+                        .floor(productSales.robux)}**${!emoji ? ' Robux' : ''}.`)
+                }
+                userEmbed.addField('Total', `${emoji ? emoji: ''}${emoji ? ' ': ''}**${Math
+                    .floor(developerSales.total.robux)}**${!emoji ? ' Robux' : ''} and **${developerSales.total
+                    .amount}** trains.`)
+                user.send(userEmbed)
+            } catch (err) {
+                console.error(`Couldn't DM ${developerSales.discordId}!`)
             }
         }
         this.client.owners[0].send(embed)
