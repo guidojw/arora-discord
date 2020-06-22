@@ -219,7 +219,7 @@ module.exports = class Bot {
 
             // Message developers individually.
             try {
-                const user = this.client.users.fetch(developerSales.discordId)
+                const user = await this.client.users.fetch(developerSales.discordId)
                 const userEmbed = new MessageEmbed()
                     .setTitle('Weekly Train Payout Report')
                     .setColor(0xffffff)
