@@ -3,6 +3,8 @@ const { MessageEmbed } = require('discord.js')
 
 const applicationConfig = require('../../config/application')
 
+const REACTION_COLLECTOR_TIMEOUT = 60000
+
 exports.getMemberByName = async (guild, name) => {
     const members = await guild.members.fetch()
     for (const member of members.values()) {
@@ -32,19 +34,19 @@ exports.getEmojiFromNumber = number => {
     }
 }
 
-exports.prompt = async (channel, author, message) => {
-    const filter = (reaction, user) => (reaction.emoji.name === '✅' || reaction.emoji.name === '🚫') && user.id ===
-        author.id
-    const collector = message.createReactionCollector(filter, { time: 60000 })
+exports.prompt = async (channel, author, message, options) => {
+    const filter = (reaction, user) => options.includes(reaction.emoji.name) && user.id === author.id
+    const collector = message.createReactionCollector(filter, { time: REACTION_COLLECTOR_TIMEOUT })
     const promise = new Promise(resolve => {
         collector.on('end', collected => {
             const reaction = collected.first()
-            resolve(reaction && reaction.emoji.name === '✅')
+            resolve(reaction ? reaction.emoji.name : null)
         })
     })
     collector.on('collect', collector.stop)
-    await message.react('✅')
-    await message.react('🚫')
+    for (const option of options) {
+        await message.react(option)
+    }
     return promise
 }
 
