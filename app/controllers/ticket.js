@@ -3,13 +3,16 @@ const EventEmitter = require('events')
 const { MessageEmbed } = require('discord.js')
 const discordService = require('../services/discord')
 const { stripIndents } = require('common-tags')
+const short = require('short-uuid')
+const roVerAdapter = require('../adapters/roVer')
 
 const applicationConfig = require('../../config/application')
 
 module.exports = class TicketController extends EventEmitter {
-    constructor (client, message) {
+    constructor (ticketsController, client, message) {
         super()
 
+        this.ticketsController = ticketsController
         this.client = client
         this.message = message
 
@@ -29,8 +32,18 @@ module.exports = class TicketController extends EventEmitter {
 
         if (!choice) {
             return this.close()
+
         } else {
-            console.log('new ticket')
+            const type = choice === '1⃣' ? 'conflict' : 'bug'
+            const id = short.generate()
+            const name = `${type}-${id}`
+
+            const guild = this.ticketsController.guild
+            const channel = await guild.guild.channels.create(name)
+            await channel.setParent(guild.guild.channels.cache.get('733863993340329984'))
+
+            const response = await roVerAdapter('get', `/user/${this.message.author.id}`)
+            
         }
     }
 
@@ -41,6 +54,6 @@ module.exports = class TicketController extends EventEmitter {
             .setDescription('Ticket closed, you did not respond in time.')
         await this.message.channel.send(embed)
 
-        this.emit('finished')
+        this.emit('close')
     }
 }
