@@ -40,7 +40,7 @@ module.exports = class TicketController extends EventEmitter {
 
             const guild = this.ticketsController.guild
             const channel = await guild.guild.channels.create(name)
-            await channel.setParent(guild.guild.channels.cache.get('733863993340329984'))
+            await channel.setParent(guild.getData('channels').ticketsCategory)
 
             const response = await roVerAdapter('get', `/user/${this.message.author.id}`)
             
