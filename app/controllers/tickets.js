@@ -40,7 +40,8 @@ module.exports = class TicketsController {
                 const embed = new MessageEmbed()
                     .setColor(applicationConfig.primaryColor)
                     .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
-                    .setDescription('Welcome to NS Roblox Support, do you want to create a ticket?')
+                    .setTitle('Welcome to NS Roblox Support')
+                    .setDescription('Do you want to create a ticket?')
                 const prompt = await message.channel.send(embed)
                 const choice = await discordService.prompt(message.channel, message.author, prompt, ['✅',
                     '🚫']) === '✅'
