@@ -12,7 +12,7 @@ module.exports = class Command extends Commando.Command {
 
     hasPermission (message, ownerOverride) {
         const group = this.group.name.toLowerCase()
-        if (!this.ownerOnly && (group === 'admin' || group === 'voting')) {
+        if (!this.ownerOnly && (group === 'admin' || group === 'voting' || group === 'tickets')) {
             const guild = this.client.bot.getGuild(message.guild.id)
             return discordService.isAdmin(message.member, guild.getData('adminRoles'))
         }
