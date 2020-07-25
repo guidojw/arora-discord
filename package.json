@@ -13,7 +13,7 @@
   "author": "Guido de Jong",
   "license": "MIT",
   "dependencies": {
-    "@sentry/node": "^5.19.1",
+    "@sentry/node": "^5.19.2",
     "axios": "^0.19.2",
     "common-tags": "^1.8.0",
     "discord.js": "^12.2.0",
