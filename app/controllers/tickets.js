@@ -1,7 +1,7 @@
 'use strict'
 const discordService = require('../services/discord')
 const { MessageEmbed } = require('discord.js')
-const TicketController = require('./ticket')
+const { TicketController, TicketStates } = require('./ticket')
 
 const applicationConfig = require('../../config/application')
 
@@ -32,8 +32,10 @@ module.exports = class TicketsController {
 
         // If message is a DM
         if (!message.guild) {
-            // If author can create a ticket
-            if (!this.debounces[message.author.id]) {
+            let ticketController = this.tickets[message.author.id]
+
+            // If author doesn't have a open ticket yet and can create a ticket
+            if (!ticketController && !this.debounces[message.author.id]) {
                 this.debounces[message.author.id] = true
                 const timeout = setTimeout(this.clear.bind(this, message.author.id), TICKETS_INTERVAL)
 
@@ -48,14 +50,18 @@ module.exports = class TicketsController {
 
                 if (choice) {
                     clearTimeout(timeout)
-                    const ticketController = new TicketController(this, this.client, message)
+                    ticketController = new TicketController(this, this.client, message)
                     this.tickets[message.author.id] = ticketController
                     ticketController.once('close', this.clear.bind(this, message.author.id))
                 }
 
             // If author already has created a ticket
-            } else if (this.tickets[message.author.id]) {
-
+            } else if (ticketController) {
+                // If the ticket's author is currently entering their report,
+                // add the message to the ticket's report messages
+                if (ticketController.state === TicketStates.REQUESTING_REPORT) {
+                    ticketController.addMessage(message)
+                }
             }
 
         // If message is sent in a channel in the Tickets category in the guild
