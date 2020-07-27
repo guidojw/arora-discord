@@ -52,9 +52,6 @@ class TicketController extends EventEmitter {
         if (this.type === TicketTypes.CONFLICT || this.type === TicketTypes.BUG) {
             await this.requestReport()
         }
-
-        // Create channel in guild which admins can see and reply to
-        await this.createChannel()
     }
 
     async requestType () {
@@ -94,6 +91,7 @@ class TicketController extends EventEmitter {
         // add it to the report messages
         if (choice === '✅') {
             this.addMessage(this.message)
+            await this.submit()
 
         // If the message doesn't explain the report clearly,
         // ask for a summary of the report
@@ -118,15 +116,15 @@ class TicketController extends EventEmitter {
         const name = `${this.type}-${this.id}`
 
         // Create channel
-        const guild = this.ticketsController.guild
-        let channel = await guild.guild.channels.create(name)
-        channel = await channel.setParent(guild.getData('channels').ticketsCategory)
+        const guild = this.client.bot.masterGuild
+        this.channel = await guild.guild.channels.create(name)
+        this.channel = await this.channel.setParent(guild.getData('channels').ticketsCategory)
 
         // Sync channel permissions with category permissions
-        await channel.lockPermissions()
+        await this.channel.lockPermissions()
 
         // Show the channel to the ticket's creator
-        const permissions = channel.permissionsFor(this.message.author)
+        const permissions = this.channel.permissionsFor(this.message.author)
         permissions.add('VIEW_CHANNEL')
 
         const response = (await roVerAdapter('get', `/user/${this.message.author.id}`)).data
@@ -144,7 +142,7 @@ class TicketController extends EventEmitter {
                 `Username: ${username ? '**' + username + '**' : '*user is not verified with RoVer*'}
                  User ID: ${userId ? '**' + userId + '**' : '*user is not verified with RoVer*'}`))
             .setFooter(`Start time: ${readableDate + ' ' + readableTime} - Ticket ID: ${this.id}`)
-        await channel.send(embed)
+        await this.channel.send(embed)
 
         // Change state to connected so that the TicketsController knows
         // to link messages through to the newly created channel
@@ -153,6 +151,22 @@ class TicketController extends EventEmitter {
 
     addMessage (message) {
         this.report.push(message)
+    }
+
+    async submit () {
+        if (this.state === TicketStates.REQUESTING_REPORT) {
+
+            // Create channel in guild which admins can see and reply to
+            await this.createChannel()
+
+            // Send all report messages to the just created channel
+            for (const message of this.report) {
+                const embed = new MessageEmbed()
+                    .setAuthor(this.message.author.tag, this.message.author.displayAvatarURL())
+                    .setDescription(message)
+                await this.channel.send(embed)
+            }
+        }
     }
 
     async close () {

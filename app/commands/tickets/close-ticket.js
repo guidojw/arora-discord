@@ -5,11 +5,12 @@ const discordService = require('../../services/discord')
 module.exports = class CloseTicketCommand extends Command {
     constructor (client) {
         super(client, {
-            group: 'main',
+            group: 'tickets',
             name: 'closeticket',
             aliases: ['close'],
             description: 'Closes this ticket.',
-            clientPermissions: ['MANAGE_MESSAGES', 'ADD_REACTIONS', 'SEND_MESSAGES', 'MANAGE_CHANNELS']
+            clientPermissions: ['MANAGE_MESSAGES', 'ADD_REACTIONS', 'SEND_MESSAGES', 'MANAGE_CHANNELS'],
+            guildOnly: false
         })
     }
 

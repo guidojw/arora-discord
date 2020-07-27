@@ -8,9 +8,8 @@ const applicationConfig = require('../../config/application')
 const TICKETS_INTERVAL = 60000
 
 module.exports = class TicketsController {
-    constructor (client, guild) {
+    constructor (client) {
         this.client = client
-        this.guild = guild
 
         this.debounces = []
         this.tickets = []
@@ -28,6 +27,9 @@ module.exports = class TicketsController {
         }
         if (message.partial) {
             await message.fetch()
+        }
+        if (message.content.startsWith(this.client.commandPrefix)) {
+            return
         }
 
         // If message is a DM
@@ -65,7 +67,7 @@ module.exports = class TicketsController {
             }
 
         // If message is sent in a channel in the Tickets category in the guild
-        } else if (message.channel.parentID === this.guild.getData('channels').ticketsCategory) {
+        } else if (message.channel.parentID === this.client.bot.masterGuild.getData('channels').ticketsCategory) {
 
         }
     }
