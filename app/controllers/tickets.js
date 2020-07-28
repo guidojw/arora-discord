@@ -11,8 +11,8 @@ module.exports = class TicketsController {
     constructor (client) {
         this.client = client
 
-        this.debounces = []
-        this.tickets = []
+        this.debounces = {} // map from user ID to debounce flag
+        this.tickets = {} // map from user ID to TicketController
 
         this.init()
     }
@@ -68,12 +68,29 @@ module.exports = class TicketsController {
 
         // If message is sent in a channel in the Tickets category in the guild
         } else if (message.channel.parentID === this.client.bot.masterGuild.getData('channels').ticketsCategory) {
+            const ticketController = this.getTicketFromChannel(message.channel)
 
+            // If channel is from a ticket
+            if (ticketController) {
+
+                const embed = new MessageEmbed()
+                    .setAuthor(message.author.tag, message.author.displayAvatarURL())
+                    .setDescription(message.content)
+                await ticketController.author.send(embed)
+            }
         }
     }
 
     clear (authorId) {
         delete this.debounces[authorId]
         delete this.tickets[authorId]
+    }
+
+    getTicketFromChannel (channel) {
+        for (const ticketController of Object.values(this.tickets)) {
+            if (ticketController.channel.id === channel.id) {
+                return ticketController
+            }
+        }
     }
 }

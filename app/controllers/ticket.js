@@ -30,6 +30,7 @@ class TicketController extends EventEmitter {
         this.ticketsController = ticketsController
         this.client = client
         this.message = message
+        this.author = message.author
 
         this.id = short.generate()
         this.state = TicketStates.INIT
@@ -98,7 +99,7 @@ class TicketController extends EventEmitter {
         } else if (choice === '🚫') {
             const summariseEmbed = new MessageEmbed()
                 .setColor(applicationConfig.primaryColor)
-                .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
+                .setAuthor(this.client.user.tag, this.client.user.displayAvatarURL())
                 .setTitle('Please summarise your report')
                 .setDescription(stripIndents`You may use several messages and attach pictures/videos.
                     Use the command \`/submit\` once you're done or \`/close\` to close your ticket.`)
