@@ -15,6 +15,7 @@ const TicketStates = {
     REQUESTING_REPORT: 'requestingReport',
     CREATING_CHANNEL: 'creatingChannel',
     CONNECTED: 'connected',
+    REQUESTING_RATING: 'requestingRating',
     CLOSING: 'closing'
 }
 
@@ -109,6 +110,25 @@ class TicketController extends EventEmitter {
         } else {
             return this.close()
         }
+    }
+
+    async requestRating () {
+        this.state = TicketStates.REQUESTING_RATING
+
+        const embed = new MessageEmbed()
+            .setColor(applicationConfig.primaryColor)
+            .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
+            .setTitle('How would you rate the support you got?')
+        const message = await this.author.send(embed)
+
+        const options = []
+        for (let i = 1; i <= 5; i++) {
+            options.push(discordService.getEmojiFromNumber(i))
+        }
+
+        let rating = await discordService.prompt(this.author, this.author, message, options)
+        rating = rating.substring(0, 1)
+        return rating
     }
 
     async createChannel () {
