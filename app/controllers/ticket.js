@@ -128,9 +128,12 @@ class TicketController extends EventEmitter {
         const permissions = this.channel.permissionsFor(this.message.author)
         permissions.add('VIEW_CHANNEL')
 
+        // Check if user is verified with RoVer
+        // If so, the Roblox username and ID are retrieved
         const response = (await roVerAdapter('get', `/user/${this.message.author.id}`)).data
         const username = response.robloxUsername
         const userId = response.robloxId
+
         const date = new Date()
         const readableDate = timeHelper.getDate(date)
         const readableTime = timeHelper.getTime(date)
@@ -156,6 +159,7 @@ class TicketController extends EventEmitter {
     }
 
     async submit () {
+        // If the ticket author is currently entering a report
         if (this.state === TicketStates.REQUESTING_REPORT) {
 
             // Create channel in guild which admins can see and reply to
@@ -168,27 +172,31 @@ class TicketController extends EventEmitter {
 
             // Send all report messages to the just created channel
             for (const message of this.report) {
-                // Send message content if existent
-                if (message.content) {
-                    const embed = new MessageEmbed()
-                        .setAuthor(this.message.author.tag, this.message.author.displayAvatarURL())
-                        .setDescription(message)
-                        .setFooter(`Ticket ID: ${this.id}`)
-                    await this.channel.send(embed)
-                }
-
-                // Send attachments if existent
-                if (message.attachments) {
-                    for (const attachment of message.attachments) {
-                        await this.channel.send(attachment)
-                    }
-                }
+                await this.send(message, this.channel)
             }
 
             // Indicate this is the end of the report
             const endEmbed = new MessageEmbed()
                 .setTitle('End report')
             await this.channel.send(endEmbed)
+        }
+    }
+
+    async send (message, channel) {
+        // Send message content if existent
+        if (message.content) {
+            const embed = new MessageEmbed()
+                .setAuthor(message.author.tag, message.author.displayAvatarURL())
+                .setDescription(message.content)
+                .setFooter(`Ticket ID: ${this.id}`)
+            await channel.send(embed)
+        }
+
+        // Send attachments if existent
+        if (message.attachments) {
+            for (const attachment of message.attachments) {
+                await channel.send(attachment)
+            }
         }
     }
 

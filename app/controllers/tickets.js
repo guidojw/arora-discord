@@ -50,6 +50,8 @@ module.exports = class TicketsController {
                 const choice = await discordService.prompt(message.channel, message.author, prompt, ['✅',
                     '🚫']) === '✅'
 
+                // If the user wants to create a ticket,
+                // instantiate a new TicketController
                 if (choice) {
                     clearTimeout(timeout)
                     ticketController = new TicketController(this, this.client, message)
@@ -63,6 +65,10 @@ module.exports = class TicketsController {
                 // add the message to the ticket's report messages
                 if (ticketController.state === TicketStates.REQUESTING_REPORT) {
                     ticketController.addMessage(message)
+
+                // If the ticket has been created and a new message is sent
+                } else if (ticketController.state === TicketStates.CONNECTED) {
+                    await ticketController.send(message, ticketController.channel)
                 }
             }
 
@@ -72,12 +78,7 @@ module.exports = class TicketsController {
 
             // If channel is from a ticket
             if (ticketController) {
-
-                const embed = new MessageEmbed()
-                    .setAuthor(message.author.tag, message.author.displayAvatarURL())
-                    .setDescription(message.content)
-                    .setFooter(`Ticket ID: ${ticketController.id}`)
-                await ticketController.author.send(embed)
+                await ticketController.send(message, ticketController.author)
             }
         }
     }
@@ -88,10 +89,6 @@ module.exports = class TicketsController {
     }
 
     getTicketFromChannel (channel) {
-        for (const ticketController of Object.values(this.tickets)) {
-            if (ticketController.channel.id === channel.id) {
-                return ticketController
-            }
-        }
+        return Object.values(this.tickets).find(ticketController => ticketController.channel.id === channel.id)
     }
 }
