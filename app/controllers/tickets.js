@@ -76,6 +76,7 @@ module.exports = class TicketsController {
                 const embed = new MessageEmbed()
                     .setAuthor(message.author.tag, message.author.displayAvatarURL())
                     .setDescription(message.content)
+                    .setFooter(`Ticket ID: ${ticketController.id}`)
                 await ticketController.author.send(embed)
             }
         }

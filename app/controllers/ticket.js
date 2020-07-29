@@ -141,8 +141,9 @@ class TicketController extends EventEmitter {
             .setTitle('Ticket Information')
             .setDescription(stripIndents(
                 `Username: ${username ? '**' + username + '**' : '*user is not verified with RoVer*'}
-                 User ID: ${userId ? '**' + userId + '**' : '*user is not verified with RoVer*'}`))
-            .setFooter(`Start time: ${readableDate + ' ' + readableTime} - Ticket ID: ${this.id}`)
+                 User ID: ${userId ? '**' + userId + '**' : '*user is not verified with RoVer*'}
+                 Start time: ${readableDate + ' ' + readableTime}`))
+            .setFooter(`Ticket ID: ${this.id}`)
         await this.channel.send(embed)
 
         // Change state to connected so that the TicketsController knows
@@ -160,13 +161,34 @@ class TicketController extends EventEmitter {
             // Create channel in guild which admins can see and reply to
             await this.createChannel()
 
+            // Indicate this is the start of the report
+            const startEmbed = new MessageEmbed()
+                .setTitle('Start report')
+            await this.channel.send(startEmbed)
+
             // Send all report messages to the just created channel
             for (const message of this.report) {
-                const embed = new MessageEmbed()
-                    .setAuthor(this.message.author.tag, this.message.author.displayAvatarURL())
-                    .setDescription(message)
-                await this.channel.send(embed)
+                // Send message content if existent
+                if (message.content) {
+                    const embed = new MessageEmbed()
+                        .setAuthor(this.message.author.tag, this.message.author.displayAvatarURL())
+                        .setDescription(message)
+                        .setFooter(`Ticket ID: ${this.id}`)
+                    await this.channel.send(embed)
+                }
+
+                // Send attachments if existent
+                if (message.attachments) {
+                    for (const attachment of message.attachments) {
+                        await this.channel.send(attachment)
+                    }
+                }
             }
+
+            // Indicate this is the end of the report
+            const endEmbed = new MessageEmbed()
+                .setTitle('End report')
+            await this.channel.send(endEmbed)
         }
     }
 
