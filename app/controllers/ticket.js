@@ -9,17 +9,18 @@ const timeHelper = require('../helpers/time')
 
 const applicationConfig = require('../../config/application')
 
-const TicketStates = {
+const TicketState = {
     INIT: 'init',
     REQUESTING_TYPE: 'requestingType',
     REQUESTING_REPORT: 'requestingReport',
+    SUBMITTING_REPORT: 'submittingReport',
     CREATING_CHANNEL: 'creatingChannel',
     CONNECTED: 'connected',
     REQUESTING_RATING: 'requestingRating',
     CLOSING: 'closing'
 }
 
-const TicketTypes = {
+const TicketType = {
     CONFLICT: 'conflict',
     BUG: 'bug'
 }
@@ -34,7 +35,7 @@ class TicketController extends EventEmitter {
         this.author = message.author
 
         this.id = short.generate()
-        this.state = TicketStates.INIT
+        this.state = TicketState.INIT
 
         this.report = [] // array of messages describing report
 
@@ -46,18 +47,18 @@ class TicketController extends EventEmitter {
         // If they don't respond, close ticket
         this.type = await this.requestType()
         if (!this.type) {
-            return this.close()
+            return this.close('Ticket closed, you did not respond in time.', false)
         }
 
         // If the ticket type is a confict/bug report,
         // ask the user for the actual report to be discussed
-        if (this.type === TicketTypes.CONFLICT || this.type === TicketTypes.BUG) {
+        if (this.type === TicketType.CONFLICT || this.type === TicketType.BUG) {
             await this.requestReport()
         }
     }
 
     async requestType () {
-        this.state = TicketStates.REQUESTING_TYPE
+        this.state = TicketState.REQUESTING_TYPE
 
         const embed = new MessageEmbed()
             .setColor(applicationConfig.primaryColor)
@@ -70,14 +71,14 @@ class TicketController extends EventEmitter {
         const choice = await discordService.prompt(this.message.channel, this.message.author, prompt, ['1⃣', '2⃣'])
 
         /* eslint-disable indent */
-        return choice === '1⃣' ? TicketTypes.CONFLICT
-            : choice === '2⃣' ? TicketTypes.BUG
+        return choice === '1⃣' ? TicketType.CONFLICT
+            : choice === '2⃣' ? TicketType.BUG
             : undefined
         /* eslint-enable indent */
     }
 
     async requestReport () {
-        this.state = TicketStates.REQUESTING_REPORT
+        this.state = TicketState.REQUESTING_REPORT
 
         const content = this.message.content
         const embed = new MessageEmbed()
@@ -106,33 +107,16 @@ class TicketController extends EventEmitter {
                     Use the command \`/submit\` once you're done or \`/close\` to close your ticket.`)
             await this.message.channel.send(summariseEmbed)
 
+            this.state = TicketState.SUBMITTING_REPORT
+
         // If they don't respond, close ticket
         } else {
-            return this.close()
+            return this.close('Ticket closed, you did not respond in time.', false)
         }
-    }
-
-    async requestRating () {
-        this.state = TicketStates.REQUESTING_RATING
-
-        const embed = new MessageEmbed()
-            .setColor(applicationConfig.primaryColor)
-            .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
-            .setTitle('How would you rate the support you got?')
-        const message = await this.author.send(embed)
-
-        const options = []
-        for (let i = 1; i <= 5; i++) {
-            options.push(discordService.getEmojiFromNumber(i))
-        }
-
-        let rating = await discordService.prompt(this.author, this.author, message, options)
-        rating = rating.substring(0, 1)
-        return rating
     }
 
     async createChannel () {
-        this.state = TicketStates.CREATING_CHANNEL
+        this.state = TicketState.CREATING_CHANNEL
 
         const name = `${this.type}-${this.id}`
 
@@ -141,12 +125,23 @@ class TicketController extends EventEmitter {
         this.channel = await guild.guild.channels.create(name)
         this.channel = await this.channel.setParent(guild.getData('channels').ticketsCategory)
 
-        // Sync channel permissions with category permissions
-        await this.channel.lockPermissions()
-
-        // Show the channel to the ticket's creator
-        const permissions = this.channel.permissionsFor(this.message.author)
-        permissions.add('VIEW_CHANNEL')
+        // Show the channel to the ticket's creator and Ticket Moderators
+        const roles = guild.getData('roles')
+        await this.channel.overwritePermissions([
+            {
+                id: this.message.author.id,
+                allow: ['VIEW_CHANNEL']
+            }, {
+                id: this.client.user.id, // NSadmin
+                allow: ['VIEW_CHANNEL']
+            }, {
+                id: roles.ticketModerator,
+                allow: ['VIEW_CHANNEL']
+            }, {
+                id: guild.guild.id, // @everyone
+                deny: ['VIEW_CHANNEL']
+            }
+        ])
 
         // Check if user is verified with RoVer
         // If so, the Roblox username and ID are retrieved
@@ -171,7 +166,7 @@ class TicketController extends EventEmitter {
 
         // Change state to connected so that the TicketsController knows
         // to link messages through to the newly created channel
-        this.state = TicketStates.CONNECTED
+        this.state = TicketState.CONNECTED
     }
 
     addMessage (message) {
@@ -180,7 +175,7 @@ class TicketController extends EventEmitter {
 
     async submit () {
         // If the ticket author is currently entering a report
-        if (this.state === TicketStates.REQUESTING_REPORT) {
+        if (this.state === TicketState.REQUESTING_REPORT || this.state === TicketState.SUBMITTING_REPORT) {
 
             // Create channel in guild which admins can see and reply to
             await this.createChannel()
@@ -202,6 +197,25 @@ class TicketController extends EventEmitter {
         }
     }
 
+    async requestRating () {
+        this.state = TicketState.REQUESTING_RATING
+
+        const embed = new MessageEmbed()
+            .setColor(applicationConfig.primaryColor)
+            .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
+            .setTitle('How would you rate the support you got?')
+        const message = await this.author.send(embed)
+
+        const options = []
+        for (let i = 1; i <= 5; i++) {
+            options.push(discordService.getEmojiFromNumber(i))
+        }
+
+        let rating = await discordService.prompt(this.author, this.author, message, options)
+        rating = rating.substring(0, 1)
+        return rating
+    }
+
     async send (message, channel) {
         // Send message content if existent
         if (message.content) {
@@ -220,14 +234,20 @@ class TicketController extends EventEmitter {
         }
     }
 
-    async close () {
-        this.state = TicketStates.CLOSING
+    async close (message, success, color) {
+        this.state = TicketState.CLOSING
 
+        // Send closing message
         const embed = new MessageEmbed()
-            .setColor(0xff0000)
+            .setColor(color ? color : success ? 0x00ff00 : 0xff0000)
             .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
-            .setDescription('Ticket closed, you did not respond in time.')
+            .setTitle(message)
         await this.message.channel.send(embed)
+
+        // Delete the ticket's channel in the guild if existent
+        if (this.channel) {
+            await this.channel.delete()
+        }
 
         this.emit('close')
     }
@@ -235,6 +255,6 @@ class TicketController extends EventEmitter {
 
 module.exports = {
     TicketController,
-    TicketStates,
-    TicketTypes
+    TicketState,
+    TicketType
 }

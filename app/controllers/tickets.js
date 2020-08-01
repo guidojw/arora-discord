@@ -1,7 +1,7 @@
 'use strict'
 const discordService = require('../services/discord')
 const { MessageEmbed } = require('discord.js')
-const { TicketController, TicketStates } = require('./ticket')
+const { TicketController, TicketState } = require('./ticket')
 
 const applicationConfig = require('../../config/application')
 
@@ -63,11 +63,11 @@ module.exports = class TicketsController {
             } else if (ticketController) {
                 // If the ticket's author is currently entering their report,
                 // add the message to the ticket's report messages
-                if (ticketController.state === TicketStates.REQUESTING_REPORT) {
+                if (ticketController.state === TicketState.SUBMITTING_REPORT) {
                     ticketController.addMessage(message)
 
                 // If the ticket has been created and a new message is sent
-                } else if (ticketController.state === TicketStates.CONNECTED) {
+                } else if (ticketController.state === TicketState.CONNECTED) {
                     await ticketController.send(message, ticketController.channel)
                 }
             }

@@ -1,6 +1,7 @@
 'use strict'
 const Command = require('../../controllers/command')
 const discordService = require('../../services/discord')
+const { TicketState } = require('../../controllers/ticket')
 
 module.exports = class CloseTicketCommand extends Command {
     constructor (client) {
@@ -15,16 +16,45 @@ module.exports = class CloseTicketCommand extends Command {
     }
 
     async execute (message, _args, guild) {
-        const channels = guild.getData('channels')
-        if (message.channel.parentID !== channels.ticketsCategory) {
-            return message.reply('This command can only be used in channels in the tickets category.')
-        }
+        const ticketsController = this.client.bot.ticketsController
 
-        const prompt = await message.channel.send('Are you sure you want to close this ticket?')
-        const choice = await discordService.prompt(message.channel, message.author, prompt, ['✅', '🚫']) === '✅'
+        // If executed in a guild
+        if (guild) {
+            const channels = guild.getData('channels')
+            if (message.channel.parentID !== channels.ticketsCategory) {
+                return message.reply('This command can only be used in channels in the tickets category.')
+            }
 
-        if (choice) {
-            await message.channel.delete()
+            const ticketController = ticketsController.getTicketFromChannel(message.channel)
+            if (ticketController) {
+
+                const prompt = await message.channel.send('Are you sure you want to close this ticket?')
+                const choice = await discordService.prompt(message.channel, message.author, prompt, ['✅', '🚫'])
+                    === '✅'
+
+                if (choice) {
+                    await ticketController.close('The administrator has closed this ticket.', true, 0xffff00)
+                }
+            }
+
+        // If executed in DMs
+        } else {
+            const ticketController = ticketsController.tickets[message.author.id]
+            // Tickets can only be closed between the submitting report and the connected states
+            if (ticketController && (ticketController.state === TicketState.SUBMITTING_REPORT || ticketController.state
+                === TicketState.CREATING_CHANNEL || ticketController.state === TicketState.CONNECTED)) {
+
+                const prompt = await message.channel.send('Are you sure you want to close this ticket?')
+                const choice = await discordService.prompt(message.channel, message.author, prompt, ['✅', '🚫'])
+                    === '✅'
+
+                if (choice) {
+                    await ticketController.close('Ticket successfully closed.', true, 0xffff00)
+                }
+
+            } else {
+                return message.reply('You have no open tickets.')
+            }
         }
     }
 }

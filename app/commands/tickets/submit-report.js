@@ -1,7 +1,7 @@
 'use strict'
 const Command = require('../../controllers/command')
 const discordService = require('../../services/discord')
-const { TicketStates } = require('../../controllers/ticket')
+const { TicketState } = require('../../controllers/ticket')
 
 module.exports = class SubmitReportCommand extends Command {
     constructor (client) {
@@ -24,9 +24,10 @@ module.exports = class SubmitReportCommand extends Command {
             if (ticketController) {
 
                 // If user is currently entering a report
-                if (ticketController.state === TicketStates.REQUESTING_REPORT) {
+                if (ticketController.state === TicketState.SUBMITTING_REPORT) {
                     const prompt = await message.channel.send('Are you sure you want to submit your report?')
-                    const choice = await discordService.prompt(message.channel, message.author, prompt, ['✅', '🚫']) === '✅'
+                    const choice = await discordService.prompt(message.channel, message.author, prompt, ['✅',
+                        '🚫']) === '✅'
 
                     if (choice) {
                         ticketController.submit()
@@ -35,6 +36,9 @@ module.exports = class SubmitReportCommand extends Command {
                 } else {
                     message.reply('You\'re not currently filing a report.')
                 }
+
+            } else {
+                message.reply('You have no open tickets.')
             }
 
         } else {
