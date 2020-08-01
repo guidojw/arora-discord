@@ -125,23 +125,8 @@ class TicketController extends EventEmitter {
         this.channel = await guild.guild.channels.create(name)
         this.channel = await this.channel.setParent(guild.getData('channels').ticketsCategory)
 
-        // Show the channel to the ticket's creator and Ticket Moderators
-        const roles = guild.getData('roles')
-        await this.channel.overwritePermissions([
-            {
-                id: this.message.author.id,
-                allow: ['VIEW_CHANNEL']
-            }, {
-                id: this.client.user.id, // NSadmin
-                allow: ['VIEW_CHANNEL']
-            }, {
-                id: roles.ticketModerator,
-                allow: ['VIEW_CHANNEL']
-            }, {
-                id: guild.guild.id, // @everyone
-                deny: ['VIEW_CHANNEL']
-            }
-        ])
+        // Sync channel permissions with category permissions
+        await this.channel.lockPermissions()
 
         // Check if user is verified with RoVer
         // If so, the Roblox username and ID are retrieved
