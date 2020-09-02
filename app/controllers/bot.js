@@ -79,10 +79,10 @@ module.exports = class Bot {
             await this.guilds[guildId].loadData()
         }
 
-        const masterGuildId = process.env.NODE_ENV === 'production'
-            ? applicationConfig.productionMasterGuildId
-            : applicationConfig.developmentMasterGuildId
-        this.masterGuild = this.getGuild(masterGuildId)
+        const mainGuildId = process.env.NODE_ENV === 'production'
+            ? applicationConfig.productionMainGuildId
+            : applicationConfig.developmentMainGuildId
+        this.mainGuild = this.getGuild(mainGuildId)
 
         this.client.setProvider(new SettingProvider())
 
@@ -211,10 +211,10 @@ module.exports = class Bot {
         const developerIds = Object.keys(developersSales)
         const developers = await userService.getUsers(developerIds)
         let emoji
-        const masterGuild = this.getGuild(applicationConfig.productionMasterGuildId)
-        if (masterGuild) {
-            const emojis = masterGuild.getData('emojis')
-            emoji = masterGuild.guild.emojis.cache.find(emoji => emoji.id === emojis.robuxEmoji)
+        const mainGuild = this.getGuild(applicationConfig.productionMainGuildId)
+        if (mainGuild) {
+            const emojis = mainGuild.getData('emojis')
+            emoji = mainGuild.guild.emojis.cache.find(emoji => emoji.id === emojis.robuxEmoji)
         }
         const embed = new MessageEmbed()
             .setTitle('Train Developers Payout Report')
