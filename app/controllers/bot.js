@@ -223,14 +223,13 @@ module.exports = class Bot {
                 const userEmbed = new MessageEmbed()
                     .setTitle('Weekly Train Payout Report')
                     .setColor(0xffffff)
-                for (const productSales of developerSales.sales) {
+                for (const productSales of Object.values(developerSales.sales)) {
                     userEmbed.addField(productSales.name, `Sold **${productSales.amount}** ${pluralize('time', 
                         productSales.amount)} and earned ${emoji ? emoji: ''}${emoji ? ' ': ''}**${Math
                         .floor(productSales.robux)}**${!emoji ? ' Robux' : ''}.`)
                 }
-                userEmbed.addField('Total', `${emoji ? emoji: ''}${emoji ? ' ': ''}**${Math
-                    .floor(developerSales.total.robux)}**${!emoji ? ' Robux' : ''} and **${developerSales.total
-                    .amount}** trains.`)
+                userEmbed.addField('Total', `**${developerSales.total.amount}** trains and ${emoji ? emoji: 
+                    ''}${emoji ? ' ': ''}**${Math.floor(developerSales.total.robux)}**${!emoji ? ' Robux' : ''}.`)
                 user.send(userEmbed)
             } catch (err) {
                 console.error(`Couldn't DM ${developerSales.discordId}!`)
