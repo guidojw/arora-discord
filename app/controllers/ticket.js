@@ -9,13 +9,36 @@ const timeHelper = require('../helpers/time')
 
 const applicationConfig = require('../../config/application')
 
-module.exports = class TicketController extends EventEmitter {
+const TicketState = {
+    INIT: 'init',
+    REQUESTING_TYPE: 'requestingType',
+    REQUESTING_REPORT: 'requestingReport',
+    SUBMITTING_REPORT: 'submittingReport',
+    CREATING_CHANNEL: 'creatingChannel',
+    CONNECTED: 'connected',
+    REQUESTING_RATING: 'requestingRating',
+    CLOSING: 'closing'
+}
+
+const TicketType = {
+    CONFLICT: 'conflict',
+    BUG: 'bug'
+}
+
+class TicketController extends EventEmitter {
     constructor (ticketsController, client, message) {
         super()
 
         this.ticketsController = ticketsController
         this.client = client
         this.message = message
+        this.author = message.author
+
+        this.id = short.generate()
+        this.state = TicketState.INIT
+
+        this.report = [] // array of messages describing report
+        this.moderators = []
 
         this.init()
     }
@@ -23,44 +46,21 @@ module.exports = class TicketController extends EventEmitter {
     async init () {
         // Ask user what type of support they require
         // If they don't respond, close ticket
-        const type = await this.requestSupportType()
-        if (!type) {
-            return this.close()
+        this.type = await this.requestType()
+        if (!this.type) {
+            return this.close('Ticket closed, you did not respond in time.', false)
         }
 
-        // Ask the user for the report to be discussed
-        await this.requestClarity()
-
-
-        // Create channel in guild which admins can see and reply to
-        const id = short.generate()
-        const name = `${type}-${id}`
-
-        const guild = this.ticketsController.guild
-        const channel = await guild.guild.channels.create(name)
-        await channel.setParent(guild.getData('channels').ticketsCategory)
-
-        const response = (await roVerAdapter('get', `/user/${this.message.author.id}`)).data
-        const username = response.robloxUsername
-        const userId = response.robloxId
-        const date = new Date()
-        const readableDate = timeHelper.getDate(date)
-        const readableTime = timeHelper.getTime(date)
-
-        const embed = new MessageEmbed()
-            .setColor(applicationConfig.primaryColor)
-            .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
-            .setTitle('Ticket Information')
-            .setDescription(stripIndents(
-                `Username: ${username ? '**' + username + '**' : '*user is not verified with RoVer*'}
-                 User ID: ${userId ? '**' + userId + '**' : '*user is not verified with RoVer*'}`))
-            .setFooter(`Start time: ${readableDate + ' ' + readableTime} - Ticket ID: ${id}`)
-        await channel.send(embed)
-
-
+        // If the ticket type is a confict/bug report,
+        // ask the user for the actual report to be discussed
+        if (this.type === TicketType.CONFLICT || this.type === TicketType.BUG) {
+            await this.requestReport()
+        }
     }
 
-    async requestSupportType () {
+    async requestType () {
+        this.state = TicketState.REQUESTING_TYPE
+
         const embed = new MessageEmbed()
             .setColor(applicationConfig.primaryColor)
             .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
@@ -72,13 +72,15 @@ module.exports = class TicketController extends EventEmitter {
         const choice = await discordService.prompt(this.message.channel, this.message.author, prompt, ['1⃣', '2⃣'])
 
         /* eslint-disable indent */
-        return choice === '1⃣' ? 'conflict'
-            : choice === '2⃣' ? 'bug'
+        return choice === '1⃣' ? TicketType.CONFLICT
+            : choice === '2⃣' ? TicketType.BUG
             : undefined
         /* eslint-enable indent */
     }
 
-    async requestClarity () {
+    async requestReport () {
+        this.state = TicketState.REQUESTING_REPORT
+
         const content = this.message.content
         const embed = new MessageEmbed()
             .setColor(applicationConfig.primaryColor)
@@ -86,25 +88,175 @@ module.exports = class TicketController extends EventEmitter {
             .setTitle('Does the following clearly explain your report?')
             .setDescription(content)
         const prompt = await this.message.channel.send(embed)
-        const choice = await discordService.prompt(this.message.channel, this.message.author, prompt,
-            ['✅', '🚫'])
+        const choice = await discordService.prompt(this.message.channel, this.message.author, prompt, ['✅',
+            '🚫'])
 
+        // If the message explains the report clearly,
+        // add it to the report messages
         if (choice === '✅') {
+            this.addMessage(this.message)
+            await this.submit()
 
+        // If the message doesn't explain the report clearly,
+        // ask for a summary of the report
         } else if (choice === '🚫') {
+            const summariseEmbed = new MessageEmbed()
+                .setColor(applicationConfig.primaryColor)
+                .setAuthor(this.client.user.tag, this.client.user.displayAvatarURL())
+                .setTitle('Please summarise your report')
+                .setDescription(stripIndents`You may use several messages and attach pictures/videos.
+                    Use the command \`/submitreport\` once you're done or \`/closeticket\` to close your ticket.`)
+            await this.message.channel.send(summariseEmbed)
 
+            this.state = TicketState.SUBMITTING_REPORT
+
+        // If they don't respond, close ticket
         } else {
-
+            return this.close('Ticket closed, you did not respond in time.', false)
         }
     }
 
-    async close () {
+    async createChannel () {
+        this.state = TicketState.CREATING_CHANNEL
+
+        const name = `${this.type}-${this.id}`
+
+        // Create channel
+        const guild = this.client.bot.mainGuild
+        this.channel = await guild.guild.channels.create(name)
+        this.channel = await this.channel.setParent(guild.getData('channels').ticketsCategory)
+
+        // Sync channel permissions with category permissions
+        await this.channel.lockPermissions()
+
+        // Check if user is verified with RoVer
+        // If so, the Roblox username and ID are retrieved
+        const response = (await roVerAdapter('get', `/user/${this.message.author.id}`)).data
+        const username = response.robloxUsername
+        const userId = response.robloxId
+
+        const date = new Date()
+        const readableDate = timeHelper.getDate(date)
+        const readableTime = timeHelper.getTime(date)
+
         const embed = new MessageEmbed()
-            .setColor(0xff0000)
+            .setColor(applicationConfig.primaryColor)
             .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
-            .setDescription('Ticket closed, you did not respond in time.')
+            .setTitle('Ticket Information')
+            .setDescription(stripIndents(
+                `Username: ${username ? '**' + username + '**' : '*user is not verified with RoVer*'}
+                 User ID: ${userId ? '**' + userId + '**' : '*user is not verified with RoVer*'}
+                 Start time: ${readableDate + ' ' + readableTime}`))
+            .setFooter(`Ticket ID: ${this.id}`)
+        await this.channel.send(embed)
+
+        // Change state to connected so that the TicketsController knows
+        // to link messages through to the newly created channel
+        this.state = TicketState.CONNECTED
+    }
+
+    addMessage (message) {
+        this.report.push(message)
+    }
+
+    async submit () {
+        // If the ticket author is currently entering a report
+        if (this.state === TicketState.REQUESTING_REPORT || this.state === TicketState.SUBMITTING_REPORT) {
+
+            // Create channel in guild which admins can see and reply to
+            await this.createChannel()
+
+            // Indicate this is the start of the report
+            const startEmbed = new MessageEmbed()
+                .setTitle('Start report')
+            await this.channel.send(startEmbed)
+
+            // Send all report messages to the just created channel
+            for (const message of this.report) {
+                await this.send(message, this.channel)
+            }
+
+            // Indicate this is the end of the report
+            const endEmbed = new MessageEmbed()
+                .setTitle('End report')
+            await this.channel.send(endEmbed)
+
+            const embed = new MessageEmbed()
+                .setColor(applicationConfig.primaryColor)
+                .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
+                .setTitle('Successfully submitted ticket')
+                .setDescription(stripIndents`Please wait for a Ticket Moderator to assess your ticket.
+                    This may take up to 24 hours. You can still close your ticket by using the \`/closeticket\`` +
+                    ' command.')
+            await this.author.send(embed)
+        }
+    }
+
+    async requestRating () {
+        this.state = TicketState.REQUESTING_RATING
+
+        const embed = new MessageEmbed()
+            .setColor(applicationConfig.primaryColor)
+            .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
+            .setTitle('How would you rate the support you got?')
+        const message = await this.author.send(embed)
+
+        const options = []
+        for (let i = 1; i <= 5; i++) {
+            options.push(discordService.getEmojiFromNumber(i))
+        }
+
+        let rating = await discordService.prompt(this.author, this.author, message, options)
+        rating = rating.substring(0, 1)
+        return rating
+    }
+
+    async send (message, channel) {
+        // Send message content if existent
+        if (message.content) {
+            const embed = new MessageEmbed()
+                .setAuthor(message.author.tag, message.author.displayAvatarURL())
+                .setDescription(message.content)
+                .setFooter(`Ticket ID: ${this.id}`)
+            await channel.send(embed)
+        }
+
+        // Send attachments if existent
+        if (message.attachments) {
+            for (const attachment of message.attachments) {
+                await channel.send(attachment)
+            }
+        }
+    }
+
+    async close (message, success, color) {
+        this.state = TicketState.CLOSING
+
+        // Send closing message
+        const embed = new MessageEmbed()
+            .setColor(color ? color : success ? 0x00ff00 : 0xff0000)
+            .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
+            .setTitle(message)
         await this.message.channel.send(embed)
+
+        // Delete the ticket's channel in the guild if existent
+        if (this.channel) {
+            await this.channel.delete()
+        }
+
+        if (success) {
+            const rating = await this.requestRating()
+            if (rating) {
+                console.log(rating)
+            }
+        }
 
         this.emit('close')
     }
+}
+
+module.exports = {
+    TicketController,
+    TicketState,
+    TicketType
 }

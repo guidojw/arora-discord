@@ -3,7 +3,6 @@ const fs = require('fs')
 const path = require('path')
 const cron = require('node-cron')
 const EventEmitter = require('events')
-const TicketsController = require('./tickets')
 
 const cronConfig = require('../../config/cron')
 
@@ -17,8 +16,6 @@ module.exports = class Guild extends EventEmitter {
         this.dataPath = path.join(__dirname, '../../data', `${id}.json`)
         this.data = undefined
         this.jobs = {}
-
-        this.ticketsController = new TicketsController(this.bot.client, this)
 
         this.once('ready', this.ready.bind(this))
     }

@@ -12,6 +12,7 @@ const discordService = require('../services/discord')
 const userService = require('../services/user')
 const stringHelper = require('../helpers/string')
 const pluralize = require('pluralize')
+const TicketsController = require('./tickets')
 
 const applicationConfig = require('../../config/application')
 
@@ -33,6 +34,7 @@ module.exports = class Bot {
             .registerGroup('miscellaneous', 'Miscellaneous')
             .registerGroup('bot', 'Bot')
             .registerGroup('voting', 'Voting')
+            .registerGroup('tickets', 'Tickets')
             .registerDefaultGroups()
             .registerDefaultTypes()
             .registerDefaultCommands({
@@ -57,6 +59,8 @@ module.exports = class Bot {
         this.webSocketController.on('rankChanged', this.rankChanged.bind(this))
         this.webSocketController.on('trainDeveloperPayoutReport', this.trainDeveloperPayoutReport.bind(this))
 
+        this.ticketsController = new TicketsController(this.client)
+
         this.client.login(process.env.DISCORD_TOKEN)
     }
 
@@ -74,6 +78,12 @@ module.exports = class Bot {
             this.guilds[guildId] = new Guild(this, guildId)
             await this.guilds[guildId].loadData()
         }
+
+        const mainGuildId = process.env.NODE_ENV === 'production'
+            ? applicationConfig.productionMainGuildId
+            : applicationConfig.developmentMainGuildId
+        this.mainGuild = this.getGuild(mainGuildId)
+
         this.client.setProvider(new SettingProvider())
 
         console.log(`Ready to serve on ${this.client.guilds.cache.size} servers, for ${this.client.users.cache.size} ` +
@@ -201,10 +211,10 @@ module.exports = class Bot {
         const developerIds = Object.keys(developersSales)
         const developers = await userService.getUsers(developerIds)
         let emoji
-        const masterGuild = this.getGuild(applicationConfig.masterGuildId)
-        if (masterGuild) {
-            const emojis = masterGuild.getData('emojis')
-            emoji = masterGuild.guild.emojis.cache.find(emoji => emoji.id === emojis.robuxEmoji)
+        const mainGuild = this.getGuild(applicationConfig.productionMainGuildId)
+        if (mainGuild) {
+            const emojis = mainGuild.getData('emojis')
+            emoji = mainGuild.guild.emojis.cache.find(emoji => emoji.id === emojis.robuxEmoji)
         }
         const embed = new MessageEmbed()
             .setTitle('Train Developers Payout Report')
