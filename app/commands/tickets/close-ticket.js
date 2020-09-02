@@ -3,6 +3,8 @@ const Command = require('../../controllers/command')
 const discordService = require('../../services/discord')
 const { TicketState } = require('../../controllers/ticket')
 
+const applicationConfig = require('../../../config/application')
+
 module.exports = class CloseTicketCommand extends Command {
     constructor (client) {
         super(client, {
@@ -33,7 +35,8 @@ module.exports = class CloseTicketCommand extends Command {
                     === '✅'
 
                 if (choice) {
-                    await ticketController.close('The administrator has closed this ticket.', true, 0xffff00)
+                    await ticketController.close('The administrator has closed this ticket.', true, applicationConfig
+                        .primaryColor)
                 }
             }
 
@@ -49,7 +52,7 @@ module.exports = class CloseTicketCommand extends Command {
                     === '✅'
 
                 if (choice) {
-                    await ticketController.close('Ticket successfully closed.', true, 0xffff00)
+                    await ticketController.close('Ticket successfully closed.', false, applicationConfig.primaryColor)
                 }
 
             } else {
