@@ -38,6 +38,7 @@ class TicketController extends EventEmitter {
         this.state = TicketState.INIT
 
         this.report = [] // array of messages describing report
+        this.moderators = []
 
         this.init()
     }
@@ -104,7 +105,7 @@ class TicketController extends EventEmitter {
                 .setAuthor(this.client.user.tag, this.client.user.displayAvatarURL())
                 .setTitle('Please summarise your report')
                 .setDescription(stripIndents`You may use several messages and attach pictures/videos.
-                    Use the command \`/submit\` once you're done or \`/close\` to close your ticket.`)
+                    Use the command \`/submitreport\` once you're done or \`/closeticket\` to close your ticket.`)
             await this.message.channel.send(summariseEmbed)
 
             this.state = TicketState.SUBMITTING_REPORT
@@ -121,7 +122,7 @@ class TicketController extends EventEmitter {
         const name = `${this.type}-${this.id}`
 
         // Create channel
-        const guild = this.client.bot.masterGuild
+        const guild = this.client.bot.mainGuild
         this.channel = await guild.guild.channels.create(name)
         this.channel = await this.channel.setParent(guild.getData('channels').ticketsCategory)
 
@@ -179,6 +180,15 @@ class TicketController extends EventEmitter {
             const endEmbed = new MessageEmbed()
                 .setTitle('End report')
             await this.channel.send(endEmbed)
+
+            const embed = new MessageEmbed()
+                .setColor(applicationConfig.primaryColor)
+                .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
+                .setTitle('Successfully submitted ticket')
+                .setDescription(stripIndents`Please wait for a Ticket Moderator to assess your ticket.
+                    This may take up to 24 hours. You can still close your ticket by using the \`/closeticket\`` +
+                    ' command.')
+            await this.author.send(embed)
         }
     }
 
@@ -232,6 +242,13 @@ class TicketController extends EventEmitter {
         // Delete the ticket's channel in the guild if existent
         if (this.channel) {
             await this.channel.delete()
+        }
+
+        if (success) {
+            const rating = await this.requestRating()
+            if (rating) {
+                console.log(rating)
+            }
         }
 
         this.emit('close')

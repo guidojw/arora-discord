@@ -38,25 +38,45 @@ module.exports = class TicketsController {
 
             // If author doesn't have a open ticket yet and can create a ticket
             if (!ticketController && !this.debounces[message.author.id]) {
-                this.debounces[message.author.id] = true
-                const timeout = setTimeout(this.clear.bind(this, message.author.id), TICKETS_INTERVAL)
+                // If the support system is enabled
+                if (this.client.bot.mainGuild.getData('settings').supportEnabled) {
+                    this.debounces[message.author.id] = true
+                    const timeout = setTimeout(this.clear.bind(this, message.author.id), TICKETS_INTERVAL)
 
-                const embed = new MessageEmbed()
-                    .setColor(applicationConfig.primaryColor)
-                    .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
-                    .setTitle('Welcome to NS Roblox Support')
-                    .setDescription('Do you want to create a ticket?')
-                const prompt = await message.channel.send(embed)
-                const choice = await discordService.prompt(message.channel, message.author, prompt, ['✅',
-                    '🚫']) === '✅'
+                    const embed = new MessageEmbed()
+                        .setColor(applicationConfig.primaryColor)
+                        .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
+                        .setTitle('Welcome to NS Roblox Support')
+                        .setDescription('Do you want to create a ticket?')
+                    const prompt = await message.channel.send(embed)
+                    const choice = await discordService.prompt(message.channel, message.author, prompt, ['✅',
+                        '🚫']) === '✅'
 
-                // If the user wants to create a ticket,
-                // instantiate a new TicketController
-                if (choice) {
-                    clearTimeout(timeout)
-                    ticketController = new TicketController(this, this.client, message)
-                    this.tickets[message.author.id] = ticketController
-                    ticketController.once('close', this.clear.bind(this, message.author.id))
+                    // If the user wants to create a ticket,
+                    // instantiate a new TicketController
+                    if (choice) {
+                        clearTimeout(timeout)
+                        ticketController = new TicketController(this, this.client, message)
+                        this.tickets[message.author.id] = ticketController
+                        ticketController.once('close', this.clear.bind(this, message.author.id))
+
+                    } else {
+                        const closeEmbed = new MessageEmbed()
+                            .setColor(applicationConfig.primaryColor)
+                            .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
+                            .setTitle('Prompt closed')
+                            .setDescription('A new prompt will be opened again if you DM me after 60 seconds.')
+                        await message.author.send(closeEmbed)
+                    }
+
+                // If support is closed, let the user know
+                } else {
+                    const embed = new MessageEmbed()
+                        .setColor(0xff0000)
+                        .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
+                        .setTitle('Welcome to NS Roblox Support')
+                        .setDescription('We are currently closed. Check the NS Roblox server for more information.')
+                    await message.channel.send(embed)
                 }
 
             // If author already has created a ticket
@@ -73,7 +93,7 @@ module.exports = class TicketsController {
             }
 
         // If message is sent in a channel in the Tickets category in the guild
-        } else if (message.channel.parentID === this.client.bot.masterGuild.getData('channels').ticketsCategory) {
+        } else if (message.channel.parentID === this.client.bot.mainGuild.getData('channels').ticketsCategory) {
             const ticketController = this.getTicketFromChannel(message.channel)
 
             // If channel is from a ticket
