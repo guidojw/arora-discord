@@ -22,21 +22,28 @@ module.exports = class CloseTicketCommand extends Command {
 
         // If executed in a guild
         if (guild) {
+            // Check if the channel is actually a ticket channel
             const channels = guild.getData('channels')
             if (message.channel.parentID !== channels.ticketsCategory) {
                 return message.reply('This command can only be used in channels in the tickets category.')
             }
 
-            const ticketController = ticketsController.getTicketFromChannel(message.channel)
-            if (ticketController) {
+            // Prompt the user if they really want to close the ticket
+            const prompt = await message.channel.send('Are you sure you want to close this ticket?')
+            const choice = await discordService.prompt(message.channel, message.author, prompt, ['✅', '🚫'])
+                === '✅'
 
-                const prompt = await message.channel.send('Are you sure you want to close this ticket?')
-                const choice = await discordService.prompt(message.channel, message.author, prompt, ['✅', '🚫'])
-                    === '✅'
-
-                if (choice) {
+            if (choice) {
+                // Check if the channel has a TicketController
+                const ticketController = ticketsController.getTicketFromChannel(message.channel)
+                if (ticketController) {
                     await ticketController.close('The moderator has closed this ticket.', true, applicationConfig
                         .primaryColor)
+
+                // Due to the lack of persistence, delete a channel if
+                // it doesn't have a TicketController
+                } else {
+                    await message.channel.delete()
                 }
             }
 
