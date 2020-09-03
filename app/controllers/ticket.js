@@ -6,6 +6,7 @@ const { stripIndents } = require('common-tags')
 const short = require('short-uuid')
 const roVerAdapter = require('../adapters/roVer')
 const timeHelper = require('../helpers/time')
+const pluralize = require('pluralize')
 
 const applicationConfig = require('../../config/application')
 
@@ -119,6 +120,62 @@ class TicketController extends EventEmitter {
         }
     }
 
+    async submit () {
+        // If the ticket author is currently entering a report
+        if (this.state === TicketState.REQUESTING_REPORT || this.state === TicketState.SUBMITTING_REPORT) {
+
+            // Create channel in guild which admins can see and reply to
+            await this.createChannel()
+
+            // Indicate this is the start of the report
+            const startEmbed = new MessageEmbed()
+                .setTitle('Start report')
+            await this.channel.send(startEmbed)
+
+            // Send all report messages to the just created channel
+            for (const message of this.report) {
+                await this.send(message, this.channel)
+            }
+
+            // Indicate this is the end of the report
+            const endEmbed = new MessageEmbed()
+                .setTitle('End report')
+            await this.channel.send(endEmbed)
+
+            // Send success embed in which the following process is clarified
+            const embed = new MessageEmbed()
+                .setColor(applicationConfig.primaryColor)
+                .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
+                .setTitle('Successfully submitted ticket')
+                .setDescription(stripIndents`Please wait for a Ticket Moderator to assess your ticket.
+                    This may take up to 24 hours. You can still close your ticket by using the \`/closeticket\`` +
+                    ' command.')
+            await this.author.send(embed)
+        }
+    }
+
+    addMessage (message) {
+        this.report.push(message)
+    }
+
+    async send (message, channel) {
+        // Send message content if existent
+        if (message.content) {
+            const embed = new MessageEmbed()
+                .setAuthor(message.author.tag, message.author.displayAvatarURL())
+                .setDescription(message.content)
+                .setFooter(`Ticket ID: ${this.id}`)
+            await channel.send(embed)
+        }
+
+        // Send attachments if existent
+        if (message.attachments) {
+            for (const attachment of message.attachments) {
+                await channel.send(attachment)
+            }
+        }
+    }
+
     async createChannel () {
         this.state = TicketState.CREATING_CHANNEL
 
@@ -159,83 +216,6 @@ class TicketController extends EventEmitter {
         this.state = TicketState.CONNECTED
     }
 
-    addMessage (message) {
-        this.report.push(message)
-    }
-
-    async submit () {
-        // If the ticket author is currently entering a report
-        if (this.state === TicketState.REQUESTING_REPORT || this.state === TicketState.SUBMITTING_REPORT) {
-
-            // Create channel in guild which admins can see and reply to
-            await this.createChannel()
-
-            // Indicate this is the start of the report
-            const startEmbed = new MessageEmbed()
-                .setTitle('Start report')
-            await this.channel.send(startEmbed)
-
-            // Send all report messages to the just created channel
-            for (const message of this.report) {
-                await this.send(message, this.channel)
-            }
-
-            // Indicate this is the end of the report
-            const endEmbed = new MessageEmbed()
-                .setTitle('End report')
-            await this.channel.send(endEmbed)
-
-            // Send success embed in which the following process is clarified
-            const embed = new MessageEmbed()
-                .setColor(applicationConfig.primaryColor)
-                .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
-                .setTitle('Successfully submitted ticket')
-                .setDescription(stripIndents`Please wait for a Ticket Moderator to assess your ticket.
-                    This may take up to 24 hours. You can still close your ticket by using the \`/closeticket\`` +
-                    ' command.')
-            await this.author.send(embed)
-        }
-    }
-
-    async requestRating () {
-        this.state = TicketState.REQUESTING_RATING
-
-        // Send the question embed
-        const embed = new MessageEmbed()
-            .setColor(applicationConfig.primaryColor)
-            .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
-            .setTitle('How would you rate the support you got?')
-        const message = await this.author.send(embed)
-
-        // Prompt how the user rates their support
-        const options = []
-        for (let i = 1; i <= 5; i++) {
-            options.push(discordService.getEmojiFromNumber(i))
-        }
-
-        let rating = await discordService.prompt(this.author, this.author, message, options)
-        rating = rating.substring(0, 1)
-        return rating
-    }
-
-    async send (message, channel) {
-        // Send message content if existent
-        if (message.content) {
-            const embed = new MessageEmbed()
-                .setAuthor(message.author.tag, message.author.displayAvatarURL())
-                .setDescription(message.content)
-                .setFooter(`Ticket ID: ${this.id}`)
-            await channel.send(embed)
-        }
-
-        // Send attachments if existent
-        if (message.attachments) {
-            for (const attachment of message.attachments) {
-                await channel.send(attachment)
-            }
-        }
-    }
-
     async close (message, success, color) {
         this.state = TicketState.CLOSING
 
@@ -251,14 +231,62 @@ class TicketController extends EventEmitter {
             await this.channel.delete()
         }
 
+        // Request for the ticket creator's rating if the ticket
+        // was closed successfully
         if (success) {
             const rating = await this.requestRating()
             if (rating) {
-                console.log(rating)
+
+                // Form a string of the moderator's names
+                let result = ''
+                for (let j = 0; j < this.moderators.length; j++) {
+                    const moderator = this.moderators[j]
+                    result += `**${moderator.tag}**`
+                    if (j < this.moderators.length - 2) {
+                        result += ', '
+                    } else if (j === this.moderators.length - 2) {
+                        result += ' & '
+                    }
+                }
+                result = result || 'none'
+
+                // Get the ratings channel
+                const channels = this.client.bot.mainGuild.getData('channels')
+                const channel = this.client.bot.mainGuild.guild.channels.cache.get(channels.ratingsChannel)
+
+                // Send the ticket rating
+                const ratingEmbed = new MessageEmbed()
+                    .setAuthor(this.author.tag, this.author.displayAvatarURL())
+                    .setTitle('Ticket Rating')
+                    .setDescription(stripIndents`${pluralize('Moderator', this.moderators.length)}: ${result}
+                        Rating: **${rating}**`)
+                    .setFooter(`Ticket ID: ${this.id}`)
+                await channel.send(ratingEmbed)
             }
         }
 
         this.emit('close')
+    }
+
+    async requestRating () {
+        this.state = TicketState.REQUESTING_RATING
+
+        // Send the question embed
+        const embed = new MessageEmbed()
+            .setColor(applicationConfig.primaryColor)
+            .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
+            .setTitle('How would you rate the support you got?')
+        const message = await this.author.send(embed)
+
+        // Prompt how the user rates their support
+        const options = []
+        for (let i = 5; i >= 1; i--) {
+            options.push(discordService.getEmojiFromNumber(i))
+        }
+
+        let rating = await discordService.prompt(this.author, this.author, message, options)
+        rating = rating.substring(0, 1)
+        return rating
     }
 }
 

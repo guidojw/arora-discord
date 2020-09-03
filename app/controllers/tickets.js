@@ -70,8 +70,8 @@ module.exports = class TicketsController {
 
                             // If the user is indeed in the guild,
                             // Check if the user is banned from making tickets
-                            const ticketsBannedRole = this.client.bot.mainGuild.getData('roles').ticketsBannedRole
-                            if (member.roles.cache.has(ticketsBannedRole)) {
+                            const roles = this.client.bot.mainGuild.getData('roles')
+                            if (member.roles.cache.has(roles.ticketsBannedRole)) {
                                 const banEmbed = new MessageEmbed()
                                     .setColor(0xff0000)
                                     .setTitle('Couldn\'t make ticket')
@@ -130,8 +130,8 @@ module.exports = class TicketsController {
 
                 // If the author is not yet added to the ticket's moderators,
                 // add the author to the ticket's moderators
-                if (!ticketController.moderators.includes(message.author.id)) {
-                    ticketController.moderators.push(message.author.id)
+                if (!ticketController.moderators.includes(message.author)) {
+                    ticketController.moderators.push(message.author)
                 }
             }
         }
