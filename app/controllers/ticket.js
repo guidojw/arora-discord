@@ -98,7 +98,7 @@ class TicketController extends EventEmitter {
         // If the message explains the report clearly,
         // add it to the report messages
         if (choice === '✅') {
-            this.addMessage(this.message)
+            this.report.push(this.message)
             await this.submit()
 
         // If the message doesn't explain the report clearly,
@@ -152,10 +152,6 @@ class TicketController extends EventEmitter {
                     ' command.')
             await this.author.send(embed)
         }
-    }
-
-    addMessage (message) {
-        this.report.push(message)
     }
 
     async send (message, channel) {

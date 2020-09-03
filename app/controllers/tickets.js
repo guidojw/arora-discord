@@ -111,7 +111,7 @@ module.exports = class TicketsController {
                 // If the ticket's author is currently entering their report,
                 // add the message to the ticket's report messages
                 if (ticketController.state === TicketState.SUBMITTING_REPORT) {
-                    ticketController.addMessage(message)
+                    ticketController.report.push(message)
 
                 // If the ticket has been created and a new message is sent
                 } else if (ticketController.state === TicketState.CONNECTED) {
