@@ -58,8 +58,8 @@ module.exports = class TicketsController {
                             .setTitle('Welcome to NS Roblox Support')
                             .setDescription('Do you want to create a ticket?')
                         const prompt = await message.channel.send(embed)
-                        const choice = await discordService.prompt(message.channel, message.author, prompt, ['✅',
-                            '🚫']) === '✅'
+                        const choice = await discordService.prompt(message.channel, message.author, prompt, [
+                            '✅', '🚫']) === '✅'
 
                         // If the user wants to create a ticket,
                         // instantiate a new TicketController
