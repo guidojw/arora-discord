@@ -58,7 +58,7 @@ module.exports = class SubmitReportCommand extends Command {
             }
 
         } else {
-            return message.reply('This command can only be used in channels in the tickets category.')
+            return message.reply('This command can only be used in private messages.')
         }
     }
 }
