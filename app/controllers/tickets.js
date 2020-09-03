@@ -125,7 +125,14 @@ module.exports = class TicketsController {
 
             // If channel is from a ticket
             if (ticketController) {
+                // Send the message to the other side (author/channel)
                 await ticketController.send(message, ticketController.author)
+
+                // If the author is not yet added to the ticket's moderators,
+                // add the author to the ticket's moderators
+                if (!ticketController.moderators.includes(message.author.id)) {
+                    ticketController.moderators.push(message.author.id)
+                }
             }
         }
     }
