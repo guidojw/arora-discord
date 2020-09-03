@@ -49,9 +49,12 @@ module.exports = class TicketsController {
 
                     // If the support system is enabled
                     if (this.client.bot.mainGuild.getData('settings').supportEnabled) {
+                        // Set a timeout of 60 seconds after which the bot
+                        // will automatically cancel the ticket
                         this.debounces[message.author.id] = true
                         const timeout = setTimeout(this.clear.bind(this, message.author.id), TICKETS_INTERVAL)
 
+                        // Prompt if the user actually wants to make a ticket
                         const embed = new MessageEmbed()
                             .setColor(applicationConfig.primaryColor)
                             .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
@@ -61,15 +64,13 @@ module.exports = class TicketsController {
                         const choice = await discordService.prompt(message.channel, message.author, prompt, [
                             '✅', '🚫']) === '✅'
 
-                        // If the user wants to create a ticket,
-                        // instantiate a new TicketController
+                        // If the user wants to create a ticket
                         if (choice) {
                             clearTimeout(timeout)
 
                             // If the user is indeed in the guild,
                             // Check if the user is banned from making tickets
                             const ticketsBannedRole = this.client.bot.mainGuild.getData('roles').ticketsBannedRole
-
                             if (member.roles.cache.has(ticketsBannedRole)) {
                                 const banEmbed = new MessageEmbed()
                                     .setColor(0xff0000)
@@ -78,11 +79,14 @@ module.exports = class TicketsController {
                                 return message.author.send(banEmbed)
                             }
 
+                            // Instantiate and connect a new TicketController
                             ticketController = new TicketController(this, this.client, message)
                             this.tickets[message.author.id] = ticketController
                             ticketController.once('close', this.clear.bind(this, message.author.id))
 
+                        // If the user doesn't want to create a ticket
                         } else {
+                            // Let the user know they can create a new ticket in 60 seconds
                             const closeEmbed = new MessageEmbed()
                                 .setColor(applicationConfig.primaryColor)
                                 .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())

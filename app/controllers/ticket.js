@@ -61,6 +61,7 @@ class TicketController extends EventEmitter {
     async requestType () {
         this.state = TicketState.REQUESTING_TYPE
 
+        // Prompt the user what type of ticket they want to make
         const embed = new MessageEmbed()
             .setColor(applicationConfig.primaryColor)
             .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
@@ -81,6 +82,8 @@ class TicketController extends EventEmitter {
     async requestReport () {
         this.state = TicketState.REQUESTING_REPORT
 
+        // Prompt the user if their earlier given report
+        // sufficiently explains their problem
         const content = this.message.content
         const embed = new MessageEmbed()
             .setColor(applicationConfig.primaryColor)
@@ -139,6 +142,7 @@ class TicketController extends EventEmitter {
         const readableDate = timeHelper.getDate(date)
         const readableTime = timeHelper.getTime(date)
 
+        // Post an embed in the ticket's channel with the ticket's information
         const embed = new MessageEmbed()
             .setColor(applicationConfig.primaryColor)
             .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
@@ -181,6 +185,7 @@ class TicketController extends EventEmitter {
                 .setTitle('End report')
             await this.channel.send(endEmbed)
 
+            // Send success embed in which the following process is clarified
             const embed = new MessageEmbed()
                 .setColor(applicationConfig.primaryColor)
                 .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
@@ -195,12 +200,14 @@ class TicketController extends EventEmitter {
     async requestRating () {
         this.state = TicketState.REQUESTING_RATING
 
+        // Send the question embed
         const embed = new MessageEmbed()
             .setColor(applicationConfig.primaryColor)
             .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
             .setTitle('How would you rate the support you got?')
         const message = await this.author.send(embed)
 
+        // Prompt how the user rates their support
         const options = []
         for (let i = 1; i <= 5; i++) {
             options.push(discordService.getEmojiFromNumber(i))
