@@ -235,12 +235,12 @@ class TicketController extends EventEmitter {
 
                 // Form a string of the moderator's names
                 let result = ''
-                for (let j = 0; j < this.moderators.length; j++) {
-                    const moderator = this.moderators[j]
+                for (let i = 0; i < this.moderators.length; i++) {
+                    const moderator = this.moderators[i]
                     result += `**${moderator.tag}**`
-                    if (j < this.moderators.length - 2) {
+                    if (i < this.moderators.length - 2) {
                         result += ', '
-                    } else if (j === this.moderators.length - 2) {
+                    } else if (i === this.moderators.length - 2) {
                         result += ' & '
                     }
                 }

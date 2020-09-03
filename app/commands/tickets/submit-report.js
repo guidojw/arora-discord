@@ -48,6 +48,7 @@ module.exports = class SubmitReportCommand extends Command {
                             .setDescription('Please add messages first.')
                         await message.channel.send(embed)
                     }
+
                 } else {
                     message.reply('You\'re not currently filing a report.')
                 }
