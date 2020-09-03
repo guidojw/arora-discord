@@ -38,33 +38,36 @@ module.exports = class TicketsController {
 
             // If author doesn't have a open ticket yet and can create a ticket
             if (!ticketController && !this.debounces[message.author.id]) {
-                // If the support system is enabled
-                if (this.client.bot.mainGuild.getData('settings').supportEnabled) {
-                    this.debounces[message.author.id] = true
-                    const timeout = setTimeout(this.clear.bind(this, message.author.id), TICKETS_INTERVAL)
+                // Get the user's member in the bot's main guild
+                const member = this.client.bot.mainGuild.guild.members.cache.find(member => {
+                    return member.user.id === message.author.id
+                })
 
-                    const embed = new MessageEmbed()
-                        .setColor(applicationConfig.primaryColor)
-                        .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
-                        .setTitle('Welcome to NS Roblox Support')
-                        .setDescription('Do you want to create a ticket?')
-                    const prompt = await message.channel.send(embed)
-                    const choice = await discordService.prompt(message.channel, message.author, prompt, ['✅',
-                        '🚫']) === '✅'
+                // Only allow the user to make a new ticket
+                // if they're in they're in the guild
+                if (member) {
 
-                    // If the user wants to create a ticket,
-                    // instantiate a new TicketController
-                    if (choice) {
-                        clearTimeout(timeout)
+                    // If the support system is enabled
+                    if (this.client.bot.mainGuild.getData('settings').supportEnabled) {
+                        this.debounces[message.author.id] = true
+                        const timeout = setTimeout(this.clear.bind(this, message.author.id), TICKETS_INTERVAL)
 
-                        // See if the user is in the bot's main guild
-                        const member = this.client.bot.mainGuild.guild.members.cache.find(member => {
-                            return member.user.id === message.author.id
-                        })
+                        const embed = new MessageEmbed()
+                            .setColor(applicationConfig.primaryColor)
+                            .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
+                            .setTitle('Welcome to NS Roblox Support')
+                            .setDescription('Do you want to create a ticket?')
+                        const prompt = await message.channel.send(embed)
+                        const choice = await discordService.prompt(message.channel, message.author, prompt, ['✅',
+                            '🚫']) === '✅'
 
-                        // If the user is indeed in the guild,
-                        // check if they're banned from making tickets
-                        if (member) {
+                        // If the user wants to create a ticket,
+                        // instantiate a new TicketController
+                        if (choice) {
+                            clearTimeout(timeout)
+
+                            // If the user is indeed in the guild,
+                            // Check if the user is banned from making tickets
                             const ticketsBannedRole = this.client.bot.mainGuild.getData('roles').ticketsBannedRole
 
                             if (member.roles.cache.has(ticketsBannedRole)) {
@@ -74,29 +77,29 @@ module.exports = class TicketsController {
                                     .setDescription('You\'re banned from making new tickets.')
                                 return message.author.send(banEmbed)
                             }
+
+                            ticketController = new TicketController(this, this.client, message)
+                            this.tickets[message.author.id] = ticketController
+                            ticketController.once('close', this.clear.bind(this, message.author.id))
+
+                        } else {
+                            const closeEmbed = new MessageEmbed()
+                                .setColor(applicationConfig.primaryColor)
+                                .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
+                                .setTitle('Prompt closed')
+                                .setDescription('A new prompt will be opened again if you DM me after 60 seconds.')
+                            await message.author.send(closeEmbed)
                         }
 
-                        ticketController = new TicketController(this, this.client, message)
-                        this.tickets[message.author.id] = ticketController
-                        ticketController.once('close', this.clear.bind(this, message.author.id))
-
+                    // If support is closed, let the user know
                     } else {
-                        const closeEmbed = new MessageEmbed()
-                            .setColor(applicationConfig.primaryColor)
+                        const embed = new MessageEmbed()
+                            .setColor(0xff0000)
                             .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
-                            .setTitle('Prompt closed')
-                            .setDescription('A new prompt will be opened again if you DM me after 60 seconds.')
-                        await message.author.send(closeEmbed)
+                            .setTitle('Welcome to NS Roblox Support')
+                            .setDescription('We are currently closed. Check the NS Roblox server for more information.')
+                        await message.channel.send(embed)
                     }
-
-                // If support is closed, let the user know
-                } else {
-                    const embed = new MessageEmbed()
-                        .setColor(0xff0000)
-                        .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
-                        .setTitle('Welcome to NS Roblox Support')
-                        .setDescription('We are currently closed. Check the NS Roblox server for more information.')
-                    await message.channel.send(embed)
                 }
 
             // If author already has created a ticket
