@@ -56,6 +56,26 @@ module.exports = class TicketsController {
                     // instantiate a new TicketController
                     if (choice) {
                         clearTimeout(timeout)
+
+                        // See if the user is in the bot's main guild
+                        const member = this.client.bot.mainGuild.guild.members.cache.find(member => {
+                            return member.user.id === message.author.id
+                        })
+
+                        // If the user is indeed in the guild,
+                        // check if they're banned from making tickets
+                        if (member) {
+                            const ticketsBannedRole = this.client.bot.mainGuild.getData('roles').ticketsBannedRole
+
+                            if (member.roles.cache.has(ticketsBannedRole)) {
+                                const banEmbed = new MessageEmbed()
+                                    .setColor(0xff0000)
+                                    .setTitle('Couldn\'t make ticket')
+                                    .setDescription('You\'re banned from making new tickets.')
+                                return message.author.send(banEmbed)
+                            }
+                        }
+
                         ticketController = new TicketController(this, this.client, message)
                         this.tickets[message.author.id] = ticketController
                         ticketController.once('close', this.clear.bind(this, message.author.id))

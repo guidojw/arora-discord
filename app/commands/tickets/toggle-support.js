@@ -9,13 +9,12 @@ module.exports = class ToggleSupportCommand extends Command {
             name: 'togglesupport',
             aliases: ['toggle'],
             description: 'Enables/disables the support system.',
-            clientPermissions: ['MANAGE_MESSAGES', 'ADD_REACTIONS', 'SEND_MESSAGES'],
-            guildOnly: false,
+            clientPermissions: ['SEND_MESSAGES'],
             adminOnly: true
         })
     }
 
-    async execute (message, _args, _guild) {
+    async execute (message) {
         // Toggle the setting
         const settings = this.client.bot.mainGuild.getData('settings')
         settings.supportEnabled = !settings.supportEnabled
@@ -26,6 +25,6 @@ module.exports = class ToggleSupportCommand extends Command {
             .setColor(settings.supportEnabled ? 0x00ff00 : 0xff0000)
             .setTitle('Successfully toggled support')
             .setDescription(`Tickets System: **${settings.supportEnabled ? 'enabled' : 'disabled'}**`)
-        message.replyEmbed(embed)
+        await message.replyEmbed(embed)
     }
 }

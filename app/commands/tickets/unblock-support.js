@@ -1,21 +1,21 @@
 'use strict'
 const Command = require('../../controllers/command')
 
-module.exports = class BlockSupportCommand extends Command {
+module.exports = class UnblockSupportCommand extends Command {
     constructor (client) {
         super(client, {
             group: 'tickets',
-            name: 'blocksupport',
-            aliases: ['block'],
-            description: 'Blocks someone from making tickets in the ticket system.',
-            examples: ['blocksupport Happywalker'],
+            name: 'unblocksupport',
+            aliases: ['unblock'],
+            description: 'Unblocks someone from making tickets in the ticket system.',
+            examples: ['unblocksupport Happywalker'],
             clientPermissions: ['SEND_MESSAGES'],
             adminOnly: true,
             args: [
                 {
                     key: 'member',
                     type: 'member',
-                    prompt: 'Who would you like to block?'
+                    prompt: 'Who would you like to unblock?'
                 }
             ]
         })
@@ -25,11 +25,11 @@ module.exports = class BlockSupportCommand extends Command {
         const username = member.displayName
         const role = guild.getData('roles').ticketsBannedRole
 
-        if (member.roles.cache.has(role)) {
-            await message.reply('Member is already blocked.')
+        if (!member.roles.cache.has(role)) {
+            await message.reply('Member is already unblocked.')
         } else {
-            member.roles.add(role)
-            await message.reply(`Successfully blocked **${username}**.`)
+            await member.roles.remove(role)
+            await message.reply(`Successfully unblocked **${username}**.`)
         }
     }
 }
