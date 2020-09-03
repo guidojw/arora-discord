@@ -35,7 +35,7 @@ module.exports = class CloseTicketCommand extends Command {
                     === '✅'
 
                 if (choice) {
-                    await ticketController.close('The administrator has closed this ticket.', true, applicationConfig
+                    await ticketController.close('The moderator has closed this ticket.', true, applicationConfig
                         .primaryColor)
                 }
             }
