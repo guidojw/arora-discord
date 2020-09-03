@@ -254,10 +254,28 @@ class TicketController extends EventEmitter {
                 const ratingEmbed = new MessageEmbed()
                     .setAuthor(this.author.tag, this.author.displayAvatarURL())
                     .setTitle('Ticket Rating')
-                    .setDescription(stripIndents`${pluralize('Moderator', this.moderators.length)}: ${result}
-                        Rating: **${rating}**`)
+                    .setDescription(stripIndents(
+                        `${pluralize('Moderator', this.moderators.length)}: ${result}
+                        Rating: **${rating}**`))
                     .setFooter(`Ticket ID: ${this.id}`)
                 await channel.send(ratingEmbed)
+
+                // Tell the user their rating has been submitted
+                const successEmbed = new MessageEmbed()
+                    .setColor(applicationConfig.primaryColor)
+                    .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
+                    .setTitle('Rating submitted')
+                    .setDescription('Thank you!')
+                await this.author.send(successEmbed)
+
+            // If no rating is submitted after the reaction collector closes
+            } else {
+                // Tell the user their rating hasn't been submitted
+                const successEmbed = new MessageEmbed()
+                    .setColor(applicationConfig.primaryColor)
+                    .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
+                    .setTitle('No rating submitted')
+                await this.author.send(successEmbed)
             }
         }
 
@@ -281,7 +299,7 @@ class TicketController extends EventEmitter {
         }
 
         let rating = await discordService.prompt(this.author, this.author, message, options)
-        rating = rating.substring(0, 1)
+        rating = rating && rating.substring(0, 1)
         return rating
     }
 }
