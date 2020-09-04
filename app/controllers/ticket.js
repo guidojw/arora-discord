@@ -80,7 +80,8 @@ class TicketController extends EventEmitter {
                 `1⃣ - I want to report a conflict
                 2⃣ - I want to report a bug`))
         const prompt = await this.message.channel.send(embed)
-        const choice = await discordService.prompt(this.message.channel, this.message.author, prompt, ['1⃣', '2⃣'])
+        const choice = await discordService.prompt(this.message.channel, this.message.author, prompt, ['1⃣',
+            '2⃣'])
 
         /* eslint-disable indent */
         return choice === '1⃣' ? TicketType.CONFLICT
@@ -151,8 +152,8 @@ class TicketController extends EventEmitter {
             await this.author.send(embed)
 
             // Log the action
-            await this.client.bot.log(this.author, `${this.author} **opened ticket** \`${this.id}\` **in** ${this
-                .channel}`, `Ticket ID: ${this.id}`)
+            await this.client.bot.log(this.author, `${this.author} **opened ticket** \`${this.id}\` **in** ${
+                this.channel}`, `Ticket ID: ${this.id}`)
         }
     }
 

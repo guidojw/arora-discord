@@ -180,7 +180,9 @@ module.exports = class TicketsController {
     }
 
     getTicketFromChannel (channel) {
-        return Object.values(this.tickets).find(ticketController => ticketController.channel.id === channel.id)
+        return Object.values(this.tickets).find(ticketController => {
+            return ticketController.channel.id === channel.id
+        })
     }
 
     inhibitor (message) {
