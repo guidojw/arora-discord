@@ -250,43 +250,10 @@ class TicketController extends EventEmitter {
         // the ticket was closed successfully
         if (success) {
             const rating = await this.requestRating()
+
+            // If a rating was submitted, log it
             if (rating) {
-
-                // Form a string of the moderator's names
-                let result = ''
-                for (let i = 0; i < this.moderators.length; i++) {
-                    const moderator = this.moderators[i]
-                    result += `**${moderator.tag}**`
-                    if (i < this.moderators.length - 2) {
-                        result += ', '
-                    } else if (i === this.moderators.length - 2) {
-                        result += ' & '
-                    }
-                }
-                result = result || 'none'
-
-                // Get the ratings channel
-                const channels = this.client.bot.mainGuild.getData('channels')
-                const channel = this.client.bot.mainGuild.guild.channels.cache.get(channels.ratingsChannel)
-
-                // Send the ticket rating
-                const ratingEmbed = new MessageEmbed()
-                    .setColor(applicationConfig.primaryColor)
-                    .setAuthor(this.author.tag, this.author.displayAvatarURL())
-                    .setTitle('Ticket Rating')
-                    .setDescription(stripIndents(
-                        `${pluralize('Moderator', this.moderators.length)}: ${result}
-                        Rating: **${rating}**`))
-                    .setFooter(`Ticket ID: ${this.id}`)
-                await channel.send(ratingEmbed)
-
-                // Tell the user their rating has been submitted
-                const successEmbed = new MessageEmbed()
-                    .setColor(applicationConfig.primaryColor)
-                    .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
-                    .setTitle('Rating submitted')
-                    .setDescription('Thank you!')
-                await this.author.send(successEmbed)
+                await this.logRating(rating)
 
             // If no rating is submitted after the reaction collector closes
             } else {
@@ -321,6 +288,44 @@ class TicketController extends EventEmitter {
         let rating = await discordService.prompt(this.author, this.author, message, options)
         rating = rating && rating.substring(0, 1)
         return rating
+    }
+
+    async logRating (rating) {
+        // Form a string of the moderator's names
+        let result = ''
+        for (let i = 0; i < this.moderators.length; i++) {
+            const moderator = this.moderators[i]
+            result += `**${moderator.tag}**`
+            if (i < this.moderators.length - 2) {
+                result += ', '
+            } else if (i === this.moderators.length - 2) {
+                result += ' & '
+            }
+        }
+        result = result || 'none'
+
+        // Get the ratings channel
+        const channels = this.client.bot.mainGuild.getData('channels')
+        const channel = this.client.bot.mainGuild.guild.channels.cache.get(channels.ratingsChannel)
+
+        // Send the ticket rating
+        const ratingEmbed = new MessageEmbed()
+            .setColor(applicationConfig.primaryColor)
+            .setAuthor(this.author.tag, this.author.displayAvatarURL())
+            .setTitle('Ticket Rating')
+            .setDescription(stripIndents(
+                `${pluralize('Moderator', this.moderators.length)}: ${result}
+                        Rating: **${rating}**`))
+            .setFooter(`Ticket ID: ${this.id}`)
+        await channel.send(ratingEmbed)
+
+        // Tell the user their rating has been submitted
+        const successEmbed = new MessageEmbed()
+            .setColor(applicationConfig.primaryColor)
+            .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
+            .setTitle('Rating submitted')
+            .setDescription('Thank you!')
+        await this.author.send(successEmbed)
     }
 }
 
