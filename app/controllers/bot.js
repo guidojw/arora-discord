@@ -124,14 +124,11 @@ module.exports = class Bot {
     async commandRun (command, promise, message) {
         if (!message.guild) return
         await promise
-        const embed = new MessageEmbed()
-            .setAuthor(message.author.tag, message.author.displayAvatarURL())
-            .setDescription(stripIndents`${message.author} **used** \`${command.name}\` **command in** ${message
-                .channel} [Jump to Message](${message.url})
-                ${message.content}`)
-            .setColor(applicationConfig.primaryColor)
-        const guild = this.getGuild(message.guild.id)
-        guild.guild.channels.cache.get(guild.getData('channels').logsChannel).send(embed)
+
+        await this.log(message.author, stripIndents`
+            ${message.author} **used** \`${command.name}\` **command in** ${message.channel} [Jump to Message](${message.url})
+            ${message.content}
+            `)
     }
 
     async messageReactionAdd (reaction, user) {
@@ -263,5 +260,19 @@ module.exports = class Bot {
             }
         }
         this.client.owners[0].send(embed)
+    }
+
+    log (author, content, footer) {
+        const embed = new MessageEmbed()
+            .setAuthor(author.tag, author.displayAvatarURL())
+            .setDescription(content)
+            .setColor(applicationConfig.primaryColor)
+
+        if (footer) {
+            embed.setFooter(footer)
+        }
+
+        const guild = this.mainGuild
+        return guild.guild.channels.cache.get(guild.getData('channels').logsChannel).send(embed)
     }
 }

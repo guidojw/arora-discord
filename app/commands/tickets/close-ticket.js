@@ -2,6 +2,7 @@
 const Command = require('../../controllers/command')
 const discordService = require('../../services/discord')
 const { TicketState } = require('../../controllers/ticket')
+const { stripIndents } = require('common-tags')
 
 const applicationConfig = require('../../../config/application')
 
@@ -38,6 +39,12 @@ module.exports = class CloseTicketCommand extends Command {
                 const ticketController = ticketsController.getTicketFromChannel(message.channel)
                 await ticketController.close('The moderator has closed this ticket.', true, applicationConfig
                     .primaryColor)
+
+                // Log the action
+                await this.client.bot.log(message.author, stripIndents`
+                        ${message.author} **closed ticket** \`${ticketController.id}\`
+                        ${message.content}
+                        `, `Ticket ID: ${ticketController.id}`)
             }
 
         // If executed in DMs
@@ -53,6 +60,12 @@ module.exports = class CloseTicketCommand extends Command {
 
                 if (choice) {
                     await ticketController.close('Ticket successfully closed.', false, applicationConfig.primaryColor)
+
+                    // Log the action
+                    await this.client.bot.log(message.author, stripIndents`
+                        ${message.author} **closed ticket** \`${ticketController.id}\`
+                        ${message.content}
+                        `, `Ticket ID: ${ticketController.id}`)
                 }
 
             } else {

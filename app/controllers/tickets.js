@@ -35,14 +35,15 @@ module.exports = class TicketsController {
             // Instantiate a new TicketController
             const ticketController = new TicketController(this, this.client)
             ticketController.id = id
+            ticketController.channel = channel
             this.tickets[this.client.user.id] = ticketController
 
             const embed = new MessageEmbed()
                 .setColor(0xff0000)
                 .setTitle('This ticket is now in closing state')
-                .setDescription('NSadmin has rebooted and has lost the ticket\'s data. Please close this ticket using' +
-                    ' the `/closeticket` command.')
-            await channel.send(embed)
+                .setDescription('NSadmin has rebooted and has lost this ticket\'s data. You cannot communicate with ' +
+                    'the ticket\'s creator anymore. \nPlease close this ticket using the `/closeticket` command.')
+            // await channel.send(embed)
         }
 
         // Connect the message event for making new tickets

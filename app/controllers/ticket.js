@@ -125,7 +125,7 @@ class TicketController extends EventEmitter {
 
         // If they don't respond, close ticket
         } else {
-            return this.close('Ticket closed, you did not respond in time.', false)
+            await this.close('Ticket closed, you did not respond in time.', false)
         }
     }
 
@@ -219,6 +219,10 @@ class TicketController extends EventEmitter {
         // Change state to connected so that the TicketsController knows
         // to link messages through to the newly created channel
         this.state = TicketState.CONNECTED
+
+        // Log the action
+        await this.client.bot.log(this.author, `${this.author} **opened ticket** \`${this.id}\` **in** ${this
+            .channel}`, `Ticket ID: ${this.id}`)
     }
 
     async close (message, success, color) {
@@ -267,6 +271,7 @@ class TicketController extends EventEmitter {
 
                 // Send the ticket rating
                 const ratingEmbed = new MessageEmbed()
+                    .setColor(applicationConfig.primaryColor)
                     .setAuthor(this.author.tag, this.author.displayAvatarURL())
                     .setTitle('Ticket Rating')
                     .setDescription(stripIndents(
