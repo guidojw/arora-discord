@@ -141,6 +141,10 @@ class TicketController extends EventEmitter {
             // and the full report and attachments
             await this.populateChannel()
 
+            // Log the action
+            await this.client.bot.log(this.author, `${this.author} **opened ticket** \`${this.id}\` **in** ${
+                this.channel}`, `Ticket ID: ${this.id}`)
+
             // Send success embed in which the following process is clarified
             const embed = new MessageEmbed()
                 .setColor(applicationConfig.primaryColor)
@@ -149,11 +153,7 @@ class TicketController extends EventEmitter {
                 .setDescription(stripIndents`Please wait for a Ticket Moderator to assess your ticket.
                     This may take up to 24 hours. You can still close your ticket by using the \`/closeticket\`` +
                     ' command.')
-            await this.author.send(embed)
-
-            // Log the action
-            await this.client.bot.log(this.author, `${this.author} **opened ticket** \`${this.id}\` **in** ${
-                this.channel}`, `Ticket ID: ${this.id}`)
+            return this.author.send(embed)
         }
     }
 
@@ -260,7 +260,7 @@ class TicketController extends EventEmitter {
 
             // If a rating was submitted, log it
             if (rating) {
-                await this.logRating(rating)
+                return this.logRating(rating)
 
             // If no rating is submitted after the reaction collector closes
             } else {
@@ -269,7 +269,7 @@ class TicketController extends EventEmitter {
                     .setColor(applicationConfig.primaryColor)
                     .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
                     .setTitle('No rating submitted')
-                await this.author.send(successEmbed)
+                return this.author.send(successEmbed)
             }
         }
 
@@ -332,7 +332,7 @@ class TicketController extends EventEmitter {
             .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
             .setTitle('Rating submitted')
             .setDescription('Thank you!')
-        await this.author.send(successEmbed)
+        return this.author.send(successEmbed)
     }
 }
 
