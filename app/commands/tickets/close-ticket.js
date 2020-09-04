@@ -55,8 +55,8 @@ module.exports = class CloseTicketCommand extends Command {
                 === TicketState.CREATING_CHANNEL || ticketController.state === TicketState.CONNECTED)) {
 
                 const prompt = await message.channel.send('Are you sure you want to close this ticket?')
-                const choice = await discordService.prompt(message.channel, message.author, prompt, ['✅', '🚫'
-                    ]) === '✅'
+                const choice = await discordService.prompt(message.channel, message.author, prompt, ['✅',
+                    '🚫']) === '✅'
 
                 if (choice) {
                     await ticketController.close('Ticket successfully closed.', false, applicationConfig.primaryColor)
