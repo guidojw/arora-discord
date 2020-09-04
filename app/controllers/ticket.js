@@ -136,20 +136,9 @@ class TicketController extends EventEmitter {
             // Create channel in guild which admins can see and reply to
             await this.createChannel()
 
-            // Indicate this is the start of the report
-            const startEmbed = new MessageEmbed()
-                .setTitle('Start report')
-            await this.channel.send(startEmbed)
-
-            // Send all report messages to the just created channel
-            for (const message of this.report) {
-                await this.send(message, this.channel)
-            }
-
-            // Indicate this is the end of the report
-            const endEmbed = new MessageEmbed()
-                .setTitle('End report')
-            await this.channel.send(endEmbed)
+            // Populate the channel with the ticket creator's data
+            // and the full report and attachments
+            await this.populateChannel()
 
             // Send success embed in which the following process is clarified
             const embed = new MessageEmbed()
@@ -160,6 +149,10 @@ class TicketController extends EventEmitter {
                     This may take up to 24 hours. You can still close your ticket by using the \`/closeticket\`` +
                     ' command.')
             await this.author.send(embed)
+
+            // Log the action
+            await this.client.bot.log(this.author, `${this.author} **opened ticket** \`${this.id}\` **in** ${this
+                .channel}`, `Ticket ID: ${this.id}`)
         }
     }
 
@@ -193,7 +186,9 @@ class TicketController extends EventEmitter {
 
         // Sync channel permissions with category permissions
         await this.channel.lockPermissions()
+    }
 
+    async populateChannel () {
         // Check if user is verified with RoVer
         // If so, the Roblox username and ID are retrieved
         const response = (await roVerAdapter('get', `/user/${this.message.author.id}`)).data
@@ -216,13 +211,24 @@ class TicketController extends EventEmitter {
             .setFooter(`Ticket ID: ${this.id}`)
         await this.channel.send(embed)
 
+        // Indicate this is the start of the report
+        const startEmbed = new MessageEmbed()
+            .setTitle('Start report')
+        await this.channel.send(startEmbed)
+
+        // Send all report messages to the just created channel
+        for (const message of this.report) {
+            await this.send(message, this.channel)
+        }
+
+        // Indicate this is the end of the report
+        const endEmbed = new MessageEmbed()
+            .setTitle('End report')
+        await this.channel.send(endEmbed)
+
         // Change state to connected so that the TicketsController knows
         // to link messages through to the newly created channel
         this.state = TicketState.CONNECTED
-
-        // Log the action
-        await this.client.bot.log(this.author, `${this.author} **opened ticket** \`${this.id}\` **in** ${this
-            .channel}`, `Ticket ID: ${this.id}`)
     }
 
     async close (message, success, color) {

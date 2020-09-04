@@ -99,8 +99,6 @@ module.exports = class TicketsController {
 
                         // If the user wants to create a ticket
                         if (choice) {
-                            clearTimeout(timeout)
-
                             // If the user is indeed in the guild,
                             // Check if the user is banned from making tickets
                             const roles = this.client.bot.mainGuild.getData('roles')
@@ -111,6 +109,8 @@ module.exports = class TicketsController {
                                     .setDescription('You\'re banned from making new tickets.')
                                 return message.author.send(banEmbed)
                             }
+
+                            clearTimeout(timeout)
 
                             // Instantiate and connect a new TicketController
                             ticketController = new TicketController(this, this.client, message)
@@ -158,8 +158,8 @@ module.exports = class TicketsController {
 
             // If channel is from a ticket
             if (ticketController) {
-                // If this ticket is closing, for example:
-                // if the ticket was connected again after a reboot
+                // If this ticket is closing, for example if the ticket was
+                // connected again after a reboot, don't try to send
                 if (ticketController.state === TicketState.CLOSING) {
                     return
                 }
