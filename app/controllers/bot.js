@@ -91,7 +91,7 @@ module.exports = class Bot {
         this.ticketsController = new TicketsController(this.client)
 
         // Block commands from running if the TicketsController starts a new prompt
-        this.client.dispatcher.addInhibitor(this.ticketsController.inhibitor)
+        this.client.dispatcher.addInhibitor(this.ticketsController.inhibitor.bind(this.ticketsController))
 
         // Set the bot's activity and start the loop that updates the activity
         this.setActivity()

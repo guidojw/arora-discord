@@ -13,7 +13,7 @@ module.exports = class CloseTicketCommand extends Command {
             name: 'closeticket',
             aliases: ['close'],
             description: 'Closes this ticket.',
-            clientPermissions: ['MANAGE_MESSAGES', 'ADD_REACTIONS', 'SEND_MESSAGES', 'MANAGE_CHANNELS'],
+            clientPermissions: ['ADD_REACTIONS', 'SEND_MESSAGES', 'MANAGE_CHANNELS'],
             guildOnly: false
         })
     }

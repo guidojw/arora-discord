@@ -13,7 +13,7 @@ module.exports = class SubmitReportCommand extends Command {
             name: 'submitreport',
             aliases: ['submit'],
             description: 'Submits entered report.',
-            clientPermissions: ['MANAGE_MESSAGES', 'ADD_REACTIONS', 'SEND_MESSAGES'],
+            clientPermissions: ['ADD_REACTIONS', 'SEND_MESSAGES'],
             guildOnly: false
         })
     }
