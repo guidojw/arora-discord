@@ -22,7 +22,7 @@ module.exports = class BlockSupportCommand extends Command {
         })
     }
 
-    async execute (message, { member }, guild) {
+    execute (message, { member }, guild) {
         const username = member.displayName
         const roles = guild.getData('roles')
 
@@ -35,6 +35,6 @@ module.exports = class BlockSupportCommand extends Command {
         }
 
         member.roles.add(roles.ticketsBannedRole)
-        await message.reply(`Successfully blocked **${username}**.`)
+        return message.reply(`Successfully blocked **${username}**.`)
     }
 }

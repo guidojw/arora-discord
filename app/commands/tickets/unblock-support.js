@@ -30,6 +30,6 @@ module.exports = class UnblockSupportCommand extends Command {
         }
 
         await member.roles.remove(roles.ticketsBannedRole)
-        await message.reply(`Successfully unblocked **${username}**.`)
+        return message.reply(`Successfully unblocked **${username}**.`)
     }
 }
