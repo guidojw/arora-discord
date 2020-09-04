@@ -49,6 +49,22 @@ module.exports = class Bot {
 
         this.guilds = {}
 
+        // Block commands from running if the TicketsController starts a new prompt
+        this.client.dispatcher.addInhibitor(msg => {
+            if (msg.guild) {
+                return
+            }
+            if (!msg.command) {
+                return
+            }
+
+            const ticketsController = this.ticketsController
+            const ticketController = ticketsController.tickets[msg.author.id]
+            if (ticketController === undefined && !ticketsController.debounces[msg.author.id]) {
+                return 'ticket prompt'
+            }
+        })
+
         this.client.once('ready', this.ready.bind(this))
         this.client.on('guildMemberAdd', this.guildMemberAdd.bind(this))
         this.client.on('commandRun', this.commandRun.bind(this))

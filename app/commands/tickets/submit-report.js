@@ -32,8 +32,8 @@ module.exports = class SubmitReportCommand extends Command {
                     // Don't allow reports without messages
                     if (ticketController.report.length > 0) {
                         const prompt = await message.channel.send('Are you sure you want to submit your report?')
-                        const choice = await discordService.prompt(message.channel, message.author, prompt, ['✅',
-                            '🚫']) === '✅'
+                        const choice = await discordService.prompt(message.channel, message.author, prompt, [
+                            '✅', '🚫']) === '✅'
 
                         if (choice) {
                             ticketController.submit()
