@@ -24,7 +24,7 @@ module.exports = class ToggleSupportCommand extends Command {
         const embed = new MessageEmbed()
             .setColor(settings.supportEnabled ? 0x00ff00 : 0xff0000)
             .setTitle('Successfully toggled support')
-            .setDescription(`Tickets System: **${settings.supportEnabled ? 'enabled' : 'disabled'}**`)
+            .setDescription(`Tickets System: **${settings.supportEnabled ? 'online' : 'offline'}**`)
         await message.replyEmbed(embed)
     }
 }

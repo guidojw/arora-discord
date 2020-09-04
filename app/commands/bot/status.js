@@ -18,7 +18,7 @@ module.exports = class StatusCommand extends Command {
         const embed = new MessageEmbed()
             .setColor(settings.supportEnabled ? 0x00ff00 : 0xff0000)
             .setTitle('NSadmin status')
-            .setDescription(`Tickets System: **${settings.supportEnabled ? 'enabled' : 'disabled'}**`)
+            .setDescription(`Tickets System: **${settings.supportEnabled ? 'online' : 'offline'}**`)
             .setTimestamp()
         message.replyEmbed(embed)
     }
