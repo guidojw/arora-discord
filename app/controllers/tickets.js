@@ -43,7 +43,7 @@ module.exports = class TicketsController {
                 .setTitle('This ticket is now in closing state')
                 .setDescription('NSadmin has rebooted and has lost this ticket\'s data. You cannot communicate with ' +
                     'the ticket\'s creator anymore. \nPlease close this ticket using the `/closeticket` command.')
-            // await channel.send(embed)
+            await channel.send(embed)
         }
 
         // Connect the message event for making new tickets
