@@ -32,16 +32,25 @@ class TicketController extends EventEmitter {
 
         this.ticketsController = ticketsController
         this.client = client
-        this.message = message
-        this.author = message.author
 
-        this.id = short.generate()
-        this.state = TicketState.INIT
+        // If this is a new ticket
+        if (message) {
+            this.message = message
+            this.author = message.author
 
-        this.report = [] // array of messages describing report
-        this.moderators = []
+            this.id = short.generate()
+            this.state = TicketState.INIT
 
-        this.init()
+            this.report = [] // array of messages describing report
+            this.moderators = []
+
+            this.init()
+
+        // If this is an already existing ticket
+        // being reinstantiated after reboot
+        } else {
+            this.state = TicketState.CLOSING
+        }
     }
 
     async init () {

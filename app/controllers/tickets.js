@@ -26,17 +26,23 @@ module.exports = class TicketsController {
         for (const channel of category.children.values()) {
             // Ignore the ratings channel
             if (channel.id === channels.ratingsChannel) {
-                return
+                continue
             }
 
             // Substring the id from the channel name
-            const id = channel.name.replace(/bug-|report-/, '')
+            const id = channel.name.replace('bug-', '').replace('conflict-', '')
 
             // Instantiate a new TicketController
             const ticketController = new TicketController(this, this.client)
             ticketController.id = id
-            ticketController.state = TicketState.CLOSING
-            this.tickets[message.author.id] = ticketController
+            this.tickets[this.client.user.id] = ticketController
+
+            const embed = new MessageEmbed()
+                .setColor(0xff0000)
+                .setTitle('This ticket is now in closing state')
+                .setDescription('NSadmin has rebooted and has lost the ticket\'s data. Please close this ticket using' +
+                    ' the `/closeticket` command.')
+            await channel.send(embed)
         }
 
         // Connect the message event for making new tickets
@@ -147,6 +153,12 @@ module.exports = class TicketsController {
 
             // If channel is from a ticket
             if (ticketController) {
+                // If this ticket is closing, for example:
+                // if the ticket was connected again after a reboot
+                if (ticketController.state === TicketState.CLOSING) {
+                    return
+                }
+
                 // Send the message to the other side (author/channel)
                 await ticketController.send(message, ticketController.author)
 
