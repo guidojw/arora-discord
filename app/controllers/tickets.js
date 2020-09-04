@@ -2,6 +2,7 @@
 const discordService = require('../services/discord')
 const { MessageEmbed } = require('discord.js')
 const { TicketController, TicketState } = require('./ticket')
+const { stripIndents } = require('common-tags')
 
 const applicationConfig = require('../../config/application')
 
@@ -41,8 +42,11 @@ module.exports = class TicketsController {
             const embed = new MessageEmbed()
                 .setColor(0xff0000)
                 .setTitle('This ticket is now in closing state')
-                .setDescription('NSadmin has rebooted and has lost this ticket\'s data. You cannot communicate with ' +
-                    'the ticket\'s creator anymore. \nPlease close this ticket using the `/closeticket` command.')
+                .setDescription(stripIndents`
+                    NSadmin has rebooted and has lost this ticket\'s data. 
+                    You cannot communicate with the ticket\'s creator anymore. 
+                    Please close this ticket using the \`/closeticket\` command.
+                    `)
             await channel.send(embed)
         }
 

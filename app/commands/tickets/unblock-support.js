@@ -23,13 +23,13 @@ module.exports = class UnblockSupportCommand extends Command {
 
     async execute (message, { member }, guild) {
         const username = member.displayName
-        const role = guild.getData('roles').ticketsBannedRole
+        const roles = guild.getData('roles')
 
-        if (!member.roles.cache.has(role)) {
-            await message.reply('Member is already unblocked.')
-        } else {
-            await member.roles.remove(role)
-            await message.reply(`Successfully unblocked **${username}**.`)
+        if (!member.roles.cache.has(roles.ticketsBannedRole)) {
+            return message.reply('Block not found.')
         }
+
+        await member.roles.remove(roles.ticketsBannedRole)
+        await message.reply(`Successfully unblocked **${username}**.`)
     }
 }

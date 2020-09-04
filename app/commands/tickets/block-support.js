@@ -1,5 +1,6 @@
 'use strict'
 const Command = require('../../controllers/command')
+const discordService = require('../../services/discord')
 
 module.exports = class BlockSupportCommand extends Command {
     constructor (client) {
@@ -23,13 +24,17 @@ module.exports = class BlockSupportCommand extends Command {
 
     async execute (message, { member }, guild) {
         const username = member.displayName
-        const role = guild.getData('roles').ticketsBannedRole
+        const roles = guild.getData('roles')
 
-        if (member.roles.cache.has(role)) {
-            await message.reply('Member is already blocked.')
-        } else {
-            member.roles.add(role)
-            await message.reply(`Successfully blocked **${username}**.`)
+        if (member.roles.cache.has(roles.ticketsBannedRole)) {
+            return message.reply('Member is already blocked.')
+        } else if (discordService.isAdmin(member, guild.getData('adminRoles'))) {
+            return message.reply('Can\'t block HRs.')
+        } else if (member.roles.cache.has(roles.ticketModeratorRole)) {
+            return message.reply('Can\'t block Ticket Moderators.')
         }
+
+        member.roles.add(roles.ticketsBannedRole)
+        await message.reply(`Successfully blocked **${username}**.`)
     }
 }
