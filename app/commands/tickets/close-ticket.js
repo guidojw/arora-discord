@@ -37,14 +37,15 @@ module.exports = class CloseTicketCommand extends Command {
             if (choice) {
                 // Get the channel's TicketController
                 const ticketController = ticketsController.getTicketFromChannel(message.channel)
-                await ticketController.close('The moderator has closed this ticket.', true, applicationConfig
-                    .primaryColor)
 
                 // Log the action
                 await this.client.bot.log(message.author, stripIndents`
                         ${message.author} **closed ticket** \`${ticketController.id}\`
                         ${message.content}
                         `, `Ticket ID: ${ticketController.id}`)
+
+                return ticketController.close('The moderator has closed this ticket.', true, applicationConfig
+                    .primaryColor)
             }
 
         // If executed in DMs
@@ -59,13 +60,13 @@ module.exports = class CloseTicketCommand extends Command {
                     '🚫']) === '✅'
 
                 if (choice) {
-                    await ticketController.close('Ticket successfully closed.', false, applicationConfig.primaryColor)
-
                     // Log the action
                     await this.client.bot.log(message.author, stripIndents`
                         ${message.author} **closed ticket** \`${ticketController.id}\`
                         ${message.content}
                         `, `Ticket ID: ${ticketController.id}`)
+
+                    return ticketController.close('Ticket successfully closed.', false, applicationConfig.primaryColor)
                 }
 
             } else {
