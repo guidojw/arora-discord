@@ -49,22 +49,6 @@ module.exports = class Bot {
 
         this.guilds = {}
 
-        // Block commands from running if the TicketsController starts a new prompt
-        this.client.dispatcher.addInhibitor(message => {
-            if (message.guild) {
-                return
-            }
-            if (!message.command) {
-                return
-            }
-
-            const ticketsController = this.ticketsController
-            const ticketController = ticketsController.tickets[message.author.id]
-            if (ticketController === undefined && !ticketsController.debounces[message.author.id]) {
-                return 'ticket prompt'
-            }
-        })
-
         this.client.once('ready', this.ready.bind(this))
         this.client.on('guildMemberAdd', this.guildMemberAdd.bind(this))
         this.client.on('commandRun', this.commandRun.bind(this))
@@ -88,26 +72,33 @@ module.exports = class Bot {
     }
 
     async ready () {
+        // Instantiate a Guild instance for every guild
         for (const guildId of this.client.guilds.cache.keys()) {
             this.guilds[guildId] = new Guild(this, guildId)
             await this.guilds[guildId].loadData()
         }
 
+        // Set the bot's main Guild
         const mainGuildId = process.env.NODE_ENV === 'production'
             ? applicationConfig.productionMainGuildId
             : applicationConfig.developmentMainGuildId
         this.mainGuild = this.getGuild(mainGuildId)
 
-        this.client.setProvider(new SettingProvider())
+        // Set the client's SettingProvider
+        await this.client.setProvider(new SettingProvider())
 
         // Instantiate the TicketsController for this bot
         this.ticketsController = new TicketsController(this.client)
 
-        console.log(`Ready to serve on ${this.client.guilds.cache.size} servers, for ${this.client.users.cache.size} ` +
-            'users.')
+        // Block commands from running if the TicketsController starts a new prompt
+        this.client.dispatcher.addInhibitor(this.ticketsController.inhibitor)
 
+        // Set the bot's activity and start the loop that updates the activity
         this.setActivity()
         setInterval(() => this.setActivity(), 60 * 1000)
+
+        console.log(`Ready to serve on ${this.client.guilds.cache.size} servers, for ${this.client.users.cache.size} ` +
+            'users.')
     }
 
     async guildMemberAdd (member) {

@@ -80,62 +80,60 @@ module.exports = class TicketsController {
                 // if they're in they're in the guild
                 if (member) {
 
-                    // If the support system is enabled
-                    if (this.client.bot.mainGuild.getData('settings').supportEnabled) {
-                        // Set a timeout of 60 seconds after which the bot
-                        // will automatically cancel the ticket
-                        this.debounces[message.author.id] = true
-                        const timeout = setTimeout(this.clear.bind(this, message.author.id), TICKETS_INTERVAL)
-
-                        // Prompt if the user actually wants to make a ticket
-                        const embed = new MessageEmbed()
-                            .setColor(applicationConfig.primaryColor)
-                            .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
-                            .setTitle('Welcome to NS Roblox Support')
-                            .setDescription('Do you want to create a ticket?')
-                        const prompt = await message.channel.send(embed)
-                        const choice = await discordService.prompt(message.channel, message.author, prompt, [
-                            '✅', '🚫']) === '✅'
-
-                        // If the user wants to create a ticket
-                        if (choice) {
-                            // If the user is indeed in the guild,
-                            // Check if the user is banned from making tickets
-                            const roles = this.client.bot.mainGuild.getData('roles')
-                            if (member.roles.cache.has(roles.ticketsBannedRole)) {
-                                const banEmbed = new MessageEmbed()
-                                    .setColor(0xff0000)
-                                    .setTitle('Couldn\'t make ticket')
-                                    .setDescription('You\'re banned from making new tickets.')
-                                return message.author.send(banEmbed)
-                            }
-
-                            clearTimeout(timeout)
-
-                            // Instantiate and connect a new TicketController
-                            ticketController = new TicketController(this, this.client, message)
-                            this.tickets[message.author.id] = ticketController
-                            ticketController.once('close', this.clear.bind(this, message.author.id))
-
-                        // If the user doesn't want to create a ticket
-                        } else {
-                            // Let the user know they can create a new ticket in 60 seconds
-                            const closeEmbed = new MessageEmbed()
-                                .setColor(applicationConfig.primaryColor)
-                                .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
-                                .setTitle('Prompt closed')
-                                .setDescription('A new prompt will be opened again if you DM me after 60 seconds.')
-                            await message.author.send(closeEmbed)
-                        }
-
-                    // If support is closed, let the user know
-                    } else {
+                    // If the support system is offline, let the user know
+                    if (!this.client.bot.mainGuild.getData('settings').supportEnabled) {
                         const embed = new MessageEmbed()
                             .setColor(0xff0000)
                             .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
                             .setTitle('Welcome to NS Roblox Support')
                             .setDescription('We are currently closed. Check the NS Roblox server for more information.')
-                        await message.channel.send(embed)
+                        return message.channel.send(embed)
+                    }
+
+                    // Set a timeout of 60 seconds after which the bot
+                    // will automatically cancel the ticket
+                    this.debounces[message.author.id] = true
+                    const timeout = setTimeout(this.clear.bind(this, message.author.id), TICKETS_INTERVAL)
+
+                    // Prompt if the user actually wants to make a ticket
+                    const embed = new MessageEmbed()
+                        .setColor(applicationConfig.primaryColor)
+                        .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
+                        .setTitle('Welcome to NS Roblox Support')
+                        .setDescription('Do you want to create a ticket?')
+                    const prompt = await message.channel.send(embed)
+                    const choice = await discordService.prompt(message.channel, message.author, prompt, [
+                        '✅', '🚫']) === '✅'
+
+                    // If the user wants to create a ticket
+                    if (choice) {
+                        // If the user is indeed in the guild,
+                        // Check if the user is banned from making tickets
+                        const roles = this.client.bot.mainGuild.getData('roles')
+                        if (member.roles.cache.has(roles.ticketsBannedRole)) {
+                            const banEmbed = new MessageEmbed()
+                                .setColor(0xff0000)
+                                .setTitle('Couldn\'t make ticket')
+                                .setDescription('You\'re banned from making new tickets.')
+                            return message.author.send(banEmbed)
+                        }
+
+                        clearTimeout(timeout)
+
+                        // Instantiate and connect a new TicketController
+                        ticketController = new TicketController(this, this.client, message)
+                        this.tickets[message.author.id] = ticketController
+                        ticketController.once('close', this.clear.bind(this, message.author.id))
+
+                    // If the user doesn't want to create a ticket
+                    } else {
+                        // Let the user know they can create a new ticket in 60 seconds
+                        const closeEmbed = new MessageEmbed()
+                            .setColor(applicationConfig.primaryColor)
+                            .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
+                            .setTitle('Prompt closed')
+                            .setDescription('A new prompt will be opened again if you DM me after 60 seconds.')
+                        await message.author.send(closeEmbed)
                     }
                 }
 
@@ -183,5 +181,19 @@ module.exports = class TicketsController {
 
     getTicketFromChannel (channel) {
         return Object.values(this.tickets).find(ticketController => ticketController.channel.id === channel.id)
+    }
+
+    inhibitor (message) {
+        if (message.guild) {
+            return
+        }
+        if (!message.command) {
+            return
+        }
+
+        const ticketController = this.tickets[message.author.id]
+        if (ticketController === undefined && !this.debounces[message.author.id]) {
+            return 'ticket prompt'
+        }
     }
 }
