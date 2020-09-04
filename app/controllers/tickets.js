@@ -18,6 +18,28 @@ module.exports = class TicketsController {
     }
 
     async init () {
+        // Instantiate a TicketController for every ticket's channel
+        const guild = this.client.bot.mainGuild
+        const channels = guild.getData('channels')
+        const category = guild.guild.channels.cache.get(channels.ticketsCategory)
+
+        for (const channel of category.children.values()) {
+            // Ignore the ratings channel
+            if (channel.id === channels.ratingsChannel) {
+                return
+            }
+
+            // Substring the id from the channel name
+            const id = channel.name.replace(/bug-|report-/, '')
+
+            // Instantiate a new TicketController
+            const ticketController = new TicketController(this, this.client)
+            ticketController.id = id
+            ticketController.state = TicketState.CLOSING
+            this.tickets[message.author.id] = ticketController
+        }
+
+        // Connect the message event for making new tickets
         this.client.on('message', this.message.bind(this))
     }
 

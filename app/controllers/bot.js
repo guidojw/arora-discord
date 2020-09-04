@@ -75,8 +75,6 @@ module.exports = class Bot {
         this.webSocketController.on('rankChanged', this.rankChanged.bind(this))
         this.webSocketController.on('trainDeveloperPayoutReport', this.trainDeveloperPayoutReport.bind(this))
 
-        this.ticketsController = new TicketsController(this.client)
-
         this.client.login(process.env.DISCORD_TOKEN)
     }
 
@@ -101,6 +99,9 @@ module.exports = class Bot {
         this.mainGuild = this.getGuild(mainGuildId)
 
         this.client.setProvider(new SettingProvider())
+
+        // Instantiate the TicketsController for this bot
+        this.ticketsController = new TicketsController(this.client)
 
         console.log(`Ready to serve on ${this.client.guilds.cache.size} servers, for ${this.client.users.cache.size} ` +
             'users.')

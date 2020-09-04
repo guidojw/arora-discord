@@ -34,17 +34,10 @@ module.exports = class CloseTicketCommand extends Command {
                 === '✅'
 
             if (choice) {
-                // Check if the channel has a TicketController
+                // Get the channel's TicketController
                 const ticketController = ticketsController.getTicketFromChannel(message.channel)
-                if (ticketController) {
-                    await ticketController.close('The moderator has closed this ticket.', true, applicationConfig
-                        .primaryColor)
-
-                // Due to the lack of persistence, delete a channel if
-                // it doesn't have a TicketController
-                } else {
-                    await message.channel.delete()
-                }
+                await ticketController.close('The moderator has closed this ticket.', true, applicationConfig
+                    .primaryColor)
             }
 
         // If executed in DMs
@@ -55,8 +48,8 @@ module.exports = class CloseTicketCommand extends Command {
                 === TicketState.CREATING_CHANNEL || ticketController.state === TicketState.CONNECTED)) {
 
                 const prompt = await message.channel.send('Are you sure you want to close this ticket?')
-                const choice = await discordService.prompt(message.channel, message.author, prompt, ['✅', '🚫'])
-                    === '✅'
+                const choice = await discordService.prompt(message.channel, message.author, prompt, ['✅', '🚫'
+                    ]) === '✅'
 
                 if (choice) {
                     await ticketController.close('Ticket successfully closed.', false, applicationConfig.primaryColor)

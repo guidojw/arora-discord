@@ -213,6 +213,17 @@ class TicketController extends EventEmitter {
     }
 
     async close (message, success, color) {
+        // Delete the ticket's channel in the guild if existent
+        if (this.channel) {
+            await this.channel.delete()
+        }
+
+        // If this ticket is already closing, for example:
+        // if the ticket was connected again after a reboot
+        if (this.state === TicketState.CLOSING) {
+            return
+        }
+
         this.state = TicketState.CLOSING
 
         // Send closing message
@@ -222,13 +233,8 @@ class TicketController extends EventEmitter {
             .setTitle(message)
         await this.message.channel.send(embed)
 
-        // Delete the ticket's channel in the guild if existent
-        if (this.channel) {
-            await this.channel.delete()
-        }
-
-        // Request for the ticket creator's rating if the ticket
-        // was closed successfully
+        // Request for the ticket creator's rating if
+        // the ticket was closed successfully
         if (success) {
             const rating = await this.requestRating()
             if (rating) {
