@@ -29,32 +29,30 @@ module.exports = class SubmitReportCommand extends Command {
                 // If user is currently entering a report
                 if (ticketController.state === TicketState.SUBMITTING_REPORT) {
 
-                    // Don't allow reports without messages
-                    if (ticketController.report.length > 0) {
-                        const prompt = await message.channel.send('Are you sure you want to submit your report?')
-                        const choice = await discordService.prompt(message.channel, message.author, prompt, [
-                            '✅', '🚫']) === '✅'
-
-                        if (choice) {
-                            ticketController.submit()
-                        }
-
                     // Tell the user they have to send messages first
-                    } else {
+                    if (ticketController.report.length === 0) {
                         const embed = new MessageEmbed()
                             .setColor(applicationConfig.primaryColor)
                             .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
                             .setTitle('Can\'t submit report')
                             .setDescription('Please add messages first.')
-                        await message.channel.send(embed)
+                        return message.channel.send(embed)
+                    }
+
+                    const prompt = await message.channel.send('Are you sure you want to submit your report?')
+                    const choice = await discordService.prompt(message.channel, message.author, prompt, [
+                        '✅', '🚫']) === '✅'
+
+                    if (choice) {
+                        return ticketController.submit()
                     }
 
                 } else {
-                    message.reply('You\'re not currently filing a report.')
+                    return message.reply('You\'re not currently filing a report.')
                 }
 
             } else {
-                message.reply('You have no open tickets.')
+                return message.reply('You have no open tickets.')
             }
 
         } else {
