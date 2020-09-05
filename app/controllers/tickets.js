@@ -12,8 +12,8 @@ module.exports = class TicketsController {
     constructor (client) {
         this.client = client
 
+        this.tickets = {} // map from ticket ID to TicketController
         this.debounces = {} // map from user ID to debounce flag
-        this.tickets = {} // map from user ID to TicketController
 
         this.init()
     }
@@ -37,7 +37,8 @@ module.exports = class TicketsController {
             const ticketController = new TicketController(this, this.client)
             ticketController.id = id
             ticketController.channel = channel
-            this.tickets[this.client.user.id] = ticketController
+            this.tickets[id] = ticketController
+            ticketController.once('close', this.clearTicket.bind(this, ticketController))
 
             const embed = new MessageEmbed()
                 .setColor(0xff0000)
@@ -67,7 +68,7 @@ module.exports = class TicketsController {
 
         // If message is a DM
         if (!message.guild) {
-            let ticketController = this.tickets[message.author.id]
+            let ticketController = this.getTicketFromAuthor(message.author)
 
             // If author doesn't have a open ticket yet and can create a ticket
             if (!ticketController && !this.debounces[message.author.id]) {
@@ -93,7 +94,7 @@ module.exports = class TicketsController {
                     // Set a timeout of 60 seconds after which the bot
                     // will automatically cancel the ticket
                     this.debounces[message.author.id] = true
-                    const timeout = setTimeout(this.clear.bind(this, message.author.id), TICKETS_INTERVAL)
+                    const timeout = setTimeout(this.clearAuthor.bind(this, message.author), TICKETS_INTERVAL)
 
                     // Prompt if the user actually wants to make a ticket
                     const embed = new MessageEmbed()
@@ -122,8 +123,8 @@ module.exports = class TicketsController {
 
                         // Instantiate and connect a new TicketController
                         ticketController = new TicketController(this, this.client, message)
-                        this.tickets[message.author.id] = ticketController
-                        ticketController.once('close', this.clear.bind(this, message.author.id))
+                        this.tickets[ticketController.id] = ticketController
+                        ticketController.once('close', this.clearTicket.bind(this, ticketController))
 
                     // If the user doesn't want to create a ticket
                     } else {
@@ -174,14 +175,30 @@ module.exports = class TicketsController {
         }
     }
 
-    clear (authorId) {
-        delete this.debounces[authorId]
-        delete this.tickets[authorId]
+    clearTicket (ticketController) {
+        if (ticketController) {
+            // If the TicketController hasn't lost its author
+            if (ticketController.state !== TicketState.RECONNECTED) {
+                this.clearAuthor(ticketController.author)
+            }
+
+            delete this.tickets[ticketController.id]
+        }
+    }
+
+    clearAuthor (author) {
+        delete this.debounces[author.id]
     }
 
     getTicketFromChannel (channel) {
         return Object.values(this.tickets).find(ticketController => {
             return ticketController.channel.id === channel.id
+        })
+    }
+
+    getTicketFromAuthor (author) {
+        return Object.values(this.tickets).find(ticketController => {
+            return ticketController.state !== TicketState.RECONNECTED && ticketController.author.id === author.id
         })
     }
 
@@ -193,7 +210,7 @@ module.exports = class TicketsController {
             return
         }
 
-        const ticketController = this.tickets[message.author.id]
+        const ticketController = this.getTicketFromAuthor(message.author)
         if (ticketController === undefined && !this.debounces[message.author.id]) {
             return 'ticket prompt'
         }

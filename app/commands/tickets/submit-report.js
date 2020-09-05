@@ -23,7 +23,7 @@ module.exports = class SubmitReportCommand extends Command {
         if (!guild) {
 
             const ticketsController = this.client.bot.ticketsController
-            const ticketController = ticketsController.tickets[message.author.id]
+            const ticketController = ticketsController.getTicketFromAuthor(message.author)
             if (ticketController) {
 
                 // If user is currently entering a report

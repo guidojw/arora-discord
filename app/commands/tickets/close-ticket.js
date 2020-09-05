@@ -50,7 +50,7 @@ module.exports = class CloseTicketCommand extends Command {
 
         // If executed in DMs
         } else {
-            const ticketController = ticketsController.tickets[message.author.id]
+            const ticketController = ticketsController.getTicketFromAuthor(message.author)
             // Tickets can only be closed between the submitting report and the connected states
             if (ticketController && (ticketController.state === TicketState.SUBMITTING_REPORT || ticketController.state
                 === TicketState.CREATING_CHANNEL || ticketController.state === TicketState.CONNECTED)) {

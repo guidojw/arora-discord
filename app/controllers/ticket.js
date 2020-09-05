@@ -257,16 +257,16 @@ class TicketController extends EventEmitter {
 
                 // If a rating was submitted, log it
                 if (rating) {
-                    return this.logRating(rating)
+                    await this.logRating(rating)
 
-                    // If no rating is submitted after the reaction collector closes
+                // If no rating is submitted after the reaction collector closes
                 } else {
                     // Tell the user their rating hasn't been submitted
                     const successEmbed = new MessageEmbed()
                         .setColor(applicationConfig.primaryColor)
                         .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
                         .setTitle('No rating submitted')
-                    return this.author.send(successEmbed)
+                    await this.author.send(successEmbed)
                 }
             }
         }
