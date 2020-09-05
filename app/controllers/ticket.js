@@ -80,6 +80,7 @@ class TicketController extends EventEmitter {
             .setDescription(stripIndents(
                 `1⃣ - I want to report a conflict
                 2⃣ - I want to report a bug`))
+            .setFooter('Please do only make tickets for conflict or bug reports. Abuse will not be tolerated.')
         const prompt = await this.message.channel.send(embed)
         const choice = await discordService.prompt(this.message.channel, this.message.author, prompt, ['1⃣',
             '2⃣'])
