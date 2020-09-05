@@ -17,6 +17,7 @@ const TicketState = {
     SUBMITTING_REPORT: 'submittingReport',
     CREATING_CHANNEL: 'creatingChannel',
     CONNECTED: 'connected',
+    RECONNECTED: 'reconnected',
     REQUESTING_RATING: 'requestingRating',
     CLOSING: 'closing'
 }
@@ -46,10 +47,10 @@ class TicketController extends EventEmitter {
 
             this.init()
 
-        // If this is an already existing ticket
+        // If this is a reconnected ticket
         // being reinstantiated after reboot
         } else {
-            this.state = TicketState.CLOSING
+            this.state = TicketState.RECONNECTED
         }
     }
 
@@ -238,38 +239,35 @@ class TicketController extends EventEmitter {
             await this.channel.delete()
         }
 
-        // If this ticket is already closing, for example:
-        // if the ticket was connected again after a reboot
-        if (this.state === TicketState.CLOSING) {
-            return
-        }
+        // If this ticket isn't reconnected and thus hasn't lost its author
+        if (this.state !== TicketState.RECONNECTED) {
+            this.state = TicketState.CLOSING
 
-        this.state = TicketState.CLOSING
+            // Send closing message
+            const embed = new MessageEmbed()
+                .setColor(color ? color : success ? 0x00ff00 : 0xff0000)
+                .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
+                .setTitle(message)
+            await this.message.channel.send(embed)
 
-        // Send closing message
-        const embed = new MessageEmbed()
-            .setColor(color ? color : success ? 0x00ff00 : 0xff0000)
-            .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
-            .setTitle(message)
-        await this.message.channel.send(embed)
+            // Request for the ticket creator's rating if
+            // the ticket was closed successfully
+            if (success) {
+                const rating = await this.requestRating()
 
-        // Request for the ticket creator's rating if
-        // the ticket was closed successfully
-        if (success) {
-            const rating = await this.requestRating()
+                // If a rating was submitted, log it
+                if (rating) {
+                    return this.logRating(rating)
 
-            // If a rating was submitted, log it
-            if (rating) {
-                return this.logRating(rating)
-
-            // If no rating is submitted after the reaction collector closes
-            } else {
-                // Tell the user their rating hasn't been submitted
-                const successEmbed = new MessageEmbed()
-                    .setColor(applicationConfig.primaryColor)
-                    .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
-                    .setTitle('No rating submitted')
-                return this.author.send(successEmbed)
+                    // If no rating is submitted after the reaction collector closes
+                } else {
+                    // Tell the user their rating hasn't been submitted
+                    const successEmbed = new MessageEmbed()
+                        .setColor(applicationConfig.primaryColor)
+                        .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
+                        .setTitle('No rating submitted')
+                    return this.author.send(successEmbed)
+                }
             }
         }
 

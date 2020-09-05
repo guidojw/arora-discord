@@ -30,8 +30,8 @@ module.exports = class TicketsController {
                 continue
             }
 
-            // Substring the id from the channel name
-            const id = channel.name.replace('bug-', '').replace('conflict-', '')
+            // Substring the id from the channel name (bug-id)
+            const id = channel.name.split('-')[1]
 
             // Instantiate a new TicketController
             const ticketController = new TicketController(this, this.client)
@@ -156,9 +156,9 @@ module.exports = class TicketsController {
 
             // If channel is from a ticket
             if (ticketController) {
-                // If this ticket is closing, for example if the ticket was
-                // connected again after a reboot, don't try to send
-                if (ticketController.state === TicketState.CLOSING) {
+                // If this ticket is reconnected and thus has lost its author,
+                // don't try to send
+                if (ticketController.state === TicketState.RECONNECTED) {
                     return
                 }
 
