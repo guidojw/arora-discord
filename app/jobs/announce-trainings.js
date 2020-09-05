@@ -28,13 +28,13 @@ module.exports = async guild  => {
     const infoMessage = await channel.messages.fetch(messages.trainingInfoMessage)
     const embed = infoMessage.embeds[0]
 
-    // Update timezone if it changges
-    const next = new Date(now.getTime() + 5 * 60 * 1000) // date in 5 minutes
+    // Update timezone if it changes
+    const before = new Date(now.getTime() - 5 * 60 * 1000) // date in 5 minutes
     const dstNow = timeHelper.isDst(now)
-    if (dstNow !== timeHelper.isDst(next)) {
+    if (dstNow !== timeHelper.isDst(before)) {
         embed.fields[0].value = embed.fields[0].value.replace(
-            dstNow ? 'CEST' : 'CET',
-            dstNow ? 'CET' : 'CEST'
+            dstNow ? 'CET' : 'CEST',
+            dstNow ? 'CEST' : 'CET'
         )
     }
 
