@@ -13,20 +13,38 @@ module.exports = async guild  => {
     const messages = guild.getData('messages')
     const channel = guild.guild.channels.cache.get(channels.trainingsChannel)
 
+    // Update the trainings list embed
     const message = await channel.messages.fetch(messages.trainingsMessage)
     const trainings = (await applicationAdapter('get', `/v1/groups/${applicationConfig
         .groupId}/trainings?sort=date`)).data
     const authorIds = [...new Set(trainings.map(training => training.authorId))]
     const authors = await userService.getUsers(authorIds)
     const trainingsEmbed = getTrainingsEmbed(trainings, authors)
-    message.edit(trainingsEmbed)
+    await message.edit(trainingsEmbed)
 
     const now = new Date()
-    const nextTraining = trainings.find(training => new Date(training.date) > now)
+
+    // Get the message and its embed
     const infoMessage = await channel.messages.fetch(messages.trainingInfoMessage)
-    infoMessage.embeds[0].fields[1].value = nextTraining ? getNextTrainingMessage(nextTraining, authors) : ':x: There' +
+    const embed = infoMessage.embeds[0]
+
+    // Update timezone if it changges
+    const next = new Date(now.getTime() + 5 * 60 * 1000) // date in 5 minutes
+    const dstNow = timeHelper.isDst(now)
+    if (dstNow !== timeHelper.isDst(next)) {
+        embed.fields[0].value = embed.fields[0].value.replace(
+            dstNow ? 'CEST' : 'CET',
+            dstNow ? 'CET' : 'CEST'
+        )
+    }
+
+    // Change the next training field
+    const nextTraining = trainings.find(training => new Date(training.date) > now)
+    embed.fields[1].value = nextTraining ? getNextTrainingMessage(nextTraining, authors) : ':x: There' +
         ' are currently no scheduled trainings.'
-    infoMessage.edit(infoMessage.embeds)
+
+    // Edit the actual message
+    await infoMessage.edit(infoMessage.embeds)
 }
 
 function getTrainingsEmbed (trainings, authors) {
@@ -36,10 +54,12 @@ function getTrainingsEmbed (trainings, authors) {
         .setColor(applicationConfig.primaryColor)
         .setFooter('Updated at')
         .setTimestamp()
+
     for (let i = 0; i < types.length; i++) {
         const type = types[i]
         const typeTrainings = groupedTrainings[type]
         let result = ''
+
         if (typeTrainings.length > 0) {
             for (let j = 0; j < typeTrainings.length; j++) {
                 const training = typeTrainings[j]
@@ -49,6 +69,7 @@ function getTrainingsEmbed (trainings, authors) {
         } else {
             result += ':x: No scheduled trainings'
         }
+
         embed.addField(type, result)
     }
     return embed
@@ -63,8 +84,10 @@ function getTrainingMessage (training, authors) {
     const dateString = trainingDay === today ? 'Today' : trainingDay === today + 1 ? 'Tomorrow' : timeHelper
         .getDate(date)
     const author = authors.find(author => author.id === training.authorId)
-    let result = `:calendar_spiral: **${dateString}** at **${timeString}** hosted by ${author.name}`
     const hourDifference = date.getHours() - now.getHours()
+
+    let result = `:calendar_spiral: **${dateString}** at **${timeString}** hosted by ${author.name}`
+
     if (trainingDay === today && hourDifference <= 5) {
         if (hourDifference === 0) {
             const minuteDifference = date.getMinutes() - now.getMinutes()
@@ -75,11 +98,15 @@ function getTrainingMessage (training, authors) {
                 result += `\n> :alarm_clock: Started **${-1 * minuteDifference} ${pluralize('minute',
                     minuteDifference)}** ago`
             }
+
         } else {
             result += `\n> :alarm_clock: Starts in: **${hourDifference} ${pluralize('hour', hourDifference)}**`
         }
     }
-    if (training.notes) result += `\n> :notepad_spiral: ${training.notes}`
+
+    if (training.notes) {
+        result += `\n> :notepad_spiral: ${training.notes}`
+    }
     return result
 }
 
@@ -92,7 +119,11 @@ function getNextTrainingMessage (training, authors) {
     const dateString = trainingDay === today ? 'today' : trainingDay === today + 1 ? 'tomorrow' : timeHelper
         .getDate(date)
     const author = authors.find(author => author.id === training.authorId)
+
     let result = `${training.type.toUpperCase()} **${dateString}** at **${timeString}** hosted by ${author.name}`
-    if (training.notes) result += `\n${training.notes}`
+
+    if (training.notes) {
+        result += `\n${training.notes}`
+    }
     return result
 }
