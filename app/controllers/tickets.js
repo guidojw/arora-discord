@@ -81,6 +81,11 @@ module.exports = class TicketsController {
                 // if they're in they're in the guild
                 if (member) {
 
+                    // Set a timeout of 60 seconds after which the bot
+                    // will automatically cancel the ticket
+                    this.debounces[message.author.id] = true
+                    const timeout = setTimeout(this.clearAuthor.bind(this, message.author), TICKETS_INTERVAL)
+
                     // If the support system is offline, let the user know
                     if (!this.client.bot.mainGuild.getData('settings').supportEnabled) {
                         const embed = new MessageEmbed()
@@ -90,11 +95,6 @@ module.exports = class TicketsController {
                             .setDescription('We are currently closed. Check the NS Roblox server for more information.')
                         return message.channel.send(embed)
                     }
-
-                    // Set a timeout of 60 seconds after which the bot
-                    // will automatically cancel the ticket
-                    this.debounces[message.author.id] = true
-                    const timeout = setTimeout(this.clearAuthor.bind(this, message.author), TICKETS_INTERVAL)
 
                     // Prompt if the user actually wants to make a ticket
                     const embed = new MessageEmbed()
