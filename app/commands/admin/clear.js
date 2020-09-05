@@ -9,8 +9,8 @@ module.exports = class ClearCommand extends Command {
             name: 'clearchannel',
             aliases: ['clear'],
             description: 'Clears given channel.',
-            details: 'Only channels #reports, #suggestions and #trainings can be cleared. This will delete all ' +
-                'messages but the important information ones.',
+            details: 'Only channels #suggestions and #trainings can be cleared. This will delete all messages but the '+
+                'important information ones.',
             examples: ['clear #suggestions'],
             clientPermissions: ['MANAGE_MESSAGES', 'ADD_REACTIONS', 'VIEW_CHANNEL', 'SEND_MESSAGES'],
             ownerOnly: true,
@@ -27,21 +27,22 @@ module.exports = class ClearCommand extends Command {
     async execute (message, { channel }, guild) {
         const channels = guild.getData('channels')
         const suggestionsChannelId = channels.suggestionsChannel
-        const reportsChannelId = channels.reportsChannel
         const trainingsChannelId = channels.trainingsChannel
-        if (channel.id !== suggestionsChannelId && channel.id !== reportsChannelId && channel.id !==
-            trainingsChannelId) {
-            return message.reply(`Can only clear <#${suggestionsChannelId}>, <#${reportsChannelId}> or <#${
-                trainingsChannelId}>.`)
+
+        if (channel.id !== suggestionsChannelId && channel.id !== trainingsChannelId) {
+            return message.reply(`Can only clear <#${suggestionsChannelId}> or <#${trainingsChannelId}>.`)
         }
-        const choice = await discordService.prompt(message.channel, message.author, await message.reply('Are you sure' +
-            ` you would like to clear ${channel}?`))
+
+        const prompt = await message.reply(`Are you sure you would like to clear ${channel}?`)
+        const choice = await discordService.prompt(message.channel, message.author, prompt, ['✅', '🚫']) ===
+            '✅'
+
         if (choice) {
             const guildMessages = guild.getData('messages')
             let messages
             do {
-                const after = channel.id === suggestionsChannelId ? guildMessages.firstSuggestionMessage : channel
-                    .id === reportsChannelId ? guildMessages.firstReportMessage : guildMessages.trainingsMessage
+                const after = channel.id === suggestionsChannelId ? guildMessages.firstSuggestionMessage : guildMessages
+                    .trainingsMessage
                 messages = await channel.messages.fetch({ after })
                 if (messages.size > 0) {
                     try {

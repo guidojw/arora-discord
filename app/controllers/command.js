@@ -8,11 +8,12 @@ module.exports = class Command extends Commando.Command {
         info.argsPromptLimit = info.argsPromptLimit || info.group === 'admin' ? 3 : 1
         info.guildOnly = info.guildOnly !== undefined ? info.guildOnly : true
         super(client, info)
+
+        this.adminOnly = info.group === 'admin' || info.group === 'voting'
     }
 
     hasPermission (message, ownerOverride) {
-        const group = this.group.name.toLowerCase()
-        if (!this.ownerOnly && (group === 'admin' || group === 'voting')) {
+        if (!this.ownerOnly && this.adminOnly) {
             const guild = this.client.bot.getGuild(message.guild.id)
             return discordService.isAdmin(message.member, guild.getData('adminRoles'))
         }
@@ -20,7 +21,7 @@ module.exports = class Command extends Commando.Command {
     }
 
     async run (message, args) {
-        const guild = this.client.bot.getGuild(message.guild.id)
+        const guild = message.guild ? this.client.bot.getGuild(message.guild.id) : undefined
         try {
             return await this.execute(message, args, guild)
         } catch (err) {

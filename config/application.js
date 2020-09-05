@@ -17,6 +17,7 @@ module.exports = {
     trelloLink: "https://trello.com/b/PDkRNR6G/project-railrunner-dev-board",
     groupCenterLink: "https://www.roblox.com/games/348800431/Group-Center",
     discordLink: "https://discord.gg/nZE8dXM",
-    masterGuildId: "248213310787289099",
+    productionMainGuildId: "248213310787289099",
+    developmentMainGuildId: "675157013650735115",
     primaryColor: 0xf7d417
 }
