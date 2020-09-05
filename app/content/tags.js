@@ -62,7 +62,7 @@ module.exports = [{
         .setColor(applicationConfig.primaryColor)
         .setTitle('How to create a new support ticket?')
         .setDescription(stripIndents`
-            You can create a new ticket by sending **NSadmin** a private message. 
+            You can create a new ticket by sending <@${process.env.BOT_ID}> a private message. 
             The bot will ask you what type of support you need and will then ask for a clear description of your report.
             
             Once submitted, our Ticket Moderators will respond to your ticket as soon as possible. This may take up to 24 hours. 
