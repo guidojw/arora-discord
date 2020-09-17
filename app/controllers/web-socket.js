@@ -1,4 +1,6 @@
 'use strict'
+require('dotenv').config()
+
 const EventEmitter = require('events')
 const WebSocket = require('ws')
 
@@ -10,7 +12,12 @@ module.exports = class WebSocketController extends EventEmitter {
     }
 
     connect () {
-        this.connection = new WebSocket(this.host + '/v1')
+        this.connection = new WebSocket(`${this.host}/v1`, {
+            headers: {
+                Authorization: `Bearer ${process.env.TOKEN}`
+            }
+        })
+
         this.connection.on('open', this.open.bind(this))
         this.connection.on('error', console.error)
         this.connection.on('close', this.close.bind(this))
