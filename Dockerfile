@@ -8,4 +8,4 @@ RUN npm install
 # Bundle app source
 COPY . .
 
-CMD node ./bin/www
+CMD node app.js
