@@ -13,7 +13,7 @@ module.exports = async guild  => {
     const messages = guild.getData('messages')
     const channel = guild.guild.channels.cache.get(channels.trainingsChannel)
 
-    // Update the trainings list embed
+    // Update the trainings list embed.
     const message = await channel.messages.fetch(messages.trainingsMessage)
     const trainings = (await applicationAdapter('get', `/v1/groups/${applicationConfig
         .groupId}/trainings?sort=date`)).data
@@ -24,26 +24,27 @@ module.exports = async guild  => {
 
     const now = new Date()
 
-    // Get the message and its embed
+    // Get the message and its embed.
     const infoMessage = await channel.messages.fetch(messages.trainingInfoMessage)
     const embed = infoMessage.embeds[0]
 
-    // Update timezone if it changes
-    const before = new Date(now.getTime() - 5 * 60 * 1000) // date in 5 minutes
+    // Update timezone if the timezone in the embed is incorrect.
     const dstNow = timeHelper.isDst(now)
-    if (dstNow !== timeHelper.isDst(before)) {
-        embed.fields[0].value = embed.fields[0].value.replace(
+    const change = dstNow  && embed.description.indexOf('CET') !== -1
+        || !dstNow && embed.description.indexOf('CEST') !== -1
+    if (change) {
+        embed.description = embed.description.replace(
             dstNow ? 'CET' : 'CEST',
             dstNow ? 'CEST' : 'CET'
         )
     }
 
-    // Change the next training field
+    // Change the next training field.
     const nextTraining = trainings.find(training => new Date(training.date) > now)
     embed.fields[1].value = nextTraining ? getNextTrainingMessage(nextTraining, authors) : ':x: There' +
         ' are currently no scheduled trainings.'
 
-    // Edit the actual message
+    // Edit the actual message.
     await infoMessage.edit(infoMessage.embeds)
 }
 
