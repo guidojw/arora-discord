@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  web:
+  app:
     build: .
     image: nsadmin-discord
     restart: unless-stopped
