@@ -2,14 +2,10 @@ version: '3'
 
 services:
   app:
-    build: .
-    image: nsadmin-discord
+    image: docker.guidojw.nl/nsadmin/nsadmin-discord:latest
     restart: unless-stopped
     env_file: .env
     environment:
       NODE_ENV: production
     volumes:
-      - node_modules:/opt/app/node_modules
-
-volumes:
-  node_modules:
+      - /opt/app/node_modules
