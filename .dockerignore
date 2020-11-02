@@ -1,11 +1,18 @@
+/.idea/*
+
 # Git
 .git
-.gitignore
 
 # Docker configuration
 Dockerfile
 docker-compose.yml
 
+ecosystem.config.js
+
 # NPM dependencies
 node_modules
 npm-debug.log
+
+.env
+
+data
