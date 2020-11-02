@@ -9,3 +9,4 @@ services:
       NODE_ENV: production
     volumes:
       - /opt/app/node_modules
+      - ./data:/opt/app/data
