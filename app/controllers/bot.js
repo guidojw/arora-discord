@@ -203,8 +203,8 @@ module.exports = class Bot {
     const username = (await userService.getUser(userId)).name
     for (const guild of Object.values(this.guilds)) {
       const member = await discordService.getMemberByName(guild.guild, username)
-      if (member) {
 
+      if (member) {
         const roles = guild.getData('roles')
         if (roles[groupId]) {
           for (const [binding, role] of Object.entries(roles[groupId])) {
