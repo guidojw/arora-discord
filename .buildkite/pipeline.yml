@@ -8,7 +8,7 @@ steps:
   - wait
 
   - label: ":eslint: Lint"
-    command: "eslint app"
+    command: npm lint
     plugins:
       - docker-compose#v3.7.0:
           run: app
