@@ -1,6 +1,10 @@
 steps:
   - label: ":docker: Build test image"
     plugins:
+      - docker-login#v2.0.1:
+          server: docker.guidojw.nl
+          username: buildkite
+          password-env: DOCKER_PASSWORD
       - docker-compose#v3.7.0:
           build: app
           config: docker-compose.buildkite.yml
@@ -11,6 +15,10 @@ steps:
   - label: ":eslint: Lint"
     command: npm run lint
     plugins:
+      - docker-login#v2.0.1:
+          server: docker.guidojw.nl
+          username: buildkite
+          password-env: DOCKER_PASSWORD
       - docker-compose#v3.7.0:
           run: app
           config: docker-compose.buildkite.yml
