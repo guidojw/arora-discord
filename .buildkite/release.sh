@@ -8,7 +8,7 @@ if [ "$STAGE" != 'production' ]; then
   exit 0
 fi
 
-cd /opt/docker/nsadmin-api/$STAGE || exit
+cd /opt/docker/nsadmin-discord/$STAGE || exit
 docker-compose pull app
 docker-compose build app
 docker-compose up -d app

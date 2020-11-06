@@ -11,4 +11,4 @@ fi
 curl -sSf -H 'Content-Type: application/json' \
   --request POST \
   --data '{"content": "Deploy for '$STAGE' is finished"}' \
-  "$DISCORD_WEBHOOK_URL"
+  $DISCORD_WEBHOOK_URL
