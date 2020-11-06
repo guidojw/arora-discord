@@ -4,6 +4,7 @@ steps:
       - docker-compose#v3.7.0:
           build: app
           config: docker-compose.buildkite.yml
+          image-repository: docker.guidojw.nl/nsadmin/nsadmin-discord
 
   - wait
 
