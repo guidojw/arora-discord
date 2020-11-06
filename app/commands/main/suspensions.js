@@ -4,14 +4,14 @@ const applicationAdapter = require('../../adapters/application')
 const discordService = require('../../services/discord')
 const userService = require('../../services/user')
 const timeHelper = require('../../helpers/time')
-const {MessageEmbed} = require('discord.js')
+const { MessageEmbed } = require('discord.js')
 const pluralize = require('pluralize')
 const groupService = require('../../services/group')
 
 const applicationConfig = require('../../../config/application')
 
 module.exports = class SuspensionsCommand extends Command {
-  constructor(client) {
+  constructor (client) {
     super(client, {
       group: 'main',
       name: 'suspensions',
@@ -19,18 +19,16 @@ module.exports = class SuspensionsCommand extends Command {
       description: 'Lists info of current suspensions/given user\'s suspension.',
       details: 'Only admins can see the suspensions of others.',
       clientPermissions: ['SEND_MESSAGES'],
-      args: [
-        {
-          key: 'username',
-          type: 'member|string',
-          prompt: 'Of whose suspension would you like to know the information?',
-          default: '',
-        },
-      ],
+      args: [{
+        key: 'username',
+        type: 'member|string',
+        prompt: 'Of whose suspension would you like to know the information?',
+        default: ''
+      }]
     })
   }
 
-  async execute(message, {username}, guild) {
+  async execute (message, { username }, guild) {
     if (!discordService.isAdmin(message.member, guild.getData('adminRoles'))) {
       if (!username) {
         username = message.member.displayName
@@ -42,8 +40,8 @@ module.exports = class SuspensionsCommand extends Command {
     if (username) {
       username = typeof username === 'string' ? username : username.displayName
       const userId = await userService.getIdFromUsername(username)
-      const suspension = (await applicationAdapter('get', `/v1/groups/${applicationConfig
-        .groupId}/suspensions/${userId}`)).data
+      const suspension = (await applicationAdapter('get', `/v1/groups/${applicationConfig.groupId}/suspensions/${userId}`))
+        .data
       const days = suspension.duration / 86400000
       const date = new Date(suspension.date)
       let extensionDays = 0
@@ -52,22 +50,27 @@ module.exports = class SuspensionsCommand extends Command {
           extensionDays += extension.duration / 86400000
         }
       }
-      const extensionString = extensionDays < 0 ? ` (${extensionDays})` : extensionDays > 0 ? ` (+${
-        extensionDays})` : ''
+      const extensionString = extensionDays < 0
+        ? ` (${extensionDays})`
+        : extensionDays > 0
+          ? ` (+${extensionDays})`
+          : ''
       const embed = new MessageEmbed()
         .setTitle(`${message.argString ? `${username}'s` : 'Your'} suspension`)
         .addField('Start date', timeHelper.getDate(date), true)
         .addField('Start time', timeHelper.getTime(date), true)
-        .addField('Duration', `${days}${extensionString} ${pluralize('day', days +
-          extensionDays)}`, true)
+        .addField('Duration', `${days}${extensionString} ${pluralize('day', days + extensionDays)}`,
+          true)
         .addField('Rank back', suspension.rankBack ? 'yes' : 'no', true)
         .addField('Reason', suspension.reason)
         .setColor(applicationConfig.primaryColor)
       message.replyEmbed(embed)
     } else {
-      const suspensions = (await applicationAdapter('get', `/v1/groups/${applicationConfig
-        .groupId}/suspensions?sort=date`)).data
-      if (suspensions.length === 0) return message.reply('There are currently no suspensions.')
+      const suspensions = (await applicationAdapter('get', `/v1/groups/${applicationConfig.groupId}/suspensions?sort=date`))
+        .data
+      if (suspensions.length === 0) {
+        return message.reply('There are currently no suspensions.')
+      }
       const embeds = await groupService.getSuspensionEmbeds(suspensions)
       for (const embed of embeds) {
         await message.author.send(embed)

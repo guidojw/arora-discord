@@ -5,7 +5,9 @@ const applicationAdapter = require('../adapters/application')
 
 exports.getIdFromUsername = async username => {
   const userId = (await applicationAdapter('get', `/v1/users/${username}/user-id`)).data
-  if (!userId) throw new Error(`**${username}** doesn't exist on Roblox.`)
+  if (!userId) {
+    throw new Error(`**${username}** doesn't exist on Roblox.`)
+  }
   return userId
 }
 
@@ -15,15 +17,13 @@ exports.hasBadge = async (userId, badgeId) => {
 
 exports.getUsers = async userIds => {
   if (userIds.length <= 100) {
-    return (await applicationAdapter('post', '/v1/users', {userIds})).data
+    return (await applicationAdapter('post', '/v1/users', { userIds })).data
   } else {
     let result = []
     const chunks = dataHelper.split(userIds, 100)
     for (const chunk of chunks) {
-      result = result.concat((await applicationAdapter('post', '/v1/users', {
-        userIds:
-        chunk,
-      })).data)
+      result = result.concat((await applicationAdapter('post', '/v1/users', { userIds: chunk }))
+        .data)
     }
     return result
   }

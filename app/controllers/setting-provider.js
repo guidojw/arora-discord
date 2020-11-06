@@ -1,15 +1,19 @@
 'use strict'
 module.exports = class SettingProvider {
-  async init(client) {
+  async init (client) {
     this.bot = client.bot
 
     for (const guild of client.guilds.cache.values()) {
       const settings = await this.getSettings(guild)
       if (settings) {
-        if (settings.prefix) guild._commandPrefix = settings.prefix
+        if (settings.prefix) {
+          guild._commandPrefix = settings.prefix
+        }
 
         if (settings.commandStates) {
-          if (!guild._commandsEnabled) guild._commandsEnabled = {}
+          if (!guild._commandsEnabled) {
+            guild._commandsEnabled = {}
+          }
           for (const command of client.registry.commands.values()) {
             if (settings.commandStates[command.name] !== undefined) {
               guild._commandsEnabled[command.name] = settings.commandStates[command.name]
@@ -18,7 +22,9 @@ module.exports = class SettingProvider {
         }
 
         if (settings.groupStates) {
-          if (!guild._groupsEnabled) guild._groupsEnabled = {}
+          if (!guild._groupsEnabled) {
+            guild._groupsEnabled = {}
+          }
           for (const group of client.registry.groups.values()) {
             if (settings.groupStates[group.name] !== undefined) {
               guild._groupsEnabled[group.name] = settings.groupStates[group.name]
@@ -43,22 +49,22 @@ module.exports = class SettingProvider {
     })
   }
 
-  async get(guild, key, defVal) {
+  async get (guild, key, defVal) {
     const settings = await this.getSettings(guild)
     return settings[key] || defVal
   }
 
-  async set(guild, key, val) {
+  async set (guild, key, val) {
     const settings = await this.getSettings(guild)
     settings[key] = val
     return this.setSettings(guild, settings)
   }
 
-  async getSettings(guild) {
+  async getSettings (guild) {
     return this.bot.getGuild(guild.id).getData('settings') || {}
   }
 
-  async setSettings(guild, settings) {
+  async setSettings (guild, settings) {
     await this.bot.getGuild(guild.id).setData('settings', settings)
   }
 }

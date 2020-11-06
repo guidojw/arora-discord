@@ -4,7 +4,7 @@ const timeHelper = require('../../helpers/time')
 const votingService = require('../../services/voting')
 
 module.exports = class StartVoteCommand extends Command {
-  constructor(client) {
+  constructor (client) {
     super(client, {
       group: 'voting',
       name: 'startvote',
@@ -15,34 +15,39 @@ module.exports = class StartVoteCommand extends Command {
       args: [{
         key: 'channel',
         type: 'channel',
-        prompt: 'In what channel would you like to hold the vote?',
+        prompt: 'In what channel would you like to hold the vote?'
       }, {
         key: 'date',
         type: 'string',
         prompt: 'At what date do you want the vote to end?',
-        validate: timeHelper.validDate,
+        validate: timeHelper.validDate
       }, {
         key: 'time',
         type: 'string',
         prompt: 'At what time on given date would you like the vote to end?',
-        validate: timeHelper.validTime,
-      }],
+        validate: timeHelper.validTime
+      }]
     })
   }
 
-  async execute(message, {channel, date, time}, guild) {
+  async execute (message, { channel, date, time }, guild) {
     const voteData = guild.getData('vote')
-    if (!voteData) return message.reply('There\'s no vote created yet, create one using the createvote command.')
-    if (voteData.timer) return message.reply('The vote has already started.')
+    if (!voteData) {
+      return message.reply('There\'s no vote created yet, create one using the createvote command.')
+    }
+    if (voteData.timer) {
+      return message.reply('The vote has already started.')
+    }
     const dateInfo = timeHelper.getDateInfo(date)
     const timeInfo = timeHelper.getTimeInfo(time)
-    const dateUnix = new Date(dateInfo.year, dateInfo.month, dateInfo.day, timeInfo.hours, timeInfo.minutes)
-      .getTime()
+    const dateUnix = new Date(dateInfo.year, dateInfo.month, dateInfo.day, timeInfo.hours, timeInfo.minutes).getTime()
     const afterNow = dateUnix - Date.now() > 0
-    if (!afterNow) return message.reply('Please give a date and time that are after now.')
+    if (!afterNow) {
+      return message.reply('Please give a date and time that are after now.')
+    }
 
     voteData.channel = channel.id
-    voteData.timer = {end: dateUnix}
+    voteData.timer = { end: dateUnix }
     const messages = await votingService.getVoteMessages(voteData, this.client)
     await channel.send(messages.intro.content, messages.intro.options)
     for (const [id, option] of Object.entries(messages.options)) {

@@ -3,7 +3,7 @@ const Command = require('../../controllers/command')
 const userService = require('../../services/user')
 
 module.exports = class ProfileCommand extends Command {
-  constructor(client) {
+  constructor (client) {
     super(client, {
       group: 'main',
       name: 'profile',
@@ -11,20 +11,17 @@ module.exports = class ProfileCommand extends Command {
       description: 'Posts the Roblox profile of given user/you.',
       examples: ['profile', 'profile Happywalker'],
       clientPermissions: ['SEND_MESSAGES'],
-      args: [
-        {
-          key: 'username',
-          prompt: 'Of which user would you like to know the profile?',
-          default: '',
-          type: 'member|string',
-        },
-      ],
+      args: [{
+        key: 'username',
+        prompt: 'Of which user would you like to know the profile?',
+        default: '',
+        type: 'member|string'
+      }]
     })
   }
 
-  async execute(message, {username}) {
-    username = username ? typeof username === 'string' ? username : username.displayName : message.member
-      .displayName
+  async execute (message, { username }) {
+    username = username ? typeof username === 'string' ? username : username.displayName : message.member.displayName
     const userId = await userService.getIdFromUsername(username || message.member.displayName)
     message.reply(`https://www.roblox.com/users/${userId}/profile`)
   }

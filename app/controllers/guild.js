@@ -7,7 +7,7 @@ const EventEmitter = require('events')
 const cronConfig = require('../../config/cron')
 
 module.exports = class Guild extends EventEmitter {
-  constructor(bot, id) {
+  constructor (bot, id) {
     super()
 
     this.bot = bot
@@ -20,7 +20,7 @@ module.exports = class Guild extends EventEmitter {
     this.once('ready', this.ready.bind(this))
   }
 
-  loadData = async () => {
+  async loadData () {
     try {
       await fs.promises.access(this.dataPath)
     } catch (err) {
@@ -32,18 +32,22 @@ module.exports = class Guild extends EventEmitter {
     this.emit('ready')
   }
 
-  async setData(key, value) {
-    if (!this.data) throw new Error('Guild data is not loaded yet.')
+  async setData (key, value) {
+    if (!this.data) {
+      throw new Error('Guild data is not loaded yet.')
+    }
     this.data[key] = value
     await fs.promises.writeFile(this.dataPath, JSON.stringify(this.data))
   }
 
-  getData(key) {
-    if (!this.data) throw new Error('Guild data is not loaded yet.')
+  getData (key) {
+    if (!this.data) {
+      throw new Error('Guild data is not loaded yet.')
+    }
     return this.data[key]
   }
 
-  ready() {
+  ready () {
     const voteData = this.getData('vote')
     if (voteData && voteData.timer && voteData.timer.end > Date.now()) {
       this.scheduleJob('saveVoteJob')
@@ -54,14 +58,18 @@ module.exports = class Guild extends EventEmitter {
     this.scheduleJob('announceTrainingsJob')
   }
 
-  scheduleJob(name) {
-    if (this.jobs[name]) throw new Error('A job with that name already exists.')
+  scheduleJob (name) {
+    if (this.jobs[name]) {
+      throw new Error('A job with that name already exists.')
+    }
     const job = cronConfig[name]
-    this.jobs[name] = cron.schedule(job.expression, () => job.job(this))
+    this.jobs[name] = cron.schedule(job.expression, job.job.bind(job.job, this))
   }
 
-  stopJob(name) {
-    if (!this.jobs[name]) throw new Error('No job with that name exists.')
+  stopJob (name) {
+    if (!this.jobs[name]) {
+      throw new Error('No job with that name exists.')
+    }
     this.jobs[name].stop()
   }
 }

@@ -1,5 +1,5 @@
 'use strict'
-const {MessageEmbed} = require('discord.js')
+const { MessageEmbed } = require('discord.js')
 
 const applicationConfig = require('../../config/application')
 
@@ -8,13 +8,17 @@ const REACTION_COLLECTOR_TIMEOUT = 60000
 exports.getMemberByName = async (guild, name) => {
   const members = await guild.members.fetch()
   for (const member of members.values()) {
-    if (member.displayName.toLowerCase() === name.toLowerCase()) return member
+    if (member.displayName.toLowerCase() === name.toLowerCase()) {
+      return member
+    }
   }
 }
 
 exports.isAdmin = (member, adminRoles) => {
   for (const roleId of adminRoles) {
-    if (member.roles.cache.has(roleId)) return true
+    if (member.roles.cache.has(roleId)) {
+      return true
+    }
   }
   return false
 }
@@ -46,7 +50,7 @@ exports.getEmojiFromNumber = number => {
 
 exports.prompt = async (channel, author, message, options) => {
   const filter = (reaction, user) => options.includes(reaction.emoji.name) && user.id === author.id
-  const collector = message.createReactionCollector(filter, {time: REACTION_COLLECTOR_TIMEOUT})
+  const collector = message.createReactionCollector(filter, { time: REACTION_COLLECTOR_TIMEOUT })
   const promise = new Promise(resolve => {
     collector.on('end', collected => {
       const reaction = collected.first()

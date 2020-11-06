@@ -3,7 +3,7 @@ const Command = require('../../controllers/command')
 const discordService = require('../../services/discord')
 
 module.exports = class ClearCommand extends Command {
-  constructor(client) {
+  constructor (client) {
     super(client, {
       group: 'admin',
       name: 'clearchannel',
@@ -14,17 +14,15 @@ module.exports = class ClearCommand extends Command {
       examples: ['clear #suggestions'],
       clientPermissions: ['MANAGE_MESSAGES', 'ADD_REACTIONS', 'VIEW_CHANNEL', 'SEND_MESSAGES'],
       ownerOnly: true,
-      args: [
-        {
-          key: 'channel',
-          prompt: 'What channel would you like to clear?',
-          type: 'channel',
-        },
-      ],
+      args: [{
+        key: 'channel',
+        prompt: 'What channel would you like to clear?',
+        type: 'channel'
+      }]
     })
   }
 
-  async execute(message, {channel}, guild) {
+  async execute (message, { channel }, guild) {
     const channels = guild.getData('channels')
     const suggestionsChannelId = channels.suggestionsChannel
     const trainingsChannelId = channels.trainingsChannel
@@ -34,16 +32,16 @@ module.exports = class ClearCommand extends Command {
     }
 
     const prompt = await message.reply(`Are you sure you would like to clear ${channel}?`)
-    const choice = await discordService.prompt(message.channel, message.author, prompt, ['✅', '🚫']) ===
-      '✅'
+    const choice = await discordService.prompt(message.channel, message.author, prompt, ['✅', '🚫']) === '✅'
 
     if (choice) {
       const guildMessages = guild.getData('messages')
       let messages
       do {
-        const after = channel.id === suggestionsChannelId ? guildMessages.firstSuggestionMessage : guildMessages
-          .trainingsMessage
-        messages = await channel.messages.fetch({after})
+        const after = channel.id === suggestionsChannelId
+          ? guildMessages.firstSuggestionMessage
+          : guildMessages.trainingsMessage
+        messages = await channel.messages.fetch({ after })
         if (messages.size > 0) {
           try {
             await channel.bulkDelete(messages)

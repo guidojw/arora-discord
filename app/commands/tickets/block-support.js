@@ -3,7 +3,7 @@ const Command = require('../../controllers/command')
 const discordService = require('../../services/discord')
 
 module.exports = class BlockSupportCommand extends Command {
-  constructor(client) {
+  constructor (client) {
     super(client, {
       group: 'tickets',
       name: 'blocksupport',
@@ -12,17 +12,15 @@ module.exports = class BlockSupportCommand extends Command {
       examples: ['blocksupport Happywalker'],
       clientPermissions: ['SEND_MESSAGES'],
       adminOnly: true,
-      args: [
-        {
-          key: 'member',
-          type: 'member',
-          prompt: 'Who would you like to block?',
-        },
-      ],
+      args: [{
+        key: 'member',
+        type: 'member',
+        prompt: 'Who would you like to block?'
+      }]
     })
   }
 
-  execute(message, {member}, guild) {
+  execute (message, { member }, guild) {
     const username = member.displayName
     const roles = guild.getData('roles')
 

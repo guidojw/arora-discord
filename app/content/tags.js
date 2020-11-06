@@ -1,41 +1,40 @@
 'use strict'
-require('dotenv').config()
-
-const {stripIndents} = require('common-tags')
-const {MessageEmbed} = require('discord.js')
+const { stripIndents } = require('common-tags')
+const { MessageEmbed } = require('discord.js')
 
 const applicationConfig = require('../../config/application')
 
+/* eslint-disable max-len */
 module.exports = [{
   names: ['game'],
-  tag: applicationConfig.gameLink,
+  tag: applicationConfig.gameLink
 }, {
   names: ['group'],
-  tag: applicationConfig.groupLink,
+  tag: applicationConfig.groupLink
 }, {
   names: ['groupcenter', 'gc'],
-  tag: applicationConfig.groupCenterLink,
+  tag: applicationConfig.groupCenterLink
 }, {
   names: ['invite', 'discord'],
-  tag: applicationConfig.discordLink,
+  tag: applicationConfig.discordLink
 }, {
   names: ['ptdt'],
-  tag: applicationConfig.practicalTrainDriverTestLink,
+  tag: applicationConfig.practicalTrainDriverTestLink
 }, {
   names: ['rr'],
-  tag: applicationConfig.rulesRegulationsLink,
+  tag: applicationConfig.rulesRegulationsLink
 }, {
   names: ['tcdt'],
-  tag: applicationConfig.theoreticalConductorTestLink,
+  tag: applicationConfig.theoreticalConductorTestLink
 }, {
   names: ['ttdt'],
-  tag: applicationConfig.theoreticalTrainDriverTestLink,
+  tag: applicationConfig.theoreticalTrainDriverTestLink
 }, {
   names: ['trello'],
-  tag: applicationConfig.trelloLink,
+  tag: applicationConfig.trelloLink
 }, {
   names: ['uw'],
-  tag: applicationConfig.updatesWorkplaceLink,
+  tag: applicationConfig.updatesWorkplaceLink
 }, {
   names: ['documents', 'docs'],
   group: 'admin',
@@ -43,19 +42,19 @@ module.exports = [{
         Training Protocols: <${process.env.TP_DOC}>
         Training Logs: <${process.env.TL_DOC}>
         Malicious Spreadsheets: <${process.env.MS_DOC}>
-        `,
+        `
 }, {
   names: ['ms'],
   group: 'admin',
-  tag: `<${process.env.MS_DOC}>`,
+  tag: `<${process.env.MS_DOC}>`
 }, {
   names: ['tl'],
   group: 'admin',
-  tag: `<${process.env.TL_DOC}>`,
+  tag: `<${process.env.TL_DOC}>`
 }, {
   names: ['tp'],
   group: 'admin',
-  tag: `<${process.env.TP_DOC}>`,
+  tag: `<${process.env.TP_DOC}>`
 }, {
   names: ['ticket'],
   tag: new MessageEmbed()
@@ -66,7 +65,7 @@ module.exports = [{
             The bot will ask you what type of support you need and will then ask for a clear description of your report.
 
             Once submitted, our Ticket Moderators will respond to your ticket as soon as possible. This may take up to 24 hours.
-            `),
+            `)
 }, {
   names: ['privacy', 'privacypolicy', 'pp'],
   tag: new MessageEmbed()
@@ -91,5 +90,6 @@ module.exports = [{
             - You may not request deletion of infractions that target you, unless consent is given by the server owner.
 
             The NS Staff reserves the right to modify or delete any data at any given time, without notice or warning.
-            `),
+            `)
 }]
+/* eslint-enable max-len */

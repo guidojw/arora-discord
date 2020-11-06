@@ -1,15 +1,15 @@
 'use strict'
 const discordService = require('../services/discord')
-const {MessageEmbed} = require('discord.js')
-const {TicketController, TicketState} = require('./ticket')
-const {stripIndents} = require('common-tags')
+const { MessageEmbed } = require('discord.js')
+const { TicketController, TicketState } = require('./ticket')
+const { stripIndents } = require('common-tags')
 
 const applicationConfig = require('../../config/application')
 
 const TICKETS_INTERVAL = 60000
 
 module.exports = class TicketsController {
-  constructor(client) {
+  constructor (client) {
     this.client = client
 
     this.tickets = {} // map from ticket ID to TicketController
@@ -18,7 +18,7 @@ module.exports = class TicketsController {
     this.init()
   }
 
-  async init() {
+  async init () {
     // Instantiate a TicketController for every ticket's channel
     const guild = this.client.bot.mainGuild
     const channels = guild.getData('channels')
@@ -44,10 +44,10 @@ module.exports = class TicketsController {
         .setColor(0xff0000)
         .setTitle('This ticket is now in closing state')
         .setDescription(stripIndents`
-                    NSadmin has rebooted and has lost this ticket\'s data.
-                    You cannot communicate with the ticket\'s creator anymore.
-                    Please close this ticket using the \`/closeticket\` command.
-                    `)
+        NSadmin has rebooted and has lost this ticket\'s data.
+        You cannot communicate with the ticket\'s creator anymore.
+        Please close this ticket using the \`/closeticket\` command.
+        `)
       await channel.send(embed)
     }
 
@@ -55,7 +55,7 @@ module.exports = class TicketsController {
     this.client.on('message', this.message.bind(this))
   }
 
-  async message(message) {
+  async message (message) {
     if (message.author.bot) {
       return
     }
@@ -80,7 +80,6 @@ module.exports = class TicketsController {
         // Only allow the user to make a new ticket
         // if they're in they're in the guild
         if (member) {
-
           // Set a timeout of 60 seconds after which the bot
           // will automatically cancel the ticket
           this.debounces[message.author.id] = true
@@ -103,8 +102,8 @@ module.exports = class TicketsController {
             .setTitle('Welcome to NS Roblox Support')
             .setDescription('Do you want to create a ticket?')
           const prompt = await message.channel.send(embed)
-          const choice = await discordService.prompt(message.channel, message.author, prompt, [
-            '✅', '🚫']) === '✅'
+          const choice = await discordService.prompt(message.channel, message.author, prompt, ['✅', '🚫']) ===
+            '✅'
 
           // If the user wants to create a ticket
           if (choice) {
@@ -175,7 +174,7 @@ module.exports = class TicketsController {
     }
   }
 
-  clearTicket(ticketController) {
+  clearTicket (ticketController) {
     if (ticketController) {
       // If the TicketController hasn't lost its author
       if (ticketController.state !== TicketState.RECONNECTED) {
@@ -186,23 +185,23 @@ module.exports = class TicketsController {
     }
   }
 
-  clearAuthor(author) {
+  clearAuthor (author) {
     delete this.debounces[author.id]
   }
 
-  getTicketFromChannel(channel) {
+  getTicketFromChannel (channel) {
     return Object.values(this.tickets).find(ticketController => {
       return ticketController.channel.id === channel.id
     })
   }
 
-  getTicketFromAuthor(author) {
+  getTicketFromAuthor (author) {
     return Object.values(this.tickets).find(ticketController => {
       return ticketController.state !== TicketState.RECONNECTED && ticketController.author.id === author.id
     })
   }
 
-  inhibitor(message) {
+  inhibitor (message) {
     if (message.guild) {
       return
     }

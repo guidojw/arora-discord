@@ -1,47 +1,45 @@
 'use strict'
 const Command = require('../../controllers/command')
 const discordService = require('../../services/discord')
-const {MessageEmbed} = require('discord.js')
+const { MessageEmbed } = require('discord.js')
 
 const applicationConfig = require('../../../config/application')
 
 const tags = require('../../content/tags')
 
 module.exports = class TagCommand extends Command {
-  constructor(client) {
+  constructor (client) {
     super(client, {
       group: 'main',
       name: 'tag',
       description: 'Posts given tag.',
       examples: ['tag rr'],
       clientPermissions: ['SEND_MESSAGES'],
-      args: [
-        {
-          key: 'name',
-          type: 'string',
-          prompt: 'What tag would you like to check out?',
-        },
-      ],
+      args: [{
+        key: 'name',
+        type: 'string',
+        prompt: 'What tag would you like to check out?'
+      }]
     })
   }
 
-  async execute(message, {name}, guild) {
+  async execute (message, { name }, guild) {
     if (name !== 'all') {
       const tag = tags.find(tag => tag.names.includes(name))
-      if (!tag) return message.reply('Couldn\'t find tag!')
+      if (!tag) {
+        return message.reply('Couldn\'t find tag!')
+      }
       if (tag.group === 'admin') {
         if (!discordService.isAdmin(message.member, guild.getData('adminRoles'))) {
           return message.reply('You do not have permission to see that tag.')
         } else {
           const channels = guild.getData('channels')
-          if (message.channel.id !== channels.hrChannel && message.channel.id !== channels
-            .botCommandsHrChannel) {
+          if (message.channel.id !== channels.hrChannel && message.channel.id !== channels.botCommandsHrChannel) {
             return message.reply('Wrong channel.')
           }
         }
       }
       message.reply(tag.tag)
-
     } else {
       let list = ''
       let count = 1

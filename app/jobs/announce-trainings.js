@@ -1,7 +1,7 @@
 'use strict'
 const applicationAdapter = require('../adapters/application')
 const userService = require('../services/user')
-const {MessageEmbed} = require('discord.js')
+const { MessageEmbed } = require('discord.js')
 const groupService = require('../services/group')
 const timeHelper = require('../helpers/time')
 const pluralize = require('pluralize')
@@ -15,8 +15,8 @@ module.exports = async guild => {
 
   // Update the trainings list embed.
   const message = await channel.messages.fetch(messages.trainingsMessage)
-  const trainings = (await applicationAdapter('get', `/v1/groups/${applicationConfig
-    .groupId}/trainings?sort=date`)).data
+  const trainings = (await applicationAdapter('get', `/v1/groups/${applicationConfig.groupId}/trainings?sort=date`))
+    .data
   const authorIds = [...new Set(trainings.map(training => training.authorId))]
   const authors = await userService.getUsers(authorIds)
   const trainingsEmbed = getTrainingsEmbed(trainings, authors)
@@ -30,25 +30,26 @@ module.exports = async guild => {
 
   // Update timezone if the timezone in the embed is incorrect.
   const dstNow = timeHelper.isDst(now)
-  const change = dstNow && embed.description.indexOf('CET') !== -1
-    || !dstNow && embed.description.indexOf('CEST') !== -1
+  const change = (dstNow && embed.description.indexOf('CET') !== -1) ||
+    (!dstNow && embed.description.indexOf('CEST') !== -1)
   if (change) {
     embed.description = embed.description.replace(
       dstNow ? 'CET' : 'CEST',
-      dstNow ? 'CEST' : 'CET',
+      dstNow ? 'CEST' : 'CET'
     )
   }
 
   // Change the next training field.
   const nextTraining = trainings.find(training => new Date(training.date) > now)
-  embed.fields[1].value = nextTraining ? getNextTrainingMessage(nextTraining, authors) : ':x: There' +
-    ' are currently no scheduled trainings.'
+  embed.fields[1].value = nextTraining
+    ? getNextTrainingMessage(nextTraining, authors)
+    : ':x: There are currently no scheduled trainings.'
 
   // Edit the actual message.
   await infoMessage.edit(infoMessage.embeds)
 }
 
-function getTrainingsEmbed(trainings, authors) {
+function getTrainingsEmbed (trainings, authors) {
   const groupedTrainings = groupService.groupTrainingsByType(trainings)
   const types = Object.keys(groupedTrainings)
   const embed = new MessageEmbed()
@@ -76,14 +77,13 @@ function getTrainingsEmbed(trainings, authors) {
   return embed
 }
 
-function getTrainingMessage(training, authors) {
+function getTrainingMessage (training, authors) {
   const now = new Date()
   const today = now.getDate()
   const date = new Date(training.date)
   const timeString = timeHelper.getTime(date)
   const trainingDay = date.getDate()
-  const dateString = trainingDay === today ? 'Today' : trainingDay === today + 1 ? 'Tomorrow' : timeHelper
-    .getDate(date)
+  const dateString = trainingDay === today ? 'Today' : trainingDay === today + 1 ? 'Tomorrow' : timeHelper.getDate(date)
   const author = authors.find(author => author.id === training.authorId)
   const hourDifference = date.getHours() - now.getHours()
 
@@ -99,7 +99,6 @@ function getTrainingMessage(training, authors) {
         result += `\n> :alarm_clock: Started **${-1 * minuteDifference} ${pluralize('minute',
           minuteDifference)}** ago`
       }
-
     } else {
       result += `\n> :alarm_clock: Starts in: **${hourDifference} ${pluralize('hour', hourDifference)}**`
     }
@@ -111,14 +110,13 @@ function getTrainingMessage(training, authors) {
   return result
 }
 
-function getNextTrainingMessage(training, authors) {
+function getNextTrainingMessage (training, authors) {
   const now = new Date()
   const today = now.getDate()
   const date = new Date(training.date)
   const timeString = timeHelper.getTime(date)
   const trainingDay = date.getDate()
-  const dateString = trainingDay === today ? 'today' : trainingDay === today + 1 ? 'tomorrow' : timeHelper
-    .getDate(date)
+  const dateString = trainingDay === today ? 'today' : trainingDay === today + 1 ? 'tomorrow' : timeHelper.getDate(date)
   const author = authors.find(author => author.id === training.authorId)
 
   let result = `${training.type.toUpperCase()} **${dateString}** at **${timeString}** hosted by ${author.name}`

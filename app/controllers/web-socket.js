@@ -1,21 +1,19 @@
 'use strict'
-require('dotenv').config()
-
 const EventEmitter = require('events')
 const WebSocket = require('ws')
 
 module.exports = class WebSocketController extends EventEmitter {
-  constructor(host) {
+  constructor (host) {
     super()
     this.host = host
     this.connect()
   }
 
-  connect() {
+  connect () {
     this.connection = new WebSocket(`${this.host}/v1`, {
       headers: {
-        Authorization: `Bearer ${process.env.TOKEN}`,
-      },
+        Authorization: `Bearer ${process.env.TOKEN}`
+      }
     })
 
     this.connection.on('open', this.open.bind(this))
@@ -25,30 +23,30 @@ module.exports = class WebSocketController extends EventEmitter {
     this.connection.on('message', this.message.bind(this))
   }
 
-  heartbeat() {
+  heartbeat () {
     clearTimeout(this.pingTimeout)
     this.pingTimeout = setTimeout(() => {
       this.connection.terminate()
     }, 30000 + 1000)
   }
 
-  open() {
+  open () {
     console.log('Connected!')
     this.heartbeat()
   }
 
-  close() {
+  close () {
     console.log('Disconnected!')
     clearTimeout(this.pingTimeout)
     setTimeout(this.connect.bind(this), 30000)
   }
 
-  ping() {
+  ping () {
     this.heartbeat()
   }
 
-  message(message) {
-    const {event, data} = JSON.parse(message)
+  message (message) {
+    const { event, data } = JSON.parse(message)
     const [...args] = Object.values(data)
     this.emit(event, ...args)
   }

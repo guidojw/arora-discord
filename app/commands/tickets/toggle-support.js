@@ -1,20 +1,20 @@
 'use strict'
 const Command = require('../../controllers/command')
-const {MessageEmbed} = require('discord.js')
+const { MessageEmbed } = require('discord.js')
 
 module.exports = class ToggleSupportCommand extends Command {
-  constructor(client) {
+  constructor (client) {
     super(client, {
       group: 'tickets',
       name: 'togglesupport',
       aliases: ['toggle'],
       description: 'Enables/disables the support system.',
       clientPermissions: ['SEND_MESSAGES'],
-      adminOnly: true,
+      adminOnly: true
     })
   }
 
-  execute(message) {
+  execute (message) {
     // Toggle the setting
     const settings = this.client.bot.mainGuild.getData('settings')
     settings.supportEnabled = !settings.supportEnabled

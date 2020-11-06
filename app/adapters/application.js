@@ -1,6 +1,4 @@
 'use strict'
-require('dotenv').config()
-
 const axios = require('axios')
 
 module.exports = async (method, pathname, data) => {
@@ -9,7 +7,7 @@ module.exports = async (method, pathname, data) => {
     url: process.env.HOST + pathname,
     data,
     headers: {
-      Authorization: 'Bearer ' + process.env.TOKEN,
-    },
+      Authorization: 'Bearer ' + process.env.TOKEN
+    }
   })
 }
