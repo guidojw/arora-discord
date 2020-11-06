@@ -28,6 +28,7 @@ module.exports = class TrainingsCommand extends Command {
     if (trainingId) {
       const training = (await applicationAdapter('get', `/v1/groups/${applicationConfig.groupId}/trainings/${trainingId}`))
         .data
+
       const embed = new MessageEmbed()
         .addField(`Training ${training.id}`, await groupService.getTrainingSentence(training))
         .setColor(applicationConfig.primaryColor)
@@ -38,6 +39,7 @@ module.exports = class TrainingsCommand extends Command {
       if (trainings.length === 0) {
         return message.reply('There are currently no hosted trainings.')
       }
+
       const embeds = await groupService.getTrainingEmbeds(trainings)
       for (const embed of embeds) {
         await message.author.send(embed)

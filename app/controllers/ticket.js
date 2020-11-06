@@ -1,12 +1,13 @@
 'use strict'
 const EventEmitter = require('events')
-const { MessageEmbed } = require('discord.js')
-const discordService = require('../services/discord')
-const { stripIndents } = require('common-tags')
+const pluralize = require('pluralize')
 const short = require('short-uuid')
+const discordService = require('../services/discord')
 const roVerAdapter = require('../adapters/roVer')
 const timeHelper = require('../helpers/time')
-const pluralize = require('pluralize')
+
+const { MessageEmbed } = require('discord.js')
+const { stripIndents } = require('common-tags')
 
 const applicationConfig = require('../../config/application')
 

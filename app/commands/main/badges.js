@@ -1,7 +1,8 @@
 'use strict'
 const Command = require('../../controllers/command')
-const { MessageEmbed } = require('discord.js')
 const userService = require('../../services/user')
+
+const { MessageEmbed } = require('discord.js')
 
 const applicationConfig = require('../../../config/application')
 
@@ -28,6 +29,7 @@ module.exports = class BadgesCommand extends Command {
     const hasTtdt = await userService.hasBadge(userId, applicationConfig.ttdtId)
     const hasPtdt = await userService.hasBadge(userId, applicationConfig.ptdtId)
     const hasTcdt = await userService.hasBadge(userId, applicationConfig.tcdtId)
+
     const embed = new MessageEmbed()
       .setTitle(`${message.argString ? username + '\'s' : 'Your'} badges`)
       .addField('TTDT', hasTtdt ? 'yes' : 'no', true)

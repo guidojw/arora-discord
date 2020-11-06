@@ -1,5 +1,6 @@
 'use strict'
 const Command = require('../../controllers/command')
+
 const { MessageEmbed } = require('discord.js')
 
 module.exports = class StatusCommand extends Command {

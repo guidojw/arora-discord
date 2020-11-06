@@ -2,6 +2,7 @@
 const Command = require('../../controllers/command')
 const userService = require('../../services/user')
 const applicationAdapter = require('../../adapters/application')
+
 const { getChannels, getTags, getUrls } = require('../../helpers/string')
 
 const applicationConfig = require('../../../config/application')
@@ -35,12 +36,16 @@ module.exports = class CancelSuspensionCommand extends Command {
 
   async execute (message, { username, reason }) {
     username = typeof username === 'string' ? username : username.displayName
-    const [userId, authorId] = await Promise.all([userService.getIdFromUsername(username), userService
-      .getIdFromUsername(message.member.displayName)])
+    const [userId, authorId] = await Promise.all([
+      userService.getIdFromUsername(username),
+      userService.getIdFromUsername(message.member.displayName)
+    ])
+
     await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId}/suspensions/${userId}/cancel`, {
       authorId,
       reason
     })
+
     message.reply(`Successfully cancelled **${username}**'s suspension.`)
   }
 }

@@ -23,8 +23,10 @@ module.exports = class PromoteCommand extends Command {
 
   async execute (message, { username }) {
     username = username ? typeof username === 'string' ? username : username.displayName : message.member.displayName
-    const [userId, authorId] = await Promise.all([userService.getIdFromUsername(username), userService
-      .getIdFromUsername(message.member.displayName)])
+    const [userId, authorId] = await Promise.all([
+      userService.getIdFromUsername(username),
+      userService.getIdFromUsername(message.member.displayName)
+    ])
     const rank = await userService.getRank(userId, applicationConfig.groupId)
     if (rank === 0) {
       return message.reply('Can\'t change rank of non members.')
@@ -41,6 +43,7 @@ module.exports = class PromoteCommand extends Command {
     if (rank >= 200) {
       return message.reply('Can\'t change rank of HRs.')
     }
+
     const roles = (await applicationAdapter('put', `/v1/groups/${applicationConfig.groupId}/users/${userId}`, {
       authorId,
       rank: rank === 1
@@ -51,6 +54,7 @@ module.exports = class PromoteCommand extends Command {
               ? 100
               : undefined
     })).data
+
     message.reply(`Successfully promoted **${username}** from **${roles.oldRole.name}** to **${roles.newRole.name}**.`)
   }
 }

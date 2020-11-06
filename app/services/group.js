@@ -1,8 +1,8 @@
 'use strict'
-const timeHelper = require('../helpers/time')
-const userService = require('../services/user')
 const pluralize = require('pluralize')
 const lodash = require('lodash')
+const timeHelper = require('../helpers/time')
+const userService = require('../services/user')
 const discordService = require('./discord')
 
 const applicationConfig = require('../../config/application')
@@ -36,7 +36,9 @@ exports.getRoleByAbbreviation = str => {
 }
 
 exports.getAbbreviationByRank = (rank, group) => {
-  if (rank === 0) return 'G'
+  if (rank === 0) {
+    return 'G'
+  }
   if (!group || group === applicationConfig.groupId) {
     /* eslint-disable no-mixed-operators */
     return rank === 1 && 'C' || rank === 2 && 'S' || rank === 3 && 'TD' || rank === 4 && 'CD' || rank === 5 && 'CSR' ||

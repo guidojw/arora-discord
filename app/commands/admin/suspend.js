@@ -2,6 +2,7 @@
 const Command = require('../../controllers/command')
 const userService = require('../../services/user')
 const applicationAdapter = require('../../adapters/application')
+
 const { getChannels, getTags, getUrls } = require('../../helpers/string')
 
 const applicationConfig = require('../../../config/application')
@@ -47,8 +48,11 @@ module.exports = class SuspendCommand extends Command {
 
   async execute (message, { username, days, reason, rankBack }) {
     username = typeof username === 'string' ? username : username.displayName
-    const [userId, authorId] = await Promise.all([userService.getIdFromUsername(username), userService
-      .getIdFromUsername(message.member.displayName)])
+    const [userId, authorId] = await Promise.all([
+      userService.getIdFromUsername(username),
+      userService.getIdFromUsername(message.member.displayName)
+    ])
+
     await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId}/suspensions`, {
       duration: days * 86400000,
       rankBack,
@@ -56,6 +60,7 @@ module.exports = class SuspendCommand extends Command {
       userId,
       reason
     })
+
     message.reply(`Successfully suspended **${username}**.`)
   }
 }

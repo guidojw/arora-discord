@@ -25,9 +25,7 @@ module.exports = class WebSocketController extends EventEmitter {
 
   heartbeat () {
     clearTimeout(this.pingTimeout)
-    this.pingTimeout = setTimeout(() => {
-      this.connection.terminate()
-    }, 30000 + 1000)
+    this.pingTimeout = setTimeout(this.connection.terminate, 30000 + 1000)
   }
 
   open () {

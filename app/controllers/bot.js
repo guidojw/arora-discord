@@ -1,16 +1,17 @@
 'use strict'
 const path = require('path')
-const Guild = require('./guild')
 const Commando = require('discord.js-commando')
-const { MessageEmbed } = require('discord.js')
+const pluralize = require('pluralize')
+const Guild = require('./guild')
 const SettingProvider = require('./setting-provider')
-const { stripIndents } = require('common-tags')
 const WebSocketController = require('./web-socket')
 const discordService = require('../services/discord')
 const userService = require('../services/user')
 const stringHelper = require('../helpers/string')
-const pluralize = require('pluralize')
 const TicketsController = require('./tickets')
+
+const { MessageEmbed } = require('discord.js')
+const { stripIndents } = require('common-tags')
 
 const applicationConfig = require('../../config/application')
 
@@ -93,7 +94,7 @@ module.exports = class Bot {
 
     // Set the bot's activity and start the loop that updates the activity
     this.setActivity()
-    setInterval(() => this.setActivity(), 60 * 1000)
+    setInterval(this.setActivity.bind(this), 60 * 1000)
 
     console.log(`Ready to serve on ${this.client.guilds.cache.size} servers, for ${this.client.users.cache.size} ` +
       'users.')
@@ -103,6 +104,7 @@ module.exports = class Bot {
     if (member.user.bot) {
       return
     }
+
     const embed = new MessageEmbed()
       .setTitle(`Hey ${member.user.tag},`)
       .setDescription(`You're the **${member.guild.memberCount}th** member on **${member.guild.name}**!`)
@@ -137,6 +139,7 @@ module.exports = class Bot {
     const guild = this.getGuild(reaction.message.guild.id)
     const member = guild.guild.member(user)
 
+    // Handle role messages
     const roleMessages = guild.getData('roleMessages')
     const roleMessage = roleMessages[reaction.message.id]
     if (roleMessage) {
@@ -151,6 +154,7 @@ module.exports = class Bot {
       }
     }
 
+    // Handle votes
     const voteData = guild.getData('vote')
     if (voteData && voteData.timer && voteData.timer.end > Date.now()) {
       let choice
@@ -182,6 +186,7 @@ module.exports = class Bot {
     const guild = this.getGuild(reaction.message.guild.id)
     const member = guild.guild.member(user)
 
+    // Handle role messages
     const roleMessages = guild.getData('roleMessages')
     const roleMessage = roleMessages[reaction.message.id]
     if (roleMessage) {
@@ -199,10 +204,12 @@ module.exports = class Bot {
     for (const guild of Object.values(this.guilds)) {
       const member = await discordService.getMemberByName(guild.guild, username)
       if (member) {
+
         const roles = guild.getData('roles')
         if (roles[groupId]) {
           for (const [binding, role] of Object.entries(roles[groupId])) {
             const ranks = stringHelper.convertBinding(binding)
+
             if (ranks.includes(rank)) {
               member.roles.add(role)
             } else {
@@ -223,6 +230,7 @@ module.exports = class Bot {
     if (this.currentActivity === 3) {
       this.currentActivity = 0
     }
+
     switch (this.currentActivity) {
       case 0:
         return { name: `${this.client.commandPrefix}help`, options: { type: 'LISTENING' } }
@@ -247,6 +255,7 @@ module.exports = class Bot {
       const emojis = mainGuild.getData('emojis')
       emoji = mainGuild.guild.emojis.cache.find(emoji => emoji.id === emojis.robuxEmoji)
     }
+
     const embed = new MessageEmbed()
       .setTitle('Train Developers Payout Report')
       .setColor(0xffffff)
@@ -271,6 +280,7 @@ module.exports = class Bot {
         console.error(`Couldn't DM ${developerSales.discordId}!`)
       }
     }
+
     this.client.owners[0].send(embed)
   }
 
@@ -279,12 +289,11 @@ module.exports = class Bot {
       .setAuthor(author.tag, author.displayAvatarURL())
       .setDescription(content)
       .setColor(applicationConfig.primaryColor)
-
     if (footer) {
       embed.setFooter(footer)
     }
-
     const guild = this.mainGuild
+
     return guild.guild.channels.cache.get(guild.getData('channels').logsChannel).send(embed)
   }
 }

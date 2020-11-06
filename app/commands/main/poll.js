@@ -1,6 +1,7 @@
 'use strict'
 const Command = require('../../controllers/command')
 const discordService = require('../../services/discord')
+
 const { MessageEmbed } = require('discord.js')
 const { getTags } = require('../../helpers/string')
 
@@ -36,6 +37,7 @@ module.exports = class PollCommand extends Command {
       .setDescription(poll)
       .setAuthor(message.author.tag, message.author.displayAvatarURL())
       .setColor(applicationConfig.primaryColor)
+
     const newMessage = await message.channel.send(embed)
     if (options.length > 0) {
       for (const option of options) {

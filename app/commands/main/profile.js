@@ -23,6 +23,7 @@ module.exports = class ProfileCommand extends Command {
   async execute (message, { username }) {
     username = username ? typeof username === 'string' ? username : username.displayName : message.member.displayName
     const userId = await userService.getIdFromUsername(username || message.member.displayName)
+
     message.reply(`https://www.roblox.com/users/${userId}/profile`)
   }
 }

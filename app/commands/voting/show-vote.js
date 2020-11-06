@@ -18,8 +18,8 @@ module.exports = class ShowVoteCommand extends Command {
     if (!voteData) {
       return message.reply('There\'s no vote created yet, create one using the createvote command.')
     }
-
     const messages = await votingService.getVoteMessages(voteData, this.client)
+
     await message.reply('The vote will look like this:')
     await message.channel.send(messages.intro.content, messages.intro.options)
     for (const option of Object.values(messages.options)) {

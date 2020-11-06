@@ -26,9 +26,7 @@ module.exports = class Guild extends EventEmitter {
     } catch (err) {
       await fs.promises.writeFile(this.dataPath, JSON.stringify({})) // TODO: default settings
     }
-
     this.data = JSON.parse(await fs.promises.readFile(this.dataPath))
-
     this.emit('ready')
   }
 
@@ -48,12 +46,14 @@ module.exports = class Guild extends EventEmitter {
   }
 
   ready () {
+    // Voting system jobs
     const voteData = this.getData('vote')
     if (voteData && voteData.timer && voteData.timer.end > Date.now()) {
       this.scheduleJob('saveVoteJob')
       this.scheduleJob('updateTimerJob')
     }
 
+    // Other jobs
     this.scheduleJob('premiumMembersReportJob')
     this.scheduleJob('announceTrainingsJob')
   }

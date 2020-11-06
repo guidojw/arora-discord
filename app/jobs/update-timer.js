@@ -12,6 +12,7 @@ module.exports = async guild => {
     throw new Error('Cannot fetch message.')
   }
   const now = Date.now()
+
   if (voteData.timer.end > now) {
     message.edit(`🕰️️ *${timeHelper.getDurationString(voteData.timer.end - now)}* left to vote!`)
   } else {

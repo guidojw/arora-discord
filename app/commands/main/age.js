@@ -2,6 +2,7 @@
 const Command = require('../../controllers/command')
 const userService = require('../../services/user')
 const pluralize = require('pluralize')
+
 const { MessageEmbed } = require('discord.js')
 
 const applicationConfig = require('../../../config/application')
@@ -29,6 +30,7 @@ module.exports = class AgeCommand extends Command {
     const userId = await userService.getIdFromUsername(username)
     const user = await userService.getUser(userId)
     const age = Math.floor((Date.now() - new Date(user.created).getTime()) / 86400000)
+
     const embed = new MessageEmbed()
       .addField(`${message.argString ? username + '\'s' : 'Your'} age`, `${age} ${pluralize('day', age)}`)
       .setColor(applicationConfig.primaryColor)

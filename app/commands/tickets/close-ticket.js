@@ -1,8 +1,9 @@
 'use strict'
 const Command = require('../../controllers/command')
 const discordService = require('../../services/discord')
-const { TicketState } = require('../../controllers/ticket')
+
 const { stripIndents } = require('common-tags')
+const { TicketState } = require('../../controllers/ticket')
 
 const applicationConfig = require('../../../config/application')
 
@@ -39,9 +40,9 @@ module.exports = class CloseTicketCommand extends Command {
 
         // Log the action
         await this.client.bot.log(message.author, stripIndents`
-                        ${message.author} **closed ticket** \`${ticketController.id}\`
-                        ${message.content}
-                        `, `Ticket ID: ${ticketController.id}`)
+        ${message.author} **closed ticket** \`${ticketController.id}\`
+        ${message.content}
+        `, `Ticket ID: ${ticketController.id}`)
 
         return ticketController.close('The moderator has closed this ticket.', true, applicationConfig
           .primaryColor)
@@ -60,9 +61,9 @@ module.exports = class CloseTicketCommand extends Command {
         if (choice) {
           // Log the action
           await this.client.bot.log(message.author, stripIndents`
-                        ${message.author} **closed ticket** \`${ticketController.id}\`
-                        ${message.content}
-                        `, `Ticket ID: ${ticketController.id}`)
+          ${message.author} **closed ticket** \`${ticketController.id}\`
+          ${message.content}
+          `, `Ticket ID: ${ticketController.id}`)
 
           return ticketController.close('Ticket successfully closed.', false, applicationConfig.primaryColor)
         }

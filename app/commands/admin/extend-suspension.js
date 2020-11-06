@@ -2,6 +2,7 @@
 const Command = require('../../controllers/command')
 const applicationAdapter = require('../../adapters/application')
 const userService = require('../../services/user')
+
 const { getChannels, getTags, getUrls } = require('../../helpers/string')
 
 const applicationConfig = require('../../../config/application')
@@ -42,13 +43,17 @@ module.exports = class ExtendSuspensionCommand extends Command {
 
   async execute (message, { username, days, reason }) {
     username = typeof username === 'string' ? username : username.displayName
-    const [userId, authorId] = await Promise.all([userService.getIdFromUsername(username), userService
-      .getIdFromUsername(message.member.displayName)])
+    const [userId, authorId] = await Promise.all([
+      userService.getIdFromUsername(username),
+      userService.getIdFromUsername(message.member.displayName)
+    ])
+
     await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId}/suspensions/${userId}/extend`, {
       duration: days * 86400000,
       authorId,
       reason
     })
+
     message.reply(`Successfully extended **${username}**'s suspension.`)
   }
 }

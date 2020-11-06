@@ -1,7 +1,8 @@
 'use strict'
-const Command = require('../../controllers/command')
-const { MessageEmbed } = require('discord.js')
 const pluralize = require('pluralize')
+const Command = require('../../controllers/command')
+
+const { MessageEmbed } = require('discord.js')
 
 module.exports = class VoteResultsCommand extends Command {
   constructor (client) {

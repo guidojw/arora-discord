@@ -1,12 +1,13 @@
 'use strict'
+const pluralize = require('pluralize')
 const Command = require('../../controllers/command')
 const applicationAdapter = require('../../adapters/application')
 const discordService = require('../../services/discord')
 const userService = require('../../services/user')
 const timeHelper = require('../../helpers/time')
-const { MessageEmbed } = require('discord.js')
-const pluralize = require('pluralize')
 const groupService = require('../../services/group')
+
+const { MessageEmbed } = require('discord.js')
 
 const applicationConfig = require('../../../config/application')
 
@@ -55,6 +56,7 @@ module.exports = class SuspensionsCommand extends Command {
         : extensionDays > 0
           ? ` (+${extensionDays})`
           : ''
+
       const embed = new MessageEmbed()
         .setTitle(`${message.argString ? `${username}'s` : 'Your'} suspension`)
         .addField('Start date', timeHelper.getDate(date), true)
@@ -71,6 +73,7 @@ module.exports = class SuspensionsCommand extends Command {
       if (suspensions.length === 0) {
         return message.reply('There are currently no suspensions.')
       }
+
       const embeds = await groupService.getSuspensionEmbeds(suspensions)
       for (const embed of embeds) {
         await message.author.send(embed)

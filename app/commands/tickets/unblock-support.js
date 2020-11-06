@@ -11,13 +11,11 @@ module.exports = class UnblockSupportCommand extends Command {
       examples: ['unblocksupport Happywalker'],
       clientPermissions: ['SEND_MESSAGES'],
       adminOnly: true,
-      args: [
-        {
-          key: 'member',
-          type: 'member',
-          prompt: 'Who would you like to unblock?'
-        }
-      ]
+      args: [{
+        key: 'member',
+        type: 'member',
+        prompt: 'Who would you like to unblock?'
+      }]
     })
   }
 

@@ -69,6 +69,7 @@ exports.getListEmbeds = async (title, values, getRow, data) => {
   let embed = new MessageEmbed()
     .setTitle(title)
     .setColor(applicationConfig.primaryColor)
+
   for (const value of values) {
     const row = await getRow(value, data)
     const currentField = embed.fields.length - 1
@@ -77,6 +78,7 @@ exports.getListEmbeds = async (title, values, getRow, data) => {
     } else {
       const fieldLength = embed.fields.length >= 0 ? embed.fields[currentField].value.length : 0
       const addition = row.length + 2 // +2 for \n
+
       if (embed.length + addition <= 6000 && fieldLength + addition <= 1024) {
         embed.fields[currentField].value += `${row}\n`
       } else {
@@ -90,5 +92,6 @@ exports.getListEmbeds = async (title, values, getRow, data) => {
     }
   }
   embeds.push(embed)
+
   return embeds
 }

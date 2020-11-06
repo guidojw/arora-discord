@@ -2,6 +2,7 @@
 const Command = require('../../controllers/command')
 const userService = require('../../services/user')
 const applicationAdapter = require('../../adapters/application')
+
 const { getChannels, getTags, getUrls } = require('../../helpers/string')
 
 module.exports = class ChangeBanCommand extends Command {
@@ -31,6 +32,7 @@ module.exports = class ChangeBanCommand extends Command {
   }
 
   async execute (message, { username, key, data }) {
+    username = typeof username === 'string' ? username : username.displayName
     key = key.toLowerCase()
     const changes = {}
     if (key === 'author') {
@@ -46,12 +48,16 @@ module.exports = class ChangeBanCommand extends Command {
       if (error) {
         return message.reply(error)
       }
+
       changes.reason = data
     }
-    username = typeof username === 'string' ? username : username.displayName
-    const [userId, editorId] = await Promise.all([userService.getIdFromUsername(username), userService
-      .getIdFromUsername(message.member.displayName)])
+    const [userId, editorId] = await Promise.all([
+      userService.getIdFromUsername(username),
+      userService.getIdFromUsername(message.member.displayName)
+    ])
+
     await applicationAdapter('put', `/v1/bans/${userId}`, { changes, editorId })
+
     message.reply(`Successfully changed **${username}**'s ban.`)
   }
 }

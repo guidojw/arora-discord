@@ -3,8 +3,9 @@ const Command = require('../../controllers/command')
 const groupService = require('../../services/group')
 const timeHelper = require('../../helpers/time')
 const applicationAdapter = require('../../adapters/application')
-const { MessageEmbed } = require('discord.js')
 const userService = require('../../services/user')
+
+const { MessageEmbed } = require('discord.js')
 const { getChannels, getTags, getUrls } = require('../../helpers/string')
 
 const applicationConfig = require('../../../config/application')
@@ -54,19 +55,26 @@ module.exports = class HostTrainingCommand extends Command {
     const role = groupService.getRoleByAbbreviation(type)
     const dateInfo = timeHelper.getDateInfo(date)
     const timeInfo = timeHelper.getTimeInfo(time)
-    const dateUnix = Math.floor(new Date(dateInfo.year, dateInfo.month, dateInfo.day, timeInfo.hours, timeInfo.minutes)
-      .getTime())
+    const dateUnix = Math.floor(new Date(
+      dateInfo.year,
+      dateInfo.month,
+      dateInfo.day,
+      timeInfo.hours,
+      timeInfo.minutes
+    ).getTime())
     const afterNow = dateUnix - Math.floor(Date.now()) > 0
     if (!afterNow) {
       return message.reply('Please give a date and time that are after now.')
     }
     const authorId = await userService.getIdFromUsername(message.member.displayName)
+
     const training = (await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId}/trainings`, {
       notes: notes.toLowerCase() === 'none' ? undefined : notes,
       date: dateUnix,
       authorId,
       type
     })).data
+
     const embed = new MessageEmbed()
       .addField('Successfully scheduled', `**${role}** training on **${date}** at **${time}**.`)
       .addField('Training ID', training.id.toString())

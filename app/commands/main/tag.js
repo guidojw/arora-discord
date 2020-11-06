@@ -1,6 +1,7 @@
 'use strict'
 const Command = require('../../controllers/command')
 const discordService = require('../../services/discord')
+
 const { MessageEmbed } = require('discord.js')
 
 const applicationConfig = require('../../../config/application')
@@ -26,6 +27,7 @@ module.exports = class TagCommand extends Command {
   async execute (message, { name }, guild) {
     if (name !== 'all') {
       const tag = tags.find(tag => tag.names.includes(name))
+
       if (!tag) {
         return message.reply('Couldn\'t find tag!')
       }
@@ -39,6 +41,7 @@ module.exports = class TagCommand extends Command {
           }
         }
       }
+
       message.reply(tag.tag)
     } else {
       let list = ''
@@ -49,6 +52,7 @@ module.exports = class TagCommand extends Command {
           count++
         }
       }
+
       const embed = new MessageEmbed()
         .setTitle('Tags')
         .setDescription(list)

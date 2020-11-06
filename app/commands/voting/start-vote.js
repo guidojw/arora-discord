@@ -61,6 +61,7 @@ module.exports = class StartVoteCommand extends Command {
     guild.setData('vote', voteData)
     guild.scheduleJob('saveVoteJob')
     guild.scheduleJob('updateTimerJob')
+
     message.reply(`Posted the vote in ${channel}.`)
   }
 }

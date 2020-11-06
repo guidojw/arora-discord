@@ -1,8 +1,9 @@
 'use strict'
 const Command = require('../../controllers/command')
 const discordService = require('../../services/discord')
-const { TicketState } = require('../../controllers/ticket')
+
 const { MessageEmbed } = require('discord.js')
+const { TicketState } = require('../../controllers/ticket')
 
 const applicationConfig = require('../../../config/application')
 

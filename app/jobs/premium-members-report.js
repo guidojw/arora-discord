@@ -1,6 +1,7 @@
 'use strict'
-const { MessageEmbed } = require('discord.js')
 const pluralize = require('pluralize')
+
+const { MessageEmbed } = require('discord.js')
 
 module.exports = async guild => {
   const members = await guild.guild.members.fetch()
@@ -30,10 +31,10 @@ module.exports = async guild => {
       .setColor(0xff73fa)
     const emojis = guild.getData('emojis')
     const emoji = guild.guild.emojis.cache.find(emoji => emoji.id === emojis.boostEmoji)
+
     for (const { member, months } of monthlyPremiumMembers) {
       if (member.user.partial) await member.user.fetch()
-      embed.addField(`${member.user.tag} ${emoji || ''}`, `Has been boosting this server for **${months}` +
-        `** ${pluralize('month', months)}!`)
+      embed.addField(`${member.user.tag} ${emoji || ''}`, `Has been boosting this server for **${months}** ${pluralize('month', months)}!`)
     }
 
     const channels = guild.getData('premiumMembersReportChannels')
@@ -42,7 +43,6 @@ module.exports = async guild => {
       if (!channel) {
         throw new Error('Cannot get channel.')
       }
-
       channel.send(embed)
     }
   }

@@ -1,14 +1,17 @@
 'use strict'
-const { MessageAttachment, MessageEmbed } = require('discord.js')
 const timeHelper = require('../helpers/time')
+
+const { MessageAttachment, MessageEmbed } = require('discord.js')
 const { stripIndents } = require('common-tags')
 
 exports.getVoteMessages = async (voteData, client) => {
   const messages = { options: {} }
+
   messages.intro = {
     content: `**${voteData.title}**\n${voteData.description}`,
     options: voteData.image ? new MessageAttachment(voteData.image) : undefined
   }
+
   let first = true
   for (const [id, option] of Object.entries(voteData.options)) {
     const user = client.users.cache.get(id)
@@ -24,6 +27,7 @@ exports.getVoteMessages = async (voteData, client) => {
       first = false
     }
   }
+
   messages.info = {
     options: new MessageEmbed()
       .setFooter(stripIndents`
@@ -35,8 +39,10 @@ exports.getVoteMessages = async (voteData, client) => {
       // the current time.
       .setTimestamp(voteData.timer ? voteData.timer.end : Date.now())
   }
+
   messages.timer = {
     content: `🕰️ *${timeHelper.getDurationString(voteData.timer ? voteData.timer.end - new Date().getTime() : 0)}* left to vote!`
   }
+
   return messages
 }

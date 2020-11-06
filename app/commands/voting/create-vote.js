@@ -33,6 +33,7 @@ module.exports = class CreateVoteCommand extends Command {
       voteData.image = message.attachments[0].url
     }
     guild.setData('vote', voteData)
+
     message.reply('Created vote.')
   }
 }

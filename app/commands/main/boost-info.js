@@ -1,7 +1,8 @@
 'use strict'
 const Command = require('../../controllers/command')
-const { MessageEmbed } = require('discord.js')
 const pluralize = require('pluralize')
+
+const { MessageEmbed } = require('discord.js')
 
 module.exports = class BoostInfoCommand extends Command {
   constructor (client) {
@@ -39,7 +40,10 @@ module.exports = class BoostInfoCommand extends Command {
     months %= 12
     const emojis = guild.getData('emojis')
     const emoji = guild.guild.emojis.cache.find(emoji => emoji.id === emojis.boostEmoji)
-    if (member.user.partial) await member.user.partial.fetch()
+    if (member.user.partial) {
+      await member.user.partial.fetch()
+    }
+
     const embed = new MessageEmbed()
       .setTitle(`${member.user.tag} ${emoji}`)
       .setThumbnail(member.user.displayAvatarURL())

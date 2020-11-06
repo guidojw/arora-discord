@@ -4,6 +4,7 @@ const groupService = require('../../services/group')
 const applicationAdapter = require('../../adapters/application')
 const timeHelper = require('../../helpers/time')
 const userService = require('../../services/user')
+
 const { getChannels, getTags, getUrls } = require('../../helpers/string')
 
 const applicationConfig = require('../../../config/application')
@@ -51,17 +52,20 @@ module.exports = class ChangeTrainingCommand extends Command {
       if (error) {
         return message.reply(error)
       }
+
       changes.notes = data
     } else if (key === 'type') {
       const type = data.toUpperCase()
       if (!groupService.getRoleByAbbreviation(type)) {
         return message.reply(`Role abbreviaton **${type}** does not exist.`)
       }
+
       changes.type = type
     } else if (key === 'date' || key === 'time') {
       const training = (await applicationAdapter('get', `/v1/groups/${applicationConfig.groupId}/trainings/${trainingId}`))
         .data
       const date = new Date(training.date)
+
       let dateInfo
       let timeInfo
       if (key === 'date') {
@@ -77,12 +81,15 @@ module.exports = class ChangeTrainingCommand extends Command {
         dateInfo = timeHelper.getDateInfo(timeHelper.getDate(date))
         timeInfo = timeHelper.getTimeInfo(data)
       }
+
       changes.date = Math.floor(new Date(dateInfo.year, dateInfo.month, dateInfo.day, timeInfo.hours, timeInfo.minutes)
         .getTime())
     }
     const editorId = await userService.getIdFromUsername(message.member.displayName)
+
     await applicationAdapter('put', `/v1/groups/${applicationConfig.groupId}/trainings/${trainingId}`,
       { changes, editorId })
+
     message.reply(`Successfully changed training with ID **${trainingId}**.`)
   }
 }

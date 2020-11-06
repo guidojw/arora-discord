@@ -1,5 +1,6 @@
 'use strict'
 const Command = require('../../controllers/command')
+
 const { MessageEmbed } = require('discord.js')
 const { getTags } = require('../../helpers/string')
 
@@ -38,10 +39,12 @@ module.exports = class SuggestCommand extends Command {
       }
     }
     const channels = guild.getData('channels')
+
     const newMessage = await guild.guild.channels.cache.get(channels.suggestionsChannel).send(embed)
     await newMessage.react('✔')
     await newMessage.react('✖')
     await newMessage.react('❔')
+
     message.reply('Successfully suggested', { embed: embed })
   }
 }

@@ -42,6 +42,7 @@ module.exports = class ClearCommand extends Command {
           ? guildMessages.firstSuggestionMessage
           : guildMessages.trainingsMessage
         messages = await channel.messages.fetch({ after })
+
         if (messages.size > 0) {
           try {
             await channel.bulkDelete(messages)
@@ -52,6 +53,7 @@ module.exports = class ClearCommand extends Command {
           }
         }
       } while (messages.size > 0)
+
       message.reply(`Successfully cleared ${channel}.`)
     } else {
       message.reply(`Didn't clear ${channel}.`)

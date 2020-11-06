@@ -1,5 +1,6 @@
 'use strict'
 const Command = require('../../controllers/command')
+
 const { MessageEmbed } = require('discord.js')
 
 module.exports = class ToggleSupportCommand extends Command {
@@ -17,6 +18,7 @@ module.exports = class ToggleSupportCommand extends Command {
   execute (message) {
     // Toggle the setting
     const settings = this.client.bot.mainGuild.getData('settings')
+
     settings.supportEnabled = !settings.supportEnabled
     this.client.bot.mainGuild.setData('settings', settings)
 

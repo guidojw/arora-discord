@@ -36,6 +36,7 @@ module.exports = class AddOptionCommand extends Command {
 
     voteData.options[user.id] = { description: description, votes: [] }
     guild.setData('vote', voteData)
+
     message.reply('Added option.')
   }
 }

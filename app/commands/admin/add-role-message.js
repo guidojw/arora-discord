@@ -22,8 +22,8 @@ module.exports = class AddRoleMessageCommand extends Command {
         type: 'string',
         validate: emoji => {
           if (emoji.charAt(0) === '<') {
-            return emoji.indexOf(':') !== emoji.lastIndexOf(':') && emoji.charAt(0) === '<' &&
-              emoji.charAt(emoji.length - 1) === '>'
+            return emoji.indexOf(':') !== emoji.lastIndexOf(':') && emoji.charAt(0) === '<' && emoji.charAt(emoji
+              .length - 1) === '>'
           }
           return true
         }
@@ -46,6 +46,7 @@ module.exports = class AddRoleMessageCommand extends Command {
 
     roleMessages[messageId].push({ role: role.id, emoji })
     guild.setData('roleMessages', roleMessages)
+
     return message.reply('Successfully made role message.')
   }
 }
