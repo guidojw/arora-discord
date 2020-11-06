@@ -8,7 +8,7 @@ if [ "$STAGE" != 'production' ]; then
   exit 0
 fi
 
-curl -sSf -H 'Content-Type: application/json' \
+curl -sSf -H 'Content-Type: application/json' 
 --request POST \
 --data '{"content": "Deploy for '$STAGE' is finished"}' \
 "$DISCORD_WEBHOOK_URL"
