@@ -9,6 +9,6 @@ if [ "$STAGE" != 'production' ]; then
 fi
 
 curl -sSf -H 'Content-Type: application/json' \
---request POST \
---data '{"content": "Deploy for '$STAGE' is finished"}' \
-"$DISCORD_WEBHOOK_URL"
+  --request POST \
+  --data '{"content": "Deploy for nsadmin-discord '$STAGE' is finished"}' \
+  "$DISCORD_WEBHOOK_URL"
