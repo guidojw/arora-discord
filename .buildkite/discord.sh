@@ -10,5 +10,5 @@ fi
 
 curl -sSf -H 'Content-Type: application/json' \
   --request POST \
-  --data '{"content": "Deploy for '$STAGE' is finished"}' \
-  $DISCORD_WEBHOOK_URL
+  --data '{"content": "Deploy for nsadmin-discord '$STAGE' is finished"}' \
+  "$DISCORD_WEBHOOK_URL"
