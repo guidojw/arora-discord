@@ -1,5 +1,6 @@
 nsadmin-discord
 ================
+[![Build status](https://badge.buildkite.com/3270dad708bac251c357a7f2eab2c08ef710708bfb76120217.svg)](https://buildkite.com/ns-roblox/nsadmin-discord)
 
 ## Prerequisites
 * [Node.js](https://nodejs.org/en/download/current/)

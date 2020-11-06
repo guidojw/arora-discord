@@ -1,0 +1,51 @@
+steps:
+  - label: ":docker: Build test image"
+    plugins:
+      - docker-login#v2.0.1:
+          server: docker.guidojw.nl
+          username: buildkite
+          password-env: DOCKER_PASSWORD
+      - docker-compose#v3.7.0:
+          build: app
+          config: docker-compose.buildkite.yml
+          image-repository: docker.guidojw.nl/nsadmin/nsadmin-discord
+
+  - wait
+
+  - label: ":eslint: Lint"
+    command: npm run lint
+    plugins:
+      - docker-compose#v3.7.0:
+          run: app
+          config: docker-compose.buildkite.yml
+
+  - wait
+
+  - label: ":docker: Build+Push `:production` image"
+    branches: master
+    plugins:
+      - docker-login#v2.0.1:
+          server: docker.guidojw.nl
+          username: buildkite
+          password-env: DOCKER_PASSWORD
+      - docker-compose#v3.7.0:
+          push: app-production:docker.guidojw.nl/nsadmin/nsadmin-discord:latest
+          image-name: docker.guidojw.nl/nsadmin/nsadmin-discord:latest
+          config: docker-compose.buildkite.yml
+
+  - block: Deploy this stage
+    branches: master
+
+  - label: Restarting service
+    command: .buildkite/release.sh
+    branches: master
+
+  - wait
+
+  - label: Inform Sentry
+    command: .buildkite/sentry.sh
+    branches: master
+
+  - label: Inform Discord
+    command: .buildkite/discord.sh
+    branches: master
