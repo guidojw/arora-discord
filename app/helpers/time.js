@@ -71,3 +71,11 @@ exports.getDurationString = milliseconds => {
   const seconds = Math.floor(minutesMilliseconds / (1000))
   return `${days > 0 ? days + 'd ' : ''}${hours > 0 ? hours + 'h ' : ''}${minutes > 0 ? minutes + 'm ' : ''}${seconds > 0 ? seconds + 's ' : ''}`
 }
+
+exports.diffDays = (date1, date2) => {
+  const d1 = new Date(date1)
+  const d2 = new Date(date2)
+  d1.setHours(0, 0, 0)
+  d2.setHours(0, 0, 0)
+  return Math.round(Math.abs((d1 - d2) / (24 * 60 * 60 * 1000)))
+}
