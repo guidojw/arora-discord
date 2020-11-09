@@ -7,34 +7,34 @@ const applicationConfig = require('../../config/application')
 /* eslint-disable max-len */
 module.exports = [{
   names: ['game'],
-  tag: applicationConfig.gameLink
+  tag: 'https://www.roblox.com/games/140576204/NS-Games-Universe'
 }, {
   names: ['group'],
-  tag: applicationConfig.groupLink
+  tag: 'https://www.roblox.com/Groups/group.aspx?gid=1018818'
 }, {
   names: ['groupcenter', 'gc'],
-  tag: applicationConfig.groupCenterLink
+  tag: 'https://www.roblox.com/games/348800431/Group-Center'
 }, {
   names: ['invite', 'discord'],
-  tag: applicationConfig.discordLink
+  tag: 'https://discord.gg/nZE8dXM'
 }, {
   names: ['ptdt'],
-  tag: applicationConfig.practicalTrainDriverTestLink
+  tag: 'https://www.roblox.com/games/496933015/Practical-Train-Driver-Test-II'
 }, {
   names: ['rr'],
-  tag: applicationConfig.rulesRegulationsLink
+  tag: 'https://devforum.roblox.com/t/ns-rules-and-regulations/63617'
 }, {
   names: ['tcdt'],
-  tag: applicationConfig.theoreticalConductorTestLink
+  tag: 'https://www.roblox.com/games/205328689/Theoretical-Conductor-Test'
 }, {
   names: ['ttdt'],
-  tag: applicationConfig.theoreticalTrainDriverTestLink
+  tag: 'https://www.roblox.com/games/528038240/Theoretical-Train-Driver-Test-II'
 }, {
   names: ['trello'],
-  tag: applicationConfig.trelloLink
+  tag: 'https://trello.com/b/PDkRNR6G/project-railrunner-dev-board'
 }, {
   names: ['uw'],
-  tag: applicationConfig.updatesWorkplaceLink
+  tag: 'https://www.roblox.com/games/149045435/UTASD-Updates-Workplace'
 }, {
   names: ['documents', 'docs'],
   group: 'admin',
