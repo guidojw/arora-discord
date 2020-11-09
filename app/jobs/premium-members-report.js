@@ -1,5 +1,6 @@
 'use strict'
 const pluralize = require('pluralize')
+const timeHelper = require('../helpers/time')
 
 const { MessageEmbed } = require('discord.js')
 
@@ -15,11 +16,11 @@ module.exports = async guild => {
   const monthlyPremiumMembers = []
   const now = new Date()
   for (const member of premiumMembers) {
-    const premiumDate = member.premiumSince
-    if (premiumDate.getMonth() !== now.getMonth() && premiumDate.getDate() === now.getDate()) {
+    const days = timeHelper.diffDays(member.premiumSince, now)
+    if (days !== 0 && days % 30 === 0) {
       monthlyPremiumMembers.push({
-        member: member,
-        months: now.getMonth() - premiumDate.getMonth() + (now.getFullYear() - premiumDate.getFullYear()) * 12
+        member,
+        months: days / 30
       })
     }
   }
@@ -33,7 +34,6 @@ module.exports = async guild => {
     const emoji = guild.guild.emojis.cache.find(emoji => emoji.id === emojis.boostEmoji)
 
     for (const { member, months } of monthlyPremiumMembers) {
-      if (member.user.partial) await member.user.fetch()
       embed.addField(`${member.user.tag} ${emoji || ''}`, `Has been boosting this server for **${months}** ${pluralize('month', months)}!`)
     }
 
