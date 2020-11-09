@@ -56,6 +56,12 @@ Malicious Spreadsheets: <${process.env.MS_DOC}>
   group: 'admin',
   tag: `<${process.env.TP_DOC}>`
 }, {
+  names: ['applicationcenter', 'ac'],
+  tag: 'https://www.roblox.com/games/4818693758/Application-Center'
+}, {
+  names: ['mycenter', 'mc'],
+  tag: 'https://my-center.net/center/mcv5_center_id:88586895-2d0f-4217-a75f-0fecc5e1911492eded3e-189d-41d6-ae7c-772bbe8a80a2b3fd3f20-4081-4576-bced-691de4c78e9a2e6da9ee-9c65-4503-a02e-9dc02f39714f'
+}, {
   names: ['ticket'],
   tag: new MessageEmbed()
     .setColor(applicationConfig.primaryColor)
