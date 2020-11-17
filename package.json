@@ -13,7 +13,7 @@
   "author": "Guido de Jong",
   "license": "MIT",
   "dependencies": {
-    "@sentry/node": "^5.27.3",
+    "@sentry/node": "^5.27.4",
     "axios": "^0.19.2",
     "common-tags": "^1.8.0",
     "discord.js": "^12.4.1",
@@ -23,11 +23,11 @@
     "node-cron": "^2.0.3",
     "pluralize": "^8.0.0",
     "short-uuid": "^3.1.1",
-    "ws": "^7.3.1"
+    "ws": "^7.4.0"
   },
   "devDependencies": {
     "eslint": "^7.13.0",
     "nodemon": "^2.0.6",
-    "standard": "^16.0.1"
+    "standard": "^16.0.2"
   }
 }
