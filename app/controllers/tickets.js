@@ -73,10 +73,14 @@ module.exports = class TicketsController {
 
       // If author doesn't have a open ticket yet and can create a ticket
       if (!ticketController && !this.debounces[message.author.id]) {
-        // Get the user's member in the bot's main guild
-        const member = this.client.bot.mainGuild.guild.members.cache.find(member => {
-          return member.user.id === message.author.id
-        })
+        // Get the user's member in the bot's main guild and return if
+        // the user has no member.
+        let member
+        try {
+          member = await this.client.bot.mainGuild.guild.members.fetch(message.author)
+        } catch (err) {
+          return
+        }
 
         // Only allow the user to make a new ticket
         // if they're in they're in the guild
