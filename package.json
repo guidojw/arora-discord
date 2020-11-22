@@ -16,7 +16,7 @@
     "@sentry/node": "^5.27.4",
     "axios": "^0.19.2",
     "common-tags": "^1.8.0",
-    "discord.js": "^12.4.1",
+    "discord.js": "^12.5.0",
     "discord.js-commando": "github:discordjs/Commando",
     "dotenv": "^8.2.0",
     "lodash": "^4.17.20",
