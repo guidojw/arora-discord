@@ -22,7 +22,7 @@ module.exports = class Bot {
       owner: applicationConfig.owner,
       unknownCommandResponse: false,
       disableEveryone: true,
-      partials: ['REACTION', 'MESSAGE', 'CHANNEL']
+      partials: ['REACTION', 'MESSAGE', 'CHANNEL', 'USER']
     })
     this.client.bot = this
     this.currentActivity = 0
