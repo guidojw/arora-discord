@@ -45,7 +45,7 @@ module.exports = class BoostInfoCommand extends Command {
     }
 
     const embed = new MessageEmbed()
-      .setTitle(`${member.user.tag} ${emoji}`)
+      .setTitle(`${member.user.tag}${emoji ? ` ${emoji}` : ''}`)
       .setThumbnail(member.user.displayAvatarURL())
       .setDescription(`Has been boosting this server for ${years > 0 ? `**${years}** ${pluralize('year', years)}, ` : ''}**${months}** ${pluralize('month', months)} and **${days}** ${pluralize('day', days)}!`)
       .setColor(0xff73fa)
