@@ -67,10 +67,10 @@ Malicious Spreadsheets: <${process.env.MS_DOC}>
     .setColor(applicationConfig.primaryColor)
     .setTitle('How to create a new support ticket?')
     .setDescription(stripIndents`
-    You can create a new ticket by sending <@${process.env.BOT_ID}> a private message.
-    The bot will ask you what type of support you need and will then ask for a clear description of your report.
+    You can create a new ticket by clicking the regarding number in #support.
+    If applicable, the bot will ask you for a clear description of your report.
 
-    Once submitted, our Ticket Moderators will respond to your ticket as soon as possible. This may take up to 24 hours.
+    Once submitted, our Ticket Moderators will respond to your ticket as soon as possible. This may take up to 24 hours, depending on your ticket type.
     `)
 }, {
   names: ['privacy', 'privacypolicy', 'pp'],
