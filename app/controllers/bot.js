@@ -10,7 +10,7 @@ const userService = require('../services/user')
 const stringHelper = require('../helpers/string')
 const TicketsController = require('./tickets')
 
-const { MessageEmbed } = require('discord.js')
+const { MessageEmbed, DiscordAPIError } = require('discord.js')
 const { stripIndents } = require('common-tags')
 
 const applicationConfig = require('../../config/application')
@@ -301,5 +301,18 @@ module.exports = class Bot {
     const guild = this.mainGuild
 
     return guild.guild.channels.cache.get(guild.getData('channels').logsChannel).send(embed)
+  }
+
+  async send (user, content) {
+    try {
+      await user.send(content)
+    } catch (err) {
+      if (err instanceof DiscordAPIError) {
+        // Most likely because the author has DMs closed,
+        // do nothing
+      } else {
+        throw err
+      }
+    }
   }
 }
