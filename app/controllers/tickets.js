@@ -72,6 +72,9 @@ module.exports = class TicketsController {
           ? TicketType.PRIZE_CLAIM
           : undefined
     if (type) {
+      if (user.partial) {
+        await user.fetch()
+      }
       await reaction.users.remove(user)
 
       if (!this.debounces[user.id]) {
