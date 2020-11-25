@@ -235,16 +235,14 @@ module.exports = class Bot {
 
   getNextActivity () {
     this.currentActivity++
-    if (this.currentActivity === 3) {
+    if (this.currentActivity === 2) {
       this.currentActivity = 0
     }
 
     switch (this.currentActivity) {
       case 0:
         return { name: `${this.client.commandPrefix}help`, options: { type: 'LISTENING' } }
-      case 1:
-        return { name: 'Project Railrunner', options: { type: 'PLAYING' } }
-      case 2: {
+      case 1: {
         let totalMemberCount = 0
         for (const guild of Object.values(this.guilds)) {
           totalMemberCount += guild.guild.memberCount
