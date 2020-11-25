@@ -10,3 +10,4 @@ services:
     volumes:
       - /opt/app/node_modules
       - ./data:/opt/app/data
+      - ./config/application.js:/opt/app/config/application.js
