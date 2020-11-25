@@ -25,7 +25,7 @@ module.exports = class CloseTicketCommand extends Command {
       return message.reply('This command can only be used in channels in the tickets category.')
     }
 
-    const ticketController = ticketsController.getTicketFromChannel(message.channel)
+    const ticketController = ticketsController.getTicketFromChannel(guild, message.channel)
     if (ticketController) {
       const prompt = await message.channel.send('Are you sure you want to close this ticket?')
       const choice = await discordService.prompt(message.channel, message.author, prompt, ['✅', '🚫']) === '✅'

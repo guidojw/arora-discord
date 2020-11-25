@@ -17,9 +17,12 @@ module.exports = class TicketsController {
   }
 
   async init () {
-    for (const guild of this.client.bot.guilds) {
+    for (const guild of Object.values(this.client.bot.guilds)) {
       const channels = guild.getData('channels')
       const category = guild.guild.channels.cache.get(channels.ticketsCategory)
+
+      this.tickets[guild.guild.id] = {}
+      this.debounces[guild.guild.id] = {}
 
       for (const channel of category.children.values()) {
         if (channel.id === channels.ratingsChannel || channel.id === channels.supportChannel) {
@@ -34,8 +37,8 @@ module.exports = class TicketsController {
         const ticketController = new TicketController(this, this.client, guild, type)
         ticketController.id = id
         ticketController.channel = channel
-        this.tickets[id] = ticketController
-        ticketController.once('close', this.clearTicket.bind(this, ticketController))
+        this.tickets[guild.guild.id][id] = ticketController
+        ticketController.once('close', this.clearTicket.bind(this, guild, ticketController))
       }
     }
 
@@ -78,13 +81,13 @@ module.exports = class TicketsController {
       }
       await reaction.users.remove(user)
 
-      if (!this.debounces[user.id]) {
+      if (!this.debounces[guild.guild.id][user.id]) {
         // Set a timeout of 60 seconds in which the bot
         // will not react to message reactions.
-        this.debounces[user.id] = true
-        const timeout = setTimeout(this.clearAuthor.bind(this, user), TICKETS_INTERVAL)
+        this.debounces[guild.guild.id][user.id] = true
+        const timeout = setTimeout(this.clearAuthor.bind(this, guild, user), TICKETS_INTERVAL)
 
-        let ticketController = this.getTicketFromAuthor(user)
+        let ticketController = this.getTicketFromAuthor(guild, user)
         if (!ticketController) {
           if (!guild.getData('settings').supportEnabled) {
             const embed = new MessageEmbed()
@@ -95,7 +98,7 @@ module.exports = class TicketsController {
             return this.client.bot.send(user, embed)
           }
 
-          const member = guild.guild.member(user)
+          const member = await guild.guild.members.fetch(user)
           const roles = guild.getData('roles')
           if (member.roles.cache.has(roles.ticketsBannedRole)) {
             const embed = new MessageEmbed()
@@ -105,12 +108,12 @@ module.exports = class TicketsController {
             return this.client.bot.send(user, embed)
           }
 
-          this.clearAuthor(user)
+          this.clearAuthor(guild, user)
           clearTimeout(timeout)
 
           ticketController = new TicketController(this, this.client, guild, type, user)
-          this.tickets[ticketController.id] = ticketController
-          ticketController.once('close', this.clearTicket.bind(this, ticketController))
+          this.tickets[guild.guild.id][ticketController.id] = ticketController
+          ticketController.once('close', this.clearTicket.bind(this, guild, ticketController))
         } else {
           const embed = new MessageEmbed()
             .setColor(0xff0000)
@@ -142,7 +145,7 @@ module.exports = class TicketsController {
       return
     }
 
-    const ticketController = this.getTicketFromChannel(message.channel)
+    const ticketController = this.getTicketFromChannel(guild, message.channel)
     if (ticketController) {
       // If this ticket is reconnected and thus has lost its author,
       // don't update.
@@ -163,29 +166,29 @@ module.exports = class TicketsController {
     }
   }
 
-  clearTicket (ticketController) {
+  clearTicket (guild, ticketController) {
     if (ticketController) {
       // If the TicketController hasn't lost its author.
       if (ticketController.state !== TicketState.RECONNECTED) {
-        this.clearAuthor(ticketController.author)
+        this.clearAuthor(guild, ticketController.author)
       }
 
-      delete this.tickets[ticketController.id]
+      delete this.tickets[guild.guild.id][ticketController.id]
     }
   }
 
-  clearAuthor (author) {
-    delete this.debounces[author.id]
+  clearAuthor (guild, author) {
+    delete this.debounces[guild.guild.id][author.id]
   }
 
-  getTicketFromChannel (channel) {
-    return Object.values(this.tickets).find(ticketController => {
+  getTicketFromChannel (guild, channel) {
+    return Object.values(this.tickets[guild.guild.id]).find(ticketController => {
       return ticketController.channel.id === channel.id
     })
   }
 
-  getTicketFromAuthor (author) {
-    return Object.values(this.tickets).find(ticketController => {
+  getTicketFromAuthor (guild, author) {
+    return Object.values(this.tickets[guild.guild.id]).find(ticketController => {
       return ticketController.state !== TicketState.RECONNECTED && ticketController.author.id === author.id
     })
   }
