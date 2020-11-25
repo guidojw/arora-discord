@@ -14,12 +14,12 @@ module.exports = class ToggleSupportCommand extends Command {
     })
   }
 
-  execute (message) {
+  execute (message, _args, guild) {
     // Toggle the setting
-    const settings = this.client.bot.mainGuild.getData('settings')
+    const settings = guild.getData('settings')
 
     settings.supportEnabled = !settings.supportEnabled
-    this.client.bot.mainGuild.setData('settings', settings)
+    guild.setData('settings', settings)
 
     // Send success message
     const embed = new MessageEmbed()
