@@ -7,7 +7,7 @@ module.exports = class SettingProvider {
       const settings = await this.getSettings(guild)
       if (settings) {
         if (settings.prefix) {
-          guild._commandPrefix = settings.prefix
+          guild.commandPrefix = settings.prefix
         }
 
         if (settings.commandStates) {
@@ -29,7 +29,7 @@ module.exports = class SettingProvider {
     }
 
     client.on('commandPrefixChange', (guild, prefix) => {
-      this.set(guild, 'prefix', prefix)
+      this.set(guild, 'commandPrefix', prefix)
     })
     client.on('commandStatusChange', async (guild, command, enabled) => {
       const commandStates = await this.get(guild, 'commandStates', {})
