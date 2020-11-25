@@ -11,24 +11,18 @@ module.exports = class SettingProvider {
         }
 
         if (settings.commandStates) {
-          if (!guild._commandsEnabled) {
-            guild._commandsEnabled = {}
-          }
           for (const command of client.registry.commands.values()) {
             if (settings.commandStates[command.name] !== undefined) {
-              guild._commandsEnabled[command.name] = settings.commandStates[command.name]
+              guild.setCommandEnabled(command.name, settings.commandStates[command.name])
             }
           }
         }
 
-        if (settings.groupStates) {
-          if (!guild._groupsEnabled) {
-            guild._groupsEnabled = {}
-          }
-          for (const group of client.registry.groups.values()) {
-            if (settings.groupStates[group.name] !== undefined) {
-              guild._groupsEnabled[group.name] = settings.groupStates[group.name]
-            }
+        for (const group of client.registry.groups.values()) {
+          if (!group.guarded) {
+            guild.setGroupEnabled(group, settings.groupStates
+              ? settings.groupStates[group.name] || false
+              : false)
           }
         }
       }
