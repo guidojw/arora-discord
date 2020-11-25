@@ -101,12 +101,12 @@ module.exports = class Bot {
       return
     }
 
+    const guild = this.getGuild(member.guild.id)
     const embed = new MessageEmbed()
       .setTitle(`Hey ${member.user.tag},`)
       .setDescription(`You're the **${member.guild.memberCount}th** member on **${member.guild.name}**!`)
       .setThumbnail(member.user.displayAvatarURL())
-      .setColor(applicationConfig.primaryColor)
-    const guild = this.getGuild(member.guild.id)
+      .setColor(guild.getData('primaryColor'))
     guild.guild.channels.cache.get(guild.getData('channels').welcomeChannel).send(embed)
   }
 
@@ -291,14 +291,14 @@ module.exports = class Bot {
   }
 
   log (author, content, footer) {
+    const guild = this.mainGuild
     const embed = new MessageEmbed()
       .setAuthor(author.tag, author.displayAvatarURL())
       .setDescription(content)
-      .setColor(applicationConfig.primaryColor)
+      .setColor(guild.getData('primaryColor'))
     if (footer) {
       embed.setFooter(footer)
     }
-    const guild = this.mainGuild
 
     return guild.guild.channels.cache.get(guild.getData('channels').logsChannel).send(embed)
   }

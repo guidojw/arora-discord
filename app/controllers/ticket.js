@@ -9,8 +9,6 @@ const timeHelper = require('../helpers/time')
 const { MessageEmbed } = require('discord.js')
 const { stripIndents } = require('common-tags')
 
-const applicationConfig = require('../../config/application')
-
 const TicketState = {
   INIT: 'init',
   CREATING_CHANNEL: 'creatingChannel',
@@ -34,6 +32,7 @@ class TicketController extends EventEmitter {
 
     this.ticketsController = ticketsController
     this.client = client
+    this.guild = undefined // TODO: remove usages of Bot.mainGuild
     this.type = type
 
     if (author) {
@@ -96,7 +95,7 @@ class TicketController extends EventEmitter {
     const readableTime = timeHelper.getTime(date)
 
     const embed = new MessageEmbed()
-      .setColor(applicationConfig.primaryColor)
+      .setColor(this.client.bot.mainGuild.getData('primaryColor'))
       .setTitle('Ticket Information')
       .setDescription(stripIndents`
       Username: ${username ? '**' + username + '**' : '*unknown (user is not verified with RoVer)*'}
@@ -114,7 +113,7 @@ class TicketController extends EventEmitter {
   async submit () {
     if (this.state === TicketState.CREATING_CHANNEL) {
       const embed = new MessageEmbed()
-        .setColor(applicationConfig.primaryColor)
+        .setColor(this.client.bot.mainGuild.getData('primaryColor'))
         .setDescription(stripIndents`
         A Ticket Moderator will be with you shortly.
         This may take up to 24 hours. You can still close your ticket by using the \`/closeticket\` command.
@@ -155,14 +154,14 @@ class TicketController extends EventEmitter {
           this.logRating(rating)
 
           const embed = new MessageEmbed()
-            .setColor(applicationConfig.primaryColor)
+            .setColor(this.client.bot.mainGuild.getData('primaryColor'))
             .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
             .setTitle('Rating submitted')
             .setDescription('Thank you!')
           this.client.bot.send(this.author, embed)
         } else {
           const embed = new MessageEmbed()
-            .setColor(applicationConfig.primaryColor)
+            .setColor(this.client.bot.mainGuild.getData('primaryColor'))
             .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
             .setTitle('No rating submitted')
           this.client.bot.send(this.author, embed)
@@ -177,7 +176,7 @@ class TicketController extends EventEmitter {
     this.state = TicketState.REQUESTING_RATING
 
     const embed = new MessageEmbed()
-      .setColor(applicationConfig.primaryColor)
+      .setColor(this.client.bot.mainGuild.getData('primaryColor'))
       .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
       .setTitle('How would you rate the support you got?')
     const message = await this.client.bot.send(this.author, embed)
@@ -210,7 +209,7 @@ class TicketController extends EventEmitter {
     const channel = this.client.bot.mainGuild.guild.channels.cache.get(channels.ratingsChannel)
 
     const embed = new MessageEmbed()
-      .setColor(applicationConfig.primaryColor)
+      .setColor(this.client.bot.mainGuild.getData('primaryColor'))
       .setAuthor(this.author.tag, this.author.displayAvatarURL())
       .setTitle('Ticket Rating')
       .setDescription(stripIndents`

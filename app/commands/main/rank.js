@@ -24,14 +24,14 @@ module.exports = class RankCommand extends Command {
     })
   }
 
-  async execute (message, { username }) {
+  async execute (message, { username }, guild) {
     username = username ? typeof username === 'string' ? username : username.displayName : message.member.displayName
     const userId = await userService.getIdFromUsername(username)
     const rank = await userService.getRank(userId, applicationConfig.groupId)
 
     const embed = new MessageEmbed()
       .addField(`${message.argString ? username + '\'s' : 'Your'} rank`, rank)
-      .setColor(applicationConfig.primaryColor)
+      .setColor(guild.getData('primaryColor'))
     message.replyEmbed(embed)
   }
 }

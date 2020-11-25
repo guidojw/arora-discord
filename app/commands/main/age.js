@@ -5,8 +5,6 @@ const pluralize = require('pluralize')
 
 const { MessageEmbed } = require('discord.js')
 
-const applicationConfig = require('../../../config/application')
-
 module.exports = class AgeCommand extends Command {
   constructor (client) {
     super(client, {
@@ -25,7 +23,7 @@ module.exports = class AgeCommand extends Command {
     })
   }
 
-  async execute (message, { username }) {
+  async execute (message, { username }, guild) {
     username = username ? typeof username === 'string' ? username : username.displayName : message.member.displayName
     const userId = await userService.getIdFromUsername(username)
     const user = await userService.getUser(userId)
@@ -33,7 +31,7 @@ module.exports = class AgeCommand extends Command {
 
     const embed = new MessageEmbed()
       .addField(`${message.argString ? username + '\'s' : 'Your'} age`, `${age} ${pluralize('day', age)}`)
-      .setColor(applicationConfig.primaryColor)
+      .setColor(guild.getData('primaryColor'))
     message.replyEmbed(embed)
   }
 }

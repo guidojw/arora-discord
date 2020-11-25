@@ -24,14 +24,14 @@ module.exports = class TrainingsCommand extends Command {
     })
   }
 
-  async execute (message, { trainingId }) {
+  async execute (message, { trainingId }, guild) {
     if (trainingId) {
       const training = (await applicationAdapter('get', `/v1/groups/${applicationConfig.groupId}/trainings/${trainingId}`))
         .data
 
       const embed = new MessageEmbed()
         .addField(`Training ${training.id}`, await groupService.getTrainingSentence(training))
-        .setColor(applicationConfig.primaryColor)
+        .setColor(guild.getData('primaryColor'))
       message.replyEmbed(embed)
     } else {
       const trainings = (await applicationAdapter('get', `/v1/groups/${applicationConfig.groupId}/trainings?sort=date`))

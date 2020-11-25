@@ -1,8 +1,6 @@
 'use strict'
 const { MessageEmbed } = require('discord.js')
 
-const applicationConfig = require('../../config/application')
-
 const REACTION_COLLECTOR_TIMEOUT = 60000
 
 exports.getMemberByName = async (guild, name) => {
@@ -68,7 +66,6 @@ exports.getListEmbeds = async (title, values, getRow, data) => {
   const embeds = []
   let embed = new MessageEmbed()
     .setTitle(title)
-    .setColor(applicationConfig.primaryColor)
 
   for (const value of values) {
     const row = await getRow(value, data)
@@ -85,7 +82,6 @@ exports.getListEmbeds = async (title, values, getRow, data) => {
         if (embed.length + addition + 6 > 6000) { // +6 for \u200b
           embeds.push(embed)
           embed = new MessageEmbed()
-            .setColor(applicationConfig.primaryColor)
         }
         embed.addField('\u200b', `${row}\n`)
       }

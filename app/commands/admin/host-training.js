@@ -51,7 +51,7 @@ module.exports = class HostTrainingCommand extends Command {
     })
   }
 
-  async execute (message, { type, date, time, notes }) {
+  async execute (message, { type, date, time, notes }, guild) {
     const role = groupService.getRoleByAbbreviation(type)
     const dateInfo = timeHelper.getDateInfo(date)
     const timeInfo = timeHelper.getTimeInfo(time)
@@ -78,7 +78,7 @@ module.exports = class HostTrainingCommand extends Command {
     const embed = new MessageEmbed()
       .addField('Successfully scheduled', `**${role}** training on **${date}** at **${time}**.`)
       .addField('Training ID', training.id.toString())
-      .setColor(applicationConfig.primaryColor)
+      .setColor(guild.getData('primaryColor'))
     message.replyEmbed(embed)
   }
 }

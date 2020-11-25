@@ -4,8 +4,6 @@ const discordService = require('../../services/discord')
 
 const { MessageEmbed } = require('discord.js')
 
-const applicationConfig = require('../../../config/application')
-
 const tags = require('../../content/tags')
 
 module.exports = class TagCommand extends Command {
@@ -42,7 +40,13 @@ module.exports = class TagCommand extends Command {
         }
       }
 
-      message.reply(tag.tag)
+      if (tag.tag instanceof MessageEmbed) {
+        const embed = new MessageEmbed(tag.tag)
+        embed.setColor(guild.getData('primaryColor'))
+        message.reply(embed)
+      } else {
+        message.reply(tag.tag)
+      }
     } else {
       let list = ''
       let count = 1
@@ -57,7 +61,7 @@ module.exports = class TagCommand extends Command {
         .setTitle('Tags')
         .setDescription(list)
         .setFooter(`Page 1/1 (${count - 1} entries)`)
-        .setColor(applicationConfig.primaryColor)
+        .setColor(guild.getData('primaryColor'))
       message.replyEmbed(embed)
     }
   }
