@@ -65,7 +65,7 @@ module.exports = class SuspensionsCommand extends Command {
           true)
         .addField('Rank back', suspension.rankBack ? 'yes' : 'no', true)
         .addField('Reason', suspension.reason)
-        .setColor(applicationConfig.primaryColor)
+        .setColor(guild.getData('primaryColor'))
       message.replyEmbed(embed)
     } else {
       const suspensions = (await applicationAdapter('get', `/v1/groups/${applicationConfig.groupId}/suspensions?sort=date`))

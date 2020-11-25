@@ -2,8 +2,6 @@
 const { stripIndents } = require('common-tags')
 const { MessageEmbed } = require('discord.js')
 
-const applicationConfig = require('../../config/application')
-
 /* eslint-disable max-len */
 module.exports = [{
   names: ['game'],
@@ -64,7 +62,6 @@ Malicious Spreadsheets: <${process.env.MS_DOC}>
 }, {
   names: ['ticket'],
   tag: new MessageEmbed()
-    .setColor(applicationConfig.primaryColor)
     .setTitle('How to create a new support ticket?')
     .setDescription(stripIndents`
     You can create a new ticket by clicking the regarding number in #support.
@@ -75,7 +72,6 @@ Malicious Spreadsheets: <${process.env.MS_DOC}>
 }, {
   names: ['privacy', 'privacypolicy', 'pp'],
   tag: new MessageEmbed()
-    .setColor(applicationConfig.primaryColor)
     .setTitle('Privacy Policy')
     .setDescription('This policy sums up all you need to know about what data we store, what we use it for and what you can do about it.')
     .addField('Stored in a Database', stripIndents`

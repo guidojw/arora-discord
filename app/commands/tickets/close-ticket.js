@@ -5,8 +5,6 @@ const discordService = require('../../services/discord')
 const { stripIndents } = require('common-tags')
 const { TicketState } = require('../../controllers/ticket')
 
-const applicationConfig = require('../../../config/application')
-
 module.exports = class CloseTicketCommand extends Command {
   constructor (client) {
     super(client, {
@@ -40,9 +38,9 @@ module.exports = class CloseTicketCommand extends Command {
           `, `Ticket ID: ${ticketController.id}`)
 
           if (message.author === ticketController.author) {
-            ticketController.close('Ticket successfully closed.', false, applicationConfig.primaryColor)
+            ticketController.close('Ticket successfully closed.', false, guild.getData('primaryColor'))
           } else if (message.author !== ticketController.author) {
-            ticketController.close('The moderator has closed your ticket.', true, applicationConfig.primaryColor)
+            ticketController.close('The moderator has closed your ticket.', true, guild.getData('primaryColor'))
           }
         }
       }

@@ -24,12 +24,12 @@ module.exports = class MemberCountCommand extends Command {
     })
   }
 
-  async execute (message, { groupId }) {
+  async execute (message, { groupId }, guild) {
     const group = (await applicationAdapter('get', `/v1/groups/${groupId}`)).data
 
     const embed = new MessageEmbed()
       .addField(`${group.name}'s member count`, group.memberCount)
-      .setColor(applicationConfig.primaryColor)
+      .setColor(guild.getData('primaryColor'))
     message.replyEmbed(embed)
   }
 }

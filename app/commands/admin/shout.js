@@ -33,7 +33,7 @@ module.exports = class ShoutCommand extends Command {
     })
   }
 
-  async execute (message, { body }) {
+  async execute (message, { body }, guild) {
     const authorId = await userService.getIdFromUsername(message.member.displayName)
 
     const shout = (await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId}/shout`, {
@@ -46,7 +46,7 @@ module.exports = class ShoutCommand extends Command {
     } else {
       const embed = new MessageEmbed()
         .addField('Successfully shouted', shout.body)
-        .setColor(applicationConfig.primaryColor)
+        .setColor(guild.getData('primaryColor'))
       message.replyEmbed(embed)
     }
   }

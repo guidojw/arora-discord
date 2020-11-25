@@ -21,6 +21,7 @@ module.exports = async guild => {
   const authorIds = [...new Set(trainings.map(training => training.authorId))]
   const authors = await userService.getUsers(authorIds)
   const trainingsEmbed = getTrainingsEmbed(trainings, authors)
+  trainingsEmbed.setColor(guild.getData('primaryColor'))
   await message.edit(trainingsEmbed)
 
   const now = new Date()
@@ -54,7 +55,6 @@ function getTrainingsEmbed (trainings, authors) {
   const groupedTrainings = groupService.groupTrainingsByType(trainings)
   const types = Object.keys(groupedTrainings)
   const embed = new MessageEmbed()
-    .setColor(applicationConfig.primaryColor)
     .setFooter('Updated at')
     .setTimestamp()
 

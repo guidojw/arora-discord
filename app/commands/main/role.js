@@ -24,14 +24,14 @@ module.exports = class RoleCommand extends Command {
     })
   }
 
-  async execute (message, { username }) {
+  async execute (message, { username }, guild) {
     username = username ? typeof username === 'string' ? username : username.displayName : message.member.displayName
     const userId = await userService.getIdFromUsername(username)
     const role = await userService.getRole(userId, applicationConfig.groupId)
 
     const embed = new MessageEmbed()
       .addField(`${message.argString ? username + '\'s' : 'Your'} role`, role)
-      .setColor(applicationConfig.primaryColor)
+      .setColor(guild.getData('primaryColor'))
     message.replyEmbed(embed)
   }
 }

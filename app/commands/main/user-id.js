@@ -4,8 +4,6 @@ const userService = require('../../services/user')
 
 const { MessageEmbed } = require('discord.js')
 
-const applicationConfig = require('../../../config/application')
-
 module.exports = class UserIdCommand extends Command {
   constructor (client) {
     super(client, {
@@ -24,13 +22,13 @@ module.exports = class UserIdCommand extends Command {
     })
   }
 
-  async execute (message, { username }) {
+  async execute (message, { username }, guild) {
     username = username ? typeof username === 'string' ? username : username.displayName : message.member.displayName
     const userId = await userService.getIdFromUsername(username)
 
     const embed = new MessageEmbed()
       .addField(`${message.argString ? username + '\'s' : 'Your'} user ID`, userId)
-      .setColor(applicationConfig.primaryColor)
+      .setColor(guild.getData('primaryColor'))
     message.replyEmbed(embed)
   }
 }

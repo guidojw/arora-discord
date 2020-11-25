@@ -5,8 +5,6 @@ const discordService = require('../../services/discord')
 const { MessageEmbed } = require('discord.js')
 const { getTags } = require('../../helpers/string')
 
-const applicationConfig = require('../../../config/application')
-
 module.exports = class PollCommand extends Command {
   constructor (client) {
     super(client, {
@@ -26,7 +24,7 @@ module.exports = class PollCommand extends Command {
     })
   }
 
-  async execute (message, { poll }) {
+  async execute (message, { poll }, guild) {
     const options = []
     for (let num = 1; num <= 10; num++) {
       if (message.content.indexOf(`(${num})`) !== -1) {
@@ -36,7 +34,7 @@ module.exports = class PollCommand extends Command {
     const embed = new MessageEmbed()
       .setDescription(poll)
       .setAuthor(message.author.tag, message.author.displayAvatarURL())
-      .setColor(applicationConfig.primaryColor)
+      .setColor(guild.getData('primaryColor'))
 
     const newMessage = await message.channel.send(embed)
     if (options.length > 0) {
