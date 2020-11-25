@@ -50,19 +50,8 @@ module.exports = class Command extends Commando.Command {
 
 function _checkPermissions (member, object, roleGroups) {
   let { requiredRoles, bannedRoles } = object
-  requiredRoles = _convertRoles(requiredRoles, roleGroups)
-  bannedRoles = _convertRoles(bannedRoles, roleGroups)
+  requiredRoles = discordService.convertRoles(requiredRoles, roleGroups)
+  bannedRoles = discordService.convertRoles(bannedRoles, roleGroups)
   return !((requiredRoles.length > 0 && !discordService.hasSomeRole(member, requiredRoles)) ||
     (bannedRoles.length > 0 && discordService.hasSomeRole(member, bannedRoles)))
-}
-
-function _convertRoles (roles, roleGroups) {
-  roles = [...new Set(roles)]
-  for (const [name, groupRoles] of Object.entries(roleGroups)) {
-    if (roles.includes(name)) {
-      roles.splice(roles.indexOf(name), 1)
-      roles.push(...groupRoles)
-    }
-  }
-  return roles
 }

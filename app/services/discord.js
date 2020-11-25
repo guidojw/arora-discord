@@ -21,6 +21,17 @@ exports.hasSomeRole = (member, roles) => {
   return false
 }
 
+exports.convertRoles = (roles, roleGroups) => {
+  roles = [...new Set(roles)]
+  for (const [name, groupRoles] of Object.entries(roleGroups)) {
+    if (roles.includes(name)) {
+      roles.splice(roles.indexOf(name), 1)
+      roles.push(...groupRoles)
+    }
+  }
+  return roles
+}
+
 exports.getEmojiFromNumber = number => {
   switch (number) {
     case 1:
