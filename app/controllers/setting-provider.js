@@ -10,34 +10,64 @@ module.exports = class SettingProvider {
           guild.commandPrefix = settings.prefix
         }
 
-        if (settings.commandStates) {
+        if (settings.commands) {
           for (const command of client.registry.commands.values()) {
-            if (settings.commandStates[command.name] !== undefined) {
-              guild.setCommandEnabled(command.name, settings.commandStates[command.name])
+            const commandSettings = settings.commands[command.name]
+            if (commandSettings) {
+              if (!command.guarded && commandSettings.enabled !== undefined) {
+                guild.setCommandEnabled(command.name, commandSettings.enabled)
+              }
+
+              command.requiredRoles = commandSettings.requiredRoles || []
+              command.bannedRoles = commandSettings.bannedRoles || []
+            } else {
+              command.requiredRoles = []
+              command.bannedRoles = []
             }
           }
         }
       }
 
       for (const group of client.registry.groups.values()) {
-        if (!group.guarded) {
-          guild.setGroupEnabled(group, settings && settings.groupStates && settings.groupStates[group.name])
+        const groupSettings = settings && settings.groups ? settings.groups[group.id] : undefined
+        if (groupSettings) {
+          if (!group.guarded) {
+            guild.setGroupEnabled(group, groupSettings.enabled !== undefined ? groupSettings.enabled : false)
+          }
+
+          group.requiredRoles = groupSettings.requiredRoles || []
+          group.bannedRoles = groupSettings.bannedRoles || []
+        } else {
+          if (!group.guarded) {
+            guild.setGroupEnabled(group, false)
+          }
+
+          group.requiredRoles = []
+          group.bannedRoles = []
         }
       }
     }
 
     client.on('commandPrefixChange', (guild, prefix) => {
-      this.set(guild, 'commandPrefix', prefix)
+      this.set(guild, 'prefix', prefix)
     })
+
     client.on('commandStatusChange', async (guild, command, enabled) => {
-      const commandStates = await this.get(guild, 'commandStates', {})
-      commandStates[command.name] = enabled
-      this.set(guild, 'commandStates', commandStates)
+      const commandsSettings = await this.get(guild, 'commands', {})
+      if (!commandsSettings[command.name]) {
+        commandsSettings[command.name] = {}
+      }
+      commandsSettings[command.name].enabled = enabled
+      this.set(guild, 'commands', commandsSettings)
     })
+
     client.on('groupStatusChange', async (guild, group, enabled) => {
-      const groupStates = await this.get(guild, 'groupStates', {})
-      groupStates[group.name] = enabled
-      this.set(guild, 'groupStates', groupStates)
+      const groupsSettings = await this.get(guild, 'groups', {})
+      if (!groupsSettings[group.id]) {
+        groupsSettings[group.id] = {}
+      }
+      groupsSettings[group.id].enabled = enabled
+      this.set(guild, 'groups', groupsSettings)
     })
   }
 

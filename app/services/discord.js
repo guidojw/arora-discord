@@ -12,8 +12,8 @@ exports.getMemberByName = async (guild, name) => {
   }
 }
 
-exports.isAdmin = (member, adminRoles) => {
-  for (const roleId of adminRoles) {
+exports.hasSomeRole = (member, roles) => {
+  for (const roleId of roles) {
     if (member.roles.cache.has(roleId)) {
       return true
     }
