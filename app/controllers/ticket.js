@@ -3,7 +3,7 @@ const EventEmitter = require('events')
 const pluralize = require('pluralize')
 const short = require('short-uuid')
 const discordService = require('../services/discord')
-const roVerAdapter = require('../adapters/roVer')
+const roVerAdapter = require('../adapters/rover')
 const timeHelper = require('../helpers/time')
 
 const { MessageEmbed } = require('discord.js')
