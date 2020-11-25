@@ -11,7 +11,6 @@ module.exports = class BlockSupportCommand extends Command {
       description: 'Blocks someone from making tickets in the ticket system.',
       examples: ['blocksupport Happywalker'],
       clientPermissions: ['SEND_MESSAGES'],
-      adminOnly: true,
       args: [{
         key: 'member',
         type: 'member',

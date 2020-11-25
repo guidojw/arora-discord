@@ -18,8 +18,11 @@ module.exports = class SettingProvider {
                 guild.setCommandEnabled(command.name, commandSettings.enabled)
               }
 
-              command.requiredRoles = commandSettings.requiredRoles
-              command.bannedRoles = commandSettings.bannedRoles
+              command.requiredRoles = commandSettings.requiredRoles || []
+              command.bannedRoles = commandSettings.bannedRoles || []
+            } else {
+              command.requiredRoles = []
+              command.bannedRoles = []
             }
           }
         }
@@ -32,12 +35,15 @@ module.exports = class SettingProvider {
             guild.setGroupEnabled(group, groupSettings.enabled !== undefined ? groupSettings.enabled : false)
           }
 
-          group.requiredRoles = groupSettings.requiredRoles
-          group.bannedRoles = groupSettings.bannedRoles
+          group.requiredRoles = groupSettings.requiredRoles || []
+          group.bannedRoles = groupSettings.bannedRoles || []
         } else {
           if (!group.guarded) {
             guild.setGroupEnabled(group, false)
           }
+
+          group.requiredRoles = []
+          group.bannedRoles = []
         }
       }
     }
@@ -52,7 +58,7 @@ module.exports = class SettingProvider {
         commandsSettings[command.name] = {}
       }
       commandsSettings[command.name].enabled = enabled
-      this.set(guild, 'commandStates', commandsSettings)
+      this.set(guild, 'commands', commandsSettings)
     })
 
     client.on('groupStatusChange', async (guild, group, enabled) => {
@@ -61,7 +67,7 @@ module.exports = class SettingProvider {
         groupsSettings[group.id] = {}
       }
       groupsSettings[group.id].enabled = enabled
-      this.set(guild, 'groupStates', groupsSettings)
+      this.set(guild, 'groups', groupsSettings)
     })
   }
 

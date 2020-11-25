@@ -1,5 +1,6 @@
 'use strict'
 const Commando = require('discord.js-commando')
+
 const discordService = require('../services/discord')
 
 module.exports = class Command extends Commando.Command {
@@ -8,15 +9,24 @@ module.exports = class Command extends Commando.Command {
     info.argsPromptLimit = info.argsPromptLimit || info.group === 'admin' ? 3 : 1
     info.guildOnly = info.guildOnly !== undefined ? info.guildOnly : true
     super(client, info)
-
-    this.adminOnly = info.adminOnly !== undefined ? info.adminOnly : info.group === 'admin' || info.group === 'voting'
   }
 
   hasPermission (message, ownerOverride) {
-    if (!this.ownerOnly && this.adminOnly) {
+    if (!this.ownerOnly) {
       const guild = this.client.bot.getGuild(message.guild.id)
-      return discordService.isAdmin(message.member, guild.getData('adminRoles'))
+      const roleGroups = guild.getData('roleGroups')
+      const member = message.member
+      const command = message.command
+      const group = command.group
+
+      if (!_checkPermissions(member, group, roleGroups)) {
+        return false
+      }
+      if (!_checkPermissions(member, command, roleGroups)) {
+        return false
+      }
     }
+
     return super.hasPermission(message, ownerOverride)
   }
 
@@ -36,4 +46,24 @@ module.exports = class Command extends Commando.Command {
       return message.reply(err.message || err.msg)
     }
   }
+}
+
+function _checkPermissions (member, object, roleGroups) {
+  let { requiredRoles, bannedRoles } = object
+  requiredRoles = _convertRoles(requiredRoles, roleGroups)
+  bannedRoles = _convertRoles(bannedRoles, roleGroups)
+  return !((requiredRoles.length > 0 && !discordService.hasSomeRole(member, requiredRoles)) ||
+    (bannedRoles.length > 0 && discordService.hasSomeRole(member, bannedRoles)));
+
+}
+
+function _convertRoles (roles, roleGroups) {
+  roles = [...new Set(roles)]
+  for (const [name, groupRoles] of Object.entries(roleGroups)) {
+    if (roles.includes(name)) {
+      roles.splice(roles.indexOf(name), 1)
+      roles.push(...groupRoles)
+    }
+  }
+  return roles
 }
