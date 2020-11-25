@@ -7,35 +7,27 @@ module.exports = class SettingProvider {
       const settings = await this.getSettings(guild)
       if (settings) {
         if (settings.prefix) {
-          guild._commandPrefix = settings.prefix
+          guild.commandPrefix = settings.prefix
         }
 
         if (settings.commandStates) {
-          if (!guild._commandsEnabled) {
-            guild._commandsEnabled = {}
-          }
           for (const command of client.registry.commands.values()) {
             if (settings.commandStates[command.name] !== undefined) {
-              guild._commandsEnabled[command.name] = settings.commandStates[command.name]
+              guild.setCommandEnabled(command.name, settings.commandStates[command.name])
             }
           }
         }
+      }
 
-        if (settings.groupStates) {
-          if (!guild._groupsEnabled) {
-            guild._groupsEnabled = {}
-          }
-          for (const group of client.registry.groups.values()) {
-            if (settings.groupStates[group.name] !== undefined) {
-              guild._groupsEnabled[group.name] = settings.groupStates[group.name]
-            }
-          }
+      for (const group of client.registry.groups.values()) {
+        if (!group.guarded) {
+          guild.setGroupEnabled(group, settings && settings.groupStates && settings.groupStates[group.name])
         }
       }
     }
 
     client.on('commandPrefixChange', (guild, prefix) => {
-      this.set(guild, 'prefix', prefix)
+      this.set(guild, 'commandPrefix', prefix)
     })
     client.on('commandStatusChange', async (guild, command, enabled) => {
       const commandStates = await this.get(guild, 'commandStates', {})
