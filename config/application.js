@@ -9,5 +9,5 @@ module.exports = {
   tcdtId: 2124496060,
   productionMainGuildId: '248213310787289099',
   developmentMainGuildId: '675157013650735115',
-  apiEnabled: true
+  apiEnabled: false
 }
