@@ -39,7 +39,7 @@ module.exports = class BoostInfoCommand extends Command {
     const years = Math.floor(months / 12)
     months %= 12
     const emojis = this.client.bot.mainGuild.getData('emojis')
-    const emoji = this.client.bot.mainGuild.emojis.cache.find(emoji => emoji.id === emojis.boostEmoji)
+    const emoji = this.client.bot.mainGuild.guild.emojis.cache.find(emoji => emoji.id === emojis.boostEmoji)
     if (member.user.partial) {
       await member.user.partial.fetch()
     }
