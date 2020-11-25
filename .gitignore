@@ -1,5 +1,9 @@
-.env
 /.idea/*
+
 /node_modules
+
 ecosystem.conf.js
+config/application.js
+
+.env
 data/*

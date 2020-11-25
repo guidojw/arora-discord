@@ -8,5 +8,6 @@ module.exports = {
   ptdtId: 496942494,
   tcdtId: 2124496060,
   productionMainGuildId: '248213310787289099',
-  developmentMainGuildId: '675157013650735115'
+  developmentMainGuildId: '675157013650735115',
+  apiEnabled: true
 }

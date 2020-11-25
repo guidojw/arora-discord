@@ -54,9 +54,11 @@ module.exports = class Bot {
     this.client.on('messageReactionAdd', this.messageReactionAdd.bind(this))
     this.client.on('messageReactionRemove', this.messageReactionRemove.bind(this))
 
-    this.webSocketController = new WebSocketController(process.env.HOST)
-    this.webSocketController.on('rankChanged', this.rankChanged.bind(this))
-    this.webSocketController.on('trainDeveloperPayoutReport', this.trainDeveloperPayoutReport.bind(this))
+    if (applicationConfig.apiEnabled) {
+      this.webSocketController = new WebSocketController(process.env.HOST)
+      this.webSocketController.on('rankChanged', this.rankChanged.bind(this))
+      this.webSocketController.on('trainDeveloperPayoutReport', this.trainDeveloperPayoutReport.bind(this))
+    }
 
     this.client.login(process.env.DISCORD_TOKEN)
   }
