@@ -17,13 +17,11 @@ module.exports = class SettingProvider {
             }
           }
         }
+      }
 
-        for (const group of client.registry.groups.values()) {
-          if (!group.guarded) {
-            guild.setGroupEnabled(group, settings.groupStates
-              ? settings.groupStates[group.name] || false
-              : false)
-          }
+      for (const group of client.registry.groups.values()) {
+        if (!group.guarded) {
+          guild.setGroupEnabled(group, settings && settings.groupStates && settings.groupStates[group.name])
         }
       }
     }
