@@ -30,7 +30,7 @@ module.exports = class SuspensionsCommand extends Command {
   }
 
   async execute (message, { username }, guild) {
-    if (!discordService.hasSomeRole(message.member, guild.getData('adminRoles'))) {
+    if (!discordService.hasSomeRole(message.member, guild.getData('roleGroups').admin)) {
       if (!username) {
         username = message.member.displayName
       } else {

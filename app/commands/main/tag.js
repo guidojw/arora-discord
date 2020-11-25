@@ -30,7 +30,7 @@ module.exports = class TagCommand extends Command {
         return message.reply('Couldn\'t find tag!')
       }
       if (tag.group === 'admin') {
-        if (!discordService.hasSomeRole(message.member, guild.getData('adminRoles'))) {
+        if (!discordService.hasSomeRole(message.member, guild.getData('roleGroups').admin)) {
           return message.reply('You do not have permission to see that tag.')
         } else {
           const channels = guild.getData('channels')
