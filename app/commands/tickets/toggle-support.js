@@ -10,8 +10,7 @@ module.exports = class ToggleSupportCommand extends Command {
       name: 'togglesupport',
       aliases: ['toggle'],
       description: 'Enables/disables the support system.',
-      clientPermissions: ['SEND_MESSAGES'],
-      adminOnly: true
+      clientPermissions: ['SEND_MESSAGES']
     })
   }
 

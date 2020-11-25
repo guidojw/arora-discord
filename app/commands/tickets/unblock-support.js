@@ -10,7 +10,6 @@ module.exports = class UnblockSupportCommand extends Command {
       description: 'Unblocks someone from making tickets in the ticket system.',
       examples: ['unblocksupport Happywalker'],
       clientPermissions: ['SEND_MESSAGES'],
-      adminOnly: true,
       args: [{
         key: 'member',
         type: 'member',
