@@ -10,10 +10,10 @@ module.exports = class SettingProvider {
           guild.commandPrefix = settings.prefix
         }
 
-        if (settings.commandStates) {
+        if (settings.commands) {
           for (const command of client.registry.commands.values()) {
-            if (settings.commandStates[command.name] !== undefined) {
-              guild.setCommandEnabled(command.name, settings.commandStates[command.name])
+            if (settings.commands[command.id] && settings.commands[command.id].enabled !== undefined) {
+              guild.setCommandEnabled(command.id, settings.commands[command.id].enabled)
             }
           }
         }
@@ -21,7 +21,8 @@ module.exports = class SettingProvider {
 
       for (const group of client.registry.groups.values()) {
         if (!group.guarded) {
-          guild.setGroupEnabled(group, settings && settings.groupStates && settings.groupStates[group.name])
+          guild.setGroupEnabled(group, settings && settings.groups && settings.groups[group.id] && settings
+            .groups[group.id].enabled)
         }
       }
     }
@@ -29,15 +30,23 @@ module.exports = class SettingProvider {
     client.on('commandPrefixChange', (guild, prefix) => {
       this.set(guild, 'prefix', prefix)
     })
+
     client.on('commandStatusChange', async (guild, command, enabled) => {
-      const commandStates = await this.get(guild, 'commandStates', {})
-      commandStates[command.name] = enabled
-      this.set(guild, 'commandStates', commandStates)
+      const commandSettings = await this.get(guild, 'commands', {})
+      if (!commandSettings[command.id]) {
+        commandSettings[command.id] = {}
+      }
+      commandSettings[command.id].enabled = enabled
+      this.set(guild, 'commandStates', commandSettings)
     })
+
     client.on('groupStatusChange', async (guild, group, enabled) => {
-      const groupStates = await this.get(guild, 'groupStates', {})
-      groupStates[group.name] = enabled
-      this.set(guild, 'groupStates', groupStates)
+      const groupSettings = await this.get(guild, 'groups', {})
+      if (!groupSettings[group.id]) {
+        groupSettings[group.id] = {}
+      }
+      groupSettings[group.id].enabled = enabled
+      this.set(guild, 'groupStates', groupSettings)
     })
   }
 
