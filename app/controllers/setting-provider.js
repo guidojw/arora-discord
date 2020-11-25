@@ -12,10 +12,10 @@ module.exports = class SettingProvider {
 
         if (settings.commands) {
           for (const command of client.registry.commands.values()) {
-            const commandSettings = settings.commands[command.id]
+            const commandSettings = settings.commands[command.name]
             if (commandSettings) {
               if (commandSettings.enabled !== undefined) {
-                guild.setCommandEnabled(command.id, commandSettings.enabled)
+                guild.setCommandEnabled(command.name, commandSettings.enabled)
               }
 
               command.requiredRoles = commandSettings.requiredRoles
@@ -48,10 +48,10 @@ module.exports = class SettingProvider {
 
     client.on('commandStatusChange', async (guild, command, enabled) => {
       const commandsSettings = await this.get(guild, 'commands', {})
-      if (!commandsSettings[command.id]) {
-        commandsSettings[command.id] = {}
+      if (!commandsSettings[command.name]) {
+        commandsSettings[command.name] = {}
       }
-      commandsSettings[command.id].enabled = enabled
+      commandsSettings[command.name].enabled = enabled
       this.set(guild, 'commandStates', commandsSettings)
     })
 
