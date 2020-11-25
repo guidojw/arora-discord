@@ -4,7 +4,9 @@ const userService = require('../../services/user')
 
 const { MessageEmbed } = require('discord.js')
 
-const applicationConfig = require('../../../config/application')
+const TTDT_ID = 912438803
+const PTDT_ID = 496942494
+const TCDT_ID = 2124496060
 
 module.exports = class BadgesCommand extends Command {
   constructor (client) {
@@ -26,9 +28,9 @@ module.exports = class BadgesCommand extends Command {
   async execute (message, { username }, guild) {
     username = username ? typeof username === 'string' ? username : username.displayName : message.member.displayName
     const userId = await userService.getIdFromUsername(username)
-    const hasTtdt = await userService.hasBadge(userId, applicationConfig.ttdtId)
-    const hasPtdt = await userService.hasBadge(userId, applicationConfig.ptdtId)
-    const hasTcdt = await userService.hasBadge(userId, applicationConfig.tcdtId)
+    const hasTtdt = await userService.hasBadge(userId, TTDT_ID)
+    const hasPtdt = await userService.hasBadge(userId, PTDT_ID)
+    const hasTcdt = await userService.hasBadge(userId, TCDT_ID)
 
     const embed = new MessageEmbed()
       .setTitle(`${message.argString ? username + '\'s' : 'Your'} badges`)
