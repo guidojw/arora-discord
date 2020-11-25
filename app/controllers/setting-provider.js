@@ -27,7 +27,7 @@ module.exports = class SettingProvider {
     }
 
     client.on('commandPrefixChange', (guild, prefix) => {
-      this.set(guild, 'commandPrefix', prefix)
+      this.set(guild, 'prefix', prefix)
     })
     client.on('commandStatusChange', async (guild, command, enabled) => {
       const commandStates = await this.get(guild, 'commandStates', {})
