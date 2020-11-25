@@ -35,7 +35,7 @@ module.exports = class Guild extends EventEmitter {
       throw new Error('Guild data is not loaded yet.')
     }
     this.data[key] = value
-    await fs.promises.writeFile(this.dataPath, JSON.stringify(this.data))
+    await fs.promises.writeFile(this.dataPath, JSON.stringify(this.data, null, '\t'))
   }
 
   getData (key) {
