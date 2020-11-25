@@ -17,25 +17,26 @@ module.exports = class TicketsController {
   }
 
   async init () {
-    const guild = this.client.bot.mainGuild
-    const channels = guild.getData('channels')
-    const category = guild.guild.channels.cache.get(channels.ticketsCategory)
+    for (const guild of this.client.bot.guilds) {
+      const channels = guild.getData('channels')
+      const category = guild.guild.channels.cache.get(channels.ticketsCategory)
 
-    for (const channel of category.children.values()) {
-      if (channel.id === channels.ratingsChannel || channel.id === channels.supportChannel) {
-        continue
+      for (const channel of category.children.values()) {
+        if (channel.id === channels.ratingsChannel || channel.id === channels.supportChannel) {
+          continue
+        }
+
+        // Get the ticket's id and type from the channel name (dataloss-id).
+        const parts = channel.name.split('-')
+        const type = TicketController.getTypeFromName(parts[0])
+        const id = parts[1]
+
+        const ticketController = new TicketController(this, this.client, guild, type)
+        ticketController.id = id
+        ticketController.channel = channel
+        this.tickets[id] = ticketController
+        ticketController.once('close', this.clearTicket.bind(this, ticketController))
       }
-
-      // Get the ticket's id and type from the channel name (dataloss-id).
-      const parts = channel.name.split('-')
-      const type = TicketController.getTypeFromName(parts[0])
-      const id = parts[1]
-
-      const ticketController = new TicketController(this, this.client, type)
-      ticketController.id = id
-      ticketController.channel = channel
-      this.tickets[id] = ticketController
-      ticketController.once('close', this.clearTicket.bind(this, ticketController))
     }
 
     // Connect the message event for adding messages and moderators
@@ -85,7 +86,7 @@ module.exports = class TicketsController {
 
         let ticketController = this.getTicketFromAuthor(user)
         if (!ticketController) {
-          if (!this.client.bot.mainGuild.getData('settings').supportEnabled) {
+          if (!guild.getData('settings').supportEnabled) {
             const embed = new MessageEmbed()
               .setColor(0xff0000)
               .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
@@ -107,7 +108,7 @@ module.exports = class TicketsController {
           this.clearAuthor(user)
           clearTimeout(timeout)
 
-          ticketController = new TicketController(this, this.client, type, user)
+          ticketController = new TicketController(this, this.client, guild, type, user)
           this.tickets[ticketController.id] = ticketController
           ticketController.once('close', this.clearTicket.bind(this, ticketController))
         } else {
