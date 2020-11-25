@@ -53,8 +53,7 @@ function _checkPermissions (member, object, roleGroups) {
   requiredRoles = _convertRoles(requiredRoles, roleGroups)
   bannedRoles = _convertRoles(bannedRoles, roleGroups)
   return !((requiredRoles.length > 0 && !discordService.hasSomeRole(member, requiredRoles)) ||
-    (bannedRoles.length > 0 && discordService.hasSomeRole(member, bannedRoles)));
-
+    (bannedRoles.length > 0 && discordService.hasSomeRole(member, bannedRoles)))
 }
 
 function _convertRoles (roles, roleGroups) {
