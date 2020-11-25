@@ -14,7 +14,7 @@ module.exports = class SettingProvider {
           for (const command of client.registry.commands.values()) {
             const commandSettings = settings.commands[command.name]
             if (commandSettings) {
-              if (commandSettings.enabled !== undefined) {
+              if (!command.guarded && commandSettings.enabled !== undefined) {
                 guild.setCommandEnabled(command.name, commandSettings.enabled)
               }
 
