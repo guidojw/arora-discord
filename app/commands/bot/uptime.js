@@ -16,7 +16,7 @@ module.exports = class UptimeCommand extends Command {
 
   execute (message, _args, guild) {
     const embed = new MessageEmbed()
-      .addField('NSadmin has been online for', getDurationString(this.client.uptime))
+      .addField('I have been online for', getDurationString(this.client.uptime))
       .setColor(guild.getData('primaryColor'))
     message.replyEmbed(embed)
   }
