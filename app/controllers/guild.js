@@ -4,6 +4,7 @@ const path = require('path')
 const cron = require('node-cron')
 const EventEmitter = require('events')
 
+const applicationConfig = require('../../config/application')
 const cronConfig = require('../../config/cron')
 
 module.exports = class Guild extends EventEmitter {
@@ -53,9 +54,13 @@ module.exports = class Guild extends EventEmitter {
       this.scheduleJob('updateTimerJob')
     }
 
+    // Jobs depending on if API is enabled
+    if (applicationConfig.apiEnabled) {
+      this.scheduleJob('announceTrainingsJob')
+    }
+
     // Other jobs
     this.scheduleJob('premiumMembersReportJob')
-    this.scheduleJob('announceTrainingsJob')
   }
 
   scheduleJob (name) {
