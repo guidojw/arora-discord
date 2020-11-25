@@ -25,7 +25,7 @@ module.exports = class BlockSupportCommand extends Command {
 
     if (member.roles.cache.has(roles.ticketsBannedRole)) {
       return message.reply('Member is already blocked.')
-    } else if (discordService.hasSomeRole(member, guild.getData('adminRoles'))) {
+    } else if (discordService.hasSomeRole(member, guild.getData('roleGroups').admin)) {
       return message.reply('Can\'t block HRs.')
     } else if (member.roles.cache.has(roles.ticketModeratorRole)) {
       return message.reply('Can\'t block Ticket Moderators.')

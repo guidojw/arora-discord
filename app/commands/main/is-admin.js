@@ -24,7 +24,7 @@ module.exports = class IsAdminCommand extends Command {
     member = member || message.member
     const username = member.displayName
 
-    if (discordService.hasSomeRole(member, guild.getData('adminRoles'))) {
+    if (discordService.hasSomeRole(member, guild.getData('roleGroups').admin)) {
       message.reply(`Yes, ${message.argString ? '**' + username + '** is' : 'you are'} admin!`)
     } else {
       message.reply(`No, ${message.argString ? '**' + username + '** is not' : 'you\'re not'} admin!`)
