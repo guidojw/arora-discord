@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
     })
     GroupPermission.belongsTo(models.RoleGroup, {
       foreignKey: {
-        name: roleGroupId,
+        name: 'roleGroupId',
         primaryKey: true
       },
       onDelete: 'CASCADE'
