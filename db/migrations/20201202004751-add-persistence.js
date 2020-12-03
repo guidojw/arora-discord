@@ -95,7 +95,7 @@ module.exports = {
         field: 'author_id'
       },
       content: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(7000),
         allowNull: false
       }
     })

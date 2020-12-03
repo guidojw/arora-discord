@@ -2,7 +2,7 @@
 module.exports = (sequelize, DataTypes) => {
   const Tag = sequelize.define('Tag', {
     content: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(7000), // 6000 for embed character limit + 1000 margin for JSON characters
       allowNull: false
     },
     authorId: {

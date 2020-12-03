@@ -59,8 +59,6 @@ module.exports = class Bot {
       this.webSocketController.on('rankChanged', this.rankChanged.bind(this))
       this.webSocketController.on('trainDeveloperPayoutReport', this.trainDeveloperPayoutReport.bind(this))
     }
-
-    this.client.login(process.env.DISCORD_TOKEN)
   }
 
   setActivity (name, options) {

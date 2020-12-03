@@ -8,4 +8,4 @@ if (process.env.SENTRY_DSN) {
   Sentry.init({dsn: process.env.SENTRY_DSN})
 }
 
-new Bot()
+new Bot().login(process.env.TOKEN)
