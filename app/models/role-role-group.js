@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       onDelete: 'CASCADE'
     })
+
   }
 
   return RoleRoleGroup

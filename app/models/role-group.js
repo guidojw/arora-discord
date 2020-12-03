@@ -23,6 +23,11 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true
       }
     })
+    RoleGroup.belongsToMany(models.Permission, {
+      through: models.GroupPermission,
+      sourceKey: 'id',
+      targetKey: 'name'
+    })
   }
 
   return RoleGroup

@@ -1,6 +1,6 @@
 'use strict'
 module.exports = (sequelize, DataTypes) => {
-  const GroupPermission = sequelize.define('GroupPermission', {
+  const RoleGroupPermission = sequelize.define('RoleGroupPermission', {
     permitted: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
@@ -10,15 +10,15 @@ module.exports = (sequelize, DataTypes) => {
     tableName: 'role_groups_permissions'
   })
 
-  GroupPermission.associate = models => {
-    GroupPermission.belongsTo(models.Permission, {
+  RoleGroupPermission.associate = models => {
+    RoleGroupPermission.belongsToMany(models.Permission, {
       foreignKey: {
         name: 'permissionName',
         primaryKey: true
       },
       onDelete: 'CASCADE'
     })
-    GroupPermission.belongsTo(models.RoleGroup, {
+    RoleGroupPermission.belongsTo(models.RoleGroup, {
       foreignKey: {
         name: 'roleGroupId',
         primaryKey: true
@@ -27,5 +27,5 @@ module.exports = (sequelize, DataTypes) => {
     })
   }
 
-  return GroupPermission
+  return RoleGroupPermission
 }

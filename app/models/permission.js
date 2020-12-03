@@ -10,11 +10,11 @@ module.exports = (sequelize, DataTypes) => {
   })
 
   Permission.associate = models => {
-    Permission.hasMany(models.GroupPermission, {
-      foreignKey: {
-        name: 'permissionName',
-        primaryKey: true
-      }
+    Permission.belongsToMany(models.RoleGroup, {
+      through: models.RoleGroupPermission,
+      sourceKey: 'name',
+      targetKey: 'id'
+
     })
     Permission.hasMany(models.RolePermission, {
       foreignKey: {
