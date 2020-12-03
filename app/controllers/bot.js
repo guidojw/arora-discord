@@ -253,8 +253,7 @@ module.exports = class Bot {
   async trainDeveloperPayoutReport (developersSales) {
     const developerIds = Object.keys(developersSales)
     const developers = await userService.getUsers(developerIds)
-    const emojis = this.mainGuild.getData('emojis')
-    const emoji = this.mainGuild.guild.emojis.cache.find(emoji => emoji.id === emojis.robuxEmoji)
+    const emoji = this.mainGuild.guild.emojis.cache.find(emoji => emoji.name.toLowerCase() === 'robux')
 
     const embed = new MessageEmbed()
       .setTitle('Train Developers Payout Report')
