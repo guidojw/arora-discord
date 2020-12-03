@@ -3,8 +3,7 @@ module.exports = (sequelize, DataTypes) => {
   const Guild = sequelize.define('Guild', {
     id: {
       type: DataTypes.STRING,
-      primaryKey: true,
-      allowNull: false
+      primaryKey: true
     },
     primaryColor: {
       type: DataTypes.INTEGER,
@@ -56,8 +55,7 @@ module.exports = (sequelize, DataTypes) => {
     Guild.hasMany(models.GuildCommand, {
       foreignKey: {
         name: 'guildId',
-        primaryKey: true,
-        allowNull: false
+        primaryKey: true
       }
     })
   }

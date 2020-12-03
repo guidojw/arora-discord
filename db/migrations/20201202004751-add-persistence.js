@@ -4,7 +4,6 @@ module.exports = {
     await queryInterface.createTable('guilds', {
       id: {
         type: Sequelize.STRING,
-        allowNull: false,
         primaryKey: true
       },
       primaryColor: {
@@ -54,7 +53,6 @@ module.exports = {
     await queryInterface.createTable('guilds_commands', {
       commandName: {
         type: Sequelize.STRING,
-        allowNull: false,
         primaryKey: true,
         field: 'command_name'
       },
@@ -74,9 +72,54 @@ module.exports = {
         defaultValue: false
       }
     })
+
+    await queryInterface.createTable('tags', {
+      id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+      },
+      guildId: {
+        type: Sequelize.STRING,
+        references: {
+          model: 'guilds',
+          key: 'id'
+        },
+        onDelete: 'CASCADE',
+        field: 'guild_id'
+      },
+      authorId: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        field: 'author_id'
+      },
+      content: {
+        type: Sequelize.STRING,
+        allowNull: false
+      }
+    })
+
+    await queryInterface.createTable('tag_names', {
+      name: {
+        type: Sequelize.STRING,
+        primaryKey: true
+      },
+      tagId: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        references: {
+          model: 'tags',
+          key: 'id'
+        },
+        onDelete: 'CASCADE',
+        field: 'tag_id'
+      }
+    })
   },
 
   down: async (queryInterface /* , Sequelize */) => {
+    await queryInterface.dropTable('tag_names')
+    await queryInterface.dropTable('tags')
     await queryInterface.dropTable('guilds_commands')
     await queryInterface.dropTable('guilds')
   }
