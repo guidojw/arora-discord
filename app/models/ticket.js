@@ -1,34 +1,35 @@
 'use strict'
 module.exports = (sequelize, DataTypes) => {
-  const Tag = sequelize.define('Tag', {
-    content: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
+  const Ticket = sequelize.define('Ticket', {
     authorId: {
       type: DataTypes.STRING,
       allowNull: false,
       field: 'author_id'
+    },
+    channelId: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      field: 'channel_id'
     }
   }, {
-    tableName: 'tags'
+    tableName: 'tickets_moderators'
   })
 
-  Tag.associate = models => {
-    Tag.belongsTo(models.Guild, {
+  Ticket.associate = models => {
+    Ticket.belongsTo(models.Guild, {
       foreignKey: {
         name: 'guildId',
         allowNull: false
       },
       onDelete: 'CASCADE'
     })
-    Tag.hasMany(models.TagName, {
+    Ticket.hasMany(models.TicketModerator, {
       foreignKey: {
-        name: 'tagId',
+        name: 'ticketId',
         primaryKey: true
       }
     })
   }
 
-  return Tag
+  return Ticket
 }

@@ -81,6 +81,7 @@ module.exports = {
       },
       guildId: {
         type: Sequelize.STRING,
+        allowNull: false,
         references: {
           model: 'guilds',
           key: 'id'
@@ -115,11 +116,61 @@ module.exports = {
         field: 'tag_id'
       }
     })
+
+    await queryInterface.createTable('tickets', {
+      id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+      },
+      guildId: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        references: {
+          model: 'guilds',
+          key: 'id'
+        },
+        onDelete: 'CASCADE',
+        field: 'guild_id'
+      },
+      authorId: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        field: 'author_id'
+      },
+      channelId: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        field: 'channel_id'
+      }
+    })
+
+    await queryInterface.createTable('tickets_moderators', {
+      userId: {
+        type: Sequelize.STRING,
+        primaryKey: true,
+        field: 'user_id'
+      },
+      ticketId: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        references: {
+          model: 'tickets',
+          key: 'id'
+        },
+        onDelete: 'CASCADE',
+        field: 'ticket_id'
+      }
+    })
   },
 
   down: async (queryInterface /* , Sequelize */) => {
+    await queryInterface.dropTable('tickets_moderators')
+    await queryInterface.dropTable('tickets')
+
     await queryInterface.dropTable('tag_names')
     await queryInterface.dropTable('tags')
+
     await queryInterface.dropTable('guilds_commands')
     await queryInterface.dropTable('guilds')
   }

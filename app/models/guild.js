@@ -58,6 +58,12 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true
       }
     })
+    Guild.hasMany(models.Tag, {
+      foreignKey: {
+        name: 'guildId',
+        allowNull: false
+      }
+    })
   }
 
   return Guild
