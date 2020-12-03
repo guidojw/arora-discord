@@ -316,9 +316,71 @@ module.exports = {
         field: 'role_group_id'
       }
     })
+
+    await queryInterface.createTable('permissions', {
+      name: {
+        type: Sequelize.STRING,
+        primaryKey: true
+      }
+    })
+
+    await queryInterface.createTable('role_groups_permissions', {
+      roleGroupId: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        references: {
+          model: 'role_groups',
+          key: 'id'
+        },
+        onDelete: 'CASCADE',
+        field: 'role_group_id'
+      },
+      permissionName: {
+        type: Sequelize.STRING,
+        primaryKey: true,
+        references: {
+          model: 'permissions',
+          key: 'name',
+        },
+        onDelete: 'CASCADE',
+        field: 'permission_name'
+      },
+      permitted: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: true
+      }
+    })
+
+    await queryInterface.createTable('roles_permissions', {
+      roleId: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        field: 'role_id'
+      },
+      permissionName: {
+        type: Sequelize.STRING,
+        primaryKey: true,
+        references: {
+          model: 'permissions',
+          key: 'name',
+        },
+        onDelete: 'CASCADE',
+        field: 'permission_name'
+      },
+      permitted: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: true
+      }
+    })
   },
 
   down: async (queryInterface /* , Sequelize */) => {
+    await queryInterface.dropTable('roles_permissions')
+    await queryInterface.dropTable('role_groups_permissions')
+    await queryInterface.dropTable('permissions')
+
     await queryInterface.dropTable('roles_role_groups')
     await queryInterface.dropTable('role_groups')
 
