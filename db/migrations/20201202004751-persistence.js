@@ -1,6 +1,14 @@
 'use strict'
 module.exports = {
   up: async (queryInterface, Sequelize) => {
+    // Sequelize's seederStorage doesn't work, so we do it ourselves:
+    await queryInterface.createTable('sequelize_data', {
+      name: {
+        type: Sequelize.STRING,
+        primaryKey: true
+      }
+    })
+
     await queryInterface.createTable('guilds', {
       id: {
         type: Sequelize.STRING,
@@ -400,5 +408,7 @@ module.exports = {
 
     await queryInterface.dropTable('guilds_commands')
     await queryInterface.dropTable('guilds')
+
+    await queryInterface.dropTable('sequelize_data')
   }
 }

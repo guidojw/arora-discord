@@ -11,7 +11,8 @@ module.exports = {
     define: {
       timestamps: false,
       underscored: true
-    }
+    },
+    migrationStorageTableName: 'sequelize_meta'
   },
 
   production: {
@@ -26,6 +27,7 @@ module.exports = {
       timestamps: false,
       underscored: true
     },
+    migrationStorageTableName: 'sequelize_meta',
     logging: false
   }
 }
