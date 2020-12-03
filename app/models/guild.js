@@ -64,6 +64,24 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false
       }
     })
+    Guild.hasMany(models.Ticket, {
+      foreignKey: {
+        name: 'guildId',
+        allowNull: false
+      }
+    })
+    Guild.hasMany(models.RoleBinding, {
+      foreignKey: {
+        name: 'guildId',
+        allowNull: false
+      }
+    })
+    Guild.hasMany(models.UserRole, {
+      foreignKey: {
+        name: 'guildId',
+        primaryKey: true
+      }
+    })
   }
 
   return Guild

@@ -162,6 +162,57 @@ module.exports = {
         field: 'ticket_id'
       }
     })
+
+    await queryInterface.createTable('role_bindings', {
+      id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+      },
+      roleId: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        field: 'role_id'
+      },
+      guildId: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        references: {
+          model: 'guilds',
+          key: 'id'
+        },
+        onDelete: 'CASCADE',
+        field: 'guild_id'
+      },
+      min: {
+        type: Sequelize.INTEGER,
+        allowNull: false
+      },
+      max: Sequelize.INTEGER
+    })
+
+    await queryInterface.createTable('users_roles', {
+      userId: {
+        type: Sequelize.STRING,
+        primaryKey: true,
+        field: 'user_id'
+      },
+      roleId: {
+        type: Sequelize.STRING,
+        primaryKey: true,
+        field: 'role_id'
+      },
+      guildId: {
+        type: Sequelize.STRING,
+        primaryKey: true,
+        references: {
+          model: 'guilds',
+          key: 'id'
+        },
+        onDelete: 'CASCADE',
+        field: 'guild_id'
+      }
+    })
   },
 
   down: async (queryInterface /* , Sequelize */) => {
