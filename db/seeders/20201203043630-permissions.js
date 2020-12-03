@@ -2,7 +2,7 @@
 const Bot = require('../../app/controllers/bot')
 
 module.exports = {
-  up: async (queryInterface /* , Sequelize */) => {
+  up: async (queryInterface) => {
     const bot = new Bot()
 
     let permissions = []
@@ -22,7 +22,7 @@ module.exports = {
     await queryInterface.bulkInsert('permissions', permissions)
   },
 
-  down: async (queryInterface /* , Sequelize */) => {
+  down: async (queryInterface) => {
     await queryInterface.bulkDelete('permissions', null, {})
   }
 }

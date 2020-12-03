@@ -376,7 +376,7 @@ module.exports = {
     })
   },
 
-  down: async (queryInterface /* , Sequelize */) => {
+  down: async (queryInterface) => {
     await queryInterface.dropTable('roles_permissions')
     await queryInterface.dropTable('role_groups_permissions')
     await queryInterface.dropTable('permissions')

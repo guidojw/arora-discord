@@ -4,7 +4,7 @@ const { MessageEmbed } = require('discord.js')
 const tags = require('../../app/content/tags')
 
 module.exports = {
-  up: async (queryInterface /* , Sequelize */) => {
+  up: async (queryInterface) => {
     const guild = (await queryInterface.bulkInsert(
       'guilds',
       [{ id: 'global' }],
@@ -18,15 +18,14 @@ module.exports = {
         author_id: process.env.BOT_ID
       }], { returning: true }))[0]
 
-      const tagNames = []
-      for (const name of tag.names) {
-        tagNames.push({ tag_id: newTag.id, name })
-      }
+      const tagNames = tag.names.map(name => {
+        return { tag_id: newTag.id, name }
+      })
       await queryInterface.bulkInsert('tag_names', tagNames)
     }
   },
 
-  down: async (queryInterface /* , Sequelize */) => {
+  down: async (queryInterface) => {
     await queryInterface.bulkDelete('tags', null, {})
     await queryInterface.bulkDelete('guilds', null, {})
   }
