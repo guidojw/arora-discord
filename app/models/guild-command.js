@@ -1,6 +1,6 @@
 'use strict'
 module.exports = (sequelize, DataTypes) => {
-  const Command = sequelize.define('GuildCommand', {
+  const GuildCommand = sequelize.define('GuildCommand', {
     commandName: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -13,11 +13,11 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: false
     }
   }, {
-    tableName: 'commands'
+    tableName: 'guilds_commands'
   })
 
-  Command.associate = models => {
-    Command.belongsTo(models.Guild, {
+  GuildCommand.associate = models => {
+    GuildCommand.belongsTo(models.Guild, {
       foreignKey: {
         name: 'guildId',
         primaryKey: true,
@@ -27,5 +27,5 @@ module.exports = (sequelize, DataTypes) => {
     })
   }
 
-  return Command
+  return GuildCommand
 }

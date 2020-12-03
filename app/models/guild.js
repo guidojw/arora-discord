@@ -8,12 +8,12 @@ module.exports = (sequelize, DataTypes) => {
     },
     primaryColor: {
       type: DataTypes.INTEGER,
-      allowNull: false,
       field: 'primary_color'
     },
     supportEnabled: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
+      defaultValue: false,
       field: 'support_enabled'
     },
     logsChannelId: {

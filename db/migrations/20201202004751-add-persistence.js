@@ -14,6 +14,7 @@ module.exports = {
       supportEnabled: {
         type: Sequelize.BOOLEAN,
         allowNull: false,
+        defaultValue: false,
         field: 'support_enabled'
       },
       logsChannelId: {
@@ -64,6 +65,7 @@ module.exports = {
           model: 'guilds',
           key: 'id'
         },
+        onDelete: 'CASCADE',
         field: 'guild_id'
       },
       enabled: {
