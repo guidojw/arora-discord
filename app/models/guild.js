@@ -82,6 +82,12 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true
       }
     })
+    Guild.hasMany(models.ChannelChannel, {
+      foreignKey: {
+        name: 'guildId',
+        primaryKey: true
+      }
+    })
   }
 
   return Guild

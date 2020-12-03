@@ -213,9 +213,37 @@ module.exports = {
         field: 'guild_id'
       }
     })
+
+    await queryInterface.createTable('channels_channels', {
+      channel1_id: {
+        type: Sequelize.STRING,
+        primaryKey: true,
+        field: 'channel1_id'
+      },
+      channel2_id: {
+        type: Sequelize.STRING,
+        primaryKey: true,
+        field: 'channel2_id'
+      },
+      guildId: {
+        type: Sequelize.STRING,
+        primaryKey: true,
+        references: {
+          model: 'guilds',
+          key: 'id'
+        },
+        onDelete: 'CASCADE',
+        field: 'guild_id'
+      }
+    })
   },
 
   down: async (queryInterface /* , Sequelize */) => {
+    await queryInterface.dropTable('channels_channels')
+
+    await queryInterface.dropTable('users_roles')
+    await queryInterface.dropTable('role_bindings')
+
     await queryInterface.dropTable('tickets_moderators')
     await queryInterface.dropTable('tickets')
 
