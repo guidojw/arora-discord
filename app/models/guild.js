@@ -53,7 +53,7 @@ module.exports = (sequelize, DataTypes) => {
   })
 
   Guild.associate = models => {
-    Guild.hasMany(models.Command, {
+    Guild.hasMany(models.GuildCommand, {
       foreignKey: {
         name: 'guildId',
         primaryKey: true,
