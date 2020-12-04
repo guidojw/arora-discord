@@ -22,7 +22,18 @@ module.exports = (sequelize, DataTypes) => {
       },
       onDelete: 'CASCADE'
     })
+    Group.belongsToMany(models.Permission, {
+      through: models.GroupPermission,
+      sourceKey: 'id',
+      targetKey: 'name'
+    })
     Group.hasMany(models.ChannelGroup, {
+      foreignKey: {
+        name: 'groupId',
+        primaryKey: true
+      }
+    })
+    Group.hasMany(models.RoleGroup, {
       foreignKey: {
         name: 'groupId',
         primaryKey: true

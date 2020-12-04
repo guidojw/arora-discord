@@ -6,10 +6,11 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       field: 'role_id'
     },
-    permitted: {
-      type: DataTypes.BOOLEAN,
+    type: {
+      type: DataTypes.ENUM,
       allowNull: false,
-      defaultValue: true
+      values: ['allow', 'deny'],
+      defaultValue: 'allow'
     }
   }, {
     tableName: 'roles_permissions'

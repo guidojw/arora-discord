@@ -373,7 +373,7 @@ module.exports = {
 
   down: async (queryInterface) => {
     await queryInterface.dropTable('roles_permissions')
-    await queryInterface.dropTable('role_groups_permissions')
+    await queryInterface.dropTable('groups_permissions')
     await queryInterface.dropTable('permissions')
 
     await queryInterface.dropTable('roles_groups')
