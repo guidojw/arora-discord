@@ -245,7 +245,7 @@ module.exports = {
       }
     })
 
-    await queryInterface.createTable('channel_groups', {
+    await queryInterface.createTable('groups', {
       id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
@@ -254,6 +254,11 @@ module.exports = {
       name: {
         type: Sequelize.STRING,
         allowNull: false
+      },
+      type: {
+        type: Sequelize.ENUM,
+        allowNull: false,
+        values: ['role', 'channel']
       },
       guildId: {
         type: Sequelize.STRING,
@@ -267,61 +272,39 @@ module.exports = {
       }
     })
 
-    await queryInterface.createTable('channels_channel_groups', {
+    await queryInterface.createTable('channels_groups', {
       channelId: {
         type: Sequelize.STRING,
         primaryKey: true,
         field: 'channel_id'
       },
-      channelGroupId: {
+      groupId: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         references: {
-          model: 'channel_groups',
+          model: 'groups',
           key: 'id'
         },
         onDelete: 'CASCADE',
-        field: 'channel_group_id'
+        field: 'group_id'
       }
     })
 
-    await queryInterface.createTable('role_groups', {
-      id: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
-      },
-      name: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
-      guildId: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        references: {
-          model: 'guilds',
-          key: 'id'
-        },
-        onDelete: 'CASCADE',
-        field: 'guild_id'
-      }
-    })
-
-    await queryInterface.createTable('roles_role_groups', {
+    await queryInterface.createTable('roles_groups', {
       roleId: {
         type: Sequelize.STRING,
         primaryKey: true,
         field: 'role_id'
       },
-      roleGroupId: {
+      groupId: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         references: {
-          model: 'role_groups',
+          model: 'groups',
           key: 'id'
         },
         onDelete: 'CASCADE',
-        field: 'role_group_id'
+        field: 'group_id'
       }
     })
 
@@ -332,16 +315,16 @@ module.exports = {
       }
     })
 
-    await queryInterface.createTable('role_groups_permissions', {
-      roleGroupId: {
+    await queryInterface.createTable('groups_permissions', {
+      groupId: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         references: {
-          model: 'role_groups',
+          model: 'groups',
           key: 'id'
         },
         onDelete: 'CASCADE',
-        field: 'role_group_id'
+        field: 'group_id'
       },
       permissionName: {
         type: Sequelize.STRING,
@@ -389,11 +372,9 @@ module.exports = {
     await queryInterface.dropTable('role_groups_permissions')
     await queryInterface.dropTable('permissions')
 
-    await queryInterface.dropTable('roles_role_groups')
-    await queryInterface.dropTable('role_groups')
-
-    await queryInterface.dropTable('channels_channel_groups')
-    await queryInterface.dropTable('channel_groups')
+    await queryInterface.dropTable('roles_groups')
+    await queryInterface.dropTable('channels_groups')
+    await queryInterface.dropTable('groups')
 
     await queryInterface.dropTable('channels_channels')
 

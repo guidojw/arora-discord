@@ -1,32 +1,22 @@
 'use strict'
 module.exports = (sequelize, DataTypes) => {
   const RoleGroup = sequelize.define('RoleGroup', {
-    name: {
+    roleId: {
       type: DataTypes.STRING,
-      allowNull: false
+      primaryKey: true,
+      field: 'role_id'
     }
   }, {
-    tableName: 'role_groups'
+    tableName: 'roles_groups'
   })
 
   RoleGroup.associate = models => {
-    RoleGroup.belongsTo(models.Guild, {
+    RoleGroup.belongsTo(models.Group, {
       foreignKey: {
-        name: 'guildId',
-        allowNull: false
+        name: 'groupId',
+        primaryKey: true
       },
       onDelete: 'CASCADE'
-    })
-    RoleGroup.hasMany(models.RoleRoleGroup, {
-      foreignKey: {
-        name: 'roleGroupId',
-        primaryKey: true
-      }
-    })
-    RoleGroup.belongsToMany(models.Permission, {
-      through: models.GroupPermission,
-      sourceKey: 'id',
-      targetKey: 'name'
     })
   }
 

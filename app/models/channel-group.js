@@ -1,27 +1,22 @@
 'use strict'
 module.exports = (sequelize, DataTypes) => {
   const ChannelGroup = sequelize.define('ChannelGroup', {
-    name: {
+    channelId: {
       type: DataTypes.STRING,
-      allowNull: false
+      primaryKey: true,
+      field: 'channel_id'
     }
   }, {
-    tableName: 'channel_groups'
+    tableName: 'channels_groups'
   })
 
   ChannelGroup.associate = models => {
-    ChannelGroup.belongsTo(models.Guild, {
+    ChannelGroup.belongsTo(models.Group, {
       foreignKey: {
-        name: 'guildId',
-        allowNull: false
+        name: 'groupId',
+        primaryKey: true
       },
       onDelete: 'CASCADE'
-    })
-    ChannelGroup.hasMany(models.ChannelChannelGroup, {
-      foreignKey: {
-        name: 'channelGroupId',
-        primaryKey: true
-      }
     })
   }
 
