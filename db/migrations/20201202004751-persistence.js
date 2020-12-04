@@ -340,10 +340,11 @@ module.exports = {
         onDelete: 'CASCADE',
         field: 'permission_name'
       },
-      permitted: {
-        type: Sequelize.BOOLEAN,
+      type: {
+        type: Sequelize.ENUM,
         allowNull: false,
-        defaultValue: true
+        values: ['allow', 'deny'],
+        defaultValue: 'allow'
       }
     })
 
@@ -363,10 +364,11 @@ module.exports = {
         onDelete: 'CASCADE',
         field: 'permission_name'
       },
-      permitted: {
-        type: Sequelize.BOOLEAN,
+      type: {
+        type: Sequelize.ENUM,
         allowNull: false,
-        defaultValue: true
+        values: ['allow', 'deny'],
+        defaultValue: 'allow'
       }
     })
   },
