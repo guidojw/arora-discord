@@ -308,4 +308,8 @@ module.exports = class Bot {
       }
     }
   }
+
+  login (token) {
+    return this.client.login(token)
+  }
 }
