@@ -24,6 +24,10 @@ module.exports = {
         defaultValue: false,
         field: 'support_enabled'
       },
+      robloxGroupId: {
+        type: Sequelize.INTEGER,
+        field: 'roblox_group_id'
+      },
       logsChannelId: {
         type: Sequelize.STRING,
         field: 'log_channel_id'
