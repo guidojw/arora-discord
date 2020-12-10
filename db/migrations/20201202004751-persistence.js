@@ -48,11 +48,15 @@ module.exports = {
         type: Sequelize.STRING,
         field: 'support_channel_id'
       },
+      welcomeChannelId: {
+        type: Sequelize.STRING,
+        field: 'welcome_channel_id'
+      },
       trainingsMessageId: {
         type: Sequelize.STRING,
         field: 'trainings_message_id'
       },
-      trainingsIngfoMessageId: {
+      trainingsInfoMessageId: {
         type: Sequelize.STRING,
         field: 'trainings_info_message_id'
       },
@@ -226,6 +230,34 @@ module.exports = {
       }
     })
 
+    await queryInterface.createTable('roles_messages', {
+      emojiId: {
+        type: Sequelize.STRING,
+        primaryKey: true,
+        field: 'emoji_id'
+      },
+      roleId: {
+        type: Sequelize.STRING,
+        primaryKey: true,
+        field: 'role_id'
+      },
+      messageId: {
+        type: Sequelize.STRING,
+        primaryKey: true,
+        field: 'message_id'
+      },
+      guildId: {
+        type: Sequelize.STRING,
+        primaryKey: true,
+        references: {
+          model: 'guilds',
+          key: 'id'
+        },
+        onDelete: 'CASCADE',
+        field: 'guild_id'
+      }
+    })
+
     await queryInterface.createTable('channels_channels', {
       channel1_id: {
         type: Sequelize.STRING,
@@ -384,6 +416,7 @@ module.exports = {
 
     await queryInterface.dropTable('channels_channels')
 
+    await queryInterface.dropTable('roles_messages')
     await queryInterface.dropTable('users_roles')
     await queryInterface.dropTable('role_bindings')
 
