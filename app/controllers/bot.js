@@ -2,7 +2,6 @@
 const path = require('path')
 const Commando = require('discord.js-commando')
 const pluralize = require('pluralize')
-const Guild = require('./guild')
 const SettingProvider = require('./setting-provider')
 const WebSocketController = require('./web-socket')
 const discordService = require('../services/discord')
@@ -71,20 +70,14 @@ module.exports = class Bot {
   }
 
   async ready () {
-    // Instantiate a Guild instance for every guild
-    for (const guildId of this.client.guilds.cache.keys()) {
-      this.guilds[guildId] = new Guild(this, guildId)
-      await this.guilds[guildId].loadData()
-    }
+    // Set the client's SettingProvider
+    await this.client.setProvider(new SettingProvider())
 
     // Set the bot's main Guild
     const mainGuildId = process.env.NODE_ENV === 'production'
       ? applicationConfig.productionMainGuildId
       : applicationConfig.developmentMainGuildId
     this.mainGuild = this.getGuild(mainGuildId)
-
-    // Set the client's SettingProvider
-    await this.client.setProvider(new SettingProvider())
 
     // Instantiate the TicketsController for this bot
     this.ticketsController = new TicketsController(this.client)
@@ -96,18 +89,20 @@ module.exports = class Bot {
     console.log(`Ready to serve on ${this.client.guilds.cache.size} servers, for ${this.client.users.cache.size} users.`)
   }
 
-  async guildMemberAdd (member) {
+  guildMemberAdd (member) {
     if (member.user.bot) {
       return
     }
 
     const guild = this.getGuild(member.guild.id)
-    const embed = new MessageEmbed()
-      .setTitle(`Hey ${member.user.tag},`)
-      .setDescription(`You're the **${member.guild.memberCount}th** member on **${member.guild.name}**!`)
-      .setThumbnail(member.user.displayAvatarURL())
-      .setColor(guild.getData('primaryColor'))
-    guild.guild.channels.cache.get(guild.getData('channels').welcomeChannel).send(embed)
+    if (guild.welcomeChannelId) {
+      const embed = new MessageEmbed()
+        .setTitle(`Hey ${member.user.tag},`)
+        .setDescription(`You're the **${member.guild.memberCount}th** member on **${member.guild.name}**!`)
+        .setThumbnail(member.user.displayAvatarURL())
+        .setColor(guild.getData('primaryColor'))
+      return guild.guild.channels.cache.get(guild.welcomeChannelId).send(embed)
+    }
   }
 
   async commandRun (command, promise, message) {
@@ -116,7 +111,8 @@ module.exports = class Bot {
     }
     await promise
 
-    await this.log(message.author, stripIndents`
+    const guild = this.getGuild(message.guild.id)
+    return guild.log(message.author, stripIndents`
     ${message.author} **used** \`${command.name}\` **command in** ${message.channel} [Jump to Message](${message.url})
     ${message.content}
     `)
@@ -141,37 +137,36 @@ module.exports = class Bot {
     }
 
     // Handle role messages
-    const roleMessages = guild.getData('roleMessages')
-    const roleMessage = roleMessages[reaction.message.id]
-    if (roleMessage) {
+    const roleMessages = await guild.instance.getRoleMessages({ where: { messageId: reaction.message.id }})
+    if (roleMessages) {
       if (reaction.partial) {
         await reaction.fetch()
       }
-      const emoji = reaction.emoji.id || reaction.emoji.name
-      for (const binding of roleMessage) {
-        if (binding.emoji === emoji) {
-          return member.roles.add(binding.role)
+      const emojiId = reaction.emoji.id || reaction.emoji.name
+      for (const roleMessage of roleMessages) {
+        if (roleMessage.emojiId === emojiId) {
+          return member.roles.add(roleMessage.roleId)
         }
       }
     }
 
-    // Handle votes
-    const voteData = guild.getData('vote')
-    if (voteData && voteData.timer && voteData.timer.end > Date.now()) {
-      let choice
-      for (const option of Object.values(voteData.options)) {
-        if (option.votes.includes(member.id)) {
-          return
-        }
-        if (reaction.message.id === option.message) {
-          choice = option
-        }
-      }
-      if (choice) {
-        choice.votes.push(member.id)
-        reaction.message.edit(reaction.message.embeds[0].setFooter(`Votes: ${choice.votes.length}`))
-      }
-    }
+    // // Handle votes
+    // const voteData = guild.getData('vote')
+    // if (voteData && voteData.timer && voteData.timer.end > Date.now()) {
+    //   let choice
+    //   for (const option of Object.values(voteData.options)) {
+    //     if (option.votes.includes(member.id)) {
+    //       return
+    //     }
+    //     if (reaction.message.id === option.message) {
+    //       choice = option
+    //     }
+    //   }
+    //   if (choice) {
+    //     choice.votes.push(member.id)
+    //     reaction.message.edit(reaction.message.embeds[0].setFooter(`Votes: ${choice.votes.length}`))
+    //   }
+    // }
   }
 
   async messageReactionRemove (reaction, user) {
@@ -193,13 +188,12 @@ module.exports = class Bot {
     }
 
     // Handle role messages
-    const roleMessages = guild.getData('roleMessages')
-    const roleMessage = roleMessages[reaction.message.id]
-    if (roleMessage) {
-      const emoji = reaction.emoji.id || reaction.emoji.name
-      for (const binding of roleMessage) {
-        if (binding.emoji === emoji) {
-          return member.roles.remove(binding.role)
+    const roleMessages = await guild.instance.getRoleMessages({ where: { messageId: reaction.message.id }})
+    if (roleMessages) {
+      const emojiId = reaction.emoji.id || reaction.emoji.name
+      for (const roleMessage of roleMessages) {
+        if (roleMessage.emoji === emojiId) {
+          return member.roles.remove(roleMessage.roleId)
         }
       }
     }
@@ -281,19 +275,6 @@ module.exports = class Bot {
     }
 
     this.client.owners[0].send(embed)
-  }
-
-  log (author, content, footer) {
-    const guild = this.mainGuild
-    const embed = new MessageEmbed()
-      .setAuthor(author.tag, author.displayAvatarURL())
-      .setDescription(content)
-      .setColor(guild.getData('primaryColor'))
-    if (footer) {
-      embed.setFooter(footer)
-    }
-
-    return guild.guild.channels.cache.get(guild.getData('channels').logsChannel).send(embed)
   }
 
   async send (user, content) {
