@@ -47,6 +47,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       field: 'welcome_channel_id'
     },
+    ticketsCategoryId: {
+      type: DataTypes.STRING,
+      field: 'tickets_category_id'
+    },
     trainingsMessageId: {
       type: DataTypes.STRING,
       field: 'trainings_message_id'

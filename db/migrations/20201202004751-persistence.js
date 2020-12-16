@@ -56,6 +56,10 @@ module.exports = {
         type: Sequelize.STRING,
         field: 'welcome_channel_id'
       },
+      ticketsCategoryId: {
+        type: Sequelize.STRING,
+        field: 'tickets_category_id'
+      },
       trainingsMessageId: {
         type: Sequelize.STRING,
         field: 'trainings_message_id'
