@@ -14,18 +14,15 @@ module.exports = class ToggleSupportCommand extends Command {
     })
   }
 
-  execute (message, _args, guild) {
+  async execute (message, _args, guild) {
     // Toggle the setting
-    const settings = guild.getData('settings')
-
-    settings.supportEnabled = !settings.supportEnabled
-    guild.setData('settings', settings)
+    await guild.edit({ supportEnabled: !guild.supportEnabled })
 
     // Send success message
     const embed = new MessageEmbed()
-      .setColor(settings.supportEnabled ? 0x00ff00 : 0xff0000)
+      .setColor(guild.supportEnabled ? 0x00ff00 : 0xff0000)
       .setTitle('Successfully toggled support')
-      .setDescription(`Tickets System: **${settings.supportEnabled ? 'online' : 'offline'}**`)
+      .setDescription(`Tickets System: **${guild.supportEnabled ? 'online' : 'offline'}**`)
     return message.replyEmbed(embed)
   }
 }

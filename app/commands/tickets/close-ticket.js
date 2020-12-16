@@ -3,7 +3,6 @@ const Command = require('../../controllers/command')
 const discordService = require('../../services/discord')
 
 const { stripIndents } = require('common-tags')
-const { TicketState } = require('../../controllers/ticket')
 
 module.exports = class CloseTicketCommand extends Command {
   constructor (client) {
@@ -20,8 +19,7 @@ module.exports = class CloseTicketCommand extends Command {
     const ticketsController = this.client.bot.ticketsController
 
     // Check if the channel is actually a ticket channel
-    const channels = guild.getData('channels')
-    if (message.channel.parentID !== channels.ticketsCategory) {
+    if (message.channel.parentID !== guild.ticketsCategoryId) {
       return message.reply('This command can only be used in channels in the tickets category.')
     }
 
@@ -31,17 +29,15 @@ module.exports = class CloseTicketCommand extends Command {
       const choice = await discordService.prompt(message.channel, message.author, prompt, ['✅', '🚫']) === '✅'
 
       if (choice) {
-        if (ticketController.state === TicketState.CONNECTED || this.state === TicketState.RECONNECTED) {
-          this.client.bot.log(message.author, stripIndents`
-          ${message.author} **closed ticket** \`${ticketController.id}\`
-          ${message.content}
-          `, `Ticket ID: ${ticketController.id}`)
+        guild.log(message.author, stripIndents`
+        ${message.author} **closed ticket** \`${ticketController.id}\`
+        ${message.content}
+        `, `Ticket ID: ${ticketController.id}`)
 
-          if (message.author === ticketController.author) {
-            ticketController.close('Ticket successfully closed.', false, guild.getData('primaryColor'))
-          } else if (message.author !== ticketController.author) {
-            ticketController.close('The moderator has closed your ticket.', true, guild.getData('primaryColor'))
-          }
+        if (message.author.id === ticketController.author.id) {
+          ticketController.close('Ticket successfully closed.', false, guild.primaryColor)
+        } else {
+          ticketController.close('The moderator has closed your ticket.', true, guild.primaryColor)
         }
       }
     }
