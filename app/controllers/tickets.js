@@ -20,7 +20,7 @@ class TicketsController {
       this.tickets[guild.id] = {}
       this.timeouts[guild.id] = {}
 
-      const tickets = await Ticket.findAll({ where: { guildId: guild.id }})
+      const tickets = await Ticket.findAll({ where: { guildId: guild.id } })
       for (const ticket of tickets) {
         if (!ticket.channelId || !guild.guild.channels.cache.has(ticket.channelId)) {
           await ticket.destroy()

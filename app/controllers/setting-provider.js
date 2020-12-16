@@ -9,7 +9,7 @@ class SettingProvider {
 
     for (const guild of client.guilds.cache.values()) {
       // Look up Guild data in database or create a new instance, then initiate a new GuildController with this data.
-      const data = await Guild.findOne({ where: { id: guild.id }}) || await Guild.create({ id: guild.id })
+      const data = await Guild.findOne({ where: { id: guild.id } }) || await Guild.create({ id: guild.id })
       const guildController = new GuildController(client, data)
 
       // Initiate Guild's commandPrefix.
@@ -73,7 +73,7 @@ class SettingProvider {
   }
 
   async commandStatusChange (guild, command, enabled) {
-    const guildCommand = await GuildCommand.findOne({ where: { guildId: guild.id, commandName: command.name }})
+    const guildCommand = await GuildCommand.findOne({ where: { guildId: guild.id, commandName: command.name } })
     if (guildCommand) {
       return guildCommand.update({ enabled })
     } else {

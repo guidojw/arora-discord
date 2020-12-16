@@ -5,9 +5,9 @@ const discordService = require('../services/discord')
 const roVerAdapter = require('../adapters/rover')
 const timeHelper = require('../helpers/time')
 
-const { Ticket, TicketModerator } = require('../models')
 const { MessageEmbed } = require('discord.js')
 const { stripIndents } = require('common-tags')
+const { Ticket, TicketModerator } = require('../models')
 
 const TicketType = {
   PERSON_REPORT: 'personReport',
@@ -163,7 +163,7 @@ class TicketController extends EventEmitter {
       }
     }
 
-    await Ticket.destroy({ where: { id: this.id }})
+    await Ticket.destroy({ where: { id: this.id } })
 
     this.emit('close')
 

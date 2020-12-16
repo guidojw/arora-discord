@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       primaryKey: true,
       field: 'message_id'
-    },
+    }
   }, {
     tableName: 'roles_messages'
   })
