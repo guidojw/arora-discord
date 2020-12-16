@@ -9,6 +9,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       field: 'primary_color'
     },
+    commandPrefix: {
+      type: DataTypes.STRING,
+      fied: 'command_prefix'
+    },
     supportEnabled: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
@@ -21,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     logsChannelId: {
       type: DataTypes.STRING,
-      field: 'log_channel_id'
+      field: 'logs_channel_id'
     },
     trainingsChannelId: {
       type: DataTypes.STRING,
@@ -39,11 +43,15 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       field: 'support_channel_id'
     },
+    welcomeChannelId: {
+      type: DataTypes.STRING,
+      field: 'welcome_channel_id'
+    },
     trainingsMessageId: {
       type: DataTypes.STRING,
       field: 'trainings_message_id'
     },
-    trainingsIngfoMessageId: {
+    trainingsInfoMessageId: {
       type: DataTypes.STRING,
       field: 'trainings_info_message_id'
     },

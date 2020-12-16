@@ -18,6 +18,10 @@ module.exports = {
         type: Sequelize.INTEGER,
         field: 'primary_color'
       },
+      commandPrefix: {
+        type: Sequelize.STRING,
+        field: 'command_prefix'
+      },
       supportEnabled: {
         type: Sequelize.BOOLEAN,
         allowNull: false,
@@ -30,7 +34,7 @@ module.exports = {
       },
       logsChannelId: {
         type: Sequelize.STRING,
-        field: 'log_channel_id'
+        field: 'logs_channel_id'
       },
       trainingsChannelId: {
         type: Sequelize.STRING,
@@ -382,7 +386,7 @@ module.exports = {
 
     await queryInterface.createTable('roles_permissions', {
       roleId: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING,
         primaryKey: true,
         field: 'role_id'
       },
