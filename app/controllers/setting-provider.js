@@ -1,92 +1,94 @@
 'use strict'
-module.exports = class SettingProvider {
-  async init (client) {
-    this.bot = client.bot
+const Guild = require('../controllers/guild')
 
-    for (const guild of client.guilds.cache.values()) {
-      const settings = await this.getSettings(guild)
-      if (settings) {
-        if (settings.prefix) {
-          guild.commandPrefix = settings.prefix
+const { Guild: GuildModel, GuildCommand, RolePermission } = require('../models')
+
+class SettingProvider {
+  async init (client) {
+    this.client = client
+
+    for (let guild of client.guilds.cache.values()) {
+      // Look up Guild data in database or create a new instance, then initiate a new GuildController with this data.
+      const data = await GuildModel.findOne({ where: { id: guild.id }}) || await GuildModel.create({ id: guild.id })
+      const guildController = new Guild(data, client)
+
+      // Initiate Guild's commandPrefix.
+      if (data.commandPrefix) {
+        guild.commandPrefix = data.commandPrefix
+      }
+
+      // Initiate Guild's commandStates (Command and CommandGroup states).
+      const guildCommands = await data.getGuildCommands()
+      if (guildCommands) {
+        for (const command of client.registry.commands.values()) {
+          const commandSettings = guildCommands.find(guildCommand => guildCommand.commandName === command.name)
+          if (commandSettings) {
+            if (!command.guarded && commandSettings.enabled !== undefined) {
+              guild.setCommandEnabled(command.name, commandSettings.enabled)
+            }
+          }
         }
 
-        if (settings.commands) {
-          for (const command of client.registry.commands.values()) {
-            const commandSettings = settings.commands[command.name]
-            if (commandSettings) {
-              if (!command.guarded && commandSettings.enabled !== undefined) {
-                guild.setCommandEnabled(command.name, commandSettings.enabled)
-              }
-
-              command.requiredRoles = commandSettings.requiredRoles || []
-              command.bannedRoles = commandSettings.bannedRoles || []
-            } else {
-              command.requiredRoles = []
-              command.bannedRoles = []
+        for (const group of client.registry.groups.values()) {
+          const groupSettings = guildCommands.find(guildCommand => guildCommand.commandName === group.name)
+          if (groupSettings) {
+            if (!group.guarded) {
+              guild.setGroupEnabled(group, groupSettings.enabled !== undefined ? groupSettings.enabled : false)
+            }
+          } else {
+            if (!group.guarded) {
+              guild.setGroupEnabled(group, false)
             }
           }
         }
       }
 
-      for (const group of client.registry.groups.values()) {
-        const groupSettings = settings && settings.groups ? settings.groups[group.id] : undefined
-        if (groupSettings) {
-          if (!group.guarded) {
-            guild.setGroupEnabled(group, groupSettings.enabled !== undefined ? groupSettings.enabled : false)
-          }
-
-          group.requiredRoles = groupSettings.requiredRoles || []
-          group.bannedRoles = groupSettings.bannedRoles || []
-        } else {
-          if (!group.guarded) {
-            guild.setGroupEnabled(group, false)
-          }
-
-          group.requiredRoles = []
-          group.bannedRoles = []
-        }
+      // Initiate Guild's groupPermissions.
+      const groups = await data.getGroups()
+      for (const group of groups) {
+        guildController.groupPermissions[group.id] = await group.getPermissions()
       }
+
+      // Initiate Guild's rolePermissions.
+      const roles = await guild.roles.fetch()
+      for (const role of roles.cache.values()) {
+        guildController.rolePermissions[role.id] = await RolePermission.findAll({ where: { roleId: role.id } })
+      }
+
+      // Initiate GuildController.
+      await guildController.init()
+
+      // Initiating Guild and its controller is finished, add it to the bot's guilds list.
+      client.bot.guilds[guild.id] = guildController
     }
 
+    client.on('commandStatusChange', this.commandStatusChange.bind(this))
+    client.on('groupStatusChange', this.commandStatusChange.bind(this))
     client.on('commandPrefixChange', (guild, prefix) => {
-      this.set(guild, 'prefix', prefix)
-    })
-
-    client.on('commandStatusChange', async (guild, command, enabled) => {
-      const commandsSettings = await this.get(guild, 'commands', {})
-      if (!commandsSettings[command.name]) {
-        commandsSettings[command.name] = {}
-      }
-      commandsSettings[command.name].enabled = enabled
-      this.set(guild, 'commands', commandsSettings)
-    })
-
-    client.on('groupStatusChange', async (guild, group, enabled) => {
-      const groupsSettings = await this.get(guild, 'groups', {})
-      if (!groupsSettings[group.id]) {
-        groupsSettings[group.id] = {}
-      }
-      groupsSettings[group.id].enabled = enabled
-      this.set(guild, 'groups', groupsSettings)
+      return this.set(guild, 'commandPrefix', prefix)
     })
   }
 
-  async get (guild, key, defVal) {
-    const settings = await this.getSettings(guild)
-    return settings[key] || defVal
+  get (guild, key, defVal) {
+    const guildController = this.client.bot.getGuild(guild.id)
+    return guildController[key] || defVal
   }
 
-  async set (guild, key, val) {
-    const settings = await this.getSettings(guild)
-    settings[key] = val
-    return this.setSettings(guild, settings)
+  set (guild, key, value) {
+    const guildController = this.client.bot.getGuild(guild.id)
+    return guildController.setData(key, value)
   }
 
-  async getSettings (guild) {
-    return this.bot.getGuild(guild.id).getData('settings') || {}
-  }
+  async commandStatusChange (guild, command, enabled) {
+    const guildController = this.client.bot.getGuild(guild.id)
+    const guildCommand = await GuildCommand.findOne({ where: { guildId: guild.id, commandName: command.name }})
 
-  async setSettings (guild, settings) {
-    await this.bot.getGuild(guild.id).setData('settings', settings)
+    if (guildCommand) {
+      await guildCommand.update({ enabled })
+    } else {
+      await guildController.instance.addGuildCommand({ commandName: command.name, enabled })
+    }
   }
 }
+
+module.exports = SettingProvider
