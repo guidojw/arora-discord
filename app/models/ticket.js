@@ -30,7 +30,18 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: {
         name: 'ticketId',
         primaryKey: true
-      }
+      },
+      as: 'moderators'
+    })
+  }
+
+  Ticket.loadScopes = models => {
+    Ticket.addScope('defaultScope', {
+      include: [{
+        model: models.TicketModerator,
+        as: 'moderators'
+      }],
+      subQuery: false
     })
   }
 

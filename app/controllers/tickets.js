@@ -2,51 +2,37 @@
 const discordService = require('../services/discord')
 
 const { MessageEmbed } = require('discord.js')
-const { TicketController, TicketState, TicketType } = require('./ticket')
+const { TicketController, TicketType } = require('./ticket')
+const { Ticket } = require('../models')
 
 const TICKETS_INTERVAL = 60000
 
-module.exports = class TicketsController {
+class TicketsController {
   constructor (client) {
     this.client = client
 
-    this.tickets = {} // map from ticket ID to TicketController
-    this.debounces = {} // map from user ID to debounce flag
-
-    this.init()
+    this.tickets = {}
+    this.timeouts = {}
   }
 
   async init () {
     for (const guild of Object.values(this.client.bot.guilds)) {
-      const channels = guild.getData('channels')
-      const category = guild.guild.channels.cache.get(channels.ticketsCategory)
+      this.tickets[guild.id] = {}
+      this.timeouts[guild.id] = {}
 
-      this.tickets[guild.guild.id] = {}
-      this.debounces[guild.guild.id] = {}
-
-      for (const channel of category.children.values()) {
-        if (channel.id === channels.ratingsChannel || channel.id === channels.supportChannel) {
-          continue
+      const tickets = await Ticket.findAll({ where: { guildId: guild.id }})
+      for (const ticket of tickets) {
+        if (!ticket.channelId || !guild.guild.channels.cache.has(ticket.channelId)) {
+          await ticket.destroy()
+        } else {
+          const ticketController = new TicketController(this.client, ticket)
+          this.tickets[guild.id][ticket.id] = ticketController
+          ticketController.once('close', this.clearTicket.bind(this, guild, ticketController))
         }
-
-        // Get the ticket's id and type from the channel name (dataloss-id).
-        const parts = channel.name.split('-')
-        const type = TicketController.getTypeFromName(parts[0])
-        const id = parts[1]
-
-        const ticketController = new TicketController(this, this.client, guild, type)
-        ticketController.id = id
-        ticketController.channel = channel
-        this.tickets[guild.guild.id][id] = ticketController
-        ticketController.once('close', this.clearTicket.bind(this, guild, ticketController))
       }
     }
 
-    // Connect the message event for adding messages and moderators
-    // to open TicketControllers.
     this.client.on('message', this.message.bind(this))
-
-    // Connect the messageReactionAdd event for making new tickets.
     this.client.on('messageReactionAdd', this.messageReactionAdd.bind(this))
   }
 
@@ -63,8 +49,7 @@ module.exports = class TicketsController {
     }
 
     const guild = await this.client.bot.getGuild(message.guild.id)
-    const messages = guild.getData('messages')
-    if (message.id !== messages.supportMessage) {
+    if (message.id !== guild.supportMessageId) {
       return
     }
 
@@ -81,39 +66,41 @@ module.exports = class TicketsController {
       }
       await reaction.users.remove(user)
 
-      if (!this.debounces[guild.guild.id][user.id]) {
-        // Set a timeout of 60 seconds in which the bot
-        // will not react to message reactions.
-        this.debounces[guild.guild.id][user.id] = true
-        const timeout = setTimeout(this.clearAuthor.bind(this, guild, user), TICKETS_INTERVAL)
+      if (!this.timeouts[guild.id][user.id]) {
+        this.timeouts[guild.id][user.id] = setTimeout(this.clearTimeout.bind(this, guild, user.id), TICKETS_INTERVAL)
 
         let ticketController = this.getTicketFromAuthor(guild, user)
         if (!ticketController) {
-          if (!guild.getData('settings').supportEnabled) {
+          if (!guild.supportEnabled) {
             const embed = new MessageEmbed()
               .setColor(0xff0000)
               .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
-              .setTitle('Welcome to NS Roblox Support')
-              .setDescription('We are currently closed. Check the Twin-Rail server for more information.')
+              .setTitle(`Welcome to ${guild.guild.name} Support`)
+              .setDescription(`We are currently closed. Check the ${guild.guild.name} server for more information.`)
             return this.client.bot.send(user, embed)
           }
 
-          const member = await guild.guild.members.fetch(user)
-          const roles = guild.getData('roles')
-          if (member.roles.cache.has(roles.ticketsBannedRole)) {
-            const embed = new MessageEmbed()
-              .setColor(0xff0000)
-              .setTitle('Couldn\'t make ticket')
-              .setDescription('You\'re banned from making new tickets.')
-            return this.client.bot.send(user, embed)
-          }
+          // const member = await guild.guild.members.fetch(user)
+          // const roles = guild.getData('roles')
+          // if (member.roles.cache.has(roles.ticketsBannedRole)) {
+          //   const embed = new MessageEmbed()
+          //     .setColor(0xff0000)
+          //     .setTitle('Couldn\'t make ticket')
+          //     .setDescription('You\'re banned from making new tickets.')
+          //   return this.client.bot.send(user, embed)
+          // }
 
-          this.clearAuthor(guild, user)
-          clearTimeout(timeout)
+          this.clearTimeout(guild, user.id)
 
-          ticketController = new TicketController(this, this.client, guild, type, user)
-          this.tickets[guild.guild.id][ticketController.id] = ticketController
+          const data = await Ticket.create({
+            authorId: user.id,
+            guildId: message.guild.id,
+            type
+          })
+          ticketController = new TicketController(this.client, data, guild)
+          this.tickets[guild.id][ticketController.id] = ticketController
           ticketController.once('close', this.clearTicket.bind(this, guild, ticketController))
+          ticketController.start()
         } else {
           const embed = new MessageEmbed()
             .setColor(0xff0000)
@@ -140,56 +127,31 @@ module.exports = class TicketsController {
     }
 
     const guild = this.client.bot.getGuild(message.guild.id)
-    const channels = guild.getData('channels')
-    if (message.channel.parentID !== channels.ticketsCategory) {
-      return
-    }
-
     const ticketController = this.getTicketFromChannel(guild, message.channel)
     if (ticketController) {
-      // If this ticket is reconnected and thus has lost its author,
-      // don't update.
-      if (ticketController.state === TicketState.RECONNECTED) {
-        return
-      }
-
-      if (ticketController.timeout) {
-        clearTimeout(ticketController.timeout)
-        ticketController.timeout = undefined
-      }
-
-      if (message.author.id !== ticketController.author.id) {
-        if (!ticketController.moderators.includes(message.author)) {
-          ticketController.moderators.push(message.author)
-        }
-      }
+      return ticketController.message(message)
     }
   }
 
   clearTicket (guild, ticketController) {
-    if (ticketController) {
-      // If the TicketController hasn't lost its author.
-      if (ticketController.state !== TicketState.RECONNECTED) {
-        this.clearAuthor(guild, ticketController.author)
-      }
-
-      delete this.tickets[guild.guild.id][ticketController.id]
-    }
+    delete this.tickets[guild.id][ticketController.id]
   }
 
-  clearAuthor (guild, author) {
-    delete this.debounces[guild.guild.id][author.id]
+  clearTimeout (guild, key) {
+    delete this.timeouts[guild.id][key]
   }
 
   getTicketFromChannel (guild, channel) {
-    return Object.values(this.tickets[guild.guild.id]).find(ticketController => {
-      return ticketController.channel.id === channel.id
+    return Object.values(this.tickets[guild.id]).find(ticketController => {
+      return ticketController.channelId === channel.id
     })
   }
 
   getTicketFromAuthor (guild, author) {
-    return Object.values(this.tickets[guild.guild.id]).find(ticketController => {
-      return ticketController.state !== TicketState.RECONNECTED && ticketController.author.id === author.id
+    return Object.values(this.tickets[guild.id]).find(ticketController => {
+      return ticketController.authorId === author.id
     })
   }
 }
+
+module.exports = TicketsController

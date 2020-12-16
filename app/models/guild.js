@@ -72,7 +72,8 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: {
         name: 'guildId',
         primaryKey: true
-      }
+      },
+      as: 'commands'
     })
     Guild.hasMany(models.Tag, {
       foreignKey: {

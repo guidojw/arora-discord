@@ -1,33 +1,38 @@
 'use strict'
 const cron = require('node-cron')
 
+const { Guild } = require('../models')
+
 const applicationConfig = require('../../config/application')
 const cronConfig = require('../../config/cron')
 
-class Guild {
-  constructor (data, client) {
-    this.id = data.id
-    this.primaryColor = data.primaryColor
-    this.commandPrefix = data.commandPrefix
-    this.supportEnabled = data.supportEnabled
-    this.robloxGroupId = data.robloxGroupId
-    this.logsChannelId = data.logsChannelId
-    this.trainingsChannelId = data.trainingsChannelId
-    this.suggestionsChannelId = data.suggestionsChannelId
-    this.ratingsChannelId = data.ratingsChannelId
-    this.supportChannelId = data.supportChannelId
-    this.welcomeChannelId = data.welcomeChannelId
-    this.ticketsCategoryId = data.ticketsCategoryId
-    this.trainingsMessageId = data.trainingsMessageId
-    this.trainingsInfoMessageId = data.trainingsInfoMessageId
-    this.supportMessageId = data.supportMessageId
-
-    this.instance = data
-    this.guild = client.guilds.cache.get(data.id)
+class GuildController {
+  constructor (client, data) {
+    this.client = client
 
     this.jobs = {}
     this.groupPermissions = {}
     this.rolePermissions = {}
+
+    this._patch(data)
+  }
+
+  _patch (data) {
+    this.id = data.id
+    this.primaryColor = data.primaryColor || null
+    this.commandPrefix = data.commandPrefix || null
+    this.supportEnabled = data.supportEnabled || null
+    this.robloxGroupId = data.robloxGroupId || null
+    this.logsChannelId = data.logsChannelId || null
+    this.trainingsChannelId = data.trainingsChannelId || null
+    this.suggestionsChannelId = data.suggestionsChannelId || null
+    this.ratingsChannelId = data.ratingsChannelId || null
+    this.supportChannelId = data.supportChannelId || null
+    this.welcomeChannelId = data.welcomeChannelId || null
+    this.ticketsCategoryId = data.ticketsCategoryId || null
+    this.trainingsMessageId = data.trainingsMessageId || null
+    this.trainingsInfoMessageId = data.trainingsInfoMessageId || null
+    this.supportMessageId = data.supportMessageId || null
   }
 
   async init () {
@@ -47,6 +52,38 @@ class Guild {
     this.scheduleJob('premiumMembersReportJob')
   }
 
+  get guild () {
+    return this.client.guilds.cache.get(this.id) || null
+  }
+
+  get logsChannel () {
+    return this.logsChannelId ? this.guild.channels.cache.get(this.logsChannelId) : null
+  }
+
+  get trainingsChannel () {
+    return this.trainingsChannelId ? this.guild.channels.cache.get(this.trainingsChannelId) : null
+  }
+
+  get suggestionsChannel () {
+    return this.suggestionsChannelId ? this.guild.channels.cache.get(this.suggestionsChannelId) : null
+  }
+
+  get ratingsChannel () {
+    return this.ratingsChannelId ? this.guild.channels.cache.get(this.ratingsChannelId) : null
+  }
+
+  get supportChannel () {
+    return this.supportChannelId ? this.guild.channels.cache.get(this.supportChannelId) : null
+  }
+
+  get welcomeChannel () {
+    return this.welcomeChannelId ? this.guild.channels.cache.get(this.welcomeChannelId) : null
+  }
+
+  get ticketsCategory () {
+    return this.ticketsCategoryId ? this.guild.channels.cache.get(this.ticketsCategoryId) : null
+  }
+
   scheduleJob (name) {
     if (this.jobs[name]) {
       throw new Error('A job with that name already exists.')
@@ -62,8 +99,12 @@ class Guild {
     this.jobs[name].stop()
   }
 
-  log (author, content, footer) {
-    if (this.logsChannelId) {
+  async log (author, content, footer) {
+    if (this.logsChannel) {
+      if (author.partial) {
+        await author.fetch()
+      }
+
       const embed = new MessageEmbed()
         .setAuthor(author.tag, author.displayAvatarURL())
         .setDescription(content)
@@ -72,15 +113,33 @@ class Guild {
         embed.setFooter(footer)
       }
 
-      return this.guild.channels.cache.get(this.logsChannelId).send(embed)
+      return this.logsChannel.send(embed)
     }
   }
 
-  async setData (key, value) {
-    await this.instance.update({ [key]: value })
-    this[key] = value
-    return value
+  async edit (data) {
+    const guild = await Guild.findByPk(this.id)
+
+    const newData = await guild.update({
+      primaryColor: data.primaryColor,
+      commandPrefix: data.commandPrefix,
+      supportEnabled: data.supportEnabled,
+      robloxGroupId: data.robloxGroupId,
+      logsChannelId: data.logsChannelId,
+      trainingsChannelId: data.trainingsChannelId,
+      suggestionsChannelId: data.suggestionsChannelId,
+      ratingsChannelId: data.ratingsChannelId,
+      supportChannelId: data.supportChannelId,
+      welcomeChannelId: data.welcomeChannelId,
+      ticketsCategoryId: data.ticketsCategoryId,
+      trainingsMessageId: data.trainingsMessageId,
+      trainingsInfoMessageId: data.trainingsInfoMessageId,
+      supportMessageId: data.supportMessageId
+    })
+
+    this._patch(newData)
+    return newData
   }
 }
 
-module.exports = Guild
+module.exports = GuildController

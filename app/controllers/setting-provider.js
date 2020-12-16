@@ -1,16 +1,16 @@
 'use strict'
-const Guild = require('../controllers/guild')
+const GuildController = require('../controllers/guild')
 
-const { Guild: GuildModel, GuildCommand, RolePermission } = require('../models')
+const { Guild, GuildCommand, RolePermission } = require('../models')
 
 class SettingProvider {
   async init (client) {
     this.client = client
 
-    for (let guild of client.guilds.cache.values()) {
+    for (const guild of client.guilds.cache.values()) {
       // Look up Guild data in database or create a new instance, then initiate a new GuildController with this data.
-      const data = await GuildModel.findOne({ where: { id: guild.id }}) || await GuildModel.create({ id: guild.id })
-      const guildController = new Guild(data, client)
+      const data = await Guild.findOne({ where: { id: guild.id }}) || await Guild.create({ id: guild.id })
+      const guildController = new GuildController(client, data)
 
       // Initiate Guild's commandPrefix.
       if (data.commandPrefix) {
@@ -18,7 +18,7 @@ class SettingProvider {
       }
 
       // Initiate Guild's commandStates (Command and CommandGroup states).
-      const guildCommands = await data.getGuildCommands()
+      const guildCommands = await data.getCommands()
       if (guildCommands) {
         for (const command of client.registry.commands.values()) {
           const commandSettings = guildCommands.find(guildCommand => guildCommand.commandName === command.name)
@@ -62,31 +62,22 @@ class SettingProvider {
       client.bot.guilds[guild.id] = guildController
     }
 
+    client.on('commandPrefixChange', this.commandPrefixChange.bind(this))
     client.on('commandStatusChange', this.commandStatusChange.bind(this))
     client.on('groupStatusChange', this.commandStatusChange.bind(this))
-    client.on('commandPrefixChange', (guild, prefix) => {
-      return this.set(guild, 'commandPrefix', prefix)
-    })
   }
 
-  get (guild, key, defVal) {
+  commandPrefixChange (guild, prefix) {
     const guildController = this.client.bot.getGuild(guild.id)
-    return guildController[key] || defVal
-  }
-
-  set (guild, key, value) {
-    const guildController = this.client.bot.getGuild(guild.id)
-    return guildController.setData(key, value)
+    return guildController.edit({ commandPrefix: prefix })
   }
 
   async commandStatusChange (guild, command, enabled) {
-    const guildController = this.client.bot.getGuild(guild.id)
     const guildCommand = await GuildCommand.findOne({ where: { guildId: guild.id, commandName: command.name }})
-
     if (guildCommand) {
-      await guildCommand.update({ enabled })
+      return guildCommand.update({ enabled })
     } else {
-      await guildController.instance.addGuildCommand({ commandName: command.name, enabled })
+      return GuildCommand.create({ guildId: guild.id, commandName: command.name, enabled })
     }
   }
 }

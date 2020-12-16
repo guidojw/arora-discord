@@ -1,22 +1,13 @@
 'use strict'
 const EventEmitter = require('events')
 const pluralize = require('pluralize')
-const short = require('short-uuid')
 const discordService = require('../services/discord')
 const roVerAdapter = require('../adapters/rover')
 const timeHelper = require('../helpers/time')
 
+const { Ticket, TicketModerator } = require('../models')
 const { MessageEmbed } = require('discord.js')
 const { stripIndents } = require('common-tags')
-
-const TicketState = {
-  INIT: 'init',
-  CREATING_CHANNEL: 'creatingChannel',
-  CONNECTED: 'connected',
-  RECONNECTED: 'reconnected',
-  REQUESTING_RATING: 'requestingRating',
-  CLOSING: 'closing'
-}
 
 const TicketType = {
   PERSON_REPORT: 'personReport',
@@ -24,59 +15,73 @@ const TicketType = {
   PRIZE_CLAIM: 'prizeClaim'
 }
 
-const SUBMISSION_TIME = 30 * 60 * 1000 // time after which a ticket with no messages will be closed
+const SUBMISSION_TIME = 30 * 60 * 1000
 
 class TicketController extends EventEmitter {
-  constructor (ticketsController, client, guild, type, author) {
+  constructor (client, data) {
     super()
 
-    this.ticketsController = ticketsController
     this.client = client
-    this.guild = guild
-    this.type = type
 
-    if (author) {
-      // If this is a new ticket.
-      this.author = author
-      this.moderators = []
-
-      this.id = short.generate()
-      this.state = TicketState.INIT
-
-      this.init()
-    } else {
-      // If this is a reconnected ticket
-      // being reinstantiated after reboot.
-      this.state = TicketState.RECONNECTED
-    }
+    this._patch(data)
   }
 
-  async init () {
-    await this.createChannel()
+  _patch (data) {
+    this.id = data.id
+    this.authorId = data.authorId || null
+    this.channelId = data.channelId || null
+    this.guildId = data.guildId || null
+    this.type = data.type || null
+    this._moderators = data.moderators
+  }
 
-    // Populate the channel with the ticket creator's data.
+  get ticketsController () {
+    return this.client.bot.ticketsController || null
+  }
+
+  get author () {
+    return this.client.users.cache.get(this.authorId) ||
+      (this.client.options.partials.includes('USER')
+        ? this.client.users.add({ id: this.authorId })
+        : null)
+  }
+
+  get channel () {
+    return this.guild.guild.channels.cache.get(this.channelId)
+  }
+
+  get guild () {
+    return this.client.bot.getGuild(this.guildId) || null
+  }
+
+  get moderators () {
+    return this._moderators.map(moderator => {
+      return this.client.users.cache.get(moderator.userId) ||
+        (this.client.options.partials.includes('USER')
+          ? this.client.users.add({ id: moderator.userId })
+          : null)
+    })
+  }
+
+  async start () {
+    await this.createChannel()
     await this.populateChannel()
 
-    // Initialise the submission timeout after which the ticket will
-    // be closed if nothing was messaged.
     this.timeout = setTimeout(this.close.bind(this, 'Timeout: ticket closed'), SUBMISSION_TIME)
 
     await this.submit()
   }
 
   async createChannel () {
-    this.state = TicketState.CREATING_CHANNEL
-
     const name = `${this.type}-${this.id}`
-    this.channel = await this.guild.guild.channels.create(name)
-    this.channel = await this.channel.setParent(this.guild.getData('channels').ticketsCategory)
+    const channel = await this.guild.guild.channels.create(name)
 
+    await this.edit({ channelId: channel.id })
+    await this.channel.setParent(this.guild.ticketsCategory)
     await this.channel.updateOverwrite(this.author, { VIEW_CHANNEL: true })
   }
 
   async populateChannel () {
-    // Check if user is verified with RoVer
-    // If so, the Roblox username and ID are retrieved.
     let username
     let userId
     try {
@@ -94,7 +99,7 @@ class TicketController extends EventEmitter {
     const readableTime = timeHelper.getTime(date)
 
     const embed = new MessageEmbed()
-      .setColor(this.guild.getData('primaryColor'))
+      .setColor(this.guild.primaryColor)
       .setTitle('Ticket Information')
       .setDescription(stripIndents`
       Username: ${username ? '**' + username + '**' : '*unknown (user is not verified with RoVer)*'}
@@ -110,22 +115,20 @@ class TicketController extends EventEmitter {
   }
 
   async submit () {
-    if (this.state === TicketState.CREATING_CHANNEL) {
-      const embed = new MessageEmbed()
-        .setColor(this.guild.getData('primaryColor'))
-        .setDescription(stripIndents`
-        A Ticket Moderator will be with you shortly.
-        This may take up to 24 hours. You can still close your ticket by using the \`/closeticket\` command.
-        `)
-      await this.channel.send(embed)
+    const embed = new MessageEmbed()
+      .setColor(this.guild.primaryColor)
+      .setDescription(stripIndents`
+      A Ticket Moderator will be with you shortly.
+      This may take up to 24 hours. You can still close your ticket by using the \`/closeticket\` command.
+      `)
+    await this.channel.send(embed)
 
-      const roles = this.guild.getData('roles')
-      await this.channel.updateOverwrite(roles.ticketModeratorRole, { VIEW_CHANNEL: true })
+    // const roles = this.guild.getData('roles')
+    // await this.channel.updateOverwrite(roles.ticketModeratorRole, { VIEW_CHANNEL: true })
 
-      this.client.bot.log(this.author, `${this.author} **opened ticket** \`${this.id}\` **in** ${this.channel}`, `Ticket ID: ${this.id}`)
+    this.guild.log(this.author, `${this.author} **opened ticket** \`${this.id}\` **in** ${this.channel}`, `Ticket ID: ${this.id}`)
 
-      this.state = TicketState.CONNECTED
-    }
+    return this
   }
 
   async close (message, success, color) {
@@ -133,48 +136,43 @@ class TicketController extends EventEmitter {
       await this.channel.delete()
     }
 
-    // If this ticket isn't reconnected and thus hasn't lost its author.
-    if (this.state !== TicketState.RECONNECTED) {
-      this.state = TicketState.CLOSING
+    const embed = new MessageEmbed()
+      .setColor(color || success ? 0x00ff00 : 0xff0000)
+      .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
+      .setTitle(message)
+    await this.client.bot.send(this.author, embed)
 
-      const embed = new MessageEmbed()
-        .setColor(color || success ? 0x00ff00 : 0xff0000)
-        .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
-        .setTitle(message)
-      await this.client.bot.send(this.author, embed)
+    if (this.guild.ratingsChannel && success) {
+      const rating = await this.requestRating()
 
-      // Request for the ticket creator's rating if
-      // the ticket was closed successfully.
-      if (success) {
-        const rating = await this.requestRating()
+      if (rating) {
+        this.logRating(rating)
 
-        if (rating) {
-          this.logRating(rating)
-
-          const embed = new MessageEmbed()
-            .setColor(this.guild.getData('primaryColor'))
-            .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
-            .setTitle('Rating submitted')
-            .setDescription('Thank you!')
-          this.client.bot.send(this.author, embed)
-        } else {
-          const embed = new MessageEmbed()
-            .setColor(this.guild.getData('primaryColor'))
-            .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
-            .setTitle('No rating submitted')
-          this.client.bot.send(this.author, embed)
-        }
+        const embed = new MessageEmbed()
+          .setColor(this.guild.primaryColor)
+          .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
+          .setTitle('Rating submitted')
+          .setDescription('Thank you!')
+        this.client.bot.send(this.author, embed)
+      } else {
+        const embed = new MessageEmbed()
+          .setColor(this.guild.primaryColor)
+          .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
+          .setTitle('No rating submitted')
+        this.client.bot.send(this.author, embed)
       }
     }
 
+    await Ticket.destroy({ where: { id: this.id }})
+
     this.emit('close')
+
+    return this
   }
 
   async requestRating () {
-    this.state = TicketState.REQUESTING_RATING
-
     const embed = new MessageEmbed()
-      .setColor(this.guild.getData('primaryColor'))
+      .setColor(this.guild.primaryColor)
       .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
       .setTitle('How would you rate the support you got?')
     const message = await this.client.bot.send(this.author, embed)
@@ -189,11 +187,14 @@ class TicketController extends EventEmitter {
     return rating
   }
 
-  logRating (rating) {
-    // Form a string of the moderator's names.
+  async logRating (rating) {
     let result = ''
     for (let i = 0; i < this.moderators.length; i++) {
       const moderator = this.moderators[i]
+      if (moderator.partial) {
+        await moderator.fetch()
+      }
+
       result += `**${moderator.tag}**`
       if (i < this.moderators.length - 2) {
         result += ', '
@@ -203,11 +204,8 @@ class TicketController extends EventEmitter {
     }
     result = result || 'none'
 
-    const channels = this.guild.getData('channels')
-    const channel = this.guild.guild.channels.cache.get(channels.ratingsChannel)
-
     const embed = new MessageEmbed()
-      .setColor(this.guild.getData('primaryColor'))
+      .setColor(this.guild.primaryColor)
       .setAuthor(this.author.tag, this.author.displayAvatarURL())
       .setTitle('Ticket Rating')
       .setDescription(stripIndents`
@@ -215,7 +213,7 @@ class TicketController extends EventEmitter {
       Rating: **${rating}**
       `)
       .setFooter(`Ticket ID: ${this.id}`)
-    return channel.send(embed)
+    return this.guild.ratingsChannel.send(embed)
   }
 
   static getTypeFromName (name) {
@@ -225,10 +223,36 @@ class TicketController extends EventEmitter {
       }
     }
   }
+
+  async message (message) {
+    if (this.timeout) {
+      clearTimeout(this.timeout)
+      this.timeout = undefined
+    }
+
+    if (message.author.id !== this.authorId) {
+      if (!this.moderators.some(moderator => moderator.id === message.author.id)) {
+        await TicketModerator.create({ ticketId: this.id, userId: message.author.id })
+        const data = await Ticket.findByPk(this.id)
+        this._patch(data)
+      }
+    }
+  }
+
+  async edit (data) {
+    const ticket = await Ticket.findByPk(this.id)
+
+    const newData = await ticket.update({
+      channelId: data.channelId,
+      type: data.type
+    })
+
+    this._patch(newData)
+    return newData
+  }
 }
 
 module.exports = {
   TicketController,
-  TicketState,
   TicketType
 }

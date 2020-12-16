@@ -17,12 +17,6 @@ module.exports = class CloseTicketCommand extends Command {
 
   async execute (message, _args, guild) {
     const ticketsController = this.client.bot.ticketsController
-
-    // Check if the channel is actually a ticket channel
-    if (message.channel.parentID !== guild.ticketsCategoryId) {
-      return message.reply('This command can only be used in channels in the tickets category.')
-    }
-
     const ticketController = ticketsController.getTicketFromChannel(guild, message.channel)
     if (ticketController) {
       const prompt = await message.channel.send('Are you sure you want to close this ticket?')

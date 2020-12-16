@@ -13,18 +13,18 @@ module.exports = class Command extends Commando.Command {
 
   hasPermission (message, ownerOverride) {
     if (!this.ownerOnly) {
-      const guild = this.client.bot.getGuild(message.guild.id)
-      const roleGroups = guild.getData('roleGroups')
-      const member = message.member
-      const command = message.command
-      const group = command.group
-
-      if (!_checkPermissions(member, group, roleGroups)) {
-        return false
-      }
-      if (!_checkPermissions(member, command, roleGroups)) {
-        return false
-      }
+      // const guild = this.client.bot.getGuild(message.guild.id)
+      // const roleGroups = guild.getData('roleGroups')
+      // const member = message.member
+      // const command = message.command
+      // const group = command.group
+      //
+      // if (!_checkPermissions(member, group, roleGroups)) {
+      //   return false
+      // }
+      // if (!_checkPermissions(member, command, roleGroups)) {
+      //   return false
+      // }
     }
 
     return super.hasPermission(message, ownerOverride)

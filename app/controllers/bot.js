@@ -9,6 +9,7 @@ const userService = require('../services/user')
 const stringHelper = require('../helpers/string')
 const TicketsController = require('./tickets')
 
+const { RoleMessage } = require('../models')
 const { MessageEmbed, DiscordAPIError } = require('discord.js')
 const { stripIndents } = require('common-tags')
 
@@ -48,6 +49,28 @@ module.exports = class Bot {
     this.guilds = {}
 
     this.client.once('ready', this.ready.bind(this))
+  }
+
+  setActivity (name, options) {
+    if (!name) {
+      const activity = this.getNextActivity()
+      name = activity.name
+      options = activity.options
+    }
+    return this.client.user.setActivity(name, options)
+  }
+
+  async ready () {
+    await this.client.setProvider(new SettingProvider())
+
+    const mainGuildId = process.env.NODE_ENV === 'production'
+      ? applicationConfig.productionMainGuildId
+      : applicationConfig.developmentMainGuildId
+    this.mainGuild = this.getGuild(mainGuildId)
+
+    this.ticketsController = new TicketsController(this.client)
+    await this.ticketsController.init()
+
     this.client.on('guildMemberAdd', this.guildMemberAdd.bind(this))
     this.client.on('commandRun', this.commandRun.bind(this))
     this.client.on('messageReactionAdd', this.messageReactionAdd.bind(this))
@@ -58,31 +81,7 @@ module.exports = class Bot {
       this.webSocketController.on('rankChanged', this.rankChanged.bind(this))
       this.webSocketController.on('trainDeveloperPayoutReport', this.trainDeveloperPayoutReport.bind(this))
     }
-  }
 
-  setActivity (name, options) {
-    if (!name) {
-      const activity = this.getNextActivity()
-      name = activity.name
-      options = activity.options
-    }
-    this.client.user.setActivity(name, options)
-  }
-
-  async ready () {
-    // Set the client's SettingProvider
-    await this.client.setProvider(new SettingProvider())
-
-    // Set the bot's main Guild
-    const mainGuildId = process.env.NODE_ENV === 'production'
-      ? applicationConfig.productionMainGuildId
-      : applicationConfig.developmentMainGuildId
-    this.mainGuild = this.getGuild(mainGuildId)
-
-    // Instantiate the TicketsController for this bot
-    this.ticketsController = new TicketsController(this.client)
-
-    // Set the bot's activity and start the loop that updates the activity
     this.setActivity()
     setInterval(this.setActivity.bind(this), 60 * 1000)
 
@@ -95,13 +94,13 @@ module.exports = class Bot {
     }
 
     const guild = this.getGuild(member.guild.id)
-    if (guild.welcomeChannelId) {
+    if (guild.welcomeChannel) {
       const embed = new MessageEmbed()
         .setTitle(`Hey ${member.user.tag},`)
         .setDescription(`You're the **${member.guild.memberCount}th** member on **${member.guild.name}**!`)
         .setThumbnail(member.user.displayAvatarURL())
         .setColor(guild.getData('primaryColor'))
-      return guild.guild.channels.cache.get(guild.welcomeChannelId).send(embed)
+      return guild.welcomeChannel.send(embed)
     }
   }
 
@@ -109,6 +108,7 @@ module.exports = class Bot {
     if (!message.guild) {
       return
     }
+
     await promise
 
     const guild = this.getGuild(message.guild.id)
@@ -129,15 +129,14 @@ module.exports = class Bot {
       return
     }
     const guild = this.getGuild(reaction.message.guild.id)
-    let member
-    try {
-      member = await guild.guild.members.fetch(user)
-    } catch (err) {
-      return
-    }
+    const member = await guild.guild.members.fetch(user)
 
-    // Handle role messages
-    const roleMessages = await guild.instance.getRoleMessages({ where: { messageId: reaction.message.id }})
+    const roleMessages = await RoleMessage.findAll({
+      where: {
+        guildId: guild.id,
+        messageId: reaction.message.id
+      }
+    })
     if (roleMessages) {
       if (reaction.partial) {
         await reaction.fetch()
@@ -150,7 +149,6 @@ module.exports = class Bot {
       }
     }
 
-    // // Handle votes
     // const voteData = guild.getData('vote')
     // if (voteData && voteData.timer && voteData.timer.end > Date.now()) {
     //   let choice
@@ -180,15 +178,14 @@ module.exports = class Bot {
       return
     }
     const guild = this.getGuild(reaction.message.guild.id)
-    let member
-    try {
-      member = await guild.guild.members.fetch(user)
-    } catch (err) {
-      return
-    }
+    const member = await guild.guild.members.fetch(user)
 
-    // Handle role messages
-    const roleMessages = await guild.instance.getRoleMessages({ where: { messageId: reaction.message.id }})
+    const roleMessages = await RoleMessage.findAll({
+      where: {
+        guildId: guild.id,
+        messageId: reaction.message.id
+      }
+    })
     if (roleMessages) {
       const emojiId = reaction.emoji.id || reaction.emoji.name
       for (const roleMessage of roleMessages) {
@@ -227,9 +224,7 @@ module.exports = class Bot {
 
   getNextActivity () {
     this.currentActivity++
-    if (this.currentActivity === 2) {
-      this.currentActivity = 0
-    }
+    this.currentActivity = this.currentActivity % 2
 
     switch (this.currentActivity) {
       case 0:
@@ -253,12 +248,10 @@ module.exports = class Bot {
       .setTitle('Train Developers Payout Report')
       .setColor(0xffffff)
     for (const [id, developerSales] of Object.entries(developersSales)) {
-      // Add new field with developer totals to the main embed.
       const username = developers.find(developer => developer.id === parseInt(id)).name
       const total = Math.ceil(developerSales.total.robux)
       embed.addField(username, `Has sold **${developerSales.total.amount}** ${pluralize('train', developerSales.total.amount)} and earned ${emoji || ''}${emoji ? ' ' : ''}**${total}**${!emoji ? ' Robux' : ''}.`)
 
-      // Message developers individually.
       try {
         const user = await this.client.users.fetch(developerSales.discordId)
         const userEmbed = new MessageEmbed()
@@ -283,7 +276,7 @@ module.exports = class Bot {
     } catch (err) {
       if (err instanceof DiscordAPIError) {
         // Most likely because the author has DMs closed,
-        // do nothing
+        // do nothing.
       } else {
         throw err
       }
