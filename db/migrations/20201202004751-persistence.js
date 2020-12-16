@@ -164,8 +164,11 @@ module.exports = {
       },
       channelId: {
         type: Sequelize.STRING,
-        allowNull: false,
         field: 'channel_id'
+      },
+      type: {
+        type: Sequelize.STRING,
+        allowNull: false
       }
     })
 

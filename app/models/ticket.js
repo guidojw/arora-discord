@@ -8,11 +8,14 @@ module.exports = (sequelize, DataTypes) => {
     },
     channelId: {
       type: DataTypes.STRING,
-      allowNull: false,
       field: 'channel_id'
+    },
+    type: {
+      type: DataTypes.STRING,
+      allowNull: false
     }
   }, {
-    tableName: 'tickets_moderators'
+    tableName: 'tickets'
   })
 
   Ticket.associate = models => {
