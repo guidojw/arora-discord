@@ -1,58 +1,42 @@
 'use strict'
-const fs = require('fs')
-const path = require('path')
 const cron = require('node-cron')
-const EventEmitter = require('events')
 
 const applicationConfig = require('../../config/application')
 const cronConfig = require('../../config/cron')
 
-module.exports = class Guild extends EventEmitter {
-  constructor (bot, id) {
-    super()
+class Guild {
+  constructor (data, client) {
+    this.id = data.id
+    this.primaryColor = data.primaryColor
+    this.commandPrefix = data.commandPrefix
+    this.supportEnabled = data.supportEnabled
+    this.robloxGroupId = data.robloxGroupId
+    this.logsChannelId = data.logsChannelId
+    this.trainingsChannelId = data.trainingsChannelId
+    this.suggestionsChannelId = data.suggestionsChannelId
+    this.ratingsChannelId = data.ratingsChannelId
+    this.supportChannelId = data.supportChannelId
+    this.welcomeChannelId = data.welcomeChannelId
+    this.ticketsCategoryId = data.ticketsCategoryId
+    this.trainingsMessageId = data.trainingsMessageId
+    this.trainingsInfoMessageId = data.trainingsInfoMessageId
+    this.supportMessageId = data.supportMessageId
 
-    this.bot = bot
-    this.id = id
-    this.guild = this.bot.client.guilds.cache.get(id)
-    this.dataPath = path.join(__dirname, '../../data', `${id}.json`)
-    this.data = undefined
+    this.instance = data
+    this.guild = client.guilds.cache.get(data.id)
+
     this.jobs = {}
-
-    this.once('ready', this.ready.bind(this))
+    this.groupPermissions = {}
+    this.rolePermissions = {}
   }
 
-  async loadData () {
-    try {
-      await fs.promises.access(this.dataPath)
-    } catch (err) {
-      await fs.promises.writeFile(this.dataPath, JSON.stringify({})) // TODO: default settings
-    }
-    this.data = JSON.parse(await fs.promises.readFile(this.dataPath))
-    this.emit('ready')
-  }
-
-  async setData (key, value) {
-    if (!this.data) {
-      throw new Error('Guild data is not loaded yet.')
-    }
-    this.data[key] = value
-    await fs.promises.writeFile(this.dataPath, JSON.stringify(this.data, null, '\t'))
-  }
-
-  getData (key) {
-    if (!this.data) {
-      throw new Error('Guild data is not loaded yet.')
-    }
-    return this.data[key]
-  }
-
-  ready () {
-    // Voting system jobs
-    const voteData = this.getData('vote')
-    if (voteData && voteData.timer && voteData.timer.end > Date.now()) {
-      this.scheduleJob('saveVoteJob')
-      this.scheduleJob('updateTimerJob')
-    }
+  async init () {
+    // // Voting system jobs
+    // const voteData = this.getData('vote')
+    // if (voteData && voteData.timer && voteData.timer.end > Date.now()) {
+    //   this.scheduleJob('saveVoteJob')
+    //   this.scheduleJob('updateTimerJob')
+    // }
 
     // Jobs depending on if API is enabled
     if (applicationConfig.apiEnabled) {
@@ -77,4 +61,26 @@ module.exports = class Guild extends EventEmitter {
     }
     this.jobs[name].stop()
   }
+
+  log (author, content, footer) {
+    if (this.logsChannelId) {
+      const embed = new MessageEmbed()
+        .setAuthor(author.tag, author.displayAvatarURL())
+        .setDescription(content)
+        .setColor(this.primaryColor)
+      if (footer) {
+        embed.setFooter(footer)
+      }
+
+      return this.guild.channels.cache.get(this.logsChannelId).send(embed)
+    }
+  }
+
+  async setData (key, value) {
+    await this.instance.update({ [key]: value })
+    this[key] = value
+    return value
+  }
 }
+
+module.exports = Guild
