@@ -1,10 +1,12 @@
 'use strict'
 const Command = require('../../controllers/command')
 
+const { RoleMessage } = require('../../models')
+
 module.exports = class AddRoleMessageCommand extends Command {
   constructor (client) {
     super(client, {
-      group: 'admin',
+      group: 'settings',
       name: 'addrolemessage',
       aliases: ['addrolemsg'],
       description: 'Adds a new role message.',
@@ -35,17 +37,29 @@ module.exports = class AddRoleMessageCommand extends Command {
     })
   }
 
-  execute (message, { messageId, emoji, role }, guild) {
-    const roleMessages = guild.getData('roleMessages')
-    if (!roleMessages[messageId]) {
-      roleMessages[messageId] = []
-    }
+  async execute (message, { messageId, emoji, role }, guild) {
     if (emoji.charAt(0) === '<') {
       emoji = emoji.substring(emoji.lastIndexOf(':') + 1, emoji.indexOf('>'))
     }
 
-    roleMessages[messageId].push({ role: role.id, emoji })
-    guild.setData('roleMessages', roleMessages)
+    const roleMessage = await RoleMessage.findOne({
+      where: {
+        messageId: messageId,
+        emojiId: emoji,
+        roleId: role.id,
+        guildId: guild.id
+      }
+    })
+    if (roleMessage) {
+      return message.reply('A role message with that message, emoji and role already exists.')
+    }
+
+    await RoleMessage.create({
+      messageId: messageId,
+      emojiId: emoji,
+      roleId: role.id,
+      guildId: guild.id
+    })
 
     return message.reply('Successfully made role message.')
   }

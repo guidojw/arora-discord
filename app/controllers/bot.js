@@ -190,7 +190,7 @@ module.exports = class Bot {
     if (roleMessages) {
       const emojiId = reaction.emoji.id || reaction.emoji.name
       for (const roleMessage of roleMessages) {
-        if (roleMessage.emoji === emojiId) {
+        if (roleMessage.emojiId === emojiId) {
           return member.roles.remove(roleMessage.roleId)
         }
       }
