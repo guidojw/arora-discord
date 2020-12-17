@@ -33,7 +33,7 @@ module.exports = class SetSettingCommand extends Command {
     key = Object.keys(Guild.rawAttributes)
       .find(attribute => {
         attribute = attribute.toLowerCase()
-        return key.endsWith('id') ? attribute.slice(0, -2) === key : attribute === key
+        return attribute.endsWith('id') ? attribute.slice(0, -2) === key : attribute === key
       })
 
     let error
@@ -46,17 +46,21 @@ module.exports = class SetSettingCommand extends Command {
       } else if (value < 0 || value > 16777215) { // [0x000000, 0xffffff]
         error = 'Color out of bounds.'
       }
+    } else if (key === 'robloxGroupId') {
+      if (typeof value !== 'number') {
+        error = 'Invalid ID.'
+      }
     } else if (key === 'ticketsCategoryId') {
       if (!(value instanceof CategoryChannel)) {
-        error = 'Value is not a CategoryChannel.'
+        error = 'Invalid category channel.'
       }
     } else if (key === 'trainingsMessageId' || key === 'trainingsInfoMessageId') {
       if (!(value instanceof Message)) {
-        error = 'Value is not a Message.'
+        error = 'Invalid message.'
       }
     } else {
       if (!(value instanceof Channel)) {
-        error = 'Value is not a Channel.'
+        error = 'Invalid channel.'
       }
     }
     if (error) {
@@ -65,6 +69,6 @@ module.exports = class SetSettingCommand extends Command {
 
     await guild.edit({ [key]: key.endsWith('Id') ? value.id : value })
 
-    return message.reply(`Successfully changed ${key} to **${value}**.`)
+    return message.reply(`Successfully changed ${key.endsWith('Id') ? key.slice(0, -2) : key} to **${value}**.`)
   }
 }

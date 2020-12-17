@@ -130,8 +130,6 @@ class TicketController extends EventEmitter {
     // await this.channel.updateOverwrite(roles.ticketModeratorRole, { VIEW_CHANNEL: true })
 
     this.guild.log(this.author, `${this.author} **opened ticket** \`${this.id}\` **in** ${this.channel}`, `Ticket ID: ${this.id}`)
-
-    return this
   }
 
   async close (message, success, color) {
@@ -169,8 +167,6 @@ class TicketController extends EventEmitter {
     await Ticket.destroy({ where: { id: this.id } })
 
     this.emit('close')
-
-    return this
   }
 
   async requestRating () {
