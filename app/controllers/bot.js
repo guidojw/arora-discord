@@ -6,10 +6,9 @@ const SettingProvider = require('./setting-provider')
 const WebSocketController = require('./web-socket')
 const discordService = require('../services/discord')
 const userService = require('../services/user')
-const stringHelper = require('../helpers/string')
 const TicketsController = require('./tickets')
 
-const { RoleMessage } = require('../models')
+const { RoleBinding, RoleMessage } = require('../models')
 const { MessageEmbed, DiscordAPIError } = require('discord.js')
 const { stripIndents } = require('common-tags')
 
@@ -203,16 +202,12 @@ module.exports = class Bot {
       const member = await discordService.getMemberByName(guild.guild, username)
 
       if (member) {
-        const roles = guild.getData('roles')
-        if (roles[groupId]) {
-          for (const [binding, role] of Object.entries(roles[groupId])) {
-            const ranks = stringHelper.convertBinding(binding)
-
-            if (ranks.includes(rank)) {
-              member.roles.add(role)
-            } else {
-              member.roles.remove(role)
-            }
+        const roleBindings = await RoleBinding.findAll({ where: { guildId: guild.id, robloxGroupId: groupId } })
+        for (const roleBinding of roleBindings) {
+          if (rank === roleBinding.min || (roleBinding.max && rank >= roleBinding.min && rank <= roleBinding.max)) {
+            member.roles.add(roleBinding.roleId)
+          } else {
+            member.roles.remove(roleBinding.roleId)
           }
         }
       }

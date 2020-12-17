@@ -6,6 +6,11 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       field: 'role_id'
     },
+    robloxGroupId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: 'roblox_group_id'
+    },
     min: {
       type: DataTypes.INTEGER,
       allowNull: false

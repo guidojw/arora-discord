@@ -201,6 +201,11 @@ module.exports = {
         allowNull: false,
         field: 'role_id'
       },
+      robloxGroupId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        field: 'roblox_group_id'
+      },
       guildId: {
         type: Sequelize.STRING,
         allowNull: false,
