@@ -29,8 +29,15 @@ module.exports = class SetSettingCommand extends Command {
   }
 
   async execute (message, { key, value }, guild) {
+    key = key.toLowerCase()
+    key = Object.keys(Guild.rawAttributes)
+      .find(attribute => {
+        attribute = attribute.toLowerCase()
+        return key.endsWith('id') ? attribute.slice(0, -2) === key : attribute === key
+      })
+
     let error
-    if (key === 'primarycolor') {
+    if (key === 'primaryColor') {
       if (typeof value !== 'number') {
         value = parseInt(value, 16)
         if (isNaN(value)) {
@@ -39,11 +46,11 @@ module.exports = class SetSettingCommand extends Command {
       } else if (value < 0 || value > 16777215) { // [0x000000, 0xffffff]
         error = 'Color out of bounds.'
       }
-    } else if (key === 'ticketscategory') {
+    } else if (key === 'ticketsCategoryId') {
       if (!(value instanceof CategoryChannel)) {
         error = 'Value is not a CategoryChannel.'
       }
-    } else if (key === 'trainingsmessage' || key === 'trainingsinfomessage') {
+    } else if (key === 'trainingsMessageId' || key === 'trainingsInfoMessageId') {
       if (!(value instanceof Message)) {
         error = 'Value is not a Message.'
       }
@@ -55,9 +62,6 @@ module.exports = class SetSettingCommand extends Command {
     if (error) {
       return message.reply(error)
     }
-
-    key = Object.keys(Guild.rawAttributes)
-      .find(attribute => attribute.slice(0, -2).toLowerCase() === key)
 
     await guild.edit({ [key]: key.endsWith('Id') ? value.id : value })
 
