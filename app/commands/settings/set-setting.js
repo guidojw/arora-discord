@@ -67,7 +67,7 @@ module.exports = class SetSettingCommand extends Command {
       return message.reply(error)
     }
 
-    await guild.edit({ [key]: key.endsWith('Id') ? value.id : value })
+    await guild.edit({ [key]: key.endsWith('Id') && key !== 'robloxGroupId' ? value.id : value })
 
     return message.reply(`Successfully changed ${key.endsWith('Id') ? key.slice(0, -2) : key} to **${value}**.`)
   }
