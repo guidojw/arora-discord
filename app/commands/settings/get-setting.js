@@ -31,18 +31,18 @@ module.exports = class GetSettingCommand extends Command {
         return attribute.endsWith('id') ? attribute.slice(0, -2) === key : attribute === key
       })
 
-    let value
-    if (key.includes('Channel')) {
-      key = key.slice(0, -2)
-      value = guild[key]
-    } else if (key === 'primaryColor') {
+    let result
+    if (key === 'primaryColor') {
       const color = guild.primaryColor.toString(16)
-      value = `0x${color}${'0'.repeat(6 - color.length)}`
+      result = `0x${color}${'0'.repeat(6 - color.length)}`
+    } else if (key.includes('Channel')) {
+      key = key.slice(0, -2)
+      result = guild[key]
     } else {
-      value = guild[key]
+      result = guild[key]
       key = key.slice(0, -2)
     }
 
-    return message.reply(`${key} is set to **${value}**.`)
+    return message.reply(`${key} is set to **${result}**.`)
   }
 }
