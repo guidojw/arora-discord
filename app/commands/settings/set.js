@@ -2,6 +2,7 @@
 const Command = require('../../controllers/command')
 
 const { Channel, CategoryChannel, Message } = require('discord.js')
+const { Guild } = require('../../models')
 
 module.exports = class SetSettingCommand extends Command {
   constructor (client) {
@@ -15,11 +16,10 @@ module.exports = class SetSettingCommand extends Command {
         key: 'key',
         prompt: 'What setting would you like to change?',
         type: 'string',
-        oneOf: [
-          'primarycolor', 'robloxgroupid', 'logschannel', 'trainingschannel', 'suggestionschannel', 'ratingschannel',
-          'supportchannel', 'welcomechannel', 'ticketscategory', 'trainingsmessage', 'trainingsinfomessage',
-          'supportmessage'
-        ]
+        oneOf: Object.keys(Guild.rawAttributes)
+          .filter(attribute => attribute !== 'id' && attribute !== 'supportEnabled' && attribute !== 'commandPrefix')
+          .map(attribute => attribute.endsWith('Id') ? attribute.slice(0, -2) : attribute)
+          .map(attribute => attribute.toLowerCase())
       }, {
         key: 'value',
         prompt: 'What would you like to change this setting to?',
@@ -56,7 +56,10 @@ module.exports = class SetSettingCommand extends Command {
       return message.reply(error)
     }
 
-    await guild.edit({ [key]: value })
+    key = Object.keys(Guild.rawAttributes)
+      .find(attribute => attribute.slice(0, -2).toLowerCase() === key)
+
+    await guild.edit({ [key]: key.endsWith('Id') ? value.id : value })
 
     return message.reply(`Successfully changed ${key} to **${value}**.`)
   }
