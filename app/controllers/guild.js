@@ -21,7 +21,7 @@ class GuildController {
 
   _patch (data) {
     this.id = data.id
-    this.primaryColor = data.primaryColor || null
+    this.primaryColor = typeof data.primaryColor !== 'undefined' ? data.primaryColor : null // primaryColor can be 0
     this.commandPrefix = data.commandPrefix || null
     this.supportEnabled = data.supportEnabled || null
     this.robloxGroupId = data.robloxGroupId || null

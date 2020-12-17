@@ -37,7 +37,7 @@ module.exports = class GetSettingCommand extends Command {
       value = guild[key]
     } else if (key === 'primaryColor') {
       const color = guild.primaryColor.toString(16)
-      value = `0x${color}${'0'.repeat(6 - color.toString().length)}`
+      value = `0x${color}${'0'.repeat(6 - color.length)}`
     } else {
       value = guild[key]
       key = key.slice(0, -2)
