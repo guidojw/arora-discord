@@ -73,7 +73,10 @@ class TicketController extends EventEmitter {
   }
 
   async createChannel () {
-    const name = `${this.type}-${this.id}`
+    if (this.author.partial) {
+      await this.author.fetch()
+    }
+    const name = `${this.type}-${this.author.username}`
     const channel = await this.guild.guild.channels.create(name)
 
     await this.edit({ channelId: channel.id })
