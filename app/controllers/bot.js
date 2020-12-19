@@ -14,7 +14,8 @@ const { RoleBinding, RoleMessage } = require('../models')
 
 const applicationConfig = require('../../config/application')
 
-const RESPONSE_DELETE_TIME = 10000
+const ACTIVITY_CAROUSEL_INTERVAL = 60 * 1000
+const COMMAND_DELETE_MESSAGES_TIMEOUT = 10 * 1000
 
 class Bot {
   constructor () {
@@ -78,7 +79,7 @@ class Bot {
     }
 
     this.setActivity()
-    setInterval(this.setActivity.bind(this), 60 * 1000)
+    setInterval(this.setActivity.bind(this), ACTIVITY_CAROUSEL_INTERVAL)
 
     console.log(`Ready to serve on ${this.client.guilds.cache.size} servers, for ${this.client.users.cache.size} users.`)
   }
@@ -135,7 +136,7 @@ class Bot {
       message.delete()
     ])
     if (result instanceof Message) {
-      setTimeout(this.deleteMessage.bind(this, result), RESPONSE_DELETE_TIME)
+      setTimeout(this.deleteMessage.bind(this, result), COMMAND_DELETE_MESSAGES_TIMEOUT)
     } else if (result instanceof Array) {
       setTimeout(() => {
         return Promise.all(result.map(this.deleteMessage.bind(this)))
@@ -275,7 +276,7 @@ class Bot {
 
   getNextActivity () {
     this.currentActivity++
-    this.currentActivity = this.currentActivity % 2
+    this.currentActivity %= 2
 
     switch (this.currentActivity) {
       case 0:

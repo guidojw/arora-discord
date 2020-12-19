@@ -246,25 +246,30 @@ module.exports = {
       }
     })
 
-    await queryInterface.createTable('roles_messages', {
+    await queryInterface.createTable('role_messages', {
+      id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+      },
       emojiId: {
         type: Sequelize.STRING,
-        primaryKey: true,
+        allowNull: false,
         field: 'emoji_id'
       },
       roleId: {
         type: Sequelize.STRING,
-        primaryKey: true,
+        allowNull: false,
         field: 'role_id'
       },
       messageId: {
         type: Sequelize.STRING,
-        primaryKey: true,
+        allowNull: false,
         field: 'message_id'
       },
       guildId: {
         type: Sequelize.STRING,
-        primaryKey: true,
+        allowNull: false,
         references: {
           model: 'guilds',
           key: 'id'

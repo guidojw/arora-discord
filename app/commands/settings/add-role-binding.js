@@ -57,7 +57,7 @@ class AddRoleBindingCommand extends Command {
         max
       })
 
-      return message.reply('Successfully made role binding.')
+      return message.reply('Successfully added role binding.')
     } else {
       return message.reply('This server is not bound to a Roblox group yet!')
     }

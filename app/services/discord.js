@@ -1,7 +1,7 @@
 'use strict'
 const { MessageEmbed } = require('discord.js')
 
-const REACTION_COLLECTOR_TIMEOUT = 60000
+const REACTION_COLLECTOR_TIME = 60000
 
 exports.getMemberByName = async (guild, name) => {
   const members = await guild.members.fetch()
@@ -59,7 +59,7 @@ exports.getEmojiFromNumber = number => {
 
 exports.prompt = async (channel, author, message, options) => {
   const filter = (reaction, user) => options.includes(reaction.emoji.name) && user.id === author.id
-  const collector = message.createReactionCollector(filter, { time: REACTION_COLLECTOR_TIMEOUT })
+  const collector = message.createReactionCollector(filter, { time: REACTION_COLLECTOR_TIME })
   const promise = new Promise(resolve => {
     collector.on('end', collected => {
       const reaction = collected.first()

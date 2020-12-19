@@ -14,10 +14,10 @@ class AddRoleMessageCommand extends Command {
       details: 'Can only be used in the channel of the message you want to make a role message. Because of this, the ' +
         'message that fires this command, the response, the argument prompts and the answers will all be deleted when' +
         ' the command has finished.',
-      clientPermissions: ['SEND_MESSAGES'],
+      clientPermissions: ['SEND_MESSAGES', 'ADD_REACTIONS'],
       deleteMessages: true,
       args: [{
-        key: 'message',
+        key: 'integer',
         prompt: 'What message would you like to make a role message?',
         type: 'message'
       }, {
@@ -62,7 +62,7 @@ class AddRoleMessageCommand extends Command {
       guildId: guild.id
     })
 
-    return message.reply('Successfully made role message.')
+    return message.reply('Successfully added role message.')
   }
 }
 
