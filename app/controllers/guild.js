@@ -4,7 +4,6 @@ const cron = require('node-cron')
 const { MessageEmbed } = require('discord.js')
 const { Guild } = require('../models')
 
-
 const applicationConfig = require('../../config/application')
 const cronConfig = require('../../config/cron')
 

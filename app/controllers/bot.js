@@ -107,7 +107,7 @@ class Bot {
     let result
     try {
       result = await promise
-    } catch {
+    } catch (err) {
       // Command execution errors are handled by the commandError event.
       return
     }

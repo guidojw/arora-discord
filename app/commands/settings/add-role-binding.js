@@ -64,8 +64,8 @@ class AddRoleBindingCommand extends Command {
   }
 }
 
-function _validateRank(value) {
-  return value >= 0 && value <= 255 || 'Invalid rank.'
+function _validateRank (value) {
+  return (value >= 0 && value <= 255) || 'Invalid rank.'
 }
 
 module.exports = AddRoleBindingCommand
