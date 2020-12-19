@@ -1,9 +1,12 @@
 'use strict'
 const Command = require('../../controllers/command')
 
+const { DiscordAPIError, GuildEmoji } = require('discord.js')
 const { RoleMessage } = require('../../models')
 
-module.exports = class AddRoleMessageCommand extends Command {
+const RESPONSE_DELETE_TIME = 10000
+
+class AddRoleMessageCommand extends Command {
   constructor (client) {
     super(client, {
       group: 'settings',
@@ -12,23 +15,13 @@ module.exports = class AddRoleMessageCommand extends Command {
       description: 'Adds a new role message.',
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
-        key: 'messageId',
-        prompt: 'What message would you like to add role functionality to?',
-        type: 'string',
-        validate: messageId => {
-          return /^[0-9]+$/.test(messageId)
-        }
+        key: 'message',
+        prompt: 'What message would you like to make a role message?',
+        type: 'message'
       }, {
         key: 'emoji',
         prompt: 'What emoji do you want to bind to this message?',
-        type: 'string',
-        validate: emoji => {
-          if (emoji.charAt(0) === '<') {
-            return emoji.indexOf(':') !== emoji.lastIndexOf(':') && emoji.charAt(0) === '<' && emoji.charAt(emoji
-              .length - 1) === '>'
-          }
-          return true
-        }
+        type: 'custom-emoji|string'
       }, {
         key: 'role',
         prompt: 'What role do you want to bind to this emoji?',
@@ -37,15 +30,11 @@ module.exports = class AddRoleMessageCommand extends Command {
     })
   }
 
-  async execute (message, { messageId, emoji, role }, guild) {
-    if (emoji.charAt(0) === '<') {
-      emoji = emoji.substring(emoji.lastIndexOf(':') + 1, emoji.indexOf('>'))
-    }
-
+  async execute (message, { message: newMessage, emoji, role }, guild) {
     const roleMessage = await RoleMessage.findOne({
       where: {
-        messageId: messageId,
-        emojiId: emoji,
+        emojiId: emoji instanceof GuildEmoji ? emoji.id : emoji,
+        messageId: newMessage.id,
         roleId: role.id,
         guildId: guild.id
       }
@@ -54,13 +43,27 @@ module.exports = class AddRoleMessageCommand extends Command {
       return message.reply('A role message with that message, emoji and role already exists.')
     }
 
+    try {
+      await newMessage.react(emoji)
+    } catch (err) {
+      if (err instanceof DiscordAPIError && err.code === 10014) {
+        return message.reply('Unknown emoji.')
+      } else {
+        throw err
+      }
+    }
+
     await RoleMessage.create({
-      messageId: messageId,
-      emojiId: emoji,
+      emojiId: emoji instanceof GuildEmoji ? emoji.id : emoji,
+      messageId: newMessage.id,
       roleId: role.id,
       guildId: guild.id
     })
 
-    return message.reply('Successfully made role message.')
+    const response = await message.reply('Successfully made role message.')
+    setTimeout(response.delete.bind(response), RESPONSE_DELETE_TIME)
+    return response
   }
 }
+
+module.exports = AddRoleMessageCommand

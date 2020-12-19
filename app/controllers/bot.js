@@ -104,12 +104,23 @@ module.exports = class Bot {
     }
   }
 
-  async commandRun (command, promise, message) {
+  async commandRun (command, promise, message, _args, _fromPattern, collResult) {
     if (!message.guild) {
       return
     }
 
     await promise
+
+    // AddRoleMessageCommand can only be run in the channel of the message
+    // which may be a channel that's not normally messaged in, so delete
+    // the message, prompts and answers.
+    if (command.name === 'addrolemessage') {
+      await Promise.all([
+        ...collResult.prompts.map(prompt => prompt.delete()),
+        ...collResult.answers.map(answer => answer.delete()),
+        message.delete()
+      ])
+    }
 
     const guild = this.getGuild(message.guild.id)
     return guild.log(message.author, stripIndents`
