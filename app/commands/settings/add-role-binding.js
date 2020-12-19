@@ -19,28 +19,28 @@ class AddRoleBindingCommand extends Command {
         key: 'min',
         prompt: 'What do you want the lower limit of this binding to be?',
         type: 'integer',
-        validate: _validRank
+        validate: _validateRank
       }, {
         key: 'max',
         prompt: 'What do you want the upper limit of this binding to be? Reply with "0" if you don\'t want one.',
         type: 'integer',
-        validate: _validRank
+        validate: _validateRank
       }]
     })
   }
 
   async execute (message, { role, min, max }, guild) {
     if (guild.robloxGroupId) {
-      max = max === 0 ? null : max
-      if (max !== null && max < min) {
-        [min, max] = [max, min] // swap values
+      max = max === 0 ? undefined : max
+      if (typeof max !== 'undefined' && max < min) {
+        [min, max] = [max, min]
       }
 
       const roleBinding = await RoleBinding.findOne({
         where: {
+          robloxGroupId: guild.robloxGroupId,
           guildId: guild.id,
           roleId: role.id,
-          robloxGroupId: guild.robloxGroupId,
           min,
           max
         }
@@ -50,9 +50,9 @@ class AddRoleBindingCommand extends Command {
       }
 
       await RoleBinding.create({
+        robloxGroupId: guild.robloxGroupId,
         guildId: guild.id,
         roleId: role.id,
-        robloxGroupId: guild.robloxGroupId,
         min,
         max
       })
@@ -64,7 +64,7 @@ class AddRoleBindingCommand extends Command {
   }
 }
 
-function _validRank(value) {
+function _validateRank(value) {
   return value >= 0 && value <= 255 || 'Invalid rank.'
 }
 

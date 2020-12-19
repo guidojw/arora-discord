@@ -3,7 +3,7 @@ const Command = require('../../controllers/command')
 
 const { Guild } = require('../../models')
 
-module.exports = class GetSettingCommand extends Command {
+class GetSettingCommand extends Command {
   constructor (client) {
     super(client, {
       group: 'settings',
@@ -46,3 +46,5 @@ module.exports = class GetSettingCommand extends Command {
     return message.reply(`${key} is set to **${result}**.`)
   }
 }
+
+module.exports = GetSettingCommand

@@ -44,7 +44,7 @@ module.exports = class SuggestCommand extends Command {
       await newMessage.react('⬆️')
       await newMessage.react('⬇️')
 
-      message.reply('Successfully suggested', { embed: embed })
+      return message.reply('Successfully suggested', { embed })
     }
   }
 }

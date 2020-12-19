@@ -129,7 +129,11 @@ class TicketController extends EventEmitter {
     // const roles = this.guild.getData('roles')
     // await this.channel.updateOverwrite(roles.ticketModeratorRole, { VIEW_CHANNEL: true })
 
-    this.guild.log(this.author, `${this.author} **opened ticket** \`${this.id}\` **in** ${this.channel}`, `Ticket ID: ${this.id}`)
+    this.guild.log(
+      this.author,
+      `${this.author} **opened ticket** \`${this.id}\` **in** ${this.channel}`,
+      { footer: `Ticket ID: ${this.id}` }
+    )
   }
 
   async close (message, success, color) {

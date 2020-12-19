@@ -101,7 +101,7 @@ class GuildController {
     this.jobs[name].stop()
   }
 
-  async log (author, content, footer) {
+  async log (author, content, options) {
     if (this.logsChannel) {
       if (author.partial) {
         await author.fetch()
@@ -111,8 +111,11 @@ class GuildController {
         .setAuthor(author.tag, author.displayAvatarURL())
         .setDescription(content)
         .setColor(this.primaryColor)
-      if (footer) {
-        embed.setFooter(footer)
+      if (options.footer) {
+        embed.setFooter(options.footer)
+      }
+      if (options.color) {
+        embed.setColor(options.color)
       }
 
       return this.logsChannel.send(embed)

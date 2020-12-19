@@ -3,12 +3,14 @@ const Commando = require('discord.js-commando')
 
 const discordService = require('../services/discord')
 
-module.exports = class Command extends Commando.Command {
+class Command extends Commando.Command {
   constructor (client, info) {
     info.memberName = info.name
     info.argsPromptLimit = info.argsPromptLimit || (info.group === 'admin' || info.group === 'settings') ? 3 : 1
     info.guildOnly = info.guildOnly !== undefined ? info.guildOnly : true
     super(client, info)
+
+    this.deleteMessages = typeof info.deleteMessages !== 'undefined' ? info.deleteMessages : false
   }
 
   hasPermission (message, ownerOverride) {
@@ -30,21 +32,13 @@ module.exports = class Command extends Commando.Command {
     return super.hasPermission(message, ownerOverride)
   }
 
-  async run (message, args) {
-    const guild = message.guild ? this.client.bot.getGuild(message.guild.id) : undefined
-    try {
-      return await this.execute(message, args, guild)
-    } catch (err) {
-      return this.handleError(err, message)
-    }
+  onError (_err, _message, _args, _fromPattern, _result) {
+    // The commandError event in the Bot class takes care of this.
   }
 
-  handleError (err, message) {
-    if (err.response && err.response.data.errors && err.response.data.errors.length > 0) {
-      return message.reply(err.response.data.errors[0].message || err.response.data.errors[0].msg)
-    } else {
-      return message.reply(err.message || err.msg)
-    }
+  async run (message, args, _fromPattern, _result) {
+    const guild = message.guild ? this.client.bot.getGuild(message.guild.id) : undefined
+    return this.execute(message, args, guild)
   }
 }
 
@@ -55,3 +49,5 @@ function _checkPermissions (member, object, roleGroups) {
   return !((requiredRoles.length > 0 && !discordService.hasSomeRole(member, requiredRoles)) ||
     (bannedRoles.length > 0 && discordService.hasSomeRole(member, bannedRoles)))
 }
+
+module.exports = Command

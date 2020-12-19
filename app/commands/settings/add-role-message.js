@@ -4,8 +4,6 @@ const Command = require('../../controllers/command')
 const { DiscordAPIError, GuildEmoji } = require('discord.js')
 const { RoleMessage } = require('../../models')
 
-const RESPONSE_DELETE_TIME = 10000
-
 class AddRoleMessageCommand extends Command {
   constructor (client) {
     super(client, {
@@ -13,7 +11,11 @@ class AddRoleMessageCommand extends Command {
       name: 'addrolemessage',
       aliases: ['addrolemsg'],
       description: 'Adds a new role message.',
+      details: 'Can only be used in the channel of the message you want to make a role message. Because of this, the ' +
+        'message that fires this command, the response, the argument prompts and the answers will all be deleted when' +
+        ' the command has finished.',
       clientPermissions: ['SEND_MESSAGES'],
+      deleteMessages: true,
       args: [{
         key: 'message',
         prompt: 'What message would you like to make a role message?',
@@ -60,9 +62,7 @@ class AddRoleMessageCommand extends Command {
       guildId: guild.id
     })
 
-    const response = await message.reply('Successfully made role message.')
-    setTimeout(response.delete.bind(response), RESPONSE_DELETE_TIME)
-    return response
+    return message.reply('Successfully made role message.')
   }
 }
 

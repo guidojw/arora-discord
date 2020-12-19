@@ -4,7 +4,7 @@ const discordService = require('../../services/discord')
 
 const { stripIndents } = require('common-tags')
 
-module.exports = class CloseTicketCommand extends Command {
+class CloseTicketCommand extends Command {
   constructor (client) {
     super(client, {
       group: 'tickets',
@@ -23,10 +23,14 @@ module.exports = class CloseTicketCommand extends Command {
       const choice = await discordService.prompt(message.channel, message.author, prompt, ['✅', '🚫']) === '✅'
 
       if (choice) {
-        guild.log(message.author, stripIndents`
-        ${message.author} **closed ticket** \`${ticketController.id}\`
-        ${message.content}
-        `, `Ticket ID: ${ticketController.id}`)
+        guild.log(
+          message.author,
+          stripIndents`
+          ${message.author} **closed ticket** \`${ticketController.id}\`
+          ${message.content}
+          `,
+          { footer: `Ticket ID: ${ticketController.id}` }
+        )
 
         if (message.author.id === ticketController.author.id) {
           ticketController.close('Ticket successfully closed.', false, guild.primaryColor)
@@ -37,3 +41,5 @@ module.exports = class CloseTicketCommand extends Command {
     }
   }
 }
+
+module.exports = CloseTicketCommand

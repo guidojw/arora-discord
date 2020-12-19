@@ -4,7 +4,7 @@ const Command = require('../../controllers/command')
 const { Channel, CategoryChannel, Message } = require('discord.js')
 const { Guild } = require('../../models')
 
-module.exports = class SetSettingCommand extends Command {
+class SetSettingCommand extends Command {
   constructor (client) {
     super(client, {
       group: 'settings',
@@ -46,7 +46,7 @@ module.exports = class SetSettingCommand extends Command {
           if (isNaN(value)) {
             error = 'Invalid color.'
           }
-        } else if (value < 0 || value > 16777215) { // [0x000000, 0xffffff]
+        } else if (value < 0 || value > parseInt('0xffffff', 16)) {
           error = 'Color out of bounds.'
         }
       } else if (key === 'robloxGroupId') {
@@ -77,3 +77,5 @@ module.exports = class SetSettingCommand extends Command {
     return message.reply(`Successfully changed ${key.endsWith('Id') ? key.slice(0, -2) : key} to **${value}**.`)
   }
 }
+
+module.exports = SetSettingCommand

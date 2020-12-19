@@ -8,11 +8,13 @@ const discordService = require('../services/discord')
 const userService = require('../services/user')
 const TicketsController = require('./tickets')
 
-const { RoleBinding, RoleMessage } = require('../models')
-const { MessageEmbed, DiscordAPIError } = require('discord.js')
+const { DiscordAPIError, Message, MessageEmbed } = require('discord.js')
 const { stripIndents } = require('common-tags')
+const { RoleBinding, RoleMessage } = require('../models')
 
 const applicationConfig = require('../../config/application')
+
+const RESPONSE_DELETE_TIME = 10000
 
 class Bot {
   constructor () {
@@ -63,8 +65,9 @@ class Bot {
     this.ticketsController = new TicketsController(this.client)
     await this.ticketsController.init()
 
-    this.client.on('guildMemberAdd', this.guildMemberAdd.bind(this))
+    this.client.on('commandError', this.commandError.bind(this))
     this.client.on('commandRun', this.commandRun.bind(this))
+    this.client.on('guildMemberAdd', this.guildMemberAdd.bind(this))
     this.client.on('messageReactionAdd', this.messageReactionAdd.bind(this))
     this.client.on('messageReactionRemove', this.messageReactionRemove.bind(this))
 
@@ -78,6 +81,66 @@ class Bot {
     setInterval(this.setActivity.bind(this), 60 * 1000)
 
     console.log(`Ready to serve on ${this.client.guilds.cache.size} servers, for ${this.client.users.cache.size} users.`)
+  }
+
+  async commandError (command, err, message, args, fromPattern, collResult) {
+    if (err.response && err.response.data.errors && err.response.data.errors.length > 0) {
+      await message.reply(err.response.data.errors[0].message || err.response.data.errors[0].msg)
+    } else {
+      await message.reply(err.message || err.msg)
+    }
+
+    await this.handleCommandDeleteMessages(command, err, message, args, fromPattern, collResult)
+
+    const guild = message.guild ? this.getGuild(message.guild.id) : this.mainGuild
+    await guild.log(
+      message.author,
+      stripIndents`
+      ${message.author} **used** \`${command.name}\` **command in** ${message.channel} [Jump to Message](${message.url})
+      ${message.content}
+      `,
+      { color: 0xff0000 }
+    )
+  }
+
+  async commandRun (command, promise, message, args, fromPattern, collResult) {
+    let result
+    try {
+      result = await promise
+    } catch {
+      // Command execution errors are handled by the commandError event.
+      return
+    }
+
+    await this.handleCommandDeleteMessages(command, result, message, args, fromPattern, collResult)
+
+    const guild = message.guild ? this.getGuild(message.guild.id) : this.mainGuild
+    await guild.log(
+      message.author,
+      stripIndents`
+      ${message.author} **used** \`${command.name}\` **command in** ${message.channel} [Jump to Message](${message.url})
+      ${message.content}
+      `
+    )
+  }
+
+  async handleCommandDeleteMessages (command, result, message, _args, _fromPattern, collResult) {
+    if (!command.deleteMessages) {
+      return
+    }
+
+    await Promise.all([
+      ...collResult.prompts.map(this.deleteMessage.bind(this)),
+      ...collResult.answers.map(this.deleteMessage.bind(this)),
+      message.delete()
+    ])
+    if (result instanceof Message) {
+      setTimeout(this.deleteMessage.bind(this, result), RESPONSE_DELETE_TIME)
+    } else if (result instanceof Array) {
+      setTimeout(() => {
+        return Promise.all(result.map(this.deleteMessage.bind(this)))
+      }, RESPONSE_DELETE_TIME)
+    }
   }
 
   guildMemberAdd (member) {
@@ -96,61 +159,8 @@ class Bot {
     }
   }
 
-  async commandRun (command, promise, message, _args, _fromPattern, collResult) {
-    if (!message.guild) {
-      return
-    }
-
-    await promise
-
-    // AddRoleMessageCommand can only be run in the channel of the message
-    // which may be a channel that's not normally messaged in, so delete
-    // the message, prompts and answers.
-    if (command.name === 'addrolemessage') {
-      await Promise.all([
-        ...collResult.prompts.map(prompt => prompt.delete()),
-        ...collResult.answers.map(answer => answer.delete()),
-        message.delete()
-      ])
-    }
-
-    const guild = this.getGuild(message.guild.id)
-    return guild.log(message.author, stripIndents`
-    ${message.author} **used** \`${command.name}\` **command in** ${message.channel} [Jump to Message](${message.url})
-    ${message.content}
-    `)
-  }
-
   async messageReactionAdd (reaction, user) {
-    if (user.bot) {
-      return
-    }
-    if (reaction.message.partial) {
-      await reaction.message.fetch()
-    }
-    if (!reaction.message.guild) {
-      return
-    }
-    const guild = this.getGuild(reaction.message.guild.id)
-    const member = await guild.guild.members.fetch(user)
-
-    const roleMessages = await RoleMessage.findAll({
-      where: {
-        guildId: guild.id,
-        messageId: reaction.message.id
-      }
-    })
-    if (roleMessages) {
-      if (reaction.partial) {
-        await reaction.fetch()
-      }
-      const emojiId = reaction.emoji.id || reaction.emoji.name
-      for (const roleMessage of roleMessages) {
-        if (roleMessage.emojiId === emojiId) {
-          return member.roles.add(roleMessage.roleId)
-        }
-      }
-    }
+    await this.handleRoleMessage('add', reaction, user)
 
     // const voteData = guild.getData('vote')
     // if (voteData && voteData.timer && voteData.timer.end > Date.now()) {
@@ -171,6 +181,10 @@ class Bot {
   }
 
   async messageReactionRemove (reaction, user) {
+    await this.handleRoleMessage('remove', reaction, user)
+  }
+
+  async handleRoleMessage (type, reaction, user) {
     if (user.bot) {
       return
     }
@@ -193,7 +207,7 @@ class Bot {
       const emojiId = reaction.emoji.id || reaction.emoji.name
       for (const roleMessage of roleMessages) {
         if (roleMessage.emojiId === emojiId) {
-          return member.roles.remove(roleMessage.roleId)
+          await member.roles[type](roleMessage.roleId)
         }
       }
     }
@@ -213,27 +227,6 @@ class Bot {
             member.roles.remove(roleBinding.roleId)
           }
         }
-      }
-    }
-  }
-
-  getGuild (id) {
-    return this.guilds[id]
-  }
-
-  getNextActivity () {
-    this.currentActivity++
-    this.currentActivity = this.currentActivity % 2
-
-    switch (this.currentActivity) {
-      case 0:
-        return { name: `${this.client.commandPrefix}help`, options: { type: 'LISTENING' } }
-      case 1: {
-        let totalMemberCount = 0
-        for (const guild of Object.values(this.guilds)) {
-          totalMemberCount += guild.guild.memberCount
-        }
-        return { name: `${totalMemberCount} users`, options: { type: 'WATCHING' } }
       }
     }
   }
@@ -276,6 +269,27 @@ class Bot {
     }
   }
 
+  getGuild (id) {
+    return this.guilds[id]
+  }
+
+  getNextActivity () {
+    this.currentActivity++
+    this.currentActivity = this.currentActivity % 2
+
+    switch (this.currentActivity) {
+      case 0:
+        return { name: `${this.client.commandPrefix}help`, options: { type: 'LISTENING' } }
+      case 1: {
+        let totalMemberCount = 0
+        for (const guild of Object.values(this.guilds)) {
+          totalMemberCount += guild.guild.memberCount
+        }
+        return { name: `${totalMemberCount} users`, options: { type: 'WATCHING' } }
+      }
+    }
+  }
+
   setActivity (name, options) {
     if (!name) {
       const activity = this.getNextActivity()
@@ -287,11 +301,24 @@ class Bot {
 
   async send (user, content) {
     try {
-      await user.send(content)
+      return await user.send(content)
     } catch (err) {
       if (err instanceof DiscordAPIError && err.code === 50007) {
         // Most likely because the author has DMs closed,
         // do nothing.
+      } else {
+        throw err
+      }
+    }
+  }
+
+  async deleteMessage (message) {
+    try {
+      return await message.delete()
+    } catch (err) {
+      if (err instanceof DiscordAPIError && err.code === 10008) {
+        // Discord API Unknown message error, the message
+        // was probably already deleted.
       } else {
         throw err
       }
