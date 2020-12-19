@@ -289,7 +289,7 @@ class Bot {
     try {
       await user.send(content)
     } catch (err) {
-      if (err instanceof DiscordAPIError) {
+      if (err instanceof DiscordAPIError && err.code === 50007) {
         // Most likely because the author has DMs closed,
         // do nothing.
       } else {
