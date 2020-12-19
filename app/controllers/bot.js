@@ -14,14 +14,15 @@ const { stripIndents } = require('common-tags')
 
 const applicationConfig = require('../../config/application')
 
-module.exports = class Bot {
+class Bot {
   constructor () {
     this.client = new Commando.Client({
       commandPrefix: applicationConfig.defaultPrefix,
       owner: applicationConfig.owner,
       unknownCommandResponse: false,
       disableEveryone: true,
-      partials: ['REACTION', 'MESSAGE', 'USER']
+      partials: ['REACTION', 'MESSAGE', 'USER'],
+      commandEditableDuration: 0
     })
     this.client.bot = this
     this.currentActivity = 0
@@ -49,15 +50,6 @@ module.exports = class Bot {
     this.guilds = {}
 
     this.client.once('ready', this.ready.bind(this))
-  }
-
-  setActivity (name, options) {
-    if (!name) {
-      const activity = this.getNextActivity()
-      name = activity.name
-      options = activity.options
-    }
-    return this.client.user.setActivity(name, options)
   }
 
   async ready () {
@@ -268,13 +260,29 @@ module.exports = class Bot {
           userEmbed.addField(productSales.name, `Sold **${productSales.amount}** ${pluralize('time', productSales.amount)} and earned ${emoji || ''}${emoji ? ' ' : ''}**${Math.floor(productSales.robux)}**${!emoji ? ' Robux' : ''}.`)
         }
         userEmbed.addField('Total', `**${developerSales.total.amount}** trains and ${emoji || ''}${emoji ? ' ' : ''}**${Math.floor(developerSales.total.robux)}**${!emoji ? ' Robux' : ''}.`)
+
         user.send(userEmbed)
       } catch (err) {
         console.error(`Couldn't DM ${developerSales.discordId}!`)
       }
     }
 
-    this.client.owners[0].send(embed)
+    for (const owner of this.client.owners) {
+      if (owner.partial) {
+        await owner.fetch()
+      }
+
+      owner.send(embed)
+    }
+  }
+
+  setActivity (name, options) {
+    if (!name) {
+      const activity = this.getNextActivity()
+      name = activity.name
+      options = activity.options
+    }
+    return this.client.user.setActivity(name, options)
   }
 
   async send (user, content) {
@@ -294,3 +302,5 @@ module.exports = class Bot {
     return this.client.login(token)
   }
 }
+
+module.exports = Bot
