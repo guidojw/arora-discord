@@ -1,5 +1,6 @@
 'use strict'
 const Command = require('../../controllers/command')
+const lodash = require('lodash')
 const discordService = require('../../services/discord')
 
 const { MessageEmbed } = require('discord.js')
@@ -42,8 +43,8 @@ class RoleBindingsCommand extends Command {
 
       const embeds = await discordService.getListEmbeds(
         'Role Bindings',
-        roleBindings,
-        _getRoleBindingRow,
+        lodash.groupBy(roleBindings, 'roleId'),
+        _getGroupedRoleBindingRow,
         { roles: guild.guild.roles }
       )
       for (const embed of embeds) {
@@ -53,9 +54,14 @@ class RoleBindingsCommand extends Command {
   }
 }
 
-function _getRoleBindingRow (roleBinding, { roles }) {
-  const role = roles.cache.get(roleBinding.roleId) || 'Unknown'
-  return `**${roleBinding.id}**. ${_getRangeString(roleBinding.min, roleBinding.max)} => **${role}**`
+function _getGroupedRoleBindingRow (groupedRoleBinding, { roles }) {
+  let result = ''
+  const role = roles.cache.get(groupedRoleBinding.shift()) || 'Unknown'
+  result += `**${role}**\n`
+  for (const roleBinding of groupedRoleBinding.shift()) {
+    result += `**${roleBinding.id}**. ${_getRangeString(roleBinding.min, roleBinding.max)}\n`
+  }
+  return result
 }
 
 function _getRangeString (min, max) {

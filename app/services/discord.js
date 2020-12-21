@@ -74,6 +74,10 @@ exports.prompt = async (channel, author, message, options) => {
 }
 
 exports.getListEmbeds = async (title, values, getRow, data) => {
+  if (values instanceof Object) {
+    values = Object.entries(values)
+  }
+
   const embeds = []
   let embed = new MessageEmbed()
     .setTitle(title)

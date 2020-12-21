@@ -1,5 +1,6 @@
 'use strict'
 const Command = require('../../controllers/command')
+const lodash = require('lodash')
 const discordService = require('../../services/discord')
 
 const { MessageEmbed } = require('discord.js')
@@ -43,8 +44,8 @@ class RoleMessagesCommand extends Command {
 
       const embeds = await discordService.getListEmbeds(
         'Role Messages',
-        roleMessages,
-        _getRoleMessageRow,
+        lodash.groupBy(roleMessages, 'messageId'),
+        _getGroupedRoleMessageRow,
         { emojis: guild.guild.emojis, roles: guild.guild.roles }
       )
       for (const embed of embeds) {
@@ -54,10 +55,15 @@ class RoleMessagesCommand extends Command {
   }
 }
 
-function _getRoleMessageRow (roleMessage, { emojis, roles }) {
-  let emoji = emojis.cache.get(roleMessage.emojiId) || roleMessage.emojiId
-  const role = roles.cache.get(roleMessage.roleId) || 'Unknown'
-  return `**${roleMessage.id}**. Message ID: **${roleMessage.messageId}**, ${emoji} => **${role}**`
+function _getGroupedRoleMessageRow (groupedRoleMessage, { emojis, roles }) {
+  let result = `**${groupedRoleMessage.shift()}**\n`
+  const roleMessages = groupedRoleMessage.shift()
+  for (const roleMessage of roleMessages) {
+    const emoji = emojis.cache.get(roleMessage.emojiId) || roleMessage.emojiId
+    const role = roles.cache.get(roleMessage.roleId) || 'Unknown'
+    result += `**${roleMessage.id}**. ${emoji} => **${role}**`
+  }
+  return result
 }
 
 module.exports = RoleMessagesCommand
