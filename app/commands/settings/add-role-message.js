@@ -17,7 +17,7 @@ class AddRoleMessageCommand extends Command {
       clientPermissions: ['SEND_MESSAGES', 'ADD_REACTIONS'],
       deleteMessages: true,
       args: [{
-        key: 'integer',
+        key: 'message',
         prompt: 'What message would you like to make a role message?',
         type: 'message'
       }, {

@@ -42,7 +42,7 @@ class AddRoleBindingCommand extends Command {
           guildId: guild.id,
           roleId: role.id,
           min,
-          max
+          max: max ?? null
         }
       })
       if (roleBinding) {
