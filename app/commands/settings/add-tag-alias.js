@@ -16,17 +16,20 @@ class AddTagAliasCommand extends Command {
         prompt: 'To what tag would you like to add this alias?',
         type: 'string'
       }, {
-        key: 'alias',
+        key: 'name',
         prompt: 'What would you like the new alias of this tag to be?',
         type: 'string',
-        validate: _validateAlias
+        validate: _validateName
       }]
     })
   }
 
-  async execute (message, { tagName, alias }, guild) {
+  async execute (message, { tagName, name }, guild) {
     tagName = tagName.toLowerCase()
-    alias = alias.toLowerCase()
+    name = name.toLowerCase()
+    if (this.client.registry.commands.some(command => command.name === name || command.aliases?.includes(name))) {
+      return message.reply('Not allowed, name is reserved.')
+    }
     const tag = await Tag.findOne({
       where: { guildId: guild.id },
       include: [{ model: TagName, as: 'names', where: { name: tagName } }]
@@ -36,19 +39,19 @@ class AddTagAliasCommand extends Command {
     }
     if (await Tag.findOne({
       where: { guildId: guild.id },
-      include: [{ model: TagName, as: 'names', where: { name: alias } }]
+      include: [{ model: TagName, as: 'names', where: { name } }]
     })) {
       return message.reply('A tag with that alias already exists.')
     }
 
-    await tag.createName({ name: alias })
+    await tag.createName({ name })
 
-    return message.reply(`Successfully added alias **${alias}** to tag **${tag.names[0]?.name ?? 'Unknown'}**.`)
+    return message.reply(`Successfully added alias **${name}** to tag **${tag.names[0]?.name ?? 'Unknown'}**.`)
   }
 }
 
-function _validateAlias (alias) {
-  return alias.includes(' ') ? 'Alias cannot include spaces.' : true
+function _validateName (name) {
+  return name.includes(' ') ? 'Name cannot include spaces.' : true
 }
 
 module.exports = AddTagAliasCommand

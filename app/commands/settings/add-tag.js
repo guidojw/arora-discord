@@ -27,6 +27,9 @@ class AddTagCommand extends Command {
 
   async execute (message, { name, content }, guild) {
     name = name.toLowerCase()
+    if (this.client.registry.commands.some(command => command.name === name || command.aliases?.includes(name))) {
+      return message.reply('Not allowed, name is reserved.')
+    }
     if (await Tag.findOne({
       where: { guildId: guild.id },
       include: [{ model: TagName, as: 'names', where: { name } }]
