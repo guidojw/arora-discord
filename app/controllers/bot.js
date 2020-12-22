@@ -140,7 +140,7 @@ class Bot {
     } else if (result instanceof Array) {
       setTimeout(() => {
         return Promise.all(result.map(this.deleteMessage.bind(this)))
-      }, RESPONSE_DELETE_TIME)
+      }, COMMAND_DELETE_MESSAGES_TIMEOUT)
     }
   }
 
@@ -215,17 +215,22 @@ class Bot {
   }
 
   async rankChanged (groupId, userId, rank) {
-    const username = (await userService.getUser(userId)).name
+    let username
     for (const guild of Object.values(this.guilds)) {
-      const member = await discordService.getMemberByName(guild.guild, username)
+      if (guild.groupId === groupId) {
+        if (!username) {
+          username = (await userService.getUser(userId)).name
+        }
+        const member = await discordService.getMemberByName(guild.guild, username)
 
-      if (member) {
-        const roleBindings = await RoleBinding.findAll({ where: { guildId: guild.id, robloxGroupId: groupId } })
-        for (const roleBinding of roleBindings) {
-          if (rank === roleBinding.min || (roleBinding.max && rank >= roleBinding.min && rank <= roleBinding.max)) {
-            member.roles.add(roleBinding.roleId)
-          } else {
-            member.roles.remove(roleBinding.roleId)
+        if (member) {
+          const roleBindings = await RoleBinding.findAll({ where: { guildId: guild.id, robloxGroupId: groupId } })
+          for (const roleBinding of roleBindings) {
+            if (rank === roleBinding.min || (roleBinding.max && rank >= roleBinding.min && rank <= roleBinding.max)) {
+              await member.roles.add(roleBinding.roleId)
+            } else {
+              await member.roles.remove(roleBinding.roleId)
+            }
           }
         }
       }
@@ -255,7 +260,7 @@ class Bot {
         }
         userEmbed.addField('Total', `**${developerSales.total.amount}** trains and ${emoji || ''}${emoji ? ' ' : ''}**${Math.floor(developerSales.total.robux)}**${!emoji ? ' Robux' : ''}.`)
 
-        user.send(userEmbed)
+        await user.send(userEmbed)
       } catch (err) {
         console.error(`Couldn't DM ${developerSales.discordId}!`)
       }
@@ -266,7 +271,7 @@ class Bot {
         await owner.fetch()
       }
 
-      owner.send(embed)
+      await owner.send(embed)
     }
   }
 
