@@ -26,7 +26,18 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: {
         name: 'tagId',
         primaryKey: true
-      }
+      },
+      as: 'names'
+    })
+  }
+
+  Tag.loadScopes = models => {
+    Tag.addScope('defaultScope', {
+      include: [{
+        model: models.TagName,
+        as: 'names'
+      }],
+      subQuery: false
     })
   }
 

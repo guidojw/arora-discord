@@ -106,3 +106,28 @@ exports.getListEmbeds = async (title, values, getRow, data) => {
 
   return embeds
 }
+
+exports.validateEmbed = embed => {
+  if (embed.length > 6000) {
+    return 'Embed length is too big.'
+  } else if (embed.title?.length > 256) {
+    return 'Title is too long.'
+  } else if (embed.description?.length > 2048) {
+    return 'Description is too long.'
+  } else if (embed.footer?.text.length > 2048) {
+    return 'Footer text is too long.'
+  } else if (embed.author?.name?.length > 256) {
+    return 'Author name is too long.'
+  } else if (embed.fields.length > 25) {
+    return 'Embed has too many fields.'
+  } else {
+    for (const field of embed.fields) {
+      if (field.name.length > 256) {
+        return `Field **${field.name}**'s name is too long.`
+      } else if (field.value > 2048) {
+        return `Field **${field.name}**'s value is too long.`
+      }
+    }
+  }
+  return true
+}

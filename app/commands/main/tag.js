@@ -1,10 +1,8 @@
 'use strict'
 const Command = require('../../controllers/command')
-const discordService = require('../../services/discord')
 
 const { MessageEmbed } = require('discord.js')
-
-const tags = require('../../content/tags')
+const { Tag, TagName } = require('../../models')
 
 module.exports = class TagCommand extends Command {
   constructor (client) {
@@ -24,35 +22,26 @@ module.exports = class TagCommand extends Command {
 
   async execute (message, { name }, guild) {
     if (name !== 'all') {
-      const tag = tags.find(tag => tag.names.includes(name))
-
+      const tag = await Tag.findOne({ include: [{ model: TagName, as: 'names', where: { name } }] })
       if (!tag) {
-        return message.reply('Couldn\'t find tag!')
-      }
-      if (tag.group === 'admin') {
-        if (!discordService.hasSomeRole(message.member, guild.getData('roleGroups').admin)) {
-          return message.reply('You do not have permission to see that tag.')
-        } else {
-          const channels = guild.getData('channels')
-          if (message.channel.id !== channels.hrChannel && message.channel.id !== channels.botCommandsHrChannel) {
-            return message.reply('Wrong channel.')
-          }
-        }
+        return message.reply('Tag not found.')
       }
 
-      if (tag.tag instanceof MessageEmbed) {
-        const embed = new MessageEmbed(tag.tag)
-        embed.setColor(guild.getData('primaryColor'))
-        message.reply(embed)
-      } else {
-        message.reply(tag.tag)
+      try {
+        const embed = new MessageEmbed(JSON.parse(tag.content))
+
+        return message.reply(embed)
+      } catch (err) {
+        return message.reply(tag.content)
       }
     } else {
+      const tags = await Tag.findAll({ where: { guildId: guild.id } })
+
       let list = ''
       let count = 1
       for (const tag of tags) {
-        for (const name of tag.names) {
-          list += `${count}. ${name}\n`
+        for (const tagName of tag.names) {
+          list += `${count}. ${tagName.name}\n`
           count++
         }
       }
@@ -61,8 +50,8 @@ module.exports = class TagCommand extends Command {
         .setTitle('Tags')
         .setDescription(list)
         .setFooter(`Page 1/1 (${count - 1} entries)`)
-        .setColor(guild.getData('primaryColor'))
-      message.replyEmbed(embed)
+        .setColor(guild.primaryColor)
+      return message.replyEmbed(embed)
     }
   }
 }
