@@ -24,7 +24,7 @@ module.exports = (sequelize, DataTypes) => {
     RoleMessage.belongsTo(models.Guild, {
       foreignKey: {
         name: 'guildId',
-        allowNull: false,
+        allowNull: false
       },
       onDelete: 'CASCADE'
     })

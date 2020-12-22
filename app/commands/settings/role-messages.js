@@ -29,13 +29,13 @@ class RoleMessagesCommand extends Command {
       if (!roleMessage) {
         return message.reply('Role message not found.')
       }
-      let emoji = guild.guild.emojis.cache.get(roleMessage.emojiId) || roleMessage.emojiId
+      const emoji = guild.guild.emojis.cache.get(roleMessage.emojiId) || roleMessage.emojiId
       const role = guild.guild.roles.cache.get(roleMessage.roleId) || 'Unknown'
 
       const embed = new MessageEmbed()
         .addField(`Role Message ${roleMessage.id}`, `Message ID: **${roleMessage.messageId}**, ${emoji} => **${role}**`)
         .setColor(guild.primaryColor)
-      return message.replyEmbed(embed, undefined,  { allowedMentions: { users: [message.author.id] } })
+      return message.replyEmbed(embed, undefined, { allowedMentions: { users: [message.author.id] } })
     } else {
       const roleMessages = await RoleMessage.findAll({ where: { guildId: guild.id } })
       if (roleMessages.length === 0) {
