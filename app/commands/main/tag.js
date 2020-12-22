@@ -22,7 +22,10 @@ module.exports = class TagCommand extends Command {
 
   async execute (message, { name }, guild) {
     if (name !== 'all') {
-      const tag = await Tag.findOne({ include: [{ model: TagName, as: 'names', where: { name } }] })
+      const tag = await Tag.findOne({
+        where: { guildId: guild.id },
+        include: [{ model: TagName, as: 'names', where: { name } }]
+      })
       if (!tag) {
         return message.reply('Tag not found.')
       }
