@@ -57,7 +57,7 @@ class RoleMessagesCommand extends Command {
 
 function _getGroupedRoleMessageRow (groupedRoleMessage, { emojis, roles }) {
   let result = `**${groupedRoleMessage.shift()}**\n`
-  const roleMessages = groupedRoleMessage.shift()
+  const roleMessages = groupedRoleMessage.pop()
   for (const roleMessage of roleMessages) {
     const emoji = emojis.cache.get(roleMessage.emojiId) || roleMessage.emojiId
     const role = roles.cache.get(roleMessage.roleId) || 'Unknown'
