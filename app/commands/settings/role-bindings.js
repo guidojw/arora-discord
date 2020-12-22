@@ -59,7 +59,7 @@ function _getGroupedRoleBindingRow (groupedRoleBinding, { roles }) {
   const role = roles.cache.get(groupedRoleBinding.shift()) || 'Unknown'
   result += `**${role}**\n`
   for (const roleBinding of groupedRoleBinding.pop()) {
-    result += `**${roleBinding.id}**. ${_getRangeString(roleBinding.min, roleBinding.max)}\n`
+    result += `${roleBinding.id}. ${_getRangeString(roleBinding.min, roleBinding.max)}\n`
   }
   return result
 }

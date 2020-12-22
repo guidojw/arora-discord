@@ -36,7 +36,7 @@ class AddRoleBindingCommand extends Command {
         [min, max] = [max, min]
       }
 
-      const roleBinding = await RoleBinding.findOne({
+      const [, created] = await RoleBinding.findOrCreate({
         where: {
           robloxGroupId: guild.robloxGroupId,
           guildId: guild.id,
@@ -45,17 +45,9 @@ class AddRoleBindingCommand extends Command {
           max: max ?? null
         }
       })
-      if (roleBinding) {
+      if (!created) {
         return message.reply('A role message with that message and range already exists.')
       }
-
-      await RoleBinding.create({
-        robloxGroupId: guild.robloxGroupId,
-        guildId: guild.id,
-        roleId: role.id,
-        min,
-        max
-      })
 
       return message.reply('Successfully added role binding.')
     } else {

@@ -61,7 +61,7 @@ function _getGroupedRoleMessageRow (groupedRoleMessage, { emojis, roles }) {
   for (const roleMessage of roleMessages) {
     const emoji = emojis.cache.get(roleMessage.emojiId) || roleMessage.emojiId
     const role = roles.cache.get(roleMessage.roleId) || 'Unknown'
-    result += `**${roleMessage.id}**. ${emoji} => **${role}**`
+    result += `${roleMessage.id}. ${emoji} => **${role}**`
   }
   return result
 }
