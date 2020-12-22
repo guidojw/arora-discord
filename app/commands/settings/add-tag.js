@@ -27,7 +27,10 @@ class AddTagCommand extends Command {
 
   async execute (message, { name, content }, guild) {
     name = name.toLowerCase()
-    if (await Tag.findOne({ include: [{ model: TagName, as: 'names', where: { name } }] })) {
+    if (await Tag.findOne({
+      where: { guildId: guild.id },
+      include: [{ model: TagName, as: 'names', where: { name } }]
+    })) {
       return message.reply('A tag with that name already exists.')
     }
     try {

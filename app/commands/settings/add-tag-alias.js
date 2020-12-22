@@ -24,14 +24,20 @@ class AddTagAliasCommand extends Command {
     })
   }
 
-  async execute (message, { tagName, alias }) {
+  async execute (message, { tagName, alias }, guild) {
     tagName = tagName.toLowerCase()
     alias = alias.toLowerCase()
-    const tag = await Tag.findOne({ include: [{ model: TagName, as: 'names', where: { name: tagName } }] })
+    const tag = await Tag.findOne({
+      where: { guildId: guild.id },
+      include: [{ model: TagName, as: 'names', where: { name: tagName } }]
+    })
     if (!tag) {
       return message.reply('Tag not found.')
     }
-    if (await Tag.findOne({ include: [{ model: TagName, as: 'names', where: { name: alias } }] })) {
+    if (await Tag.findOne({
+      where: { guildId: guild.id },
+      include: [{ model: TagName, as: 'names', where: { name: alias } }]
+    })) {
       return message.reply('A tag with that alias already exists.')
     }
 
