@@ -25,7 +25,9 @@ class AddTagAliasCommand extends Command {
   }
 
   async execute (message, { tagName, alias }) {
-    const tag = await Tag.findOne({ include: [{ model: TagName, as: 'names', where: { tagName } }] })
+    tagName = tagName.toLowerCase()
+    alias = alias.toLowerCase()
+    const tag = await Tag.findOne({ include: [{ model: TagName, as: 'names', where: { name: tagName } }] })
     if (!tag) {
       return message.reply('Tag not found.')
     }
@@ -33,9 +35,9 @@ class AddTagAliasCommand extends Command {
       return message.reply('A tag with that alias already exists.')
     }
 
-    await Tag.createName({ name: alias })
+    await tag.createName({ name: alias })
 
-    return message.reply(`Successfully added alias **${alias}** to tag **${tag.name}**.`)
+    return message.reply(`Successfully added alias **${alias}** to tag **${tag.names[0]?.name ?? 'Unknown'}**.`)
   }
 }
 
