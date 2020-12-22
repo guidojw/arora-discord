@@ -54,11 +54,11 @@ class RoleBindingsCommand extends Command {
   }
 }
 
-function _getGroupedRoleBindingRow (groupedRoleBinding, { roles }) {
+function _getGroupedRoleBindingRow ([id, roleBindings], { roles }) {
   let result = ''
-  const role = roles.cache.get(groupedRoleBinding.shift()) || 'Unknown'
+  const role = roles.cache.get(id) || 'Unknown'
   result += `**${role}**\n`
-  for (const roleBinding of groupedRoleBinding.pop()) {
+  for (const roleBinding of roleBindings) {
     result += `${roleBinding.id}. ${_getRangeString(roleBinding.min, roleBinding.max)}\n`
   }
   return result
