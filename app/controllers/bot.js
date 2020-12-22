@@ -10,7 +10,7 @@ const TicketsController = require('./tickets')
 
 const { DiscordAPIError, Message, MessageEmbed } = require('discord.js')
 const { stripIndents } = require('common-tags')
-const { RoleBinding, RoleMessage } = require('../models')
+const { RoleBinding, RoleMessage, Tag, TagName } = require('../models')
 
 const applicationConfig = require('../../config/application')
 
@@ -71,6 +71,7 @@ class Bot {
     this.client.on('guildMemberAdd', this.guildMemberAdd.bind(this))
     this.client.on('messageReactionAdd', this.messageReactionAdd.bind(this))
     this.client.on('messageReactionRemove', this.messageReactionRemove.bind(this))
+    this.client.on('message', this.message.bind(this))
 
     if (applicationConfig.apiEnabled) {
       this.webSocketController = new WebSocketController(process.env.HOST)
@@ -209,6 +210,36 @@ class Bot {
       for (const roleMessage of roleMessages) {
         if (roleMessage.emojiId === emojiId) {
           await member.roles[type](roleMessage.roleId)
+        }
+      }
+    }
+  }
+
+  async message (message) {
+    if (message.author.bot) {
+      return
+    }
+    if (!message.guild) {
+      return
+    }
+    const guild = this.getGuild(message.guild.id)
+    const prefix = guild.guild.commandPrefix ?? this.client.commandPrefix
+
+    if (message.content.startsWith(prefix)) {
+      const args = message.content.slice(prefix.length).trim().split(/ +/)
+      const tagName = args.shift().toLowerCase()
+      const tag = await Tag.findOne({
+        where: { guildId: guild.id },
+        include: [{ model: TagName, as: 'names', where: { name: tagName } }]
+      })
+
+      if (tag) {
+        try {
+          const embed = new MessageEmbed(JSON.parse(tag.content))
+
+          return message.reply(embed)
+        } catch (err) {
+          return message.reply(tag.content)
         }
       }
     }
