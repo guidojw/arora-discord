@@ -228,18 +228,20 @@ class Bot {
     if (message.content.startsWith(prefix)) {
       const args = message.content.slice(prefix.length).trim().split(/ +/)
       const tagName = args.shift().toLowerCase()
-      const tag = await Tag.findOne({
-        where: { guildId: guild.id },
-        include: [{ model: TagName, as: 'names', where: { name: tagName } }]
-      })
+      if (tagName) {
+        const tag = await Tag.findOne({
+          where: { guildId: guild.id },
+          include: [{ model: TagName, as: 'names', where: { name: tagName } }]
+        })
 
-      if (tag) {
-        try {
-          const embed = new MessageEmbed(JSON.parse(tag.content))
+        if (tag) {
+          try {
+            const embed = new MessageEmbed(JSON.parse(tag.content))
 
-          return message.reply(embed)
-        } catch (err) {
-          return message.reply(tag.content)
+            return message.reply(embed)
+          } catch (err) {
+            return message.reply(tag.content)
+          }
         }
       }
     }
