@@ -33,9 +33,9 @@ module.exports = class TagCommand extends Command {
       try {
         const embed = new MessageEmbed(JSON.parse(tag.content))
 
-        return message.reply(embed)
+        return message.replyEmbed(embed)
       } catch (err) {
-        return message.reply(tag.content)
+        return message.reply(tag.content, { allowedMentions: { users: [message.author.id] } })
       }
     } else {
       const tags = await Tag.findAll({ where: { guildId: guild.id } })

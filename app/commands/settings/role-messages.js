@@ -35,7 +35,7 @@ class RoleMessagesCommand extends Command {
       const embed = new MessageEmbed()
         .addField(`Role Message ${roleMessage.id}`, `Message ID: **${roleMessage.messageId}**, ${emoji} => **${role}**`)
         .setColor(guild.primaryColor)
-      return message.replyEmbed(embed, undefined, { allowedMentions: { users: [message.author.id] } })
+      return message.replyEmbed(embed)
     } else {
       const roleMessages = await RoleMessage.findAll({ where: { guildId: guild.id } })
       if (roleMessages.length === 0) {
@@ -49,7 +49,7 @@ class RoleMessagesCommand extends Command {
         { emojis: guild.guild.emojis, roles: guild.guild.roles }
       )
       for (const embed of embeds) {
-        await message.replyEmbed(embed, undefined, { allowedMentions: { users: [message.author.id] } })
+        await message.replyEmbed(embed)
       }
     }
   }

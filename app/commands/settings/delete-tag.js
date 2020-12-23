@@ -20,7 +20,7 @@ class DeleteTagCommand extends Command {
     })
   }
 
-  async execute (message, { name }) {
+  async execute (message, { name }, guild) {
     name = name.toLowerCase()
     const tag = await Tag.findOne({
       where: { guildId: guild.id },

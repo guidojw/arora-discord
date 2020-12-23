@@ -34,7 +34,7 @@ class RoleBindingsCommand extends Command {
       const embed = new MessageEmbed()
         .addField(`Role Binding ${roleBinding.id}`, `${_getRangeString(roleBinding.min, roleBinding.max)} => **${role}**`)
         .setColor(guild.primaryColor)
-      return message.replyEmbed(embed, undefined, { allowedMentions: { users: [message.author.id] } })
+      return message.replyEmbed(embed)
     } else {
       const roleBindings = await RoleBinding.findAll({ where: { guildId: guild.id } })
       if (roleBindings.length === 0) {
@@ -48,7 +48,7 @@ class RoleBindingsCommand extends Command {
         { roles: guild.guild.roles }
       )
       for (const embed of embeds) {
-        await message.replyEmbed(embed, undefined, { allowedMentions: { users: [message.author.id] } })
+        await message.replyEmbed(embed)
       }
     }
   }
