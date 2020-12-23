@@ -64,6 +64,14 @@ module.exports = (sequelize, DataTypes) => {
       field: 'support_message_id'
     }
   }, {
+    hooks: {
+      afterCreate: async guild => {
+        await guild.createGroup({ name: 'premiumMembersReportChannels', type: 'channel' })
+
+        await guild.createGroup({ name: 'admin', type: 'role' })
+        await guild.createGroup({ name: 'everyone', type: 'role' })
+      }
+    },
     tableName: 'guilds'
   })
 
