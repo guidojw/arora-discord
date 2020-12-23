@@ -1,7 +1,7 @@
 'use strict'
 const GuildController = require('../controllers/guild')
 
-const { Guild, GuildCommand, RolePermission } = require('../models')
+const { GroupPermission, Guild, GuildCommand, RolePermission } = require('../models')
 
 class SettingProvider {
   async init (client) {
@@ -48,13 +48,21 @@ class SettingProvider {
     }
 
     const groups = await data.getGroups()
-    for (const group of groups) {
-      guildController.groupPermissions[group.id] = await group.getPermissions()
+    const groupIds = groups.map(group => group.id)
+    const groupPermissions = await GroupPermission.findAll({ where: { groupId: groupIds }})
+    for (const groupId of groupIds) {
+      guildController.groupPermissions[groupId] = groupPermissions.find(groupPermission => {
+        return groupPermission.groupId === groupId
+      }) ?? []
     }
 
     const roles = await guild.roles.fetch()
-    for (const role of roles.cache.values()) {
-      guildController.rolePermissions[role.id] = await RolePermission.findAll({ where: { roleId: role.id } })
+    const roleIds = [...roles.cache.keys()]
+    const rolePermissions = await RolePermission.findAll({ where: { roleId: roleIds } })
+    for (const roleId of roleIds) {
+      guildController.rolePermissions[roleId] = rolePermissions.find(rolePermission => {
+        return rolePermission.roleId === roleId
+      }) ?? []
     }
 
     await guildController.init()
