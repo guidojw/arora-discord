@@ -56,11 +56,13 @@ module.exports = class ChangeTrainingCommand extends Command {
       changes.notes = data
     } else if (key === 'type') {
       const type = data.toUpperCase()
-      if (!groupService.getRoleByAbbreviation(type)) {
-        return message.reply(`Role abbreviaton **${type}** does not exist.`)
+      const trainingTypes = await groupService.getTrainingTypes(applicationConfig.groupId)
+      const trainingType = trainingTypes.find(trainingType => trainingType.abbreviation.toLowerCase() === type)
+      if (!trainingType) {
+        return message.reply('Type not found.')
       }
 
-      changes.type = type
+      changes.typeId = trainingType.id
     } else if (key === 'date' || key === 'time') {
       const training = (await applicationAdapter('get', `/v1/groups/${applicationConfig.groupId}/trainings/${trainingId}`))
         .data
