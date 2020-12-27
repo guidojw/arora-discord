@@ -29,7 +29,7 @@ exports.getSuspensionEmbeds = async suspensions => {
     ...suspensions.map(suspension => suspension.authorId)
   ])]
   const users = await userService.getUsers(userIds)
-  const roles  = await this.getRoles(applicationConfig.groupId)
+  const roles = await this.getRoles(applicationConfig.groupId)
   return discordService.getListEmbeds('Current Suspensions', suspensions, exports.getSuspensionRow, {
     users,
     roles
