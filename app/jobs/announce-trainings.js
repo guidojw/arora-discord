@@ -1,4 +1,5 @@
 'use strict'
+const lodash = require('lodash')
 const pluralize = require('pluralize')
 const applicationAdapter = require('../adapters/application')
 const userService = require('../services/user')
@@ -20,7 +21,7 @@ module.exports = async guild => {
     .data
   const authorIds = [...new Set(trainings.map(training => training.authorId))]
   const authors = await userService.getUsers(authorIds)
-  const trainingsEmbed = getTrainingsEmbed(trainings, authors)
+  const trainingsEmbed = await getTrainingsEmbed(trainings, authors)
   trainingsEmbed.setColor(guild.getData('primaryColor'))
   await message.edit(trainingsEmbed)
 
@@ -51,8 +52,15 @@ module.exports = async guild => {
   await infoMessage.edit(infoMessage.embeds)
 }
 
-function getTrainingsEmbed (trainings, authors) {
-  const groupedTrainings = groupService.groupTrainingsByType(trainings)
+async function getTrainingsEmbed (trainings, authors) {
+  const trainingTypes = (await groupService.getTrainingTypes(applicationConfig.groupId))
+    .map(trainingType => trainingType.name)
+    .reduce((result, item) => {
+      result[item] = []
+      return result
+    }, {})
+  const groupedTrainings = lodash.assign({}, trainingTypes, groupService.groupTrainingsByType(trainings))
+
   const types = Object.keys(groupedTrainings)
   const embed = new MessageEmbed()
     .setFooter('Updated at')
@@ -120,7 +128,7 @@ function getNextTrainingMessage (training, authors) {
   const dateString = trainingDay === today ? 'today' : trainingDay === today + 1 ? 'tomorrow' : timeHelper.getDate(date)
   const author = authors.find(author => author.id === training.authorId)
 
-  let result = `${training.type.toUpperCase()} **${dateString}** at **${timeString}** hosted by ${author.name}`
+  let result = `${training.type.abbreviation} **${dateString}** at **${timeString}** hosted by ${author.name}`
 
   if (training.notes) {
     result += `\n${training.notes}`
