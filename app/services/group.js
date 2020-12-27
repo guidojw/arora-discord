@@ -42,7 +42,7 @@ exports.getSuspensionRow = (suspension, { users, roles }) => {
   const username = users.find(user => user.id === suspension.userId).name
   const author = users.find(user => user.id === suspension.authorId)
   const role = roles.roles.find(role => role.rank === suspension.rank)
-  const roleAbbreviation = role ?? stringHelper.getAbbreviation(role.name)
+  const roleAbbreviation = role ? stringHelper.getAbbreviation(role.name) : 'Unknown'
   const rankBack = suspension.rankBack ? 'yes' : 'no'
   const dateString = timeHelper.getDate(new Date(suspension.date))
   const days = suspension.duration / 86400000
