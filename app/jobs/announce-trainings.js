@@ -55,6 +55,10 @@ module.exports = async guild => {
 async function getTrainingsEmbed (trainings, authors) {
   const trainingTypes = (await groupService.getTrainingTypes(applicationConfig.groupId))
     .map(trainingType => trainingType.name)
+    .reduce((result, item) => {
+      result[item] = []
+      return result
+    }, {})
   const groupedTrainings = lodash.assign({}, trainingTypes, groupService.groupTrainingsByType(trainings))
 
   const types = Object.keys(groupedTrainings)
