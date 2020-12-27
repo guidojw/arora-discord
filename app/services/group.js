@@ -3,6 +3,7 @@ const pluralize = require('pluralize')
 const timeHelper = require('../helpers/time')
 const userService = require('../services/user')
 const discordService = require('./discord')
+const applicationAdapter = require('../adapters/application')
 
 const applicationConfig = require('../../config/application')
 
