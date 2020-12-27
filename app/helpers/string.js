@@ -28,3 +28,10 @@ exports.getTags = string => {
 exports.getUrls = string => {
   return string.match(urlRegex)
 }
+
+exports.getAbbreviation = string => {
+  return string
+    .split(' ')
+    .map(word => word.charAt(0))
+    .join('')
+}

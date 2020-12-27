@@ -24,8 +24,7 @@ module.exports = class HostTrainingCommand extends Command {
       args: [{
         key: 'type',
         type: 'string',
-        prompt: 'What kind of training is this?',
-        oneOf: ['cd', 'csr']
+        prompt: 'What kind of training is this?'
       }, {
         key: 'date',
         type: 'string',
@@ -52,7 +51,7 @@ module.exports = class HostTrainingCommand extends Command {
   }
 
   async execute (message, { type, date, time, notes }, guild) {
-    const role = groupService.getRoleByAbbreviation(type)
+    type = type.toLowerCase()
     const dateInfo = timeHelper.getDateInfo(date)
     const timeInfo = timeHelper.getTimeInfo(time)
     const dateUnix = Math.floor(new Date(
@@ -66,19 +65,24 @@ module.exports = class HostTrainingCommand extends Command {
     if (!afterNow) {
       return message.reply('Please give a date and time that are after now.')
     }
+    const trainingTypes = await groupService.getTrainingTypes(applicationConfig.groupId)
+    const trainingType = trainingTypes.find(trainingType => trainingType.abbreviation.toLowerCase() === type)
+    if (!trainingType) {
+      return message.reply('Type not found.')
+    }
     const authorId = await userService.getIdFromUsername(message.member.displayName)
 
     const training = (await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId}/trainings`, {
       notes: notes.toLowerCase() === 'none' ? undefined : notes,
       date: dateUnix,
-      authorId,
-      type
+      typeId: trainingType.id,
+      authorId
     })).data
 
     const embed = new MessageEmbed()
-      .addField('Successfully scheduled', `**${role}** training on **${date}** at **${time}**.`)
+      .addField('Successfully scheduled', `**${trainingType.name}** training on **${date}** at **${time}**.`)
       .addField('Training ID', training.id.toString())
       .setColor(guild.getData('primaryColor'))
-    message.replyEmbed(embed)
+    return message.replyEmbed(embed)
   }
 }
