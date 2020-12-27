@@ -1,5 +1,6 @@
 'use strict'
 const pluralize = require('pluralize')
+const stringHelper = require('../helpers/string')
 const timeHelper = require('../helpers/time')
 const userService = require('../services/user')
 const discordService = require('./discord')
@@ -8,11 +9,11 @@ const applicationAdapter = require('../adapters/application')
 const applicationConfig = require('../../config/application')
 
 exports.getTrainingSentence = async training => {
-  const role = training.type.abbreviation
   const date = new Date(training.date)
   const readableDate = timeHelper.getDate(date)
   const readableTime = timeHelper.getTime(date)
-  return `**${role}** training on **${readableDate}** at **${readableTime} ${(timeHelper.isDst(date) && 'CEST') || 'CET'}**, hosted by **${(await userService.getUser(training.authorId)).name}**.`
+
+  return `**${training.type.abbreviation}** training on **${readableDate}** at **${readableTime} ${(timeHelper.isDst(date) && 'CEST') || 'CET'}**, hosted by **${(await userService.getUser(training.authorId)).name}**.`
 }
 
 exports.getTrainingEmbeds = async trainings => {
@@ -30,6 +31,7 @@ exports.getSuspensionEmbeds = async suspensions => {
   ])]
   const users = await userService.getUsers(userIds)
   const roles = await this.getRoles(applicationConfig.groupId)
+
   return discordService.getListEmbeds('Current Suspensions', suspensions, exports.getSuspensionRow, {
     users,
     roles
@@ -40,6 +42,7 @@ exports.getSuspensionRow = (suspension, { users, roles }) => {
   const username = users.find(user => user.id === suspension.userId).name
   const author = users.find(user => user.id === suspension.authorId)
   const role = roles.roles.find(role => role.rank === suspension.rank)
+  const roleAbbreviation = role ?? stringHelper.getAbbreviation(role.name)
   const rankBack = suspension.rankBack ? 'yes' : 'no'
   const dateString = timeHelper.getDate(new Date(suspension.date))
   const days = suspension.duration / 86400000
@@ -50,7 +53,8 @@ exports.getSuspensionRow = (suspension, { users, roles }) => {
     }
   }
   const extensionString = extensionDays < 0 ? ` (${extensionDays})` : extensionDays > 0 ? ` (+${extensionDays})` : ''
-  return `**${username}** (${role.name}, rankback **${rankBack}**) by **${author.name}** at **${dateString}** for **${days}${extensionString} ${pluralize('day', days + extensionDays)}** with reason:\n*${suspension.reason}*`
+
+  return `**${username}** (${roleAbbreviation}, rankback **${rankBack}**) by **${author.name}** at **${dateString}** for **${days}${extensionString} ${pluralize('day', days + extensionDays)}** with reason:\n*${suspension.reason}*`
 }
 
 exports.groupTrainingsByType = trainings => {
@@ -61,6 +65,7 @@ exports.groupTrainingsByType = trainings => {
     }
     result[training.type.abbreviation].push(training)
   }
+
   return result
 }
 

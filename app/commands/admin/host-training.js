@@ -83,6 +83,6 @@ module.exports = class HostTrainingCommand extends Command {
       .addField('Successfully scheduled', `**${trainingType.name}** training on **${date}** at **${time}**.`)
       .addField('Training ID', training.id.toString())
       .setColor(guild.getData('primaryColor'))
-    message.replyEmbed(embed)
+    return message.replyEmbed(embed)
   }
 }

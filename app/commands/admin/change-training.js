@@ -92,6 +92,6 @@ module.exports = class ChangeTrainingCommand extends Command {
     await applicationAdapter('put', `/v1/groups/${applicationConfig.groupId}/trainings/${trainingId}`,
       { changes, editorId })
 
-    message.reply(`Successfully changed training with ID **${trainingId}**.`)
+    return message.reply(`Successfully changed training with ID **${trainingId}**.`)
   }
 }
