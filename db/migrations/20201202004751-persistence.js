@@ -317,6 +317,11 @@ module.exports = {
         allowNull: false,
         values: ['role', 'channel']
       },
+      guarded: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+      },
       guildId: {
         type: Sequelize.STRING,
         allowNull: false,

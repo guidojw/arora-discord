@@ -15,6 +15,10 @@ class Command extends Commando.Command {
 
   hasPermission (message, ownerOverride) {
     if (!this.ownerOnly) {
+      if (this.message.member.hasPermission('MANAGE_GUILD')) {
+        return true
+      }
+
       // const guild = this.client.bot.getGuild(message.guild.id)
       // const roleGroups = guild.getData('roleGroups')
       // const member = message.member
