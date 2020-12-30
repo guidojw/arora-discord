@@ -60,10 +60,10 @@ exports.getSuspensionRow = (suspension, { users, roles }) => {
 exports.groupTrainingsByType = trainings => {
   const result = {}
   for (const training of trainings) {
-    if (!result[training.type.abbreviation]) {
-      result[training.type.abbreviation] = []
+    if (!result[training.type.name]) {
+      result[training.type.name] = []
     }
-    result[training.type.abbreviation].push(training)
+    result[training.type.name].push(training)
   }
 
   return result
