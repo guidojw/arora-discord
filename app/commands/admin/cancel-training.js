@@ -1,13 +1,13 @@
 'use strict'
-const Command = require('../../controllers/command')
 const applicationAdapter = require('../../adapters/application')
+const BaseCommand = require('../base')
 const userService = require('../../services/user')
 
 const { getChannels, getTags, getUrls } = require('../../helpers/string')
 
 const applicationConfig = require('../../../config/application')
 
-module.exports = class CancelTrainingCommand extends Command {
+class CancelTrainingCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'admin',
@@ -43,6 +43,8 @@ module.exports = class CancelTrainingCommand extends Command {
       reason
     })
 
-    message.reply(`Successfully cancelled training with ID **${trainingId}**.`)
+    return message.reply(`Successfully cancelled training with ID **${trainingId}**.`)
   }
 }
+
+module.exports = CancelTrainingCommand

@@ -72,8 +72,8 @@ module.exports = (sequelize, DataTypes) => {
 
         const adminRoleGroup = await guild.createGroup({ name: 'admin', type: 'role', guarded: true })
         const everyoneRoleGroup = await guild.createGroup({ name: 'everyone', type: 'role', guarded: true })
-        await Sequelize.GroupPermission.bulkCreate([])
-        await Sequelize.GroupPermission.bulkCreate([])
+        await sequelize.models.GroupPermission.bulkCreate([])
+        await sequelize.models.GroupPermission.bulkCreate([])
       }
     },
     tableName: 'guilds'

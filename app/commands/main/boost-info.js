@@ -1,10 +1,10 @@
 'use strict'
-const Command = require('../../controllers/command')
 const pluralize = require('pluralize')
+const BaseCommand = require('../base')
 
 const { MessageEmbed } = require('discord.js')
 
-module.exports = class BoostInfoCommand extends Command {
+class BoostInfoCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'main',
@@ -48,6 +48,8 @@ module.exports = class BoostInfoCommand extends Command {
       .setThumbnail(member.user.displayAvatarURL())
       .setDescription(`Has been boosting this server for ${years > 0 ? `**${years}** ${pluralize('year', years)}, ` : ''}**${months}** ${pluralize('month', months)} and **${days}** ${pluralize('day', days)}!`)
       .setColor(0xff73fa)
-    message.replyEmbed(embed)
+    return message.replyEmbed(embed)
   }
 }
+
+module.exports = BoostInfoCommand

@@ -3,7 +3,7 @@ const axios = require('axios')
 
 const applicationConfig = require('../../config/application')
 
-module.exports = async (method, pathname, data) => {
+function request (method, pathname, data) {
   if (applicationConfig.apiEnabled) {
     return axios({
       method,
@@ -17,3 +17,5 @@ module.exports = async (method, pathname, data) => {
     throw new Error('This bot has no API enabled.')
   }
 }
+
+module.exports = request

@@ -1,9 +1,9 @@
 'use strict'
-const Command = require('../../controllers/command')
+const BaseCommand = require('../base')
 
 const { Tag, TagName } = require('../../models')
 
-class DeleteTagCommand extends Command {
+class DeleteTagCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'settings',

@@ -1,13 +1,13 @@
 'use strict'
-const Command = require('../../controllers/command')
-const userService = require('../../services/user')
 const applicationAdapter = require('../../adapters/application')
+const BaseCommand = require('../base')
+const userService = require('../../services/user')
 
 const { getChannels, getTags, getUrls } = require('../../helpers/string')
 
 const applicationConfig = require('../../../config/application')
 
-module.exports = class ChangeSuspensionCommand extends Command {
+class ChangeSuspensionCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'admin',
@@ -70,6 +70,8 @@ module.exports = class ChangeSuspensionCommand extends Command {
       editorId
     })
 
-    message.reply(`Successfully changed **${username}**'s suspension.`)
+    return message.reply(`Successfully changed **${username}**'s suspension.`)
   }
 }
+
+module.exports = ChangeSuspensionCommand

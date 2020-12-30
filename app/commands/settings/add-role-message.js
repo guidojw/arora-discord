@@ -1,10 +1,10 @@
 'use strict'
-const Command = require('../../controllers/command')
+const BaseCommand = require('../base')
 
 const { DiscordAPIError, GuildEmoji } = require('discord.js')
 const { RoleMessage } = require('../../models')
 
-class AddRoleMessageCommand extends Command {
+class AddRoleMessageCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'settings',

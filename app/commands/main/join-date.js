@@ -1,11 +1,11 @@
 'use strict'
-const Command = require('../../controllers/command')
+const BaseCommand = require('../base')
 const userService = require('../../services/user')
 const timeHelper = require('../../helpers/time')
 
 const { MessageEmbed } = require('discord.js')
 
-module.exports = class JoinDateCommand extends Command {
+class JoinDateCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'main',
@@ -30,6 +30,8 @@ module.exports = class JoinDateCommand extends Command {
     const embed = new MessageEmbed()
       .addField(`${message.argString ? username : 'Your'} join date`, `${timeHelper.getDate(new Date(user.created))}`)
       .setColor(guild.getData('primaryColor'))
-    message.replyEmbed(embed)
+    return message.replyEmbed(embed)
   }
 }
+
+module.exports = JoinDateCommand

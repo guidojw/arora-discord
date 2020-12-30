@@ -1,9 +1,9 @@
 'use strict'
-const Command = require('../../controllers/command')
+const BaseCommand = require('../base')
 
 const { MessageEmbed } = require('discord.js')
 
-module.exports = class ToggleSupportCommand extends Command {
+class ToggleSupportCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'tickets',
@@ -15,10 +15,8 @@ module.exports = class ToggleSupportCommand extends Command {
   }
 
   async execute (message, _args, guild) {
-    // Toggle the setting
     await guild.edit({ supportEnabled: !guild.supportEnabled })
 
-    // Send success message
     const embed = new MessageEmbed()
       .setColor(guild.supportEnabled ? 0x00ff00 : 0xff0000)
       .setTitle('Successfully toggled support')
@@ -26,3 +24,5 @@ module.exports = class ToggleSupportCommand extends Command {
     return message.replyEmbed(embed)
   }
 }
+
+module.exports = ToggleSupportCommand

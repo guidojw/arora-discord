@@ -1,9 +1,8 @@
 'use strict'
 const Commando = require('discord.js-commando')
-
 const discordService = require('../services/discord')
 
-class Command extends Commando.Command {
+class BaseCommand extends Commando.Command {
   constructor (client, info) {
     info.memberName = info.name
     info.argsPromptLimit = info.argsPromptLimit || (info.group === 'admin' || info.group === 'settings') ? 3 : 1
@@ -15,7 +14,7 @@ class Command extends Commando.Command {
 
   hasPermission (message, ownerOverride) {
     if (!this.ownerOnly) {
-      if (this.message.member.hasPermission('MANAGE_GUILD')) {
+      if (message.member.hasPermission('MANAGE_GUILD')) {
         return true
       }
 
@@ -54,4 +53,4 @@ function _checkPermissions (member, object, roleGroups) {
     (bannedRoles.length > 0 && discordService.hasSomeRole(member, bannedRoles)))
 }
 
-module.exports = Command
+module.exports = BaseCommand

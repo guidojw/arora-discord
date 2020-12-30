@@ -1,7 +1,7 @@
 'use strict'
-const Command = require('../../controllers/command')
+const BaseCommand = require('../base')
 
-module.exports = class UnblockSupportCommand extends Command {
+class UnblockSupportCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'tickets',
@@ -30,3 +30,5 @@ module.exports = class UnblockSupportCommand extends Command {
     return message.reply(`Successfully unblocked **${username}**.`)
   }
 }
+
+module.exports = UnblockSupportCommand

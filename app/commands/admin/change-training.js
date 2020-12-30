@@ -1,7 +1,7 @@
 'use strict'
-const Command = require('../../controllers/command')
-const groupService = require('../../services/group')
 const applicationAdapter = require('../../adapters/application')
+const BaseCommand = require('../base')
+const groupService = require('../../services/group')
 const timeHelper = require('../../helpers/time')
 const userService = require('../../services/user')
 
@@ -9,7 +9,7 @@ const { getChannels, getTags, getUrls } = require('../../helpers/string')
 
 const applicationConfig = require('../../../config/application')
 
-module.exports = class ChangeTrainingCommand extends Command {
+class ChangeTrainingCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'admin',
@@ -95,3 +95,5 @@ module.exports = class ChangeTrainingCommand extends Command {
     return message.reply(`Successfully changed training with ID **${trainingId}**.`)
   }
 }
+
+module.exports = ChangeTrainingCommand

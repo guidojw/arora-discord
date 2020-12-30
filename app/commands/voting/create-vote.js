@@ -1,7 +1,7 @@
 'use strict'
-const Command = require('../../controllers/command')
+const BaseCommand = require('../base')
 
-module.exports = class CreateVoteCommand extends Command {
+module.exports = class CreateVoteCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'voting',

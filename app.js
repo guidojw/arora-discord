@@ -1,11 +1,11 @@
 'use strict'
 require('dotenv').config()
 
-const Bot = require('./app/controllers/bot')
+const BotController = require('./app/controllers/bot')
 const Sentry = require('@sentry/node')
 
 if (process.env.SENTRY_DSN) {
   Sentry.init({dsn: process.env.SENTRY_DSN})
 }
 
-new Bot().login(process.env.DISCORD_TOKEN)
+new BotController().login(process.env.DISCORD_TOKEN)

@@ -1,12 +1,12 @@
 'use strict'
-const Command = require('../../controllers/command')
+const BaseCommand = require('../base')
 const lodash = require('lodash')
 const discordService = require('../../services/discord')
 
 const { MessageEmbed } = require('discord.js')
 const { RoleMessage } = require('../../models')
 
-class RoleMessagesCommand extends Command {
+class RoleMessagesCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'settings',

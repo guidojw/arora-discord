@@ -1,9 +1,16 @@
 'use strict'
+const Collection = require('@discordjs/collection')
 const discordService = require('../services/discord')
+const TicketController = require('../structures/ticket')
 
 const { MessageEmbed } = require('discord.js')
-const { TicketController, TicketType } = require('./ticket')
 const { Ticket } = require('../models')
+
+const ticketTypes = {
+  PERSON_REPORT: 'personReport',
+  BUG_REPORT: 'bugReport',
+  PRIZE_CLAIM: 'prizeClaim'
+}
 
 const TICKETS_INTERVAL = 60000
 
@@ -11,14 +18,14 @@ class TicketsController {
   constructor (client) {
     this.client = client
 
-    this.tickets = {}
-    this.timeouts = {}
+    this.tickets = new Collection()
+    this.timeouts = new Collection()
   }
 
   async init () {
     for (const guild of Object.values(this.client.bot.guilds)) {
-      this.tickets[guild.id] = {}
-      this.timeouts[guild.id] = {}
+      this.tickets.set(guild.id, new Collection())
+      this.timeouts.set(guild.id, new Collection())
 
       const tickets = await Ticket.findAll({ where: { guildId: guild.id } })
       for (const ticket of tickets) {
@@ -26,7 +33,7 @@ class TicketsController {
           await ticket.destroy()
         } else {
           const ticketController = new TicketController(this.client, ticket)
-          this.tickets[guild.id][ticket.id] = ticketController
+          this.tickets.get(guild.id).set(ticket.id, ticketController)
           ticketController.once('close', this.clearTicket.bind(this, guild, ticketController))
         }
       }
@@ -34,6 +41,8 @@ class TicketsController {
 
     this.client.on('message', this.message.bind(this))
     this.client.on('messageReactionAdd', this.messageReactionAdd.bind(this))
+
+    this.client.bot.on('ticketClose', this.ticketClose.bind(this))
   }
 
   async messageReactionAdd (reaction, user) {
@@ -54,11 +63,11 @@ class TicketsController {
     }
 
     const type = reaction.emoji.name === discordService.getEmojiFromNumber(1)
-      ? TicketType.PERSON_REPORT
+      ? ticketTypes.PERSON_REPORT
       : reaction.emoji.name === discordService.getEmojiFromNumber(2)
-        ? TicketType.BUG_REPORT
+        ? ticketTypes.BUG_REPORT
         : reaction.emoji.name === discordService.getEmojiFromNumber(3)
-          ? TicketType.PRIZE_CLAIM
+          ? ticketTypes.PRIZE_CLAIM
           : undefined
     if (type) {
       if (user.partial) {
@@ -66,8 +75,9 @@ class TicketsController {
       }
       await reaction.users.remove(user)
 
-      if (!this.timeouts[guild.id][user.id]) {
-        this.timeouts[guild.id][user.id] = setTimeout(this.clearTimeout.bind(this, guild, user.id), TICKETS_INTERVAL)
+      const timeouts = this.timeouts.get(guild.id)
+      if (!timeouts.get(user.id)) {
+        timeouts.set(user.id, setTimeout(this.clearTimeout.bind(this, guild, user.id), TICKETS_INTERVAL))
 
         let ticketController = this.getTicketFromAuthor(guild, user)
         if (!ticketController) {
@@ -98,9 +108,8 @@ class TicketsController {
             type
           })
           ticketController = new TicketController(this.client, data, guild)
-          this.tickets[guild.id][ticketController.id] = ticketController
-          ticketController.once('close', this.clearTicket.bind(this, guild, ticketController))
-          ticketController.start()
+          this.tickets.get(guild.id).set(ticketController.id, ticketController)
+          return ticketController.start()
         } else {
           const embed = new MessageEmbed()
             .setColor(0xff0000)
@@ -133,22 +142,26 @@ class TicketsController {
     }
   }
 
+  ticketClose (ticketController) {
+    return this.clearTicket(ticketController.guild, ticketController)
+  }
+
   clearTicket (guild, ticketController) {
-    delete this.tickets[guild.id][ticketController.id]
+    return this.tickets.get(guild.id).delete(ticketController.id)
   }
 
   clearTimeout (guild, key) {
-    delete this.timeouts[guild.id][key]
+    return this.timeouts.get(guild.id).delete(key)
   }
 
   getTicketFromChannel (guild, channel) {
-    return Object.values(this.tickets[guild.id]).find(ticketController => {
+    return this.tickets.get(guild.id).find(ticketController => {
       return ticketController.channelId === channel.id
     })
   }
 
   getTicketFromAuthor (guild, author) {
-    return Object.values(this.tickets[guild.id]).find(ticketController => {
+    return this.tickets.get(guild.id).find(ticketController => {
       return ticketController.authorId === author.id
     })
   }

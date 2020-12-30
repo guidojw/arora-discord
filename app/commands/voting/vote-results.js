@@ -1,10 +1,10 @@
 'use strict'
 const pluralize = require('pluralize')
-const Command = require('../../controllers/command')
+const BaseCommand = require('../base')
 
 const { MessageEmbed } = require('discord.js')
 
-module.exports = class VoteResultsCommand extends Command {
+module.exports = class VoteResultsCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'voting',

@@ -1,24 +1,27 @@
 'use strict'
-const path = require('path')
+const EventEmitter = require('events')
 const Commando = require('discord.js-commando')
+const path = require('path')
 const pluralize = require('pluralize')
-const SettingProvider = require('./setting-provider')
-const WebSocketController = require('./web-socket')
 const discordService = require('../services/discord')
-const userService = require('../services/user')
+const SettingProvider = require('./setting-provider')
 const TicketsController = require('./tickets')
+const userService = require('../services/user')
+const WebSocketManager = require('../managers/web-socket')
 
 const { DiscordAPIError, Message, MessageEmbed } = require('discord.js')
-const { stripIndents } = require('common-tags')
 const { RoleBinding, RoleMessage, Tag, TagName } = require('../models')
+const { stripIndents } = require('common-tags')
 
 const applicationConfig = require('../../config/application')
 
 const ACTIVITY_CAROUSEL_INTERVAL = 60 * 1000
 const COMMAND_DELETE_MESSAGES_TIMEOUT = 10 * 1000
 
-class Bot {
+class BotController extends EventEmitter {
   constructor () {
+    super()
+
     this.client = new Commando.Client({
       commandPrefix: applicationConfig.defaultPrefix,
       owner: applicationConfig.owner,
@@ -74,7 +77,7 @@ class Bot {
     this.client.on('message', this.message.bind(this))
 
     if (applicationConfig.apiEnabled) {
-      this.webSocketController = new WebSocketController(process.env.HOST)
+      this.webSocketController = new WebSocketManager(process.env.HOST)
       this.webSocketController.on('rankChanged', this.rankChanged.bind(this))
       this.webSocketController.on('trainDeveloperPayoutReport', this.trainDeveloperPayoutReport.bind(this))
     }
@@ -369,4 +372,4 @@ class Bot {
   }
 }
 
-module.exports = Bot
+module.exports = BotController

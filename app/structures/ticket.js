@@ -1,6 +1,6 @@
 'use strict'
-const EventEmitter = require('events')
 const pluralize = require('pluralize')
+const BaseStructure = require('./base')
 const discordService = require('../services/discord')
 const roVerAdapter = require('../adapters/rover')
 const timeHelper = require('../helpers/time')
@@ -9,19 +9,11 @@ const { MessageEmbed } = require('discord.js')
 const { stripIndents } = require('common-tags')
 const { Ticket, TicketModerator } = require('../models')
 
-const TicketType = {
-  PERSON_REPORT: 'personReport',
-  BUG_REPORT: 'bugReport',
-  PRIZE_CLAIM: 'prizeClaim'
-}
-
 const SUBMISSION_TIME = 30 * 60 * 1000
 
-class TicketController extends EventEmitter {
+class TicketController extends BaseStructure {
   constructor (client, data) {
-    super()
-
-    this.client = client
+    super(client)
 
     this._patch(data)
   }
@@ -170,7 +162,7 @@ class TicketController extends EventEmitter {
 
     await Ticket.destroy({ where: { id: this.id } })
 
-    this.emit('close')
+    this.client.bot.emit('ticketClose', this)
   }
 
   async requestRating () {
@@ -219,14 +211,6 @@ class TicketController extends EventEmitter {
     return this.guild.ratingsChannel.send(embed)
   }
 
-  static getTypeFromName (name) {
-    for (const [type, typeName] of Object.entries(TicketType)) {
-      if (typeName.toLowerCase() === name.toLowerCase()) {
-        return type
-      }
-    }
-  }
-
   async message (message) {
     if (this.timeout) {
       clearTimeout(this.timeout)
@@ -255,7 +239,4 @@ class TicketController extends EventEmitter {
   }
 }
 
-module.exports = {
-  TicketController,
-  TicketType
-}
+module.exports = TicketController

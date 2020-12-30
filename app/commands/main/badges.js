@@ -1,5 +1,5 @@
 'use strict'
-const Command = require('../../controllers/command')
+const Base = require('../base')
 const userService = require('../../services/user')
 
 const { MessageEmbed } = require('discord.js')
@@ -8,7 +8,7 @@ const TTDT_ID = 912438803
 const PTDT_ID = 496942494
 const TCDT_ID = 2124496060
 
-module.exports = class BadgesCommand extends Command {
+class BadgesCommand extends Base {
   constructor (client) {
     super(client, {
       group: 'main',
@@ -38,6 +38,8 @@ module.exports = class BadgesCommand extends Command {
       .addField('PTDT', hasPtdt ? 'yes' : 'no', true)
       .addField('TCDT', hasTcdt ? 'yes' : 'no', true)
       .setColor(guild.getData('primaryColor'))
-    message.replyEmbed(embed)
+    return message.replyEmbed(embed)
   }
 }
+
+module.exports = BadgesCommand

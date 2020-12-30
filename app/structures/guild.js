@@ -1,5 +1,7 @@
 'use strict'
+const Collection = require('@discordjs/collection')
 const cron = require('node-cron')
+const BaseStructure = require('./base')
 
 const { MessageEmbed } = require('discord.js')
 const { Guild } = require('../models')
@@ -7,13 +9,15 @@ const { Guild } = require('../models')
 const applicationConfig = require('../../config/application')
 const cronConfig = require('../../config/cron')
 
-class GuildController {
+class GuildController extends BaseStructure {
   constructor (client, data) {
-    this.client = client
+    super(client)
 
     this.jobs = {}
     this.groupPermissions = {}
     this.rolePermissions = {}
+
+    this.groups = new Collection()
 
     this._patch(data)
   }

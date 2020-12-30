@@ -1,10 +1,10 @@
 'use strict'
-const Command = require('../../controllers/command')
+const BaseCommand = require('../base')
 
 const { Channel, CategoryChannel, Message } = require('discord.js')
 const { Guild } = require('../../models')
 
-class SetSettingCommand extends Command {
+class SetSettingCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'settings',
@@ -57,7 +57,7 @@ class SetSettingCommand extends Command {
         if (!(value instanceof CategoryChannel)) {
           error = 'Invalid category channel.'
         }
-      } else if (key === 'trainingsMessageId' || key === 'trainingsInfoMessageId') {
+      } else if (key === 'trainingsMessageId' || key === 'trainingsInfoMessageId' || key === 'supportMessageId') {
         if (!(value instanceof Message)) {
           error = 'Invalid message.'
         }
@@ -74,7 +74,7 @@ class SetSettingCommand extends Command {
 
     await guild.edit({ [key]: value !== null && key.endsWith('Id') && key !== 'robloxGroupId' ? value.id : value })
 
-    return message.reply(`Successfully changed ${key.endsWith('Id') ? key.slice(0, -2) : key} to **${value}**.`)
+    return message.reply(`Successfully changed ${key.endsWith('Id') ? key.slice(0, -2) : key} to **${value instanceof Message ? value.id : value}**.`)
   }
 }
 

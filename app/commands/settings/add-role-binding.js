@@ -1,9 +1,9 @@
 'use strict'
-const Command = require('../../controllers/command')
+const BaseCommand = require('../base')
 
 const { RoleBinding } = require('../../models')
 
-class AddRoleBindingCommand extends Command {
+class AddRoleBindingCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'settings',

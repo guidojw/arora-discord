@@ -1,13 +1,14 @@
 'use strict'
-const Command = require('../../controllers/command')
-const userService = require('../../services/user')
 const applicationAdapter = require('../../adapters/application')
+const BaseCommand = require('../base')
+const userService = require('../../services/user')
+
 const { MessageEmbed } = require('discord.js')
 const { getChannels, getTags, getUrls } = require('../../helpers/string')
 
 const applicationConfig = require('../../../config/application')
 
-module.exports = class ShoutCommand extends Command {
+class ShoutCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'admin',
@@ -42,12 +43,14 @@ module.exports = class ShoutCommand extends Command {
     })).data
 
     if (shout.body === '') {
-      message.reply('Successfully cleared shout.')
+      return message.reply('Successfully cleared shout.')
     } else {
       const embed = new MessageEmbed()
         .addField('Successfully shouted', shout.body)
         .setColor(guild.getData('primaryColor'))
-      message.replyEmbed(embed)
+      return message.replyEmbed(embed)
     }
   }
 }
+
+module.exports = ShoutCommand

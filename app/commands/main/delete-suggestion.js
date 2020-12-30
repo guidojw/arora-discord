@@ -1,8 +1,8 @@
 'use strict'
-const Command = require('../../controllers/command')
+const BaseCommand = require('../base')
 const discordService = require('../../services/discord')
 
-module.exports = class DeleteSuggestionCommand extends Command {
+class DeleteSuggestionCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'main',
@@ -29,14 +29,15 @@ module.exports = class DeleteSuggestionCommand extends Command {
 
         if (choice) {
           await suggestion.delete()
-          message.reply('Successfully deleted your last suggestion.')
+          return message.reply('Successfully deleted your last suggestion.')
         } else {
-          message.reply('Didn\'t delete your last suggestion.')
+          return message.reply('Didn\'t delete your last suggestion.')
         }
-        return
       }
     }
 
-    message.reply('Could not find a suggestion you made.')
+    return message.reply('Could not find a suggestion you made.')
   }
 }
+
+module.exports = DeleteSuggestionCommand

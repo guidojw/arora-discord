@@ -1,11 +1,11 @@
 'use strict'
-const Command = require('../../controllers/command')
-const userService = require('../../services/user')
 const pluralize = require('pluralize')
+const BaseCommand = require('../base')
+const userService = require('../../services/user')
 
 const { MessageEmbed } = require('discord.js')
 
-module.exports = class AgeCommand extends Command {
+class AgeCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'main',
@@ -32,6 +32,8 @@ module.exports = class AgeCommand extends Command {
     const embed = new MessageEmbed()
       .addField(`${message.argString ? username + '\'s' : 'Your'} age`, `${age} ${pluralize('day', age)}`)
       .setColor(guild.getData('primaryColor'))
-    message.replyEmbed(embed)
+    return message.replyEmbed(embed)
   }
 }
+
+module.exports = AgeCommand

@@ -1,11 +1,11 @@
 'use strict'
-const Command = require('../../controllers/command')
-const userService = require('../../services/user')
 const applicationAdapter = require('../../adapters/application')
+const BaseCommand = require('../base')
+const userService = require('../../services/user')
 
 const applicationConfig = require('../../../config/application')
 
-module.exports = class PromoteCommand extends Command {
+class PromoteCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'admin',
@@ -55,6 +55,8 @@ module.exports = class PromoteCommand extends Command {
               : undefined
     })).data
 
-    message.reply(`Successfully promoted **${username}** from **${roles.oldRole.name}** to **${roles.newRole.name}**.`)
+    return message.reply(`Successfully promoted **${username}** from **${roles.oldRole.name}** to **${roles.newRole.name}**.`)
   }
 }
+
+module.exports = PromoteCommand

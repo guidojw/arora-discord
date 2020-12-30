@@ -1,10 +1,10 @@
 'use strict'
-const Command = require('../../controllers/command')
+const BaseCommand = require('../base')
 const discordService = require('../../services/discord')
 
 const { stripIndents } = require('common-tags')
 
-class CloseTicketCommand extends Command {
+class CloseTicketCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'tickets',

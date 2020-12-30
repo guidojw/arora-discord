@@ -1,17 +1,17 @@
 'use strict'
 const pluralize = require('pluralize')
-const Command = require('../../controllers/command')
 const applicationAdapter = require('../../adapters/application')
+const BaseCommand = require('../base')
 const discordService = require('../../services/discord')
+const groupService = require('../../services/group')
 const userService = require('../../services/user')
 const timeHelper = require('../../helpers/time')
-const groupService = require('../../services/group')
 
 const { MessageEmbed } = require('discord.js')
 
 const applicationConfig = require('../../../config/application')
 
-module.exports = class SuspensionsCommand extends Command {
+class SuspensionsCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'main',
@@ -66,7 +66,7 @@ module.exports = class SuspensionsCommand extends Command {
         .addField('Rank back', suspension.rankBack ? 'yes' : 'no', true)
         .addField('Reason', suspension.reason)
         .setColor(guild.getData('primaryColor'))
-      message.replyEmbed(embed)
+      return message.replyEmbed(embed)
     } else {
       const suspensions = (await applicationAdapter('get', `/v1/groups/${applicationConfig.groupId}/suspensions?sort=date`))
         .data
@@ -78,7 +78,9 @@ module.exports = class SuspensionsCommand extends Command {
       for (const embed of embeds) {
         await message.author.send(embed)
       }
-      message.reply('Sent you a DM with the current suspensions.')
+      return message.reply('Sent you a DM with the current suspensions.')
     }
   }
 }
+
+module.exports = SuspensionsCommand

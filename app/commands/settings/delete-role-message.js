@@ -1,9 +1,9 @@
 'use strict'
-const Command = require('../../controllers/command')
+const BaseCommand = require('../base')
 
 const { RoleMessage } = require('../../models')
 
-class DeleteRoleMessageCommand extends Command {
+class DeleteRoleMessageCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'settings',

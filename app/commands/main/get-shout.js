@@ -1,12 +1,12 @@
 'use strict'
-const Command = require('../../controllers/command')
 const applicationAdapter = require('../../adapters/application')
+const Base = require('../base')
 
 const { MessageEmbed } = require('discord.js')
 
 const applicationConfig = require('../../../config/application')
 
-module.exports = class GetShoutCommand extends Command {
+ class GetShoutCommand extends Base {
   constructor (client) {
     super(client, {
       group: 'main',
@@ -25,9 +25,11 @@ module.exports = class GetShoutCommand extends Command {
         .addField(`Current shout by ${shout.poster.username}`, shout.body)
         .setTimestamp(shout.updated)
         .setColor(guild.getData('primaryColor'))
-      message.replyEmbed(embed)
+      return message.replyEmbed(embed)
     } else {
-      message.reply('There currently is no shout.')
+      return message.reply('There currently is no shout.')
     }
   }
 }
+
+module.exports = GetShoutCommand

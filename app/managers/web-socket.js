@@ -2,7 +2,7 @@
 const EventEmitter = require('events')
 const WebSocket = require('ws')
 
-module.exports = class WebSocketController extends EventEmitter {
+class WebSocketManager extends EventEmitter {
   constructor (host) {
     super()
     this.host = host
@@ -49,3 +49,5 @@ module.exports = class WebSocketController extends EventEmitter {
     this.emit(event, ...args)
   }
 }
+
+module.exports = WebSocketManager

@@ -1,11 +1,11 @@
 'use strict'
-const Command = require('../../controllers/command')
-const userService = require('../../services/user')
 const applicationAdapter = require('../../adapters/application')
+const BaseCommand = require('../base')
+const userService = require('../../services/user')
 
 const applicationConfig = require('../../../config/application')
 
-module.exports = class DemoteCommand extends Command {
+class DemoteCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'admin',
@@ -57,6 +57,8 @@ module.exports = class DemoteCommand extends Command {
               : undefined
     })).data
 
-    message.reply(`Successfully demoted **${username}** from **${roles.oldRole.name}** to **${roles.newRole.name}**.`)
+    return message.reply(`Successfully demoted **${username}** from **${roles.oldRole.name}** to **${roles.newRole.name}**.`)
   }
 }
+
+module.exports = DemoteCommand

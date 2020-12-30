@@ -1,9 +1,9 @@
 'use strict'
-const Command = require('../../controllers/command')
+const BaseCommand = require('../base')
 
 const { Guild } = require('../../models')
 
-class GetSettingCommand extends Command {
+class GetSettingCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'settings',

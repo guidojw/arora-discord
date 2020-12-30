@@ -30,19 +30,40 @@ module.exports = (sequelize, DataTypes) => {
     Group.belongsToMany(models.Permission, {
       through: models.GroupPermission,
       sourceKey: 'id',
-      targetKey: 'name'
+      targetKey: 'name',
+      as: 'permissions'
     })
     Group.hasMany(models.ChannelGroup, {
       foreignKey: {
         name: 'groupId',
         primaryKey: true
-      }
+      },
+      as: 'channels'
     })
     Group.hasMany(models.RoleGroup, {
       foreignKey: {
         name: 'groupId',
         primaryKey: true
-      }
+      },
+      as: 'roles'
+    })
+  }
+
+  Group.loadScopes = models => {
+    Group.addScope('defaultScope', {
+      include: [{
+        model: models.Permission,
+        as: 'permissions'
+      }, {
+        model: models.RoleGroup,
+        as: 'roles',
+        attributes: ['roleId']
+      }, {
+        model: models.ChannelGroup,
+        as: 'channels',
+        attributes: ['channelId']
+      }],
+      subQuery: false
     })
   }
 

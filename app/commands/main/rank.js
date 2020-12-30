@@ -1,12 +1,12 @@
 'use strict'
-const Command = require('../../controllers/command')
+const BaseCommand = require('../base')
 const userService = require('../../services/user')
 
 const { MessageEmbed } = require('discord.js')
 
 const applicationConfig = require('../../../config/application')
 
-module.exports = class RankCommand extends Command {
+class RankCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'main',
@@ -32,6 +32,8 @@ module.exports = class RankCommand extends Command {
     const embed = new MessageEmbed()
       .addField(`${message.argString ? username + '\'s' : 'Your'} rank`, rank)
       .setColor(guild.getData('primaryColor'))
-    message.replyEmbed(embed)
+    return message.replyEmbed(embed)
   }
 }
+
+module.exports = RankCommand

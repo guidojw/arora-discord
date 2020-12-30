@@ -1,13 +1,13 @@
 'use strict'
-const Command = require('../../controllers/command')
 const applicationAdapter = require('../../adapters/application')
 const banService = require('../../services/ban')
+const BaseCommand = require('../base')
 const userService = require('../../services/user')
 const timeHelper = require('../../helpers/time')
 
 const { MessageEmbed } = require('discord.js')
 
-module.exports = class BansCommand extends Command {
+class BansCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'admin',
@@ -42,7 +42,7 @@ module.exports = class BansCommand extends Command {
         embed.addField('Reason', ban.reason)
       }
 
-      message.replyEmbed(embed)
+      return message.replyEmbed(embed)
     } else {
       const bans = (await applicationAdapter('get', '/v1/bans?sort=date')).data
       if (bans.length === 0) {
@@ -54,7 +54,9 @@ module.exports = class BansCommand extends Command {
         await message.author.send(embed)
       }
 
-      message.reply('Sent you a DM with the banlist.')
+      return message.reply('Sent you a DM with the banlist.')
     }
   }
 }
+
+module.exports = BansCommand

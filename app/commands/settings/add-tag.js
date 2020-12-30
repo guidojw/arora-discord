@@ -1,11 +1,11 @@
 'use strict'
-const Command = require('../../controllers/command')
+const Base = require('../base')
 const discordService = require('../../services/discord')
 
 const { MessageEmbed } = require('discord.js')
 const { Tag, TagName } = require('../../models')
 
-class AddTagCommand extends Command {
+class AddTagCommand extends Base {
   constructor (client) {
     super(client, {
       group: 'settings',
@@ -44,7 +44,6 @@ class AddTagCommand extends Command {
       }
 
       content = JSON.stringify(embed.toJSON())
-
     } catch (err) {
       // Once a user fetches a tag, the bot replies to them with the tag content.
       // Tagging a user takes up 23 characters: 21 for tag format (<@snowflake>) + 2 for ", ".

@@ -1,12 +1,12 @@
 'use strict'
-const Command = require('../../controllers/command')
 const applicationAdapter = require('../../adapters/application')
+const BaseCommand = require('../base')
 
 const { MessageEmbed } = require('discord.js')
 
 const applicationConfig = require('../../../config/application')
 
-module.exports = class MemberCountCommand extends Command {
+class MemberCountCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'miscellaneous',
@@ -30,6 +30,8 @@ module.exports = class MemberCountCommand extends Command {
     const embed = new MessageEmbed()
       .addField(`${group.name}'s member count`, group.memberCount)
       .setColor(guild.getData('primaryColor'))
-    message.replyEmbed(embed)
+    return message.replyEmbed(embed)
   }
 }
+
+module.exports = MemberCountCommand

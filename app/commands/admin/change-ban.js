@@ -1,11 +1,11 @@
 'use strict'
-const Command = require('../../controllers/command')
-const userService = require('../../services/user')
 const applicationAdapter = require('../../adapters/application')
+const BaseCommand = require('../base')
+const userService = require('../../services/user')
 
 const { getChannels, getTags, getUrls } = require('../../helpers/string')
 
-module.exports = class ChangeBanCommand extends Command {
+class ChangeBanCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'admin',
@@ -58,6 +58,8 @@ module.exports = class ChangeBanCommand extends Command {
 
     await applicationAdapter('put', `/v1/bans/${userId}`, { changes, editorId })
 
-    message.reply(`Successfully changed **${username}**'s ban.`)
+    return message.reply(`Successfully changed **${username}**'s ban.`)
   }
 }
+
+module.exports = ChangeBanCommand

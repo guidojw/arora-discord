@@ -1,13 +1,13 @@
 'use strict'
-const Command = require('../../controllers/command')
-const userService = require('../../services/user')
 const applicationAdapter = require('../../adapters/application')
+const BaseCommand = require('../base')
+const userService = require('../../services/user')
 
 const { getChannels, getTags, getUrls } = require('../../helpers/string')
 
 const applicationConfig = require('../../../config/application')
 
-module.exports = class BanCommand extends Command {
+class BanCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'admin',
@@ -48,6 +48,8 @@ module.exports = class BanCommand extends Command {
       reason
     })
 
-    message.reply(`Successfully banned **${username}**.`)
+    return message.reply(`Successfully banned **${username}**.`)
   }
 }
+
+module.exports = BanCommand

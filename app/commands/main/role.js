@@ -1,12 +1,12 @@
 'use strict'
-const Command = require('../../controllers/command')
+const Base = require('../base')
 const userService = require('../../services/user')
 
 const { MessageEmbed } = require('discord.js')
 
 const applicationConfig = require('../../../config/application')
 
-module.exports = class RoleCommand extends Command {
+class RoleCommand extends Base {
   constructor (client) {
     super(client, {
       group: 'main',
@@ -32,6 +32,8 @@ module.exports = class RoleCommand extends Command {
     const embed = new MessageEmbed()
       .addField(`${message.argString ? username + '\'s' : 'Your'} role`, role)
       .setColor(guild.getData('primaryColor'))
-    message.replyEmbed(embed)
+    return message.replyEmbed(embed)
   }
 }
+
+module.exports = RoleCommand

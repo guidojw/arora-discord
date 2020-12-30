@@ -1,8 +1,8 @@
 'use strict'
-const Command = require('../../controllers/command')
+const applicationAdapter = require('../../adapters/application')
+const BaseCommand = require('../base')
 const groupService = require('../../services/group')
 const timeHelper = require('../../helpers/time')
-const applicationAdapter = require('../../adapters/application')
 const userService = require('../../services/user')
 
 const { MessageEmbed } = require('discord.js')
@@ -10,7 +10,7 @@ const { getChannels, getTags, getUrls } = require('../../helpers/string')
 
 const applicationConfig = require('../../../config/application')
 
-module.exports = class HostTrainingCommand extends Command {
+class HostTrainingCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'admin',
@@ -86,3 +86,5 @@ module.exports = class HostTrainingCommand extends Command {
     return message.replyEmbed(embed)
   }
 }
+
+module.exports = HostTrainingCommand

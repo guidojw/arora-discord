@@ -1,10 +1,10 @@
 'use strict'
-const Command = require('../../controllers/command')
+const BaseCommand = require('../base')
 
 const { MessageEmbed } = require('discord.js')
 const { Tag, TagName } = require('../../models')
 
-module.exports = class TagCommand extends Command {
+class TagCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'main',
@@ -58,3 +58,5 @@ module.exports = class TagCommand extends Command {
     }
   }
 }
+
+module.exports = TagCommand

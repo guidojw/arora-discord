@@ -1,8 +1,8 @@
 'use strict'
-const Command = require('../../controllers/command')
+const BaseCommand = require('../base')
 const userService = require('../../services/user')
 
-module.exports = class ProfileCommand extends Command {
+class ProfileCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'main',
@@ -24,6 +24,8 @@ module.exports = class ProfileCommand extends Command {
     username = username ? typeof username === 'string' ? username : username.displayName : message.member.displayName
     const userId = await userService.getIdFromUsername(username || message.member.displayName)
 
-    message.reply(`https://www.roblox.com/users/${userId}/profile`)
+    return message.reply(`https://www.roblox.com/users/${userId}/profile`)
   }
 }
+
+module.exports = ProfileCommand

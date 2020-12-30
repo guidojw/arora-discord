@@ -1,8 +1,8 @@
 'use strict'
-const Command = require('../../controllers/command')
+const BaseCommand = require('../base')
 const discordService = require('../../services/discord')
 
-module.exports = class BlockSupportCommand extends Command {
+class BlockSupportCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'tickets',
@@ -35,3 +35,5 @@ module.exports = class BlockSupportCommand extends Command {
     return message.reply(`Successfully blocked **${username}**.`)
   }
 }
+
+module.exports = BlockSupportCommand
