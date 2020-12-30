@@ -41,13 +41,6 @@ class GuildController extends BaseStructure {
   }
 
   async init () {
-    // // Voting system jobs
-    // const voteData = this.getData('vote')
-    // if (voteData && voteData.timer && voteData.timer.end > Date.now()) {
-    //   this.scheduleJob('saveVoteJob')
-    //   this.scheduleJob('updateTimerJob')
-    // }
-
     // Jobs depending on if API is enabled
     if (applicationConfig.apiEnabled) {
       this.scheduleJob('announceTrainingsJob')
