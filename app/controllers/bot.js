@@ -39,7 +39,6 @@ class BotController extends EventEmitter {
       .registerGroup('main', 'Main')
       .registerGroup('miscellaneous', 'Miscellaneous')
       .registerGroup('bot', 'Bot')
-      .registerGroup('voting', 'Voting')
       .registerGroup('tickets', 'Tickets')
       .registerDefaultGroups()
       .registerDefaultTypes()
@@ -166,23 +165,6 @@ class BotController extends EventEmitter {
 
   async messageReactionAdd (reaction, user) {
     await this.handleRoleMessage('add', reaction, user)
-
-    // const voteData = guild.getData('vote')
-    // if (voteData && voteData.timer && voteData.timer.end > Date.now()) {
-    //   let choice
-    //   for (const option of Object.values(voteData.options)) {
-    //     if (option.votes.includes(member.id)) {
-    //       return
-    //     }
-    //     if (reaction.message.id === option.message) {
-    //       choice = option
-    //     }
-    //   }
-    //   if (choice) {
-    //     choice.votes.push(member.id)
-    //     reaction.message.edit(reaction.message.embeds[0].setFooter(`Votes: ${choice.votes.length}`))
-    //   }
-    // }
   }
 
   async messageReactionRemove (reaction, user) {
