@@ -77,8 +77,8 @@ Malicious Spreadsheets: <${process.env.MS_DOC}>
     .addField('Stored in a Database', stripIndents`
     - Roblox user IDs: used to indicate admins and targets for infractions and trainings.
     - Roblox user names: for train developer payouts.
-    - Discord user IDs: for vote participants and train developer payouts.
-    - Parts of message contents: these are always provided by the user and are used for infraction reasons, training notes, vote descriptions and vote participant descriptions.
+    - Discord user IDs: for train developer payouts.
+    - Parts of message contents: these are always provided by the user and are used for infraction reasons and training notes.
 
     The database is hosted on a VPS residing in Germany.
     `)
