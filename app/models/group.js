@@ -40,11 +40,10 @@ module.exports = (sequelize, DataTypes) => {
       },
       as: 'channels'
     })
-    Group.hasMany(models.RoleGroup, {
-      foreignKey: {
-        name: 'groupId',
-        primaryKey: true
-      },
+    Group.belongsToMany(models.Role, {
+      through: models.RoleGroup,
+      sourceKey: 'id',
+      targetKey: 'id',
       as: 'roles'
     })
   }
@@ -55,13 +54,12 @@ module.exports = (sequelize, DataTypes) => {
         model: models.Permission,
         as: 'permissions'
       }, {
-        model: models.RoleGroup,
-        as: 'roles',
-        attributes: ['roleId']
-      }, {
         model: models.ChannelGroup,
         as: 'channels',
         attributes: ['channelId']
+      }, {
+        model: models.Role,
+        as: 'roles'
       }],
       subQuery: false
     })

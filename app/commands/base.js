@@ -18,7 +18,7 @@ class BaseCommand extends Commando.Command {
         return true
       }
 
-      // const guild = this.client.bot.getGuild(message.guild.id)
+      // const guild = this.client.bot.guilds.get(message.guild.id)
       // const roleGroups = guild.getData('roleGroups')
       // const member = message.member
       // const command = message.command
@@ -40,7 +40,7 @@ class BaseCommand extends Commando.Command {
   }
 
   async run (message, args, _fromPattern, _result) {
-    const guild = message.guild ? this.client.bot.getGuild(message.guild.id) : undefined
+    const guild = message.guild ? this.client.bot.guilds.get(message.guild.id) : undefined
     return this.execute(message, args, guild)
   }
 }

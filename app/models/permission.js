@@ -15,11 +15,10 @@ module.exports = (sequelize, DataTypes) => {
       sourceKey: 'name',
       targetKey: 'id'
     })
-    Permission.hasMany(models.RolePermission, {
-      foreignKey: {
-        name: 'permissionName',
-        primaryKey: true
-      }
+    Permission.belongsToMany(models.Role, {
+      through: models.RolePermission,
+      sourceKey: 'name',
+      targetKey: 'id'
     })
   }
 

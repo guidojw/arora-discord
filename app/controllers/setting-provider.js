@@ -1,7 +1,7 @@
 'use strict'
 const GuildController = require('../structures/guild')
 
-const { GroupPermission, Guild, GuildCommand, RolePermission } = require('../models')
+const { Guild, GuildCommand } = require('../models')
 
 class SettingProvider {
   async init (client) {
@@ -15,7 +15,8 @@ class SettingProvider {
   }
 
   async initGuild (guild) {
-    const data = await Guild.findOne({ where: { id: guild.id } }) || await Guild.create({ id: guild.id })
+    const data = await Guild.findOne({ where: { id: guild.id } }) ||
+      await (await Guild.create({ id: guild.id })).reload()
     const guildController = new GuildController(this.client, data)
 
     if (data.commandPrefix) {
@@ -47,32 +48,13 @@ class SettingProvider {
       }
     }
 
-    const groups = await data.getGroups()
-    const groupIds = groups.map(group => group.id)
-    const groupPermissions = await GroupPermission.findAll({ where: { groupId: groupIds } })
-    for (const group of groups) {
-      guildController.groups.set(group.id, group)
-      guildController.groupPermissions[group.id] = groupPermissions.find(groupPermission => {
-        return groupPermission.groupId === group.id
-      }) ?? []
-    }
-
-    const roles = await guild.roles.fetch()
-    const roleIds = [...roles.cache.keys()]
-    const rolePermissions = await RolePermission.findAll({ where: { roleId: roleIds } })
-    for (const roleId of roleIds) {
-      guildController.rolePermissions[roleId] = rolePermissions.find(rolePermission => {
-        return rolePermission.roleId === roleId
-      }) ?? []
-    }
-
     await guildController.init()
 
-    this.client.bot.guilds[guild.id] = guildController
+    this.client.bot.guilds.set(guild.id, guildController)
   }
 
   commandPrefixChange (guild, prefix) {
-    const guildController = this.client.bot.getGuild(guild.id)
+    const guildController = this.client.bot.guilds.get(guild.id)
     return guildController.edit({ commandPrefix: prefix })
   }
 

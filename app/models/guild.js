@@ -72,8 +72,8 @@ module.exports = (sequelize, DataTypes) => {
 
         const adminRoleGroup = await guild.createGroup({ name: 'admin', type: 'role', guarded: true })
         const everyoneRoleGroup = await guild.createGroup({ name: 'everyone', type: 'role', guarded: true })
-        await sequelize.models.GroupPermission.bulkCreate([])
-        await sequelize.models.GroupPermission.bulkCreate([])
+        // await sequelize.models.GroupPermission.bulkCreate([])
+        // await sequelize.models.GroupPermission.bulkCreate([])
       }
     },
     tableName: 'guilds'
@@ -127,7 +127,28 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: {
         name: 'guildId',
         allowNull: false
-      }
+      },
+      as: 'groups'
+    })
+    Guild.hasMany(models.Role, {
+      foreignKey: {
+        name: 'guildId',
+        allowNull: false
+      },
+      as: 'roles'
+    })
+  }
+
+  Guild.loadScopes = models => {
+    Guild.addScope('defaultScope', {
+      include: [{
+        model: models.Group,
+        as: 'groups'
+      }, {
+        model: models.Role,
+        as: 'roles'
+      }],
+      subQuery: false
     })
   }
 

@@ -1,5 +1,6 @@
 'use strict'
 const EventEmitter = require('events')
+const Collection = require('@discordjs/collection')
 const Commando = require('discord.js-commando')
 const path = require('path')
 const pluralize = require('pluralize')
@@ -52,7 +53,7 @@ class BotController extends EventEmitter {
       })
       .registerCommandsIn(path.join(__dirname, '../commands'))
 
-    this.guilds = {}
+    this.guilds = new Collection()
 
     this.client.once('ready', this.ready.bind(this))
   }
@@ -63,7 +64,7 @@ class BotController extends EventEmitter {
     const mainGuildId = process.env.NODE_ENV === 'production'
       ? applicationConfig.productionMainGuildId
       : applicationConfig.developmentMainGuildId
-    this.mainGuild = this.getGuild(mainGuildId)
+    this.mainGuild = this.guilds.get(mainGuildId)
 
     this.ticketsController = new TicketsController(this.client)
     await this.ticketsController.init()
@@ -96,7 +97,7 @@ class BotController extends EventEmitter {
 
     await this.handleCommandDeleteMessages(command, err, message, args, fromPattern, collResult)
 
-    const guild = message.guild ? this.getGuild(message.guild.id) : this.mainGuild
+    const guild = message.guild ? this.guilds.get(message.guild.id) : this.mainGuild
     await guild.log(
       message.author,
       stripIndents`
@@ -118,7 +119,7 @@ class BotController extends EventEmitter {
 
     await this.handleCommandDeleteMessages(command, result, message, args, fromPattern, collResult)
 
-    const guild = message.guild ? this.getGuild(message.guild.id) : this.mainGuild
+    const guild = message.guild ? this.guilds.get(message.guild.id) : this.mainGuild
     await guild.log(
       message.author,
       stripIndents`
@@ -152,7 +153,7 @@ class BotController extends EventEmitter {
       return
     }
 
-    const guild = this.getGuild(member.guild.id)
+    const guild = this.guilds.get(member.guild.id)
     if (guild.welcomeChannel) {
       const embed = new MessageEmbed()
         .setTitle(`Hey ${member.user.tag},`)
@@ -181,7 +182,7 @@ class BotController extends EventEmitter {
     if (!reaction.message.guild) {
       return
     }
-    const guild = this.getGuild(reaction.message.guild.id)
+    const guild = this.guilds.get(reaction.message.guild.id)
     const member = await guild.guild.members.fetch(user)
 
     const roleMessages = await RoleMessage.findAll({
@@ -207,7 +208,7 @@ class BotController extends EventEmitter {
     if (!message.guild) {
       return
     }
-    const guild = this.getGuild(message.guild.id)
+    const guild = this.guilds.get(message.guild.id)
     const prefix = guild.guild.commandPrefix ?? this.client.commandPrefix
 
     if (message.content.startsWith(prefix)) {
@@ -234,7 +235,7 @@ class BotController extends EventEmitter {
 
   async rankChanged (groupId, userId, rank) {
     let username
-    for (const guild of Object.values(this.guilds)) {
+    for (const guild of this.guilds.values()) {
       if (guild.groupId === groupId) {
         if (!username) {
           username = (await userService.getUser(userId)).name
@@ -293,10 +294,6 @@ class BotController extends EventEmitter {
     }
   }
 
-  getGuild (id) {
-    return this.guilds[id]
-  }
-
   getNextActivity () {
     this.currentActivity++
     this.currentActivity %= 2
@@ -306,7 +303,7 @@ class BotController extends EventEmitter {
         return { name: `${this.client.commandPrefix}help`, options: { type: 'LISTENING' } }
       case 1: {
         let totalMemberCount = 0
-        for (const guild of Object.values(this.guilds)) {
+        for (const guild of this.guilds.values()) {
           totalMemberCount += guild.guild.memberCount
         }
         return { name: `${totalMemberCount} users`, options: { type: 'WATCHING' } }

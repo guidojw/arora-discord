@@ -2,6 +2,8 @@
 const Collection = require('@discordjs/collection')
 const cron = require('node-cron')
 const BaseStructure = require('./base')
+const GroupController = require('./group')
+const RoleController = require('./role')
 
 const { MessageEmbed } = require('discord.js')
 const { Guild } = require('../models')
@@ -14,10 +16,9 @@ class GuildController extends BaseStructure {
     super(client)
 
     this.jobs = {}
-    this.groupPermissions = {}
-    this.rolePermissions = {}
 
     this.groups = new Collection()
+    this.roles = new Collection()
 
     this._patch(data)
   }
@@ -38,6 +39,18 @@ class GuildController extends BaseStructure {
     this.trainingsMessageId = data.trainingsMessageId || null
     this.trainingsInfoMessageId = data.trainingsInfoMessageId || null
     this.supportMessageId = data.supportMessageId || null
+
+    if (data.groups) {
+      for (const group of data.groups) {
+        this.groups.set(group.id, new GroupController(this.client, group))
+      }
+    }
+
+    if (data.roles) {
+      for (const role of data.roles) {
+        this.roles.set(role.id, new RoleController(this.client, role))
+      }
+    }
   }
 
   async init () {

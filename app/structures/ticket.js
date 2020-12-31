@@ -43,7 +43,7 @@ class TicketController extends BaseStructure {
   }
 
   get guild () {
-    return this.client.bot.getGuild(this.guildId) || null
+    return this.client.bot.guilds.get(this.guildId) || null
   }
 
   get moderators () {

@@ -23,7 +23,7 @@ class TicketsController {
   }
 
   async init () {
-    for (const guild of Object.values(this.client.bot.guilds)) {
+    for (const guild of this.client.bot.guilds.values()) {
       this.tickets.set(guild.id, new Collection())
       this.timeouts.set(guild.id, new Collection())
 
@@ -57,7 +57,7 @@ class TicketsController {
       return
     }
 
-    const guild = await this.client.bot.getGuild(message.guild.id)
+    const guild = await this.client.bot.guilds.get(message.guild.id)
     if (message.id !== guild.supportMessageId) {
       return
     }
@@ -135,7 +135,7 @@ class TicketsController {
       return
     }
 
-    const guild = this.client.bot.getGuild(message.guild.id)
+    const guild = this.client.bot.guilds.get(message.guild.id)
     const ticketController = this.getTicketFromChannel(guild, message.channel)
     if (ticketController) {
       return ticketController.message(message)
