@@ -1,11 +1,11 @@
 'use strict'
-const Base = require('../base')
+const BaseCommand = require('../base')
 const discordService = require('../../services/discord')
 
 const { MessageEmbed } = require('discord.js')
 const { Tag, TagName } = require('../../models')
 
-class AddTagCommand extends Base {
+class AddTagCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'settings',
