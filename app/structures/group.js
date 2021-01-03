@@ -1,6 +1,7 @@
 'use strict'
 const Collection = require('@discordjs/collection')
 const BaseStructure = require('./base')
+const RoleController = require('./role')
 
 class GroupController extends BaseStructure {
   constructor (client, data) {
@@ -35,7 +36,7 @@ class GroupController extends BaseStructure {
 
     if (data.roles) {
       for (const role of data.roles) {
-        this.roles.set(role.id, role)
+        this.roles.set(role.id, new RoleController(this.client, role))
       }
     }
   }
