@@ -15,8 +15,6 @@ class GuildController extends BaseStructure {
   constructor (client, data) {
     super(client)
 
-    this.jobs = {}
-
     this.groups = new Collection()
     this.roles = new Collection()
 
@@ -54,13 +52,19 @@ class GuildController extends BaseStructure {
   }
 
   async init () {
-    // Jobs depending on if API is enabled
     if (applicationConfig.apiEnabled) {
-      this.scheduleJob('announceTrainingsJob')
+      const announceTrainingsJob = cronConfig.premiumMembersReportJob
+      cron.schedule(
+        announceTrainingsJob.expression,
+        announceTrainingsJob.job.bind(announceTrainingsJob.job, this)
+      )
     }
 
-    // Other jobs
-    this.scheduleJob('premiumMembersReportJob')
+    const premiumMembersReportJob = cronConfig.premiumMembersReportJob
+    cron.schedule(
+      premiumMembersReportJob.expression,
+      premiumMembersReportJob.job.bind(premiumMembersReportJob.job, this)
+    )
   }
 
   get guild () {
@@ -95,20 +99,6 @@ class GuildController extends BaseStructure {
     return this.ticketsCategoryId ? this.guild.channels.cache.get(this.ticketsCategoryId) : null
   }
 
-  scheduleJob (name) {
-    if (this.jobs[name]) {
-      throw new Error('A job with that name already exists.')
-    }
-    const job = cronConfig[name]
-    this.jobs[name] = cron.schedule(job.expression, job.job.bind(job.job, this))
-  }
-
-  stopJob (name) {
-    if (!this.jobs[name]) {
-      throw new Error('No job with that name exists.')
-    }
-    this.jobs[name].stop()
-  }
 
   async log (author, content, options) {
     if (this.logsChannel) {
