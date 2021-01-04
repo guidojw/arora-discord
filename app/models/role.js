@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
       onDelete: 'CASCADE'
     })
     Role.belongsToMany(models.Permission, {
-      through: models.RolePermission,
+      through: 'roles_permissions',
       sourceKey: 'id',
       targetKey: 'name',
       as: 'permissions'

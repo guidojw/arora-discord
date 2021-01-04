@@ -28,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
       onDelete: 'CASCADE'
     })
     Group.belongsToMany(models.Permission, {
-      through: models.GroupPermission,
+      through: 'groups_permissions',
       sourceKey: 'id',
       targetKey: 'name',
       as: 'permissions'

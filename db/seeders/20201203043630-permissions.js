@@ -2,7 +2,7 @@
 const fileName = __filename.slice(__dirname.length + 1)
 
 const permissions = [
-  // TODO: fill with final set of permissions.
+  'ticket.create' // TODO: fill with final set of permissions.
 ]
 
 module.exports = {

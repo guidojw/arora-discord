@@ -66,6 +66,8 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     hooks: {
       afterCreate: async guild => {
+        await guild.createRole({ id: guild.id, guildId: guild.id })
+
         await guild.createGroup({ name: 'serverBoosterReportChannels', type: 'channel', guarded: true })
         await guild.createGroup({ name: 'photoContestChannels', type: 'channel', guarded: true })
         await guild.createGroup({ name: 'noTextChannels', type: 'channel', guarded: true })

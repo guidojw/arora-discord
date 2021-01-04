@@ -414,12 +414,6 @@ module.exports = {
         },
         onDelete: 'CASCADE',
         field: 'permission_name'
-      },
-      type: {
-        type: Sequelize.ENUM,
-        allowNull: false,
-        values: ['allow', 'deny'],
-        defaultValue: 'allow'
       }
     })
 
@@ -443,12 +437,6 @@ module.exports = {
         },
         onDelete: 'CASCADE',
         field: 'permission_name'
-      },
-      type: {
-        type: Sequelize.ENUM,
-        allowNull: false,
-        values: ['allow', 'deny'],
-        defaultValue: 'allow'
       }
     })
   },
