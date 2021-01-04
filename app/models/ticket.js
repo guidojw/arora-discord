@@ -2,12 +2,12 @@
 module.exports = (sequelize, DataTypes) => {
   const Ticket = sequelize.define('Ticket', {
     authorId: {
-      type: DataTypes.STRING,
+      type: DataTypes.BIGINT,
       allowNull: false,
       field: 'author_id'
     },
     channelId: {
-      type: DataTypes.STRING,
+      type: DataTypes.BIGINT,
       field: 'channel_id'
     },
     type: {

@@ -2,7 +2,7 @@
 module.exports = (sequelize, DataTypes) => {
   const TicketModerator = sequelize.define('TicketModerator', {
     userId: {
-      type: DataTypes.STRING,
+      type: DataTypes.BIGINT,
       primaryKey: true,
       field: 'user_id'
     }

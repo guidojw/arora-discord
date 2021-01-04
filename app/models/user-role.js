@@ -2,12 +2,12 @@
 module.exports = (sequelize, DataTypes) => {
   const UserRole = sequelize.define('UserRole', {
     userId: {
-      type: DataTypes.STRING,
+      type: DataTypes.BIGINT,
       primaryKey: true,
       field: 'user_id'
     },
     roleId: {
-      type: DataTypes.STRING,
+      type: DataTypes.BIGINT,
       primaryKey: true,
       field: 'role_id'
     }

@@ -7,12 +7,12 @@ module.exports = (sequelize, DataTypes) => {
       field: 'emoji_id'
     },
     roleId: {
-      type: DataTypes.STRING,
+      type: DataTypes.BIGINT,
       allowNull: false,
       field: 'role_id'
     },
     messageId: {
-      type: DataTypes.STRING,
+      type: DataTypes.BIGINT,
       allowNull: false,
       field: 'message_id'
     }

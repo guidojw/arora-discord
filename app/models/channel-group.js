@@ -2,7 +2,7 @@
 module.exports = (sequelize, DataTypes) => {
   const ChannelGroup = sequelize.define('ChannelGroup', {
     channelId: {
-      type: DataTypes.STRING,
+      type: DataTypes.BIGINT,
       primaryKey: true,
       field: 'channel_id'
     }

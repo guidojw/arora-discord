@@ -11,7 +11,7 @@ module.exports = {
 
     await queryInterface.createTable('guilds', {
       id: {
-        type: Sequelize.STRING,
+        type: Sequelize.BIGINT,
         primaryKey: true
       },
       primaryColor: {
@@ -33,43 +33,43 @@ module.exports = {
         field: 'roblox_group_id'
       },
       logsChannelId: {
-        type: Sequelize.STRING,
+        type: Sequelize.BIGINT,
         field: 'logs_channel_id'
       },
       trainingsChannelId: {
-        type: Sequelize.STRING,
+        type: Sequelize.BIGINT,
         field: 'trainings_channel_id'
       },
       suggestionsChannelId: {
-        type: Sequelize.STRING,
+        type: Sequelize.BIGINT,
         field: 'suggestions_channel_id'
       },
       ratingsChannelId: {
-        type: Sequelize.STRING,
+        type: Sequelize.BIGINT,
         field: 'ratings_channel_id'
       },
       supportChannelId: {
-        type: Sequelize.STRING,
+        type: Sequelize.BIGINT,
         field: 'support_channel_id'
       },
       welcomeChannelId: {
-        type: Sequelize.STRING,
+        type: Sequelize.BIGINT,
         field: 'welcome_channel_id'
       },
       ticketsCategoryId: {
-        type: Sequelize.STRING,
+        type: Sequelize.BIGINT,
         field: 'tickets_category_id'
       },
       trainingsMessageId: {
-        type: Sequelize.STRING,
+        type: Sequelize.BIGINT,
         field: 'trainings_message_id'
       },
       trainingsInfoMessageId: {
-        type: Sequelize.STRING,
+        type: Sequelize.BIGINT,
         field: 'trainings_info_message_id'
       },
       supportMessageId: {
-        type: Sequelize.STRING,
+        type: Sequelize.BIGINT,
         field: 'support_message_id'
       }
     })
@@ -81,7 +81,7 @@ module.exports = {
         field: 'command_name'
       },
       guildId: {
-        type: Sequelize.STRING,
+        type: Sequelize.BIGINT,
         primaryKey: true,
         references: {
           model: 'guilds',
@@ -104,7 +104,7 @@ module.exports = {
         autoIncrement: true
       },
       guildId: {
-        type: Sequelize.STRING,
+        type: Sequelize.BIGINT,
         allowNull: false,
         references: {
           model: 'guilds',
@@ -114,7 +114,7 @@ module.exports = {
         field: 'guild_id'
       },
       authorId: {
-        type: Sequelize.STRING,
+        type: Sequelize.BIGINT,
         allowNull: false,
         field: 'author_id'
       },
@@ -148,7 +148,7 @@ module.exports = {
         autoIncrement: true
       },
       guildId: {
-        type: Sequelize.STRING,
+        type: Sequelize.BIGINT,
         allowNull: false,
         references: {
           model: 'guilds',
@@ -158,12 +158,12 @@ module.exports = {
         field: 'guild_id'
       },
       authorId: {
-        type: Sequelize.STRING,
+        type: Sequelize.BIGINT,
         allowNull: false,
         field: 'author_id'
       },
       channelId: {
-        type: Sequelize.STRING,
+        type: Sequelize.BIGINT,
         field: 'channel_id'
       },
       type: {
@@ -174,7 +174,7 @@ module.exports = {
 
     await queryInterface.createTable('tickets_moderators', {
       userId: {
-        type: Sequelize.STRING,
+        type: Sequelize.BIGINT,
         primaryKey: true,
         field: 'user_id'
       },
@@ -197,7 +197,7 @@ module.exports = {
         autoIncrement: true
       },
       roleId: {
-        type: Sequelize.STRING,
+        type: Sequelize.BIGINT,
         allowNull: false,
         field: 'role_id'
       },
@@ -207,7 +207,7 @@ module.exports = {
         field: 'roblox_group_id'
       },
       guildId: {
-        type: Sequelize.STRING,
+        type: Sequelize.BIGINT,
         allowNull: false,
         references: {
           model: 'guilds',
@@ -225,17 +225,17 @@ module.exports = {
 
     await queryInterface.createTable('users_roles', {
       userId: {
-        type: Sequelize.STRING,
+        type: Sequelize.BIGINT,
         primaryKey: true,
         field: 'user_id'
       },
       roleId: {
-        type: Sequelize.STRING,
+        type: Sequelize.BIGINT,
         primaryKey: true,
         field: 'role_id'
       },
       guildId: {
-        type: Sequelize.STRING,
+        type: Sequelize.BIGINT,
         primaryKey: true,
         references: {
           model: 'guilds',
@@ -258,17 +258,17 @@ module.exports = {
         field: 'emoji_id'
       },
       roleId: {
-        type: Sequelize.STRING,
+        type: Sequelize.BIGINT,
         allowNull: false,
         field: 'role_id'
       },
       messageId: {
-        type: Sequelize.STRING,
+        type: Sequelize.BIGINT,
         allowNull: false,
         field: 'message_id'
       },
       guildId: {
-        type: Sequelize.STRING,
+        type: Sequelize.BIGINT,
         allowNull: false,
         references: {
           model: 'guilds',
@@ -281,17 +281,17 @@ module.exports = {
 
     await queryInterface.createTable('channels_channels', {
       channel1_id: {
-        type: Sequelize.STRING,
+        type: Sequelize.BIGINT,
         primaryKey: true,
         field: 'channel1_id'
       },
       channel2_id: {
-        type: Sequelize.STRING,
+        type: Sequelize.BIGINT,
         primaryKey: true,
         field: 'channel2_id'
       },
       guildId: {
-        type: Sequelize.STRING,
+        type: Sequelize.BIGINT,
         primaryKey: true,
         references: {
           model: 'guilds',
@@ -304,11 +304,11 @@ module.exports = {
 
     await queryInterface.createTable('roles', {
       id: {
-        type: Sequelize.STRING,
+        type: Sequelize.BIGINT,
         primaryKey: true
       },
       guildId: {
-        type: Sequelize.STRING,
+        type: Sequelize.BIGINT,
         allowNull: false,
         references: {
           model: 'guilds',
@@ -340,7 +340,7 @@ module.exports = {
         defaultValue: false
       },
       guildId: {
-        type: Sequelize.STRING,
+        type: Sequelize.BIGINT,
         allowNull: false,
         references: {
           model: 'guilds',
@@ -353,7 +353,7 @@ module.exports = {
 
     await queryInterface.createTable('channels_groups', {
       channelId: {
-        type: Sequelize.STRING,
+        type: Sequelize.BIGINT,
         primaryKey: true,
         field: 'channel_id'
       },
@@ -371,7 +371,7 @@ module.exports = {
 
     await queryInterface.createTable('roles_groups', {
       roleId: {
-        type: Sequelize.STRING,
+        type: Sequelize.BIGINT,
         primaryKey: true,
         field: 'role_id'
       },
@@ -419,7 +419,7 @@ module.exports = {
 
     await queryInterface.createTable('roles_permissions', {
       roleId: {
-        type: Sequelize.STRING,
+        type: Sequelize.BIGINT,
         primaryKey: true,
         references: {
           model: 'roles',

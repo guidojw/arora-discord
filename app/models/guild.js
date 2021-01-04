@@ -2,7 +2,7 @@
 module.exports = (sequelize, DataTypes) => {
   const Guild = sequelize.define('Guild', {
     id: {
-      type: DataTypes.STRING,
+      type: DataTypes.BIGINT,
       primaryKey: true
     },
     primaryColor: {
@@ -24,43 +24,43 @@ module.exports = (sequelize, DataTypes) => {
       field: 'roblox_group_id'
     },
     logsChannelId: {
-      type: DataTypes.STRING,
+      type: DataTypes.BIGINT,
       field: 'logs_channel_id'
     },
     trainingsChannelId: {
-      type: DataTypes.STRING,
+      type: DataTypes.BIGINT,
       field: 'trainings_channel_id'
     },
     suggestionsChannelId: {
-      type: DataTypes.STRING,
+      type: DataTypes.BIGINT,
       field: 'suggestions_channel_id'
     },
     ratingsChannelId: {
-      type: DataTypes.STRING,
+      type: DataTypes.BIGINT,
       field: 'ratings_channel_id'
     },
     supportChannelId: {
-      type: DataTypes.STRING,
+      type: DataTypes.BIGINT,
       field: 'support_channel_id'
     },
     welcomeChannelId: {
-      type: DataTypes.STRING,
+      type: DataTypes.BIGINT,
       field: 'welcome_channel_id'
     },
     ticketsCategoryId: {
-      type: DataTypes.STRING,
+      type: DataTypes.BIGINT,
       field: 'tickets_category_id'
     },
     trainingsMessageId: {
-      type: DataTypes.STRING,
+      type: DataTypes.BIGINT,
       field: 'trainings_message_id'
     },
     trainingsInfoMessageId: {
-      type: DataTypes.STRING,
+      type: DataTypes.BIGINT,
       field: 'trainings_info_message_id'
     },
     supportMessageId: {
-      type: DataTypes.STRING,
+      type: DataTypes.BIGINT,
       field: 'support_message_id'
     }
   }, {

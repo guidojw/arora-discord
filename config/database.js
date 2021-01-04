@@ -1,4 +1,8 @@
 'use strict'
+require('dotenv').config()
+
+require('pg').defaults.parseInt8 = true // By default PG returns bigint columns as strings.
+
 module.exports = {
   development: {
     username: process.env.POSTGRES_USER,

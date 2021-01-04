@@ -2,7 +2,7 @@
 module.exports = (sequelize, DataTypes) => {
   const Role = sequelize.define('Role', {
     id: {
-      type: DataTypes.STRING,
+      type: DataTypes.BIGINT,
       primaryKey: true
     }
   }, {

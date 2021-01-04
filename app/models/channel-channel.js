@@ -2,12 +2,12 @@
 module.exports = (sequelize, DataTypes) => {
   const ChannelChannel = sequelize.define('ChannelChannel', {
     channel1Id: {
-      type: DataTypes.STRING,
+      type: DataTypes.BIGINT,
       primaryKey: true,
       field: 'channel1_id'
     },
     channel2Id: {
-      type: DataTypes.STRING,
+      type: DataTypes.BIGINT,
       primaryKey: true,
       field: 'channel2_id'
     }

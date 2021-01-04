@@ -2,7 +2,7 @@
 module.exports = (sequelize, DataTypes) => {
   const RoleBinding = sequelize.define('RoleBinding', {
     roleId: {
-      type: DataTypes.STRING,
+      type: DataTypes.BIGINT,
       allowNull: false,
       field: 'role_id'
     },
