@@ -35,6 +35,9 @@ class DeleteTagAliasCommand extends Base {
     }
 
     await tagName.destroy()
+    if (tag.names.length - 1 === 0) {
+      await tag.destroy()
+    }
 
     return message.reply(`Successfully deleted tag alias **${tag.names[0]?.name ?? 'Unknown'}**.`)
   }
