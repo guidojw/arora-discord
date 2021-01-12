@@ -41,7 +41,7 @@ module.exports = (sequelize, DataTypes) => {
       as: 'channels'
     })
     Group.belongsToMany(models.Role, {
-      through: models.RoleGroup,
+      through: 'roles_groups',
       sourceKey: 'id',
       targetKey: 'id',
       as: 'roles'

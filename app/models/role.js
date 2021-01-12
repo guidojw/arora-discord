@@ -24,7 +24,7 @@ module.exports = (sequelize, DataTypes) => {
       as: 'permissions'
     })
     Role.belongsToMany(models.Group, {
-      through: models.RoleGroup,
+      through: 'roles_groups',
       sourceKey: 'id',
       targetKey: 'id'
     })
