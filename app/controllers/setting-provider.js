@@ -7,14 +7,14 @@ class SettingProvider {
   async init (client) {
     this.client = client
 
-    await Promise.all([...client.guilds.cache.mapValues(this.initGuild.bind(this)).values()])
+    await Promise.all([...client.guilds.cache.mapValues(this.setupGuild.bind(this)).values()])
 
     client.on('commandPrefixChange', this.commandPrefixChange.bind(this))
     client.on('commandStatusChange', this.commandStatusChange.bind(this))
     client.on('groupStatusChange', this.commandStatusChange.bind(this))
   }
 
-  async initGuild (guild) {
+  async setupGuild (guild) {
     const data = await Guild.findOne({ where: { id: guild.id } }) ||
       await (await Guild.create({ id: guild.id })).reload()
     const guildController = new GuildController(this.client, data)
