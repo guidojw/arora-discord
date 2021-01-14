@@ -11,7 +11,7 @@ const cronConfig = require('../../config/cron')
 
 const NSadminGuild = Structures.extend('Guild', Guild => {
   class NSadminGuild extends Guild {
-    constructor(...args) {
+    constructor (...args) {
       super(...args)
 
       this.groups = new Collection()

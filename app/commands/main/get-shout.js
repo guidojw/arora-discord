@@ -6,7 +6,7 @@ const { MessageEmbed } = require('discord.js')
 
 const applicationConfig = require('../../../config/application')
 
- class GetShoutCommand extends Base {
+class GetShoutCommand extends Base {
   constructor (client) {
     super(client, {
       group: 'main',
