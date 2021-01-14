@@ -1,23 +1,23 @@
 'use strict'
-const GuildController = require('../structures/guild')
-
 const { Guild, GuildCommand } = require('../models')
 
 class SettingProvider {
   async init (client) {
     this.client = client
 
-    await Promise.all([...client.guilds.cache.mapValues(this.setupGuild.bind(this)).values()])
+    for (const guild of this.client.guilds.cache.values()) {
+      const data = await Guild.findOne({ where: { id: guild.id } }) ||
+        await (await Guild.create({ id: guild.id })).reload()
+      this.setupGuild(guild, data)
+    }
 
     client.on('commandPrefixChange', this.commandPrefixChange.bind(this))
     client.on('commandStatusChange', this.commandStatusChange.bind(this))
     client.on('groupStatusChange', this.commandStatusChange.bind(this))
   }
 
-  async setupGuild (guild) {
-    const data = await Guild.findOne({ where: { id: guild.id } }) ||
-      await (await Guild.create({ id: guild.id })).reload()
-    const guildController = new GuildController(this.client, data)
+  async setupGuild (guild, data) {
+    guild._setup(data)
 
     if (data.commandPrefix) {
       guild.commandPrefix = data.commandPrefix
@@ -48,9 +48,7 @@ class SettingProvider {
       }
     }
 
-    await guildController.init()
-
-    this.client.bot.guilds.set(guild.id, guildController)
+    await guild.init()
   }
 
   commandPrefixChange (guild, prefix) {

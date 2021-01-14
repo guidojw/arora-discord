@@ -5,7 +5,7 @@ const timeHelper = require('../helpers/time')
 const { MessageEmbed } = require('discord.js')
 
 module.exports = async guild => {
-  const members = await guild.guild.members.fetch()
+  const members = await guild.members.fetch()
   const premiumMembers = []
   for (const member of members.values()) {
     if (member.premiumSince) {
@@ -38,7 +38,7 @@ module.exports = async guild => {
 
     const channels = guild.getData('premiumMembersReportChannels')
     for (const id of channels) {
-      const channel = guild.guild.channels.cache.get(id)
+      const channel = guild.channels.cache.get(id)
       if (!channel) {
         throw new Error('Cannot get channel.')
       }

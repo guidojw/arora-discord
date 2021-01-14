@@ -13,7 +13,7 @@ const applicationConfig = require('../../config/application')
 module.exports = async guild => {
   const channels = guild.getData('channels')
   const messages = guild.getData('messages')
-  const channel = guild.guild.channels.cache.get(channels.trainingsChannel)
+  const channel = guild.channels.cache.get(channels.trainingsChannel)
 
   // Update the trainings list embed.
   const message = await channel.messages.fetch(messages.trainingsMessage)

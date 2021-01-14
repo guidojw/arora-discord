@@ -19,6 +19,8 @@ const applicationConfig = require('../../config/application')
 const ACTIVITY_CAROUSEL_INTERVAL = 60 * 1000
 const COMMAND_DELETE_MESSAGES_TIMEOUT = 10 * 1000
 
+require('../extensions') // Extend Discord.js structures before the client's collections get instantiated.
+
 class BotController extends EventEmitter {
   constructor () {
     super()
@@ -183,7 +185,7 @@ class BotController extends EventEmitter {
       return
     }
     const guild = this.guilds.get(reaction.message.guild.id)
-    const member = await guild.guild.members.fetch(user)
+    const member = await guild.members.fetch(user)
 
     const roleMessages = await RoleMessage.findAll({
       where: {
@@ -209,7 +211,7 @@ class BotController extends EventEmitter {
       return
     }
     const guild = this.guilds.get(message.guild.id)
-    const prefix = guild.guild.commandPrefix ?? this.client.commandPrefix
+    const prefix = guild.commandPrefix ?? this.client.commandPrefix
 
     if (message.content.startsWith(prefix)) {
       const args = message.content.slice(prefix.length).trim().split(/ +/)
@@ -240,7 +242,7 @@ class BotController extends EventEmitter {
         if (!username) {
           username = (await userService.getUser(userId)).name
         }
-        const member = await discordService.getMemberByName(guild.guild, username)
+        const member = await discordService.getMemberByName(guild, username)
 
         if (member) {
           const roleBindings = await RoleBinding.findAll({ where: { guildId: guild.id, robloxGroupId: groupId } })
@@ -259,7 +261,7 @@ class BotController extends EventEmitter {
   async trainDeveloperPayoutReport (developersSales) {
     const developerIds = Object.keys(developersSales)
     const developers = await userService.getUsers(developerIds)
-    const emoji = this.mainGuild.guild.emojis.cache.find(emoji => emoji.name.toLowerCase() === 'robux')
+    const emoji = this.mainGuild.emojis.cache.find(emoji => emoji.name.toLowerCase() === 'robux')
 
     const embed = new MessageEmbed()
       .setTitle('Train Developers Payout Report')
@@ -304,7 +306,7 @@ class BotController extends EventEmitter {
       case 1: {
         let totalMemberCount = 0
         for (const guild of this.guilds.values()) {
-          totalMemberCount += guild.guild.memberCount
+          totalMemberCount += guild.memberCount
         }
         return { name: `${totalMemberCount} users`, options: { type: 'WATCHING' } }
       }

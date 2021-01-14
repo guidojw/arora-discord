@@ -29,8 +29,8 @@ class RoleMessagesCommand extends BaseCommand {
       if (!roleMessage) {
         return message.reply('Role message not found.')
       }
-      const emoji = guild.guild.emojis.cache.get(roleMessage.emojiId) || roleMessage.emojiId
-      const role = guild.guild.roles.cache.get(roleMessage.roleId) || 'Unknown'
+      const emoji = guild.emojis.cache.get(roleMessage.emojiId) || roleMessage.emojiId
+      const role = guild.roles.cache.get(roleMessage.roleId) || 'Unknown'
 
       const embed = new MessageEmbed()
         .addField(`Role Message ${roleMessage.id}`, `Message ID: **${roleMessage.messageId}**, ${emoji} => **${role}**`)
@@ -46,7 +46,7 @@ class RoleMessagesCommand extends BaseCommand {
         'Role Messages',
         lodash.groupBy(roleMessages, 'messageId'),
         _getGroupedRoleMessageRow,
-        { emojis: guild.guild.emojis, roles: guild.guild.roles }
+        { emojis: guild.emojis, roles: guild.roles }
       )
       for (const embed of embeds) {
         await message.replyEmbed(embed)

@@ -39,7 +39,7 @@ class TicketController extends BaseStructure {
   }
 
   get channel () {
-    return this.guild.guild.channels.cache.get(this.channelId)
+    return this.guild.channels.cache.get(this.channelId)
   }
 
   get guild () {
@@ -69,7 +69,7 @@ class TicketController extends BaseStructure {
       await this.author.fetch()
     }
     const name = `${this.type}-${this.author.username}`
-    const channel = await this.guild.guild.channels.create(name)
+    const channel = await this.guild.channels.create(name)
 
     await this.edit({ channelId: channel.id })
     await this.channel.setParent(this.guild.ticketsCategory)

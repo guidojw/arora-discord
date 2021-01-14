@@ -29,7 +29,7 @@ class RoleBindingsCommand extends BaseCommand {
       if (!roleBinding) {
         return message.reply('Role binding not found.')
       }
-      const role = guild.guild.roles.cache.get(roleBinding.roleId) || 'Unknown'
+      const role = guild.roles.cache.get(roleBinding.roleId) || 'Unknown'
 
       const embed = new MessageEmbed()
         .addField(`Role Binding ${roleBinding.id}`, `${_getRangeString(roleBinding.min, roleBinding.max)} => **${role}**`)
@@ -45,7 +45,7 @@ class RoleBindingsCommand extends BaseCommand {
         'Role Bindings',
         lodash.groupBy(roleBindings, 'roleId'),
         _getGroupedRoleBindingRow,
-        { roles: guild.guild.roles }
+        { roles: guild.roles }
       )
       for (const embed of embeds) {
         await message.replyEmbed(embed)

@@ -29,7 +29,7 @@ class TicketsController {
 
       const tickets = await Ticket.findAll({ where: { guildId: guild.id } })
       for (const ticket of tickets) {
-        if (!ticket.channelId || !guild.guild.channels.cache.has(ticket.channelId)) {
+        if (!ticket.channelId || !guild.channels.cache.has(ticket.channelId)) {
           await ticket.destroy()
         } else {
           const ticketController = new TicketController(this.client, ticket)
@@ -85,12 +85,12 @@ class TicketsController {
             const embed = new MessageEmbed()
               .setColor(0xff0000)
               .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
-              .setTitle(`Welcome to ${guild.guild.name} Support`)
-              .setDescription(`We are currently closed. Check the ${guild.guild.name} server for more information.`)
+              .setTitle(`Welcome to ${guild.name} Support`)
+              .setDescription(`We are currently closed. Check the ${guild.name} server for more information.`)
             return this.client.bot.send(user, embed)
           }
 
-          // const member = await guild.guild.members.fetch(user)
+          // const member = await guild.members.fetch(user)
           // const roles = guild.getData('roles')
           // if (member.roles.cache.has(roles.ticketsBannedRole)) {
           //   const embed = new MessageEmbed()
