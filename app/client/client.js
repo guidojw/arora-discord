@@ -241,67 +241,6 @@ class NSadminClient extends Commando.Client {
     }
   }
 
-  async rankChanged (groupId, userId, rank) {
-    let username
-    for (const guild of this.guilds.cache.values()) {
-      if (guild.groupId === groupId) {
-        if (!username) {
-          username = (await userService.getUser(userId)).name
-        }
-        const member = await discordService.getMemberByName(guild, username)
-
-        if (member) {
-          const roleBindings = await RoleBinding.findAll({ where: { guildId: guild.id, robloxGroupId: groupId } })
-          for (const roleBinding of roleBindings) {
-            if (rank === roleBinding.min || (roleBinding.max && rank >= roleBinding.min && rank <= roleBinding.max)) {
-              await member.roles.add(roleBinding.roleId)
-            } else {
-              await member.roles.remove(roleBinding.roleId)
-            }
-          }
-        }
-      }
-    }
-  }
-
-  async trainDeveloperPayoutReport (developersSales) {
-    const developerIds = Object.keys(developersSales)
-    const developers = await userService.getUsers(developerIds)
-    const emoji = this.mainGuild.emojis.cache.find(emoji => emoji.name.toLowerCase() === 'robux')
-
-    const embed = new MessageEmbed()
-      .setTitle('Train Developers Payout Report')
-      .setColor(0xffffff)
-    for (const [id, developerSales] of Object.entries(developersSales)) {
-      const username = developers.find(developer => developer.id === parseInt(id)).name
-      const total = Math.ceil(developerSales.total.robux)
-      embed.addField(username, `Has sold **${developerSales.total.amount}** ${pluralize('train', developerSales.total.amount)} and earned ${emoji || ''}${emoji ? ' ' : ''}**${total}**${!emoji ? ' Robux' : ''}.`)
-
-      try {
-        const user = await this.users.fetch(developerSales.discordId)
-        const userEmbed = new MessageEmbed()
-          .setTitle('Weekly Train Payout Report')
-          .setColor(0xffffff)
-        for (const productSales of Object.values(developerSales.sales)) {
-          userEmbed.addField(productSales.name, `Sold **${productSales.amount}** ${pluralize('time', productSales.amount)} and earned ${emoji || ''}${emoji ? ' ' : ''}**${Math.floor(productSales.robux)}**${!emoji ? ' Robux' : ''}.`)
-        }
-        userEmbed.addField('Total', `**${developerSales.total.amount}** trains and ${emoji || ''}${emoji ? ' ' : ''}**${Math.floor(developerSales.total.robux)}**${!emoji ? ' Robux' : ''}.`)
-
-        await user.send(userEmbed)
-      } catch (err) {
-        console.error(`Couldn't DM ${developerSales.discordId}!`)
-      }
-    }
-
-    for (const owner of this.owners) {
-      if (owner.partial) {
-        await owner.fetch()
-      }
-
-      await owner.send(embed)
-    }
-  }
-
   getNextActivity () {
     this.currentActivity++
     this.currentActivity %= 2
