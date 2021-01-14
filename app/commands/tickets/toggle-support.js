@@ -15,7 +15,7 @@ class ToggleSupportCommand extends BaseCommand {
   }
 
   async execute (message, _args, guild) {
-    await guild.edit({ supportEnabled: !guild.supportEnabled })
+    await guild.update({ supportEnabled: !guild.supportEnabled })
 
     const embed = new MessageEmbed()
       .setColor(guild.supportEnabled ? 0x00ff00 : 0xff0000)

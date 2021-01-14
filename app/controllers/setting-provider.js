@@ -60,7 +60,7 @@ class SettingProvider {
 
   commandPrefixChange (guild, prefix) {
     const guildController = this.client.bot.guilds.get(guild.id)
-    return guildController.edit({ commandPrefix: prefix })
+    return guildController.update({ commandPrefix: prefix })
   }
 
   async commandStatusChange (guild, command, enabled) {

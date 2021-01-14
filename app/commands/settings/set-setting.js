@@ -72,7 +72,7 @@ class SetSettingCommand extends BaseCommand {
       }
     }
 
-    await guild.edit({ [key]: value !== null && key.endsWith('Id') && key !== 'robloxGroupId' ? value.id : value })
+    await guild.update({ [key]: value !== null && key.endsWith('Id') && key !== 'robloxGroupId' ? value.id : value })
 
     return message.reply(`Successfully changed ${key.endsWith('Id') ? key.slice(0, -2) : key} to **${value instanceof Message ? value.id : value}**.`)
   }

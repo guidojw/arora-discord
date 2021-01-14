@@ -112,7 +112,7 @@ const NSadminGuild = Structures.extend('Guild', Guild => {
       }
     }
 
-    async edit (data) {
+    async update (data) {
       const guild = await GuildModel.findByPk(this.id)
 
       const newData = await guild.update({
