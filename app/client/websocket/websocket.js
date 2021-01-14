@@ -51,7 +51,7 @@ class WebSocketManager {
 
   handlePacket (packet) {
     if (packet && PacketHandlers[packet.event]) {
-      PacketHandlers[event](this.client, packet)
+      PacketHandlers[packet.event](this.client, packet)
     }
   }
 }
