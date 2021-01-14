@@ -16,7 +16,7 @@ class CloseTicketCommand extends BaseCommand {
   }
 
   async execute (message, _args, guild) {
-    const ticketsController = this.client.bot.ticketsController
+    const ticketsController = this.client.ticketsController
     const ticketController = ticketsController.getTicketFromChannel(guild, message.channel)
     if (ticketController) {
       const prompt = await message.channel.send('Are you sure you want to close this ticket?')

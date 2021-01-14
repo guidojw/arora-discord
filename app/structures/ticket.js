@@ -28,7 +28,7 @@ class TicketController extends BaseStructure {
   }
 
   get ticketsController () {
-    return this.client.bot.ticketsController || null
+    return this.client.ticketsController || null
   }
 
   get author () {
@@ -43,7 +43,7 @@ class TicketController extends BaseStructure {
   }
 
   get guild () {
-    return this.client.bot.guilds.get(this.guildId) || null
+    return this.client.guilds.cache.get(this.guildId) || null
   }
 
   get moderators () {
@@ -137,7 +137,7 @@ class TicketController extends BaseStructure {
       .setColor(color || success ? 0x00ff00 : 0xff0000)
       .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
       .setTitle(message)
-    await this.client.bot.send(this.author, embed)
+    await this.client.send(this.author, embed)
 
     if (this.guild.ratingsChannel && success) {
       const rating = await this.requestRating()
@@ -150,19 +150,19 @@ class TicketController extends BaseStructure {
           .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
           .setTitle('Rating submitted')
           .setDescription('Thank you!')
-        this.client.bot.send(this.author, embed)
+        this.client.send(this.author, embed)
       } else {
         const embed = new MessageEmbed()
           .setColor(this.guild.primaryColor)
           .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
           .setTitle('No rating submitted')
-        this.client.bot.send(this.author, embed)
+        this.client.send(this.author, embed)
       }
     }
 
     await Ticket.destroy({ where: { id: this.id } })
 
-    this.client.bot.emit('ticketClose', this)
+    this.client.emit('ticketClose', this)
   }
 
   async requestRating () {
@@ -170,7 +170,7 @@ class TicketController extends BaseStructure {
       .setColor(this.guild.primaryColor)
       .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
       .setTitle('How would you rate the support you got?')
-    const message = await this.client.bot.send(this.author, embed)
+    const message = await this.client.send(this.author, embed)
 
     const options = []
     for (let i = 5; i >= 1; i--) {

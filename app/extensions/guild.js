@@ -20,7 +20,6 @@ const NSadminGuild = Structures.extend('Guild', Guild => {
     _setup (data) {
       this.id = data.id
       this.primaryColor = typeof data.primaryColor !== 'undefined' ? data.primaryColor : null // primaryColor can be 0
-      this.commandPrefix = data.commandPrefix || null
       this.supportEnabled = data.supportEnabled || null
       this.robloxGroupId = data.robloxGroupId || null
       this.logsChannelId = data.logsChannelId || null
@@ -39,12 +38,6 @@ const NSadminGuild = Structures.extend('Guild', Guild => {
           this.groups.set(group.id, new Group(this.client, group))
         }
       }
-
-      // if (data.roles) {
-      //   for (const role of data.roles) {
-      //     this.roles.set(role.id, new RoleController(this.client, role))
-      //   }
-      // }
     }
 
     async init () {
@@ -64,31 +57,31 @@ const NSadminGuild = Structures.extend('Guild', Guild => {
     }
 
     get logsChannel () {
-      return this.logsChannelId ? this.guild.channels.cache.get(this.logsChannelId) : null
+      return this.logsChannelId ? this.channels.cache.get(this.logsChannelId) : null
     }
 
     get trainingsChannel () {
-      return this.trainingsChannelId ? this.guild.channels.cache.get(this.trainingsChannelId) : null
+      return this.trainingsChannelId ? this.channels.cache.get(this.trainingsChannelId) : null
     }
 
     get suggestionsChannel () {
-      return this.suggestionsChannelId ? this.guild.channels.cache.get(this.suggestionsChannelId) : null
+      return this.suggestionsChannelId ? this.channels.cache.get(this.suggestionsChannelId) : null
     }
 
     get ratingsChannel () {
-      return this.ratingsChannelId ? this.guild.channels.cache.get(this.ratingsChannelId) : null
+      return this.ratingsChannelId ? this.channels.cache.get(this.ratingsChannelId) : null
     }
 
     get supportChannel () {
-      return this.supportChannelId ? this.guild.channels.cache.get(this.supportChannelId) : null
+      return this.supportChannelId ? this.channels.cache.get(this.supportChannelId) : null
     }
 
     get welcomeChannel () {
-      return this.welcomeChannelId ? this.guild.channels.cache.get(this.welcomeChannelId) : null
+      return this.welcomeChannelId ? this.channels.cache.get(this.welcomeChannelId) : null
     }
 
     get ticketsCategory () {
-      return this.ticketsCategoryId ? this.guild.channels.cache.get(this.ticketsCategoryId) : null
+      return this.ticketsCategoryId ? this.channels.cache.get(this.ticketsCategoryId) : null
     }
 
     async log (author, content, options) {

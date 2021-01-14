@@ -23,7 +23,7 @@ class TicketsController {
   }
 
   async init () {
-    for (const guild of this.client.bot.guilds.values()) {
+    for (const guild of this.client.guilds.cache.values()) {
       this.tickets.set(guild.id, new Collection())
       this.timeouts.set(guild.id, new Collection())
 
@@ -34,15 +34,13 @@ class TicketsController {
         } else {
           const ticketController = new TicketController(this.client, ticket)
           this.tickets.get(guild.id).set(ticket.id, ticketController)
-          ticketController.once('close', this.clearTicket.bind(this, guild, ticketController))
         }
       }
     }
 
     this.client.on('message', this.message.bind(this))
     this.client.on('messageReactionAdd', this.messageReactionAdd.bind(this))
-
-    this.client.bot.on('ticketClose', this.ticketClose.bind(this))
+    this.client.on('ticketClose', this.ticketClose.bind(this))
   }
 
   async messageReactionAdd (reaction, user) {
@@ -57,7 +55,7 @@ class TicketsController {
       return
     }
 
-    const guild = await this.client.bot.guilds.get(message.guild.id)
+    const guild = await this.client.guilds.cache.get(message.guild.id)
     if (message.id !== guild.supportMessageId) {
       return
     }
@@ -87,7 +85,7 @@ class TicketsController {
               .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
               .setTitle(`Welcome to ${guild.name} Support`)
               .setDescription(`We are currently closed. Check the ${guild.name} server for more information.`)
-            return this.client.bot.send(user, embed)
+            return this.client.send(user, embed)
           }
 
           // const member = await guild.members.fetch(user)
@@ -97,7 +95,7 @@ class TicketsController {
           //     .setColor(0xff0000)
           //     .setTitle('Couldn\'t make ticket')
           //     .setDescription('You\'re banned from making new tickets.')
-          //   return this.client.bot.send(user, embed)
+          //   return this.client.send(user, embed)
           // }
 
           this.clearTimeout(guild, user.id)
@@ -115,7 +113,7 @@ class TicketsController {
             .setColor(0xff0000)
             .setTitle('Couldn\'t make ticket')
             .setDescription('You already have an open ticket.')
-          return this.client.bot.send(user, embed)
+          return this.client.send(user, embed)
         }
       }
     }
@@ -135,7 +133,7 @@ class TicketsController {
       return
     }
 
-    const guild = this.client.bot.guilds.get(message.guild.id)
+    const guild = this.client.guilds.cache.get(message.guild.id)
     const ticketController = this.getTicketFromChannel(guild, message.channel)
     if (ticketController) {
       return ticketController.message(message)

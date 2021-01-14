@@ -1,6 +1,4 @@
 'use strict'
-const EventEmitter = require('events')
-const Collection = require('@discordjs/collection')
 const Commando = require('discord.js-commando')
 const path = require('path')
 const pluralize = require('pluralize')
@@ -8,7 +6,7 @@ const discordService = require('../services/discord')
 const SettingProvider = require('./setting-provider')
 const TicketsController = require('./tickets')
 const userService = require('../services/user')
-const WebSocketManager = require('../managers/web-socket')
+const WebSocketManager = require('./websocket/websocket')
 
 const { DiscordAPIError, Message, MessageEmbed } = require('discord.js')
 const { RoleBinding, RoleMessage, Tag, TagName } = require('../models')
@@ -21,22 +19,34 @@ const COMMAND_DELETE_MESSAGES_TIMEOUT = 10 * 1000
 
 require('../extensions') // Extend Discord.js structures before the client's collections get instantiated.
 
-class BotController extends EventEmitter {
-  constructor () {
-    super()
+class NSadminClient extends Commando.Client {
+  constructor (options = {}) {
+    if (typeof options.commandPrefix === 'undefined') {
+      options.commandPrefix = applicationConfig.defaultPrefix
+    }
+    if (typeof options.owner === 'undefined') {
+      options.owner = applicationConfig.owner
+    }
+    if (typeof options.invite === 'undefined') {
+      options.invite = applicationConfig.invite
+    }
+    if (!options.partials) {
+      options.partials = []
+    }
+    if (!options.partials.some(partial => partial === 'REACTION')) {
+      options.partials.push('REACTION')
+    }
+    if (!options.partials.some(partial => partial === 'MESSAGE')) {
+      options.partials.push('MESSAGE')
+    }
+    if (!options.partials.some(partial => partial === 'USER')) {
+      options.partials.push('USER')
+    }
+    super(options)
 
-    this.client = new Commando.Client({
-      commandPrefix: applicationConfig.defaultPrefix,
-      owner: applicationConfig.owner,
-      unknownCommandResponse: false,
-      disableEveryone: true,
-      partials: ['REACTION', 'MESSAGE', 'USER'],
-      commandEditableDuration: 0
-    })
-    this.client.bot = this
     this.currentActivity = 0
 
-    this.client.registry
+    this.registry
       .registerGroup('admin', 'Admin')
       .registerGroup('settings', 'Settings')
       .registerGroup('main', 'Main')
@@ -55,28 +65,26 @@ class BotController extends EventEmitter {
       })
       .registerCommandsIn(path.join(__dirname, '../commands'))
 
-    this.guilds = new Collection()
-
-    this.client.once('ready', this.ready.bind(this))
+    this.once('ready', this.ready.bind(this))
   }
 
   async ready () {
-    await this.client.setProvider(new SettingProvider())
+    await this.setProvider(new SettingProvider())
 
     const mainGuildId = process.env.NODE_ENV === 'production'
       ? applicationConfig.productionMainGuildId
       : applicationConfig.developmentMainGuildId
-    this.mainGuild = this.guilds.get(mainGuildId)
+    this.mainGuild = this.guilds.cache.get(mainGuildId)
 
-    this.ticketsController = new TicketsController(this.client)
+    this.ticketsController = new TicketsController(this)
     await this.ticketsController.init()
 
-    this.client.on('commandError', this.commandError.bind(this))
-    this.client.on('commandRun', this.commandRun.bind(this))
-    this.client.on('guildMemberAdd', this.guildMemberAdd.bind(this))
-    this.client.on('messageReactionAdd', this.messageReactionAdd.bind(this))
-    this.client.on('messageReactionRemove', this.messageReactionRemove.bind(this))
-    this.client.on('message', this.message.bind(this))
+    this.on('commandError', this.commandError.bind(this))
+    this.on('commandRun', this.commandRun.bind(this))
+    this.on('guildMemberAdd', this.guildMemberAdd.bind(this))
+    this.on('messageReactionAdd', this.messageReactionAdd.bind(this))
+    this.on('messageReactionRemove', this.messageReactionRemove.bind(this))
+    this.on('message', this.message.bind(this))
 
     if (applicationConfig.apiEnabled) {
       this.webSocketController = new WebSocketManager(process.env.HOST)
@@ -87,7 +95,7 @@ class BotController extends EventEmitter {
     this.setActivity()
     setInterval(this.setActivity.bind(this), ACTIVITY_CAROUSEL_INTERVAL)
 
-    console.log(`Ready to serve on ${this.client.guilds.cache.size} servers, for ${this.client.users.cache.size} users.`)
+    console.log(`Ready to serve on ${this.guilds.cache.size} servers, for ${this.users.cache.size} users.`)
   }
 
   async commandError (command, err, message, args, fromPattern, collResult) {
@@ -99,7 +107,7 @@ class BotController extends EventEmitter {
 
     await this.handleCommandDeleteMessages(command, err, message, args, fromPattern, collResult)
 
-    const guild = message.guild ? this.guilds.get(message.guild.id) : this.mainGuild
+    const guild = message.guild ? this.guilds.cache.get(message.guild.id) : this.mainGuild
     await guild.log(
       message.author,
       stripIndents`
@@ -121,7 +129,7 @@ class BotController extends EventEmitter {
 
     await this.handleCommandDeleteMessages(command, result, message, args, fromPattern, collResult)
 
-    const guild = message.guild ? this.guilds.get(message.guild.id) : this.mainGuild
+    const guild = message.guild ? this.guilds.cache.get(message.guild.id) : this.mainGuild
     await guild.log(
       message.author,
       stripIndents`
@@ -155,7 +163,7 @@ class BotController extends EventEmitter {
       return
     }
 
-    const guild = this.guilds.get(member.guild.id)
+    const guild = this.guilds.cache.get(member.guild.id)
     if (guild.welcomeChannel) {
       const embed = new MessageEmbed()
         .setTitle(`Hey ${member.user.tag},`)
@@ -184,7 +192,7 @@ class BotController extends EventEmitter {
     if (!reaction.message.guild) {
       return
     }
-    const guild = this.guilds.get(reaction.message.guild.id)
+    const guild = this.guilds.cache.get(reaction.message.guild.id)
     const member = await guild.members.fetch(user)
 
     const roleMessages = await RoleMessage.findAll({
@@ -210,8 +218,8 @@ class BotController extends EventEmitter {
     if (!message.guild) {
       return
     }
-    const guild = this.guilds.get(message.guild.id)
-    const prefix = guild.commandPrefix ?? this.client.commandPrefix
+    const guild = this.guilds.cache.get(message.guild.id)
+    const prefix = guild.commandPrefix ?? this.commandPrefix
 
     if (message.content.startsWith(prefix)) {
       const args = message.content.slice(prefix.length).trim().split(/ +/)
@@ -237,7 +245,7 @@ class BotController extends EventEmitter {
 
   async rankChanged (groupId, userId, rank) {
     let username
-    for (const guild of this.guilds.values()) {
+    for (const guild of this.guilds.cache.values()) {
       if (guild.groupId === groupId) {
         if (!username) {
           username = (await userService.getUser(userId)).name
@@ -272,7 +280,7 @@ class BotController extends EventEmitter {
       embed.addField(username, `Has sold **${developerSales.total.amount}** ${pluralize('train', developerSales.total.amount)} and earned ${emoji || ''}${emoji ? ' ' : ''}**${total}**${!emoji ? ' Robux' : ''}.`)
 
       try {
-        const user = await this.client.users.fetch(developerSales.discordId)
+        const user = await this.users.fetch(developerSales.discordId)
         const userEmbed = new MessageEmbed()
           .setTitle('Weekly Train Payout Report')
           .setColor(0xffffff)
@@ -287,7 +295,7 @@ class BotController extends EventEmitter {
       }
     }
 
-    for (const owner of this.client.owners) {
+    for (const owner of this.owners) {
       if (owner.partial) {
         await owner.fetch()
       }
@@ -302,10 +310,10 @@ class BotController extends EventEmitter {
 
     switch (this.currentActivity) {
       case 0:
-        return { name: `${this.client.commandPrefix}help`, options: { type: 'LISTENING' } }
+        return { name: `${this.commandPrefix}help`, options: { type: 'LISTENING' } }
       case 1: {
         let totalMemberCount = 0
-        for (const guild of this.guilds.values()) {
+        for (const guild of this.guilds.cache.values()) {
           totalMemberCount += guild.memberCount
         }
         return { name: `${totalMemberCount} users`, options: { type: 'WATCHING' } }
@@ -319,7 +327,7 @@ class BotController extends EventEmitter {
       name = activity.name
       options = activity.options
     }
-    return this.client.user.setActivity(name, options)
+    return this.user.setActivity(name, options)
   }
 
   async send (user, content) {
@@ -347,10 +355,6 @@ class BotController extends EventEmitter {
       }
     }
   }
-
-  login (token) {
-    return this.client.login(token)
-  }
 }
 
-module.exports = BotController
+module.exports = NSadminClient

@@ -20,7 +20,7 @@ class SettingProvider {
     guild._setup(data)
 
     if (data.commandPrefix) {
-      guild.commandPrefix = data.commandPrefix
+      guild._commandPrefix = data.commandPrefix
     }
 
     const guildCommands = await data.getCommands()
@@ -59,8 +59,7 @@ class SettingProvider {
   }
 
   commandPrefixChange (guild, prefix) {
-    const guildController = this.client.bot.guilds.get(guild.id)
-    return guildController.update({ commandPrefix: prefix })
+    return guild.update({ commandPrefix: prefix })
   }
 
   async commandStatusChange (guild, command, enabled) {

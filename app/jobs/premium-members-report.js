@@ -30,7 +30,7 @@ module.exports = async guild => {
     const embed = new MessageEmbed()
       .setTitle('Server Booster Report')
       .setColor(0xff73fa)
-    const emoji = guild.bot.mainGuild.emojis.cache.find(emoji => emoji.name.toLowerCase() === 'boost')
+    const emoji = guild.emojis.cache.find(emoji => emoji.name.toLowerCase() === 'boost')
 
     for (const { member, months } of monthlyPremiumMembers) {
       embed.addField(`${member.user.tag} ${emoji || ''}`, `Has been boosting this server for **${months}** ${pluralize('month', months)}!`)
