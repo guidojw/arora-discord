@@ -87,9 +87,7 @@ class NSadminClient extends Commando.Client {
     this.on('message', this.message.bind(this))
 
     if (applicationConfig.apiEnabled) {
-      this.webSocketController = new WebSocketManager(process.env.HOST)
-      this.webSocketController.on('rankChanged', this.rankChanged.bind(this))
-      this.webSocketController.on('trainDeveloperPayoutReport', this.trainDeveloperPayoutReport.bind(this))
+      this.ws = new WebSocketManager(this)
     }
 
     this.setActivity()
@@ -354,6 +352,11 @@ class NSadminClient extends Commando.Client {
         throw err
       }
     }
+  }
+
+  async login (token = this.token) {
+    await super.login(token)
+    this.webSocketManager.connect()
   }
 }
 

@@ -1,12 +1,13 @@
 'use strict'
 const EventEmitter = require('events')
 const WebSocket = require('ws')
+const PacketHandlers = require('./handlers')
 
-class WebSocketManager extends EventEmitter {
-  constructor (host) {
-    super()
+class WebSocketManager {
+  constructor (client, host = process.env.HOST) {
+    this.client = client
+
     this.host = host
-    this.connect()
   }
 
   connect () {
@@ -44,9 +45,14 @@ class WebSocketManager extends EventEmitter {
   }
 
   message (message) {
-    const { event, data } = JSON.parse(message)
-    const [...args] = Object.values(data)
-    this.emit(event, ...args)
+    const packet = JSON.parse(message)
+    this.handlePacket(packet)
+  }
+
+  handlePacket (packet) {
+    if (packet && PacketHandlers[packet.event]) {
+      PacketHandlers[event](this.client, packet)
+    }
   }
 }
 
