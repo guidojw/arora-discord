@@ -295,7 +295,7 @@ class NSadminClient extends Commando.Client {
 
   async login (token = this.token) {
     await super.login(token)
-    this.webSocketManager.connect()
+    this.ws.connect()
   }
 }
 
