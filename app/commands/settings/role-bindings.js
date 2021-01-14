@@ -23,20 +23,20 @@ class RoleBindingsCommand extends BaseCommand {
     })
   }
 
-  async execute (message, { roleBindingId }, guild) {
+  async run (message, { roleBindingId }) {
     if (roleBindingId) {
       const roleBinding = await RoleBinding.findByPk(roleBindingId)
       if (!roleBinding) {
         return message.reply('Role binding not found.')
       }
-      const role = guild.roles.cache.get(roleBinding.roleId) || 'Unknown'
+      const role = message.guild.roles.cache.get(roleBinding.roleId) || 'Unknown'
 
       const embed = new MessageEmbed()
         .addField(`Role Binding ${roleBinding.id}`, `${_getRangeString(roleBinding.min, roleBinding.max)} => **${role}**`)
-        .setColor(guild.primaryColor)
+        .setColor(message.guild.primaryColor)
       return message.replyEmbed(embed)
     } else {
-      const roleBindings = await RoleBinding.findAll({ where: { guildId: guild.id } })
+      const roleBindings = await RoleBinding.findAll({ where: { guildId: message.guild.id } })
       if (roleBindings.length === 0) {
         return message.reply('No role bindings found.')
       }
@@ -45,7 +45,7 @@ class RoleBindingsCommand extends BaseCommand {
         'Role Bindings',
         lodash.groupBy(roleBindings, 'roleId'),
         _getGroupedRoleBindingRow,
-        { roles: guild.roles }
+        { roles: message.guild.roles }
       )
       for (const embed of embeds) {
         await message.replyEmbed(embed)

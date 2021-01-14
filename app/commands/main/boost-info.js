@@ -20,7 +20,7 @@ class BoostInfoCommand extends BaseCommand {
     })
   }
 
-  async execute (message, { member }) {
+  async run (message, { member }) {
     if (!member) {
       member = message.member
     }

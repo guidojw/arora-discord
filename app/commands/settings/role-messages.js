@@ -23,21 +23,21 @@ class RoleMessagesCommand extends BaseCommand {
     })
   }
 
-  async execute (message, { roleMessageId }, guild) {
+  async run (message, { roleMessageId }) {
     if (roleMessageId) {
       const roleMessage = await RoleMessage.findByPk(roleMessageId)
       if (!roleMessage) {
         return message.reply('Role message not found.')
       }
-      const emoji = guild.emojis.cache.get(roleMessage.emojiId) || roleMessage.emojiId
-      const role = guild.roles.cache.get(roleMessage.roleId) || 'Unknown'
+      const emoji = message.guild.emojis.cache.get(roleMessage.emojiId) || roleMessage.emojiId
+      const role = message.guild.roles.cache.get(roleMessage.roleId) || 'Unknown'
 
       const embed = new MessageEmbed()
         .addField(`Role Message ${roleMessage.id}`, `Message ID: **${roleMessage.messageId}**, ${emoji} => **${role}**`)
-        .setColor(guild.primaryColor)
+        .setColor(message.guild.primaryColor)
       return message.replyEmbed(embed)
     } else {
-      const roleMessages = await RoleMessage.findAll({ where: { guildId: guild.id } })
+      const roleMessages = await RoleMessage.findAll({ where: { guildId: message.guild.id } })
       if (roleMessages.length === 0) {
         return message.reply('No role messages found.')
       }
@@ -46,7 +46,7 @@ class RoleMessagesCommand extends BaseCommand {
         'Role Messages',
         lodash.groupBy(roleMessages, 'messageId'),
         _getGroupedRoleMessageRow,
-        { emojis: guild.emojis, roles: guild.roles }
+        { emojis: message.guild.emojis, roles: message.guild.roles }
       )
       for (const embed of embeds) {
         await message.replyEmbed(embed)

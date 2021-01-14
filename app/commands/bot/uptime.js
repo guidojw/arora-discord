@@ -14,10 +14,10 @@ class UptimeCommand extends BaseCommand {
     })
   }
 
-  execute (message, _args, guild) {
+  run (message, _args) {
     const embed = new MessageEmbed()
       .addField('I have been online for', getDurationString(this.client.uptime))
-      .setColor(guild.primaryColor)
+      .setColor(message.guild.primaryColor)
     return message.replyEmbed(embed)
   }
 }

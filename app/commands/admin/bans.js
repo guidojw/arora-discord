@@ -24,7 +24,7 @@ class BansCommand extends BaseCommand {
     })
   }
 
-  async execute (message, { username }, guild) {
+  async run (message, { username }, guild) {
     if (username) {
       username = typeof username === 'string' ? username : username.displayName
       const userId = await userService.getIdFromUsername(username)

@@ -26,8 +26,8 @@ class SuggestCommand extends BaseCommand {
     })
   }
 
-  async execute (message, { suggestion }, guild) {
-    if (guild.suggestionsChannel) {
+  async run (message, { suggestion }) {
+    if (message.guild.suggestionsChannel) {
       const authorUrl = `https://discordapp.com/users/${message.author.id}`
       const embed = new MessageEmbed()
         .setDescription(suggestion)
@@ -40,7 +40,7 @@ class SuggestCommand extends BaseCommand {
         }
       }
 
-      const newMessage = await guild.suggestionsChannel.send(embed)
+      const newMessage = await message.guild.suggestionsChannel.send(embed)
       await newMessage.react('⬆️')
       await newMessage.react('⬇️')
 

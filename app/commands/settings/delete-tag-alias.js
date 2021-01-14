@@ -20,11 +20,11 @@ class DeleteTagAliasCommand extends Base {
     })
   }
 
-  async execute (message, { alias }, guild) {
+  async run (message, { alias }) {
     alias = alias.toLowerCase()
     let tagName
     const tag = await Tag.findOne({
-      where: { guildId: guild.id },
+      where: { guildId: message.guild.id },
       include: [{ model: TagName, as: 'names', where: { name: alias } }]
     })
     if (tag) {

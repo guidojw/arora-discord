@@ -19,7 +19,7 @@ class DeleteRoleMessageCommand extends BaseCommand {
     })
   }
 
-  async execute (message, { roleMessageId }) {
+  async run (message, { roleMessageId }) {
     const roleMessage = await RoleMessage.findByPk(roleMessageId)
     if (!roleMessage) {
       return message.reply('Role message not found.')

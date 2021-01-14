@@ -46,7 +46,7 @@ class SuspendCommand extends BaseCommand {
     })
   }
 
-  async execute (message, { username, days, reason, rankBack }) {
+  async run (message, { username, days, reason, rankBack }) {
     username = typeof username === 'string' ? username : username.displayName
     const [userId, authorId] = await Promise.all([
       userService.getIdFromUsername(username),

@@ -34,7 +34,7 @@ class ShoutCommand extends BaseCommand {
     })
   }
 
-  async execute (message, { body }, guild) {
+  async run (message, { body }, guild) {
     const authorId = await userService.getIdFromUsername(message.member.displayName)
 
     const shout = (await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId}/shout`, {

@@ -34,7 +34,7 @@ class ChangeSuspensionCommand extends BaseCommand {
     })
   }
 
-  async execute (message, { username, key, data }) {
+  async run (message, { username, key, data }) {
     username = typeof username === 'string' ? username : username.displayName
     key = key.toLowerCase()
     const changes = {}

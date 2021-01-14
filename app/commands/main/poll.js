@@ -24,7 +24,7 @@ class PollCommand extends BaseCommand {
     })
   }
 
-  async execute (message, { poll }, guild) {
+  async run (message, { poll }) {
     const options = []
     for (let num = 1; num <= 10; num++) {
       if (message.content.indexOf(`(${num})`) !== -1) {
@@ -34,7 +34,7 @@ class PollCommand extends BaseCommand {
     const embed = new MessageEmbed()
       .setDescription(poll)
       .setAuthor(message.author.tag, message.author.displayAvatarURL())
-      .setColor(guild.getData('primaryColor'))
+      .setColor(message.guild.getData('primaryColor'))
 
     const newMessage = await message.channel.send(embed)
     if (options.length > 0) {

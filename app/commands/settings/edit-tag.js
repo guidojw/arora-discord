@@ -23,10 +23,10 @@ class EditTagCommand extends BaseCommand {
     })
   }
 
-  async execute (message, { name, content }, guild) {
+  async run (message, { name, content }) {
     name = name.toLowerCase()
     const tag = await Tag.findOne({
-      where: { guildId: guild.id },
+      where: { guildId: message.guild.id },
       include: [{ model: TagName, as: 'names', where: { name } }]
     })
     if (!tag) {

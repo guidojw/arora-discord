@@ -32,13 +32,13 @@ class AddRoleMessageCommand extends BaseCommand {
     })
   }
 
-  async execute (message, { message: newMessage, emoji, role }, guild) {
+  async run (message, { message: newMessage, emoji, role }) {
     const roleMessage = await RoleMessage.findOne({
       where: {
         emojiId: emoji instanceof GuildEmoji ? emoji.id : emoji,
         messageId: newMessage.id,
         roleId: role.id,
-        guildId: guild.id
+        guildId: message.guild.id
       }
     })
     if (roleMessage) {
@@ -59,7 +59,7 @@ class AddRoleMessageCommand extends BaseCommand {
       emojiId: emoji instanceof GuildEmoji ? emoji.id : emoji,
       messageId: newMessage.id,
       roleId: role.id,
-      guildId: guild.id
+      guildId: message.guild.id
     })
 
     return message.reply('Successfully added role message.')

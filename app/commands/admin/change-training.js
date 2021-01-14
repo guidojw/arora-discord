@@ -36,7 +36,7 @@ class ChangeTrainingCommand extends BaseCommand {
     })
   }
 
-  async execute (message, { trainingId, key, data }) {
+  async run (message, { trainingId, key, data }) {
     key = key.toLowerCase()
     const changes = {}
     if (key === 'author') {

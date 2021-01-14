@@ -33,7 +33,7 @@ class UnbanCommand extends BaseCommand {
     })
   }
 
-  async execute (message, { username, reason }) {
+  async run (message, { username, reason }) {
     username = typeof username === 'string' ? username : username.displayName
     const [userId, authorId] = await Promise.all([
       userService.getIdFromUsername(username),

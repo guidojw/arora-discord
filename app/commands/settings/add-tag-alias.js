@@ -24,21 +24,21 @@ class AddTagAliasCommand extends BaseCommand {
     })
   }
 
-  async execute (message, { tagName, name }, guild) {
+  async run (message, { tagName, name }) {
     tagName = tagName.toLowerCase()
     name = name.toLowerCase()
     if (this.client.registry.commands.some(command => command.name === name || command.aliases?.includes(name))) {
       return message.reply('Not allowed, name is reserved.')
     }
     const tag = await Tag.findOne({
-      where: { guildId: guild.id },
+      where: { guildId: message.guild.id },
       include: [{ model: TagName, as: 'names', where: { name: tagName } }]
     })
     if (!tag) {
       return message.reply('Tag not found.')
     }
     if (await Tag.findOne({
-      where: { guildId: guild.id },
+      where: { guildId: message.guild.id },
       include: [{ model: TagName, as: 'names', where: { name } }]
     })) {
       return message.reply('A tag with that alias already exists.')

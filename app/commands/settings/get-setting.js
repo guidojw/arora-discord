@@ -23,7 +23,7 @@ class GetSettingCommand extends BaseCommand {
     })
   }
 
-  async execute (message, { key }, guild) {
+  async run (message, { key }) {
     key = key.toLowerCase()
     key = Object.keys(Guild.rawAttributes)
       .find(attribute => {
@@ -33,13 +33,13 @@ class GetSettingCommand extends BaseCommand {
 
     let result
     if (key === 'primaryColor') {
-      const color = guild.primaryColor.toString(16)
+      const color = message.guild.primaryColor.toString(16)
       result = `0x${color}${'0'.repeat(6 - color.length)}`
     } else if (key.includes('Channel')) {
       key = key.slice(0, -2)
-      result = guild[key]
+      result = message.guild[key]
     } else {
-      result = guild[key]
+      result = message.guild[key]
       key = key.slice(0, -2)
     }
 

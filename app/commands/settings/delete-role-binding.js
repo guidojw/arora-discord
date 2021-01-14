@@ -19,7 +19,7 @@ class DeleteRoleBindingCommand extends BaseCommand {
     })
   }
 
-  async execute (message, { roleBindingId }) {
+  async run (message, { roleBindingId }) {
     const roleBinding = await RoleBinding.findByPk(roleBindingId)
     if (!roleBinding) {
       return message.reply('Role binding not found.')

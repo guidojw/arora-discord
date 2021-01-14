@@ -22,13 +22,13 @@ class UserIdCommand extends BaseCommand {
     })
   }
 
-  async execute (message, { username }, guild) {
+  async run (message, { username }) {
     username = username ? typeof username === 'string' ? username : username.displayName : message.member.displayName
     const userId = await userService.getIdFromUsername(username)
 
     const embed = new MessageEmbed()
       .addField(`${message.argString ? username + '\'s' : 'Your'} user ID`, userId)
-      .setColor(guild.getData('primaryColor'))
+      .setColor(message.guild.getData('primaryColor'))
     return message.replyEmbed(embed)
   }
 }

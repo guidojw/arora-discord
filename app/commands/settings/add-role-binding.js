@@ -29,8 +29,8 @@ class AddRoleBindingCommand extends BaseCommand {
     })
   }
 
-  async execute (message, { role, min, max }, guild) {
-    if (guild.robloxGroupId) {
+  async run (message, { role, min, max }) {
+    if (message.guild.robloxGroupId) {
       max = max === 0 ? undefined : max
       if (typeof max !== 'undefined' && max < min) {
         [min, max] = [max, min]
@@ -38,8 +38,8 @@ class AddRoleBindingCommand extends BaseCommand {
 
       const [, created] = await RoleBinding.findOrCreate({
         where: {
-          robloxGroupId: guild.robloxGroupId,
-          guildId: guild.id,
+          robloxGroupId: message.guild.robloxGroupId,
+          guildId: message.guild.id,
           roleId: role.id,
           min,
           max: max ?? null

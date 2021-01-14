@@ -35,7 +35,7 @@ class CancelTrainingCommand extends BaseCommand {
     })
   }
 
-  async execute (message, { trainingId, reason }) {
+  async run (message, { trainingId, reason }) {
     const authorId = await userService.getIdFromUsername(message.member.displayName)
 
     await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId}/trainings/${trainingId}/cancel`, {

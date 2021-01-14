@@ -41,7 +41,7 @@ class ExtendSuspensionCommand extends BaseCommand {
     })
   }
 
-  async execute (message, { username, days, reason }) {
+  async run (message, { username, days, reason }) {
     username = typeof username === 'string' ? username : username.displayName
     const [userId, authorId] = await Promise.all([
       userService.getIdFromUsername(username),

@@ -23,19 +23,19 @@ class AddGroupCommand extends BaseCommand {
     })
   }
 
-  async execute (message, { name, type }, guild) {
+  async run (message, { name, type }) {
     type = type.toLowerCase()
     if (this.client.registry.commands.some(command => command.name === name || command.aliases?.includes(name))) {
       return message.reply('Not allowed, name is reserved.')
     }
     if (await Group.findOne({
-      where: { name, guildId: guild.id }
+      where: { name, guildId: message.guild.id }
     })) {
       return message.reply('A group with that name already exists.')
     }
 
     const group = await Group.create({ name, type, guildId: guild.id })
-    guild.groups.set(group.id, group)
+    message.guild.groups.set(group.id, group)
 
     return message.reply(`Successfully added group **${name}**.`)
   }

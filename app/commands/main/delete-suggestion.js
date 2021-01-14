@@ -13,9 +13,9 @@ class DeleteSuggestionCommand extends BaseCommand {
     })
   }
 
-  async execute (message, _args, guild) {
-    const channels = guild.getData('channels')
-    const channel = guild.channels.cache.get(channels.suggestionsChannel)
+  async run (message) {
+    const channels = message.guild.getData('channels')
+    const channel = message.guild.channels.cache.get(channels.suggestionsChannel)
     const messages = await channel.messages.fetch()
     const authorUrl = `https://discordapp.com/users/${message.author.id}`
 

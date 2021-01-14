@@ -29,8 +29,8 @@ class SuspensionsCommand extends BaseCommand {
     })
   }
 
-  async execute (message, { username }, guild) {
-    if (!discordService.hasSomeRole(message.member, guild.getData('roleGroups').admin)) {
+  async run (message, { username }) {
+    if (!discordService.hasSomeRole(message.member, message.guild.getData('roleGroups').admin)) {
       if (!username) {
         username = message.member.displayName
       } else {
@@ -65,7 +65,7 @@ class SuspensionsCommand extends BaseCommand {
           true)
         .addField('Rank back', suspension.rankBack ? 'yes' : 'no', true)
         .addField('Reason', suspension.reason)
-        .setColor(guild.getData('primaryColor'))
+        .setColor(message.guild.getData('primaryColor'))
       return message.replyEmbed(embed)
     } else {
       const suspensions = (await applicationAdapter('get', `/v1/groups/${applicationConfig.groupId}/suspensions?sort=date`))

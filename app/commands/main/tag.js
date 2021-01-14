@@ -20,10 +20,10 @@ class TagCommand extends BaseCommand {
     })
   }
 
-  async execute (message, { name }, guild) {
+  async run (message, { name }) {
     if (name !== 'all') {
       const tag = await Tag.findOne({
-        where: { guildId: guild.id },
+        where: { guildId: message.guild.id },
         include: [{ model: TagName, as: 'names', where: { name } }]
       })
       if (!tag) {
@@ -53,7 +53,7 @@ class TagCommand extends BaseCommand {
         .setTitle('Tags')
         .setDescription(list)
         .setFooter(`Page 1/1 (${count - 1} entries)`)
-        .setColor(guild.primaryColor)
+        .setColor(message.guild.primaryColor)
       return message.replyEmbed(embed)
     }
   }

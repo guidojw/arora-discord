@@ -38,11 +38,6 @@ class BaseCommand extends Commando.Command {
   onError (_err, _message, _args, _fromPattern, _result) {
     // The commandError event in the Bot class takes care of this.
   }
-
-  async run (message, args, _fromPattern, _result) {
-    const guild = message.guild ? this.client.guilds.cache.get(message.guild.id) : undefined
-    return this.execute(message, args, guild)
-  }
 }
 
 function _checkPermissions (member, object, roleGroups) {

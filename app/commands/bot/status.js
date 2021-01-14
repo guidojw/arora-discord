@@ -13,11 +13,11 @@ class StatusCommand extends BaseCommand {
     })
   }
 
-  execute (message, _args, guild) {
+  run (message, _args) {
     const embed = new MessageEmbed()
-      .setColor(guild.supportEnabled ? 0x00ff00 : 0xff0000)
+      .setColor(message.guild.supportEnabled ? 0x00ff00 : 0xff0000)
       .setTitle('Status')
-      .setDescription(`Tickets System: **${guild.supportEnabled ? 'online' : 'offline'}**`)
+      .setDescription(`Tickets System: **${message.guild.supportEnabled ? 'online' : 'offline'}**`)
       .setTimestamp()
     return message.replyEmbed(embed)
   }

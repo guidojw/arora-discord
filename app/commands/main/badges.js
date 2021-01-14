@@ -25,7 +25,7 @@ class BadgesCommand extends Base {
     })
   }
 
-  async execute (message, { username }, guild) {
+  async run (message, { username }) {
     username = username ? typeof username === 'string' ? username : username.displayName : message.member.displayName
     const userId = await userService.getIdFromUsername(username)
     const hasTtdt = await userService.hasBadge(userId, TTDT_ID)
@@ -37,7 +37,7 @@ class BadgesCommand extends Base {
       .addField('TTDT', hasTtdt ? 'yes' : 'no', true)
       .addField('PTDT', hasPtdt ? 'yes' : 'no', true)
       .addField('TCDT', hasTcdt ? 'yes' : 'no', true)
-      .setColor(guild.getData('primaryColor'))
+      .setColor(message.guild.getData('primaryColor'))
     return message.replyEmbed(embed)
   }
 }

@@ -24,12 +24,12 @@ class MemberCountCommand extends BaseCommand {
     })
   }
 
-  async execute (message, { groupId }, guild) {
+  async run (message, { groupId }) {
     const group = (await applicationAdapter('get', `/v1/groups/${groupId}`)).data
 
     const embed = new MessageEmbed()
       .addField(`${group.name}'s member count`, group.memberCount)
-      .setColor(guild.getData('primaryColor'))
+      .setColor(message.guild.getData('primaryColor'))
     return message.replyEmbed(embed)
   }
 }

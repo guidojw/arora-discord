@@ -25,13 +25,13 @@ class AddTagCommand extends BaseCommand {
     })
   }
 
-  async execute (message, { name, content }, guild) {
+  async run (message, { name, content }) {
     name = name.toLowerCase()
     if (this.client.registry.commands.some(command => command.name === name || command.aliases?.includes(name))) {
       return message.reply('Not allowed, name is reserved.')
     }
     if (await Tag.findOne({
-      where: { guildId: guild.id },
+      where: { guildId: message.guild.id },
       include: [{ model: TagName, as: 'names', where: { name } }]
     })) {
       return message.reply('A tag with that name already exists.')
@@ -52,7 +52,7 @@ class AddTagCommand extends BaseCommand {
       }
     }
 
-    const tag = await Tag.create({ guildId: guild.id, authorId: message.author.id, content })
+    const tag = await Tag.create({ guildId: message.guild.id, authorId: message.author.id, content })
     await tag.createName({ name })
 
     return message.reply(`Successfully added tag **${name}**.`)

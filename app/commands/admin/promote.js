@@ -21,7 +21,7 @@ class PromoteCommand extends BaseCommand {
     })
   }
 
-  async execute (message, { username }) {
+  async run (message, { username }) {
     username = username ? typeof username === 'string' ? username : username.displayName : message.member.displayName
     const [userId, authorId] = await Promise.all([
       userService.getIdFromUsername(username),

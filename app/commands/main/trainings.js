@@ -25,14 +25,14 @@ class TrainingsCommand extends BaseCommand {
     })
   }
 
-  async execute (message, { trainingId }, guild) {
+  async run (message, { trainingId }) {
     if (trainingId) {
       const training = (await applicationAdapter('get', `/v1/groups/${applicationConfig.groupId}/trainings/${trainingId}`))
         .data
 
       const embed = new MessageEmbed()
         .addField(`Training ${training.id}`, await groupService.getTrainingSentence(training))
-        .setColor(guild.getData('primaryColor'))
+        .setColor(message.guild.getData('primaryColor'))
       return message.replyEmbed(embed)
     } else {
       const trainings = (await applicationAdapter('get', `/v1/groups/${applicationConfig.groupId}/trainings?sort=date`))

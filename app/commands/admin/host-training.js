@@ -50,7 +50,7 @@ class HostTrainingCommand extends BaseCommand {
     })
   }
 
-  async execute (message, { type, date, time, notes }, guild) {
+  async run (message, { type, date, time, notes }, guild) {
     type = type.toLowerCase()
     const dateInfo = timeHelper.getDateInfo(date)
     const timeInfo = timeHelper.getTimeInfo(time)

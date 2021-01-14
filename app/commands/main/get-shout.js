@@ -16,7 +16,7 @@ class GetShoutCommand extends Base {
     })
   }
 
-  async execute (message, _args, guild) {
+  async run (message) {
     const shout = (await applicationAdapter('get', `/v1/groups/${applicationConfig.groupId}/shout`))
       .data
 
@@ -24,7 +24,7 @@ class GetShoutCommand extends Base {
       const embed = new MessageEmbed()
         .addField(`Current shout by ${shout.poster.username}`, shout.body)
         .setTimestamp(shout.updated)
-        .setColor(guild.getData('primaryColor'))
+        .setColor(message.guild.getData('primaryColor'))
       return message.replyEmbed(embed)
     } else {
       return message.reply('There currently is no shout.')
