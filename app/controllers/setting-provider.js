@@ -25,11 +25,18 @@ class SettingProvider {
 
     const guildCommands = await data.getCommands()
     if (guildCommands) {
+      if (!guild._commandsEnabled) {
+        guild._groupsEnabled = {}
+      }
+      if (!guild._commandsEnabled) {
+        guild._commandsEnabled = {}
+      }
+
       for (const command of this.client.registry.commands.values()) {
         const commandSettings = guildCommands.find(guildCommand => guildCommand.commandName === command.name)
         if (commandSettings) {
           if (!command.guarded && commandSettings.enabled !== undefined) {
-            guild.setCommandEnabled(command.name, commandSettings.enabled)
+            guild._commandsEnabled[command.name] = commandSettings.enabled
           }
         }
       }
@@ -38,11 +45,11 @@ class SettingProvider {
         const groupSettings = guildCommands.find(guildCommand => guildCommand.commandName === group.name)
         if (groupSettings) {
           if (!group.guarded) {
-            guild.setGroupEnabled(group, groupSettings.enabled !== undefined ? groupSettings.enabled : false)
+            guild._groupsEnabled[group.id] = groupSettings.enabled !== undefined ? groupSettings.enabled : false
           }
         } else {
           if (!group.guarded) {
-            guild.setGroupEnabled(group, false)
+            guild._groupsEnabled[group.id] = false
           }
         }
       }
