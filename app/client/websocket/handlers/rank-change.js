@@ -5,7 +5,7 @@ const userService = require('../../../services/user')
 const { Events } = require('../../../util/constants')
 const { RoleBinding } = require('../../../models')
 
-const RankChangeHandler = async (client, { data }) => {
+const rankChangeHandler = async (client, { data }) => {
   const { groupId, userId, rank } = data.args
   let username
   for (const guild of client.guilds.cache.values()) {
@@ -31,4 +31,4 @@ const RankChangeHandler = async (client, { data }) => {
   client.emit(Events.RANK_CHANGE, ...data.args)
 }
 
-module.exports = RankChangeHandler
+module.exports = rankChangeHandler

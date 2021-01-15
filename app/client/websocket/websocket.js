@@ -1,7 +1,6 @@
 'use strict'
-const EventEmitter = require('events')
 const WebSocket = require('ws')
-const PacketHandlers = require('./handlers')
+const packetHandlers = require('./handlers')
 
 class WebSocketManager {
   constructor (client, host = process.env.HOST) {
@@ -50,8 +49,8 @@ class WebSocketManager {
   }
 
   handlePacket (packet) {
-    if (packet && PacketHandlers[packet.event]) {
-      PacketHandlers[packet.event](this.client, packet)
+    if (packet && packetHandlers[packet.event]) {
+      packetHandlers[packet.event](this.client, packet)
     }
   }
 }

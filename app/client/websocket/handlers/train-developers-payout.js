@@ -5,7 +5,7 @@ const userService = require('../../../services/user')
 const { Events } = require('../../../util/constants')
 const { MessageEmbed } = require('discord.js')
 
-const TrainDevelopersPayoutHandler = async (client, { data }) => {
+const trainDevelopersPayoutHandler = async (client, { data }) => {
   const { developersSales } = data.args
   const developerIds = Object.keys(developersSales)
   const developers = await userService.getUsers(developerIds)
@@ -46,4 +46,4 @@ const TrainDevelopersPayoutHandler = async (client, { data }) => {
   client.emit(Events.TRAIN_DEVELOPERS_PAYOUT, ...data.args)
 }
 
-module.exports = TrainDevelopersPayoutHandler
+module.exports = trainDevelopersPayoutHandler
