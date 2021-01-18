@@ -2,7 +2,6 @@
 const pluralize = require('pluralize')
 const userService = require('../../../services/user')
 
-const { Events } = require('../../../util/constants')
 const { MessageEmbed } = require('discord.js')
 
 const trainDevelopersPayoutHandler = async (client, { data }) => {
@@ -42,8 +41,6 @@ const trainDevelopersPayoutHandler = async (client, { data }) => {
 
     await owner.send(embed)
   }
-
-  client.emit(Events.TRAIN_DEVELOPERS_PAYOUT, ...data.args)
 }
 
 module.exports = trainDevelopersPayoutHandler

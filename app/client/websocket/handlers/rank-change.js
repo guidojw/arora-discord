@@ -2,7 +2,6 @@
 const discordService = require('../../../services/discord')
 const userService = require('../../../services/user')
 
-const { Events } = require('../../../util/constants')
 const { RoleBinding } = require('../../../models')
 
 const rankChangeHandler = async (client, { data }) => {
@@ -27,8 +26,6 @@ const rankChangeHandler = async (client, { data }) => {
       }
     }
   }
-
-  client.emit(Events.RANK_CHANGE, ...data.args)
 }
 
 module.exports = rankChangeHandler
