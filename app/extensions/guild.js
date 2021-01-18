@@ -57,31 +57,31 @@ const NSadminGuild = Structures.extend('Guild', Guild => {
     }
 
     get logsChannel () {
-      return this.logsChannelId ? this.channels.cache.get(this.logsChannelId) : null
+      return this.channels.cache.get(this.logsChannelId) || null
     }
 
     get trainingsChannel () {
-      return this.trainingsChannelId ? this.channels.cache.get(this.trainingsChannelId) : null
+      return this.channels.cache.get(this.trainingsChannelId) || null
     }
 
     get suggestionsChannel () {
-      return this.suggestionsChannelId ? this.channels.cache.get(this.suggestionsChannelId) : null
+      return this.channels.cache.get(this.suggestionsChannelId) || null
     }
 
     get ratingsChannel () {
-      return this.ratingsChannelId ? this.channels.cache.get(this.ratingsChannelId) : null
+      return this.channels.cache.get(this.ratingsChannelId) || null
     }
 
     get supportChannel () {
-      return this.supportChannelId ? this.channels.cache.get(this.supportChannelId) : null
+      return this.channels.cache.get(this.supportChannelId) || null
     }
 
     get welcomeChannel () {
-      return this.welcomeChannelId ? this.channels.cache.get(this.welcomeChannelId) : null
+      return this.channels.cache.get(this.welcomeChannelId) || null
     }
 
     get ticketsCategory () {
-      return this.ticketsCategoryId ? this.channels.cache.get(this.ticketsCategoryId) : null
+      return this.channels.cache.get(this.ticketsCategoryId) || null
     }
 
     async log (author, content, options) {
