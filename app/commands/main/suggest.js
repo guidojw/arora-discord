@@ -27,25 +27,26 @@ class SuggestCommand extends BaseCommand {
   }
 
   async run (message, { suggestion }) {
-    if (message.guild.suggestionsChannel) {
-      const authorUrl = `https://discordapp.com/users/${message.author.id}`
-      const embed = new MessageEmbed()
-        .setDescription(suggestion)
-        .setAuthor(message.author.tag, message.author.displayAvatarURL(), authorUrl)
-        .setColor(0x000af43)
-      if (message.attachments.size > 0) {
-        const attachment = message.attachments.first()
-        if (attachment.height) {
-          embed.setImage(attachment.url)
-        }
-      }
-
-      const newMessage = await message.guild.suggestionsChannel.send(embed)
-      await newMessage.react('⬆️')
-      await newMessage.react('⬇️')
-
-      return message.reply('Successfully suggested', { embed })
+    if (!message.guild.suggestionsChannel) {
+      return message.reply('This server has no suggestionsChannel set yet.')
     }
+    const authorUrl = `https://discordapp.com/users/${message.author.id}`
+    const embed = new MessageEmbed()
+      .setDescription(suggestion)
+      .setAuthor(message.author.tag, message.author.displayAvatarURL(), authorUrl)
+      .setColor(0x000af43)
+    if (message.attachments.size > 0) {
+      const attachment = message.attachments.first()
+      if (attachment.height) {
+        embed.setImage(attachment.url)
+      }
+    }
+
+    const newMessage = await message.guild.suggestionsChannel.send(embed)
+    await newMessage.react('⬆️')
+    await newMessage.react('⬇️')
+
+    return message.reply('Successfully suggested', { embed })
   }
 }
 

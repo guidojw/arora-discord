@@ -31,7 +31,7 @@ class AgeCommand extends BaseCommand {
 
     const embed = new MessageEmbed()
       .addField(`${message.argString ? username + '\'s' : 'Your'} age`, `${age} ${pluralize('day', age)}`)
-      .setColor(message.guild.getData('primaryColor'))
+      .setColor(message.guild.primaryColor)
     return message.replyEmbed(embed)
   }
 }

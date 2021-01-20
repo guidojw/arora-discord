@@ -3,8 +3,6 @@ const applicationAdapter = require('../../adapters/application')
 const BaseCommand = require('../base')
 const userService = require('../../services/user')
 
-const applicationConfig = require('../../../config/application')
-
 class PromoteCommand extends BaseCommand {
   constructor (client) {
     super(client, {
@@ -22,12 +20,15 @@ class PromoteCommand extends BaseCommand {
   }
 
   async run (message, { username }) {
+    if (message.guild.robloxGroupId === null) {
+      return message.reply('This server is not bound to a Roblox group yet.')
+    }
     username = username ? typeof username === 'string' ? username : username.displayName : message.member.displayName
     const [userId, authorId] = await Promise.all([
       userService.getIdFromUsername(username),
       userService.getIdFromUsername(message.member.displayName)
     ])
-    const rank = await userService.getRank(userId, applicationConfig.groupId)
+    const rank = await userService.getRank(userId, message.guild.robloxGroupId)
     if (rank === 0) {
       return message.reply('Can\'t change rank of non members.')
     }
@@ -44,7 +45,7 @@ class PromoteCommand extends BaseCommand {
       return message.reply('Can\'t change rank of HRs.')
     }
 
-    const roles = (await applicationAdapter('put', `/v1/groups/${applicationConfig.groupId}/users/${userId}`, {
+    const roles = (await applicationAdapter('put', `/v1/groups/${message.guild.robloxGroupId}/users/${userId}`, {
       authorId,
       rank: rank === 1
         ? 3

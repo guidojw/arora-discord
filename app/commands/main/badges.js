@@ -6,7 +6,7 @@ const { MessageEmbed } = require('discord.js')
 
 const TTDT_ID = 912438803
 const PTDT_ID = 496942494
-const TCDT_ID = 2124496060
+const TCCT_ID = 2124496060
 
 class BadgesCommand extends Base {
   constructor (client) {
@@ -19,7 +19,7 @@ class BadgesCommand extends Base {
       args: [{
         key: 'username',
         type: 'member|string',
-        prompt: 'Of who would you like to know the suspend reason?',
+        prompt: 'Whose badges would you like to check?',
         default: ''
       }]
     })
@@ -30,14 +30,14 @@ class BadgesCommand extends Base {
     const userId = await userService.getIdFromUsername(username)
     const hasTtdt = await userService.hasBadge(userId, TTDT_ID)
     const hasPtdt = await userService.hasBadge(userId, PTDT_ID)
-    const hasTcdt = await userService.hasBadge(userId, TCDT_ID)
+    const hasTcct = await userService.hasBadge(userId, TCCT_ID)
 
     const embed = new MessageEmbed()
       .setTitle(`${message.argString ? username + '\'s' : 'Your'} badges`)
       .addField('TTDT', hasTtdt ? 'yes' : 'no', true)
       .addField('PTDT', hasPtdt ? 'yes' : 'no', true)
-      .addField('TCDT', hasTcdt ? 'yes' : 'no', true)
-      .setColor(message.guild.getData('primaryColor'))
+      .addField('TCCT', hasTcct ? 'yes' : 'no', true)
+      .setColor(message.guild.primaryColor)
     return message.replyEmbed(embed)
   }
 }

@@ -9,8 +9,6 @@ const timeHelper = require('../../helpers/time')
 
 const { MessageEmbed } = require('discord.js')
 
-const applicationConfig = require('../../../config/application')
-
 class SuspensionsCommand extends BaseCommand {
   constructor (client) {
     super(client, {
@@ -30,6 +28,10 @@ class SuspensionsCommand extends BaseCommand {
   }
 
   async run (message, { username }) {
+    if (message.guild.robloxGroupId === null) {
+      return message.reply('This server is not bound to a Roblox group yet.')
+    }
+    // TODO: Fix group stuff
     if (!discordService.hasSomeRole(message.member, message.guild.getData('roleGroups').admin)) {
       if (!username) {
         username = message.member.displayName
@@ -41,7 +43,7 @@ class SuspensionsCommand extends BaseCommand {
     if (username) {
       username = typeof username === 'string' ? username : username.displayName
       const userId = await userService.getIdFromUsername(username)
-      const suspension = (await applicationAdapter('get', `/v1/groups/${applicationConfig.groupId}/suspensions/${userId}`))
+      const suspension = (await applicationAdapter('get', `/v1/groups/${message.gulid.groupId}/suspensions/${userId}`))
         .data
       const days = suspension.duration / 86400000
       const date = new Date(suspension.date)
@@ -65,16 +67,16 @@ class SuspensionsCommand extends BaseCommand {
           true)
         .addField('Rank back', suspension.rankBack ? 'yes' : 'no', true)
         .addField('Reason', suspension.reason)
-        .setColor(message.guild.getData('primaryColor'))
+        .setColor(message.guild.primaryColor)
       return message.replyEmbed(embed)
     } else {
-      const suspensions = (await applicationAdapter('get', `/v1/groups/${applicationConfig.groupId}/suspensions?sort=date`))
+      const suspensions = (await applicationAdapter('get', `/v1/groups/${message.guild.robloxGroupId}/suspensions?sort=date`))
         .data
       if (suspensions.length === 0) {
         return message.reply('There are currently no suspensions.')
       }
 
-      const embeds = await groupService.getSuspensionEmbeds(suspensions)
+      const embeds = await groupService.getSuspensionEmbeds(message.guild.robloxGroupId, suspensions)
       for (const embed of embeds) {
         await message.author.send(embed)
       }

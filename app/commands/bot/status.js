@@ -13,7 +13,7 @@ class StatusCommand extends BaseCommand {
     })
   }
 
-  run (message, _args) {
+  run (message) {
     const embed = new MessageEmbed()
       .setColor(message.guild.supportEnabled ? 0x00ff00 : 0xff0000)
       .setTitle('Status')

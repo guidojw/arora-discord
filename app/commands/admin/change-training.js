@@ -7,8 +7,6 @@ const userService = require('../../services/user')
 
 const { getChannels, getTags, getUrls } = require('../../helpers/string')
 
-const applicationConfig = require('../../../config/application')
-
 class ChangeTrainingCommand extends BaseCommand {
   constructor (client) {
     super(client, {
@@ -37,6 +35,9 @@ class ChangeTrainingCommand extends BaseCommand {
   }
 
   async run (message, { trainingId, key, data }) {
+    if (message.guild.robloxGroupId === null) {
+      return message.reply('This server is not bound to a Roblox group yet.')
+    }
     key = key.toLowerCase()
     const changes = {}
     if (key === 'author') {
@@ -56,7 +57,7 @@ class ChangeTrainingCommand extends BaseCommand {
       changes.notes = data
     } else if (key === 'type') {
       const type = data.toUpperCase()
-      const trainingTypes = await groupService.getTrainingTypes(applicationConfig.groupId)
+      const trainingTypes = await groupService.getTrainingTypes(message.guild.robloxGroupId)
       const trainingType = trainingTypes.find(trainingType => trainingType.abbreviation.toLowerCase() === type)
       if (!trainingType) {
         return message.reply('Type not found.')
@@ -64,7 +65,7 @@ class ChangeTrainingCommand extends BaseCommand {
 
       changes.typeId = trainingType.id
     } else if (key === 'date' || key === 'time') {
-      const training = (await applicationAdapter('get', `/v1/groups/${applicationConfig.groupId}/trainings/${trainingId}`))
+      const training = (await applicationAdapter('get', `/v1/groups/${message.guild.robloxGroupId}/trainings/${trainingId}`))
         .data
       const date = new Date(training.date)
 
@@ -89,7 +90,7 @@ class ChangeTrainingCommand extends BaseCommand {
     }
     const editorId = await userService.getIdFromUsername(message.member.displayName)
 
-    await applicationAdapter('put', `/v1/groups/${applicationConfig.groupId}/trainings/${trainingId}`,
+    await applicationAdapter('put', `/v1/groups/${message.guild.robloxGroupId}/trainings/${trainingId}`,
       { changes, editorId })
 
     return message.reply(`Successfully changed training with ID **${trainingId}**.`)

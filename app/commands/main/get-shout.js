@@ -4,8 +4,6 @@ const Base = require('../base')
 
 const { MessageEmbed } = require('discord.js')
 
-const applicationConfig = require('../../../config/application')
-
 class GetShoutCommand extends Base {
   constructor (client) {
     super(client, {
@@ -17,14 +15,17 @@ class GetShoutCommand extends Base {
   }
 
   async run (message) {
-    const shout = (await applicationAdapter('get', `/v1/groups/${applicationConfig.groupId}/shout`))
+    if (message.guild.robloxGroupId === null) {
+      return message.reply('This server is not bound to a Roblox group yet.')
+    }
+    const shout = (await applicationAdapter('get', `/v1/groups/${message.guild.robloxGroupId}/shout`))
       .data
 
     if (shout.body) {
       const embed = new MessageEmbed()
         .addField(`Current shout by ${shout.poster.username}`, shout.body)
         .setTimestamp(shout.updated)
-        .setColor(message.guild.getData('primaryColor'))
+        .setColor(message.guild.primaryColor)
       return message.replyEmbed(embed)
     } else {
       return message.reply('There currently is no shout.')

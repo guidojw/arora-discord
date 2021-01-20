@@ -28,7 +28,7 @@ class UserIdCommand extends BaseCommand {
 
     const embed = new MessageEmbed()
       .addField(`${message.argString ? username + '\'s' : 'Your'} user ID`, userId)
-      .setColor(message.guild.getData('primaryColor'))
+      .setColor(message.guild.primaryColor)
     return message.replyEmbed(embed)
   }
 }

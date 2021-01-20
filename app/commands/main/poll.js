@@ -34,7 +34,7 @@ class PollCommand extends BaseCommand {
     const embed = new MessageEmbed()
       .setDescription(poll)
       .setAuthor(message.author.tag, message.author.displayAvatarURL())
-      .setColor(message.guild.getData('primaryColor'))
+      .setColor(message.guild.primaryColor)
 
     const newMessage = await message.channel.send(embed)
     if (options.length > 0) {

@@ -6,8 +6,6 @@ const userService = require('../../services/user')
 const { MessageEmbed } = require('discord.js')
 const { getChannels, getTags, getUrls } = require('../../helpers/string')
 
-const applicationConfig = require('../../../config/application')
-
 class ShoutCommand extends BaseCommand {
   constructor (client) {
     super(client, {
@@ -35,9 +33,12 @@ class ShoutCommand extends BaseCommand {
   }
 
   async run (message, { body }, guild) {
+    if (message.guild.robloxGroupId === null) {
+      return message.reply('This server is not bound to a Roblox group yet.')
+    }
     const authorId = await userService.getIdFromUsername(message.member.displayName)
 
-    const shout = (await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId}/shout`, {
+    const shout = (await applicationAdapter('post', `/v1/groups/${message.guild.robloxGroupId}/shout`, {
       message: body === 'clear' ? '' : body,
       authorId
     })).data
@@ -47,7 +48,7 @@ class ShoutCommand extends BaseCommand {
     } else {
       const embed = new MessageEmbed()
         .addField('Successfully shouted', shout.body)
-        .setColor(guild.getData('primaryColor'))
+        .setColor(message.guild.primaryColor)
       return message.replyEmbed(embed)
     }
   }

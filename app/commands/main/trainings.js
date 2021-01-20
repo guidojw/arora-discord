@@ -5,8 +5,6 @@ const groupService = require('../../services/group')
 
 const { MessageEmbed } = require('discord.js')
 
-const applicationConfig = require('../../../config/application')
-
 class TrainingsCommand extends BaseCommand {
   constructor (client) {
     super(client, {
@@ -26,16 +24,19 @@ class TrainingsCommand extends BaseCommand {
   }
 
   async run (message, { trainingId }) {
+    if (message.guild.robloxGroupId === null) {
+      return message.reply('This server is not bound to a Roblox group yet.')
+    }
     if (trainingId) {
-      const training = (await applicationAdapter('get', `/v1/groups/${applicationConfig.groupId}/trainings/${trainingId}`))
+      const training = (await applicationAdapter('get', `/v1/groups/${message.guild.robloxGroupId}/trainings/${trainingId}`))
         .data
 
       const embed = new MessageEmbed()
         .addField(`Training ${training.id}`, await groupService.getTrainingSentence(training))
-        .setColor(message.guild.getData('primaryColor'))
+        .setColor(message.guild.primaryColor)
       return message.replyEmbed(embed)
     } else {
-      const trainings = (await applicationAdapter('get', `/v1/groups/${applicationConfig.groupId}/trainings?sort=date`))
+      const trainings = (await applicationAdapter('get', `/v1/groups/${message.guild.robloxGroupId}/trainings?sort=date`))
         .data
       if (trainings.length === 0) {
         return message.reply('There are currently no hosted trainings.')

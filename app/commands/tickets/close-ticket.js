@@ -15,15 +15,15 @@ class CloseTicketCommand extends BaseCommand {
     })
   }
 
-  async execute (message, _args, guild) {
+  async run (message) {
     const ticketsController = this.client.ticketsController
-    const ticketController = ticketsController.getTicketFromChannel(guild, message.channel)
+    const ticketController = ticketsController.getTicketFromChannel(message.guild, message.channel)
     if (ticketController) {
       const prompt = await message.channel.send('Are you sure you want to close this ticket?')
       const choice = await discordService.prompt(message.channel, message.author, prompt, ['✅', '🚫']) === '✅'
 
       if (choice) {
-        guild.log(
+        message.guild.log(
           message.author,
           stripIndents`
           ${message.author} **closed ticket** \`${ticketController.id}\`
@@ -33,9 +33,9 @@ class CloseTicketCommand extends BaseCommand {
         )
 
         if (message.author.id === ticketController.author.id) {
-          ticketController.close('Ticket successfully closed.', false, guild.primaryColor)
+          ticketController.close('Ticket successfully closed.', false, message.guild.primaryColor)
         } else {
-          ticketController.close('The moderator has closed your ticket.', true, guild.primaryColor)
+          ticketController.close('The moderator has closed your ticket.', true, message.guild.primaryColor)
         }
       }
     }

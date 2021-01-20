@@ -5,8 +5,6 @@ const userService = require('../../services/user')
 
 const { getChannels, getTags, getUrls } = require('../../helpers/string')
 
-const applicationConfig = require('../../../config/application')
-
 class CancelTrainingCommand extends BaseCommand {
   constructor (client) {
     super(client, {
@@ -36,9 +34,12 @@ class CancelTrainingCommand extends BaseCommand {
   }
 
   async run (message, { trainingId, reason }) {
+    if (message.guild.robloxGroupId === null) {
+      return message.reply('This server is not bound to a Roblox group yet.')
+    }
     const authorId = await userService.getIdFromUsername(message.member.displayName)
 
-    await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId}/trainings/${trainingId}/cancel`, {
+    await applicationAdapter('post', `/v1/groups/${message.guild.robloxGroupId}/trainings/${trainingId}/cancel`, {
       authorId,
       reason
     })

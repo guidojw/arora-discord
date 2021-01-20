@@ -5,15 +5,13 @@ const stringHelper = require('../helpers/string')
 const timeHelper = require('../helpers/time')
 const discordService = require('./discord')
 
-const applicationConfig = require('../../config/application')
-
-exports.getBanEmbeds = async bans => {
+exports.getBanEmbeds = async (groupId, bans) => {
   const userIds = [...new Set([
     ...bans.map(ban => ban.userId),
     ...bans.map(ban => ban.authorId)
   ])]
   const users = await userService.getUsers(userIds)
-  const roles = await groupService.getRoles(applicationConfig.groupId)
+  const roles = await groupService.getRoles(groupId)
 
   return discordService.getListEmbeds('Banlist', bans, exports.getBanRow, { users, roles })
 }

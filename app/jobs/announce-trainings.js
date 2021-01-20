@@ -11,17 +11,20 @@ const { MessageEmbed } = require('discord.js')
 const applicationConfig = require('../../config/application')
 
 module.exports = async guild => {
+  if (guild.robloxGroupId === null) {
+    return
+  }
   const channels = guild.getData('channels')
   const messages = guild.getData('messages')
   const channel = guild.channels.cache.get(channels.trainingsChannel)
 
   // Update the trainings list embed.
   const message = await channel.messages.fetch(messages.trainingsMessage)
-  const trainings = (await applicationAdapter('get', `/v1/groups/${applicationConfig.groupId}/trainings?sort=date`))
+  const trainings = (await applicationAdapter('get', `/v1/groups/${guild.robloxGroupId}/trainings?sort=date`))
     .data
   const authorIds = [...new Set(trainings.map(training => training.authorId))]
   const authors = await userService.getUsers(authorIds)
-  const trainingsEmbed = await getTrainingsEmbed(trainings, authors)
+  const trainingsEmbed = await getTrainingsEmbed(guild.robloxGroupId, trainings, authors)
   trainingsEmbed.setColor(guild.getData('primaryColor'))
   await message.edit(trainingsEmbed)
 
@@ -52,8 +55,8 @@ module.exports = async guild => {
   await infoMessage.edit(infoMessage.embeds)
 }
 
-async function getTrainingsEmbed (trainings, authors) {
-  const trainingTypes = (await groupService.getTrainingTypes(applicationConfig.groupId))
+async function getTrainingsEmbed (groupId, trainings, authors) {
+  const trainingTypes = (await groupService.getTrainingTypes(groupId))
     .map(trainingType => trainingType.name)
     .reduce((result, item) => {
       result[item] = []

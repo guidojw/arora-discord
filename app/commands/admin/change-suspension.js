@@ -4,9 +4,6 @@ const BaseCommand = require('../base')
 const userService = require('../../services/user')
 
 const { getChannels, getTags, getUrls } = require('../../helpers/string')
-
-const applicationConfig = require('../../../config/application')
-
 class ChangeSuspensionCommand extends BaseCommand {
   constructor (client) {
     super(client, {
@@ -35,6 +32,9 @@ class ChangeSuspensionCommand extends BaseCommand {
   }
 
   async run (message, { username, key, data }) {
+    if (message.guild.robloxGroupId === null) {
+      return message.reply('This server is not bound to a Roblox group yet.')
+    }
     username = typeof username === 'string' ? username : username.displayName
     key = key.toLowerCase()
     const changes = {}
@@ -65,7 +65,7 @@ class ChangeSuspensionCommand extends BaseCommand {
       userService.getIdFromUsername(message.member.displayName)
     ])
 
-    await applicationAdapter('put', `/v1/groups/${applicationConfig.groupId}/suspensions/${userId}`, {
+    await applicationAdapter('put', `/v1/groups/${message.guild.robloxGroupId}/suspensions/${userId}`, {
       changes,
       editorId
     })

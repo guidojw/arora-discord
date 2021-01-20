@@ -24,7 +24,10 @@ class BansCommand extends BaseCommand {
     })
   }
 
-  async run (message, { username }, guild) {
+  async run (message, { username }) {
+    if (message.guild.robloxGroupId === null) {
+      return message.reply('This server is not bound to a Roblox group yet.')
+    }
     if (username) {
       username = typeof username === 'string' ? username : username.displayName
       const userId = await userService.getIdFromUsername(username)
@@ -32,7 +35,7 @@ class BansCommand extends BaseCommand {
 
       const embed = new MessageEmbed()
         .setTitle(`${message.argString ? `${username}'s` : 'Your'} ban`)
-        .setColor(guild.getData('primaryColor'))
+        .setColor(message.guild.primaryColor)
       if (ban.date) {
         const date = new Date(ban.date)
         embed.addField('Start date', timeHelper.getDate(date), true)
@@ -49,7 +52,7 @@ class BansCommand extends BaseCommand {
         return message.reply('There are currently no bans.')
       }
 
-      const embeds = await banService.getBanEmbeds(bans)
+      const embeds = await banService.getBanEmbeds(message.guild.robloxGroupId, bans)
       for (const embed of embeds) {
         await message.author.send(embed)
       }

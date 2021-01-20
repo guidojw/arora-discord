@@ -8,7 +8,7 @@ const rankChangeHandler = async (client, { data }) => {
   const { groupId, userId, rank } = data.args
   let username
   for (const guild of client.guilds.cache.values()) {
-    if (guild.groupId === groupId) {
+    if (guild.robloxGroupId === groupId) {
       if (!username) {
         username = (await userService.getUser(userId)).name
       }

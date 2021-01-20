@@ -5,8 +5,6 @@ const userService = require('../../services/user')
 
 const { getChannels, getTags, getUrls } = require('../../helpers/string')
 
-const applicationConfig = require('../../../config/application')
-
 class BanCommand extends BaseCommand {
   constructor (client) {
     super(client, {
@@ -35,6 +33,9 @@ class BanCommand extends BaseCommand {
   }
 
   async run (message, { username, reason }) {
+    if (message.guild.robloxGroupId === null) {
+      return message.reply('This server is not bound to a Roblox group yet.')
+    }
     username = typeof username === 'string' ? username : username.displayName
     const [userId, authorId] = await Promise.all([
       userService.getIdFromUsername(username),
@@ -42,7 +43,7 @@ class BanCommand extends BaseCommand {
     ])
 
     await applicationAdapter('post', '/v1/bans', {
-      groupId: applicationConfig.groupId,
+      groupId: message.guild.robloxGroupId,
       authorId,
       userId,
       reason

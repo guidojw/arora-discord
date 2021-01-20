@@ -5,8 +5,6 @@ const userService = require('../../services/user')
 
 const { getChannels, getTags, getUrls } = require('../../helpers/string')
 
-const applicationConfig = require('../../../config/application')
-
 class ExtendSuspensionCommand extends BaseCommand {
   constructor (client) {
     super(client, {
@@ -42,13 +40,16 @@ class ExtendSuspensionCommand extends BaseCommand {
   }
 
   async run (message, { username, days, reason }) {
+    if (message.guild.robloxGroupId === null) {
+      return message.reply('This server is not bound to a Roblox group yet.')
+    }
     username = typeof username === 'string' ? username : username.displayName
     const [userId, authorId] = await Promise.all([
       userService.getIdFromUsername(username),
       userService.getIdFromUsername(message.member.displayName)
     ])
 
-    await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId}/suspensions/${userId}/extend`, {
+    await applicationAdapter('post', `/v1/groups/${message.guild.robloxGroupId}/suspensions/${userId}/extend`, {
       duration: days * 86400000,
       authorId,
       reason

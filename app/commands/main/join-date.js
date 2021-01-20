@@ -29,7 +29,7 @@ class JoinDateCommand extends BaseCommand {
 
     const embed = new MessageEmbed()
       .addField(`${message.argString ? username : 'Your'} join date`, `${timeHelper.getDate(new Date(user.created))}`)
-      .setColor(message.guild.getData('primaryColor'))
+      .setColor(message.guild.primaryColor)
     return message.replyEmbed(embed)
   }
 }

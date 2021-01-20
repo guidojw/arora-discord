@@ -4,8 +4,6 @@ const userService = require('../../services/user')
 
 const { MessageEmbed } = require('discord.js')
 
-const applicationConfig = require('../../../config/application')
-
 class RankCommand extends BaseCommand {
   constructor (client) {
     super(client, {
@@ -25,13 +23,16 @@ class RankCommand extends BaseCommand {
   }
 
   async run (message, { username }) {
+    if (message.guild.robloxGroupId === null) {
+      return message.reply('This server is not bound to a Roblox group yet.')
+    }
     username = username ? typeof username === 'string' ? username : username.displayName : message.member.displayName
     const userId = await userService.getIdFromUsername(username)
-    const rank = await userService.getRank(userId, applicationConfig.groupId)
+    const rank = await userService.getRank(userId, message.guild.robloxGroupId)
 
     const embed = new MessageEmbed()
       .addField(`${message.argString ? username + '\'s' : 'Your'} rank`, rank)
-      .setColor(message.guild.getData('primaryColor'))
+      .setColor(message.guild.primaryColor)
     return message.replyEmbed(embed)
   }
 }

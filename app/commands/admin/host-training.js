@@ -8,8 +8,6 @@ const userService = require('../../services/user')
 const { MessageEmbed } = require('discord.js')
 const { getChannels, getTags, getUrls } = require('../../helpers/string')
 
-const applicationConfig = require('../../../config/application')
-
 class HostTrainingCommand extends BaseCommand {
   constructor (client) {
     super(client, {
@@ -51,6 +49,9 @@ class HostTrainingCommand extends BaseCommand {
   }
 
   async run (message, { type, date, time, notes }, guild) {
+    if (message.guild.robloxGroupId === null) {
+      return message.reply('This server is not bound to a Roblox group yet.')
+    }
     type = type.toLowerCase()
     const dateInfo = timeHelper.getDateInfo(date)
     const timeInfo = timeHelper.getTimeInfo(time)
@@ -65,14 +66,14 @@ class HostTrainingCommand extends BaseCommand {
     if (!afterNow) {
       return message.reply('Please give a date and time that are after now.')
     }
-    const trainingTypes = await groupService.getTrainingTypes(applicationConfig.groupId)
+    const trainingTypes = await groupService.getTrainingTypes(message.guild.robloxGroupId)
     const trainingType = trainingTypes.find(trainingType => trainingType.abbreviation.toLowerCase() === type)
     if (!trainingType) {
       return message.reply('Type not found.')
     }
     const authorId = await userService.getIdFromUsername(message.member.displayName)
 
-    const training = (await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId}/trainings`, {
+    const training = (await applicationAdapter('post', `/v1/groups/${message.guild.robloxGroupId}/trainings`, {
       notes: notes.toLowerCase() === 'none' ? undefined : notes,
       date: dateUnix,
       typeId: trainingType.id,
@@ -82,7 +83,7 @@ class HostTrainingCommand extends BaseCommand {
     const embed = new MessageEmbed()
       .addField('Successfully scheduled', `**${trainingType.name}** training on **${date}** at **${time}**.`)
       .addField('Training ID', training.id.toString())
-      .setColor(guild.getData('primaryColor'))
+      .setColor(message.guild.primaryColor)
     return message.replyEmbed(embed)
   }
 }

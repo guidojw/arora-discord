@@ -4,8 +4,6 @@ const BaseCommand = require('../base')
 
 const { MessageEmbed } = require('discord.js')
 
-const applicationConfig = require('../../../config/application')
-
 class MemberCountCommand extends BaseCommand {
   constructor (client) {
     super(client, {
@@ -18,18 +16,21 @@ class MemberCountCommand extends BaseCommand {
           key: 'groupId',
           type: 'integer',
           prompt: 'From what group would you like to know the member count?',
-          default: applicationConfig.groupId
+          default: message => message.guild.robloxGroupId ?? undefined
         }
       ]
     })
   }
 
   async run (message, { groupId }) {
+    if (typeof groupId === 'undefined') {
+      return message.reply('Invalid group ID.')
+    }
     const group = (await applicationAdapter('get', `/v1/groups/${groupId}`)).data
 
     const embed = new MessageEmbed()
       .addField(`${group.name}'s member count`, group.memberCount)
-      .setColor(message.guild.getData('primaryColor'))
+      .setColor(message.guild.primaryColor)
     return message.replyEmbed(embed)
   }
 }

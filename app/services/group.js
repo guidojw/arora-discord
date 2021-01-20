@@ -6,8 +6,6 @@ const userService = require('../services/user')
 const discordService = require('./discord')
 const applicationAdapter = require('../adapters/application')
 
-const applicationConfig = require('../../config/application')
-
 exports.getTrainingSentence = async training => {
   const date = new Date(training.date)
   const readableDate = timeHelper.getDate(date)
@@ -24,13 +22,13 @@ exports.getTrainingRow = async training => {
   return `${training.id}. ${await exports.getTrainingSentence(training)}`
 }
 
-exports.getSuspensionEmbeds = async suspensions => {
+exports.getSuspensionEmbeds = async (groupId, suspensions) => {
   const userIds = [...new Set([
     ...suspensions.map(suspension => suspension.userId),
     ...suspensions.map(suspension => suspension.authorId)
   ])]
   const users = await userService.getUsers(userIds)
-  const roles = await this.getRoles(applicationConfig.groupId)
+  const roles = await this.getRoles(groupId)
 
   return discordService.getListEmbeds('Current Suspensions', suspensions, exports.getSuspensionRow, {
     users,

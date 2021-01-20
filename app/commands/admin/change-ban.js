@@ -32,6 +32,9 @@ class ChangeBanCommand extends BaseCommand {
   }
 
   async run (message, { username, key, data }) {
+    if (message.guild.robloxGroupId === null) {
+      return message.reply('This server is not bound to a Roblox group yet.')
+    }
     username = typeof username === 'string' ? username : username.displayName
     key = key.toLowerCase()
     const changes = {}

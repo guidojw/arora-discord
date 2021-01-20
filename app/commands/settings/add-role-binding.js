@@ -30,29 +30,28 @@ class AddRoleBindingCommand extends BaseCommand {
   }
 
   async run (message, { role, min, max }) {
-    if (message.guild.robloxGroupId) {
-      max = max === 0 ? undefined : max
-      if (typeof max !== 'undefined' && max < min) {
-        [min, max] = [max, min]
-      }
-
-      const [, created] = await RoleBinding.findOrCreate({
-        where: {
-          robloxGroupId: message.guild.robloxGroupId,
-          guildId: message.guild.id,
-          roleId: role.id,
-          min,
-          max: max ?? null
-        }
-      })
-      if (!created) {
-        return message.reply('A role message with that message and range already exists.')
-      }
-
-      return message.reply('Successfully added role binding.')
-    } else {
-      return message.reply('This server is not bound to a Roblox group yet!')
+    if (message.guild.robloxGroupId === null) {
+      return message.reply('This server is not bound to a Roblox group yet.')
     }
+    max = max === 0 ? undefined : max
+    if (typeof max !== 'undefined' && max < min) {
+      [min, max] = [max, min]
+    }
+
+    const [, created] = await RoleBinding.findOrCreate({
+      where: {
+        robloxGroupId: message.guild.robloxGroupId,
+        guildId: message.guild.id,
+        roleId: role.id,
+        min,
+        max: max ?? null
+      }
+    })
+    if (!created) {
+      return message.reply('A role message with that message and range already exists.')
+    }
+
+    return message.reply('Successfully added role binding.')
   }
 }
 
