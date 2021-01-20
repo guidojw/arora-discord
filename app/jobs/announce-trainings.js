@@ -8,8 +8,6 @@ const timeHelper = require('../helpers/time')
 
 const { MessageEmbed } = require('discord.js')
 
-const applicationConfig = require('../../config/application')
-
 module.exports = async guild => {
   if (guild.robloxGroupId === null) {
     return
