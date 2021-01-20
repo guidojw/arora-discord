@@ -1,15 +1,12 @@
 'use strict'
 const Commando = require('discord.js-commando')
 const path = require('path')
-const pluralize = require('pluralize')
-const discordService = require('../services/discord')
 const SettingProvider = require('./setting-provider')
 const TicketsController = require('./tickets')
-const userService = require('../services/user')
 const WebSocketManager = require('./websocket/websocket')
 
 const { DiscordAPIError, Message, MessageEmbed } = require('discord.js')
-const { RoleBinding, RoleMessage, Tag, TagName } = require('../models')
+const { RoleMessage, Tag, TagName } = require('../models')
 const { stripIndents } = require('common-tags')
 
 const applicationConfig = require('../../config/application')

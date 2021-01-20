@@ -38,7 +38,7 @@ class TagCommand extends BaseCommand {
         return message.reply(tag.content, { allowedMentions: { users: [message.author.id] } })
       }
     } else {
-      const tags = await Tag.findAll({ where: { guildId: guild.id } })
+      const tags = await Tag.findAll({ where: { guildId: message.guild.id } })
 
       let list = ''
       let count = 1

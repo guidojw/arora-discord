@@ -34,7 +34,7 @@ class AddGroupCommand extends BaseCommand {
       return message.reply('A group with that name already exists.')
     }
 
-    const group = await Group.create({ name, type, guildId: guild.id })
+    const group = await Group.create({ name, type, guildId: message.guild.id })
     message.guild.groups.set(group.id, group)
 
     return message.reply(`Successfully added group **${name}**.`)
