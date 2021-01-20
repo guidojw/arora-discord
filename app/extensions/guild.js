@@ -19,19 +19,19 @@ const NSadminGuild = Structures.extend('Guild', Guild => {
 
     _setup (data) {
       this.id = data.id
-      this.primaryColor = typeof data.primaryColor !== 'undefined' ? data.primaryColor : null // primaryColor can be 0
-      this.supportEnabled = data.supportEnabled || null
-      this.robloxGroupId = data.robloxGroupId || null
-      this.logsChannelId = data.logsChannelId || null
-      this.trainingsChannelId = data.trainingsChannelId || null
-      this.suggestionsChannelId = data.suggestionsChannelId || null
-      this.ratingsChannelId = data.ratingsChannelId || null
-      this.supportChannelId = data.supportChannelId || null
-      this.welcomeChannelId = data.welcomeChannelId || null
-      this.ticketsCategoryId = data.ticketsCategoryId || null
-      this.trainingsMessageId = data.trainingsMessageId || null
-      this.trainingsInfoMessageId = data.trainingsInfoMessageId || null
-      this.supportMessageId = data.supportMessageId || null
+      this.primaryColor = data.primaryColor
+      this.supportEnabled = data.supportEnabled
+      this.robloxGroupId = data.robloxGroupId
+      this.logsChannelId = data.logsChannelId
+      this.trainingsChannelId = data.trainingsChannelId
+      this.suggestionsChannelId = data.suggestionsChannelId
+      this.ratingsChannelId = data.ratingsChannelId
+      this.supportChannelId = data.supportChannelId
+      this.welcomeChannelId = data.welcomeChannelId
+      this.ticketsCategoryId = data.ticketsCategoryId
+      this.trainingsMessageId = data.trainingsMessageId
+      this.trainingsInfoMessageId = data.trainingsInfoMessageId
+      this.supportMessageId = data.supportMessageId
 
       if (data.groups) {
         for (const group of data.groups) {
