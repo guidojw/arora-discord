@@ -3,12 +3,12 @@ const BaseCommand = require('../base')
 
 const { TicketType } = require('../../models')
 
-class AddTicketTypeCommand extends BaseCommand {
+class CreateTicketTypeCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'settings',
-      name: 'addtickettype',
-      description: 'Adds a new ticket type.',
+      name: 'createtickettype',
+      description: 'Creates a new ticket type.',
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
         key: 'name',
@@ -31,7 +31,7 @@ class AddTicketTypeCommand extends BaseCommand {
       return message.reply('A ticket type with that name already exists.')
     }
 
-    return message.reply(`Successfully added ticket type **${name}**.`)
+    return message.reply(`Successfully created ticket type **${name}**.`)
   }
 }
 
@@ -43,4 +43,4 @@ function validateName (name) {
       : true
 }
 
-module.exports = AddTicketTypeCommand
+module.exports = CreateTicketTypeCommand

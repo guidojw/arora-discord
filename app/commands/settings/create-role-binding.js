@@ -3,13 +3,13 @@ const BaseCommand = require('../base')
 
 const { Role, RoleBinding } = require('../../models')
 
-class AddRoleBindingCommand extends BaseCommand {
+class CreateRoleBindingCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'settings',
-      name: 'addrolebinding',
-      aliases: ['addrolebnd'],
-      description: 'Adds a new Roblox rank to Discord role binding.',
+      name: 'createrolebinding',
+      aliases: ['createrolebnd'],
+      description: 'Creates a new Roblox rank to Discord role binding.',
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
         key: 'role',
@@ -57,7 +57,7 @@ class AddRoleBindingCommand extends BaseCommand {
       return message.reply('A role message with that message and range already exists.')
     }
 
-    return message.reply('Successfully added role binding.')
+    return message.reply('Successfully created role binding.')
   }
 }
 
@@ -65,4 +65,4 @@ function validateRank (value) {
   return (value >= 0 && value <= 255) || 'Invalid rank.'
 }
 
-module.exports = AddRoleBindingCommand
+module.exports = CreateRoleBindingCommand

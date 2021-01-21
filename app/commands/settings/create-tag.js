@@ -5,12 +5,12 @@ const discordService = require('../../services/discord')
 const { MessageEmbed } = require('discord.js')
 const { Tag, TagName } = require('../../models')
 
-class AddTagCommand extends BaseCommand {
+class CreateTagCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'settings',
-      name: 'addtag',
-      description: 'Adds a new tag.',
+      name: 'createtag',
+      description: 'Creates a new tag.',
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
         key: 'name',
@@ -55,7 +55,7 @@ class AddTagCommand extends BaseCommand {
     const tag = await Tag.create({ guildId: message.guild.id, authorId: message.author.id, content })
     await tag.createName({ name })
 
-    return message.reply(`Successfully added tag **${name}**.`)
+    return message.reply(`Successfully created tag **${name}**.`)
   }
 }
 
@@ -63,4 +63,4 @@ function validateName (name) {
   return name.includes(' ') ? 'Name cannot include spaces.' : true
 }
 
-module.exports = AddTagCommand
+module.exports = CreateTagCommand

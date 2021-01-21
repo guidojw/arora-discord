@@ -2,12 +2,12 @@
 const BaseCommand = require('../base')
 const { Group } = require('../../models')
 
-class AddGroupCommand extends BaseCommand {
+class CreateGroupCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'settings',
-      name: 'addgroup',
-      description: 'Adds a new group.',
+      name: 'creategroup',
+      description: 'Creates a new group.',
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
         key: 'name',
@@ -28,16 +28,22 @@ class AddGroupCommand extends BaseCommand {
     if (this.client.registry.commands.some(command => command.name === name || command.aliases?.includes(name))) {
       return message.reply('Not allowed, name is reserved.')
     }
-    if (await Group.findOne({
-      where: { name, guildId: message.guild.id }
-    })) {
+    const [group, created] = await Group.findOrCreate({
+      where: {
+        guildId: message.guild.id,
+        name
+      },
+      defaults: {
+        type
+      }
+    })
+    if (!created) {
       return message.reply('A group with that name already exists.')
     }
 
-    const group = await Group.create({ name, type, guildId: message.guild.id })
     message.guild.groups.set(group.id, group)
 
-    return message.reply(`Successfully added group **${name}**.`)
+    return message.reply(`Successfully create group **${name}**.`)
   }
 }
 
@@ -45,4 +51,4 @@ function validateName (name) {
   return name.includes(' ') ? 'Name cannot include spaces.' : true
 }
 
-module.exports = AddGroupCommand
+module.exports = CreateGroupCommand

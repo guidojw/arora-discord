@@ -4,13 +4,13 @@ const BaseCommand = require('../base')
 const { DiscordAPIError, GuildEmoji } = require('discord.js')
 const { Message, Role, RoleMessage } = require('../../models')
 
-class AddRoleMessageCommand extends BaseCommand {
+class CreateRoleMessageCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'settings',
-      name: 'addrolemessage',
-      aliases: ['addrolemsg'],
-      description: 'Adds a new role message.',
+      name: 'createrolemessage',
+      aliases: ['createrolemsg'],
+      description: 'Creates a new role message.',
       details: 'Can only be used in the channel of the message you want to make a role message. Because of this, the ' +
         'message that fires this command, the response, the argument prompts and the answers will all be deleted when' +
         ' the command has finished.',
@@ -69,8 +69,8 @@ class AddRoleMessageCommand extends BaseCommand {
       }
     }
 
-    return message.reply('Successfully added role message.')
+    return message.reply('Successfully created role message.')
   }
 }
 
-module.exports = AddRoleMessageCommand
+module.exports = CreateRoleMessageCommand

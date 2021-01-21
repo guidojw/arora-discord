@@ -3,13 +3,13 @@ const BaseCommand = require('../base')
 
 const { Tag, TagName } = require('../../models')
 
-class AddTagAliasCommand extends BaseCommand {
+class CreateTagAliasCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'settings',
-      name: 'addtagalias',
-      aliases: ['addalias'],
-      description: 'Adds a new alias to a tag.',
+      name: 'createtagalias',
+      aliases: ['createalias'],
+      description: 'Creates a new alias for a tag.',
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
         key: 'tagName',
@@ -46,7 +46,7 @@ class AddTagAliasCommand extends BaseCommand {
 
     await tag.createName({ name })
 
-    return message.reply(`Successfully added alias **${name}** to tag **${tag.names[0]?.name ?? 'Unknown'}**.`)
+    return message.reply(`Successfully created alias **${name}** to tag **${tag.names[0]?.name ?? 'Unknown'}**.`)
   }
 }
 
@@ -54,4 +54,4 @@ function validateName (name) {
   return name.includes(' ') ? 'Name cannot include spaces.' : true
 }
 
-module.exports = AddTagAliasCommand
+module.exports = CreateTagAliasCommand
