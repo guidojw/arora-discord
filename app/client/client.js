@@ -264,35 +264,31 @@ class NSadminClient extends Commando.Client {
     return this.user.setActivity(name, options)
   }
 
-  async send (user, content) {
-    try {
-      return await user.send(content)
-    } catch (err) {
-      if (err instanceof DiscordAPIError && err.code === 50007) {
-        // Most likely because the author has DMs closed,
-        // do nothing.
-      } else {
-        throw err
-      }
-    }
+  send (user, content) {
+    return failSilently(user.send.bind(this, content), [50007])
+    // Most likely because the author has DMs closed,
+    // do nothing.
   }
 
-  async deleteMessage (message) {
-    try {
-      return await message.delete()
-    } catch (err) {
-      if (err instanceof DiscordAPIError && err.code === 10008) {
-        // Discord API Unknown message error, the message
-        // was probably already deleted.
-      } else {
-        throw err
-      }
-    }
+  deleteMessage (message) {
+    return failSilently(message.delete, [10008])
+    // Discord API Unknown message error, the message
+    // was probably already deleted.
   }
 
   async login (token = this.token) {
     await super.login(token)
     this.ws.connect()
+  }
+}
+
+async function failSilently(fn, codes) {
+  try {
+    return await fn()
+  } catch (err) {
+    if (err instanceof DiscordAPIError && !codes.includes(err.code)) {
+      throw err
+    }
   }
 }
 
