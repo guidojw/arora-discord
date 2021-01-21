@@ -38,6 +38,12 @@ class AddRoleBindingCommand extends BaseCommand {
       [min, max] = [max, min]
     }
 
+    await Role.findOrCreate({
+      where: {
+        id: role.id,
+        guildId: message.guild.id
+      }
+    })
     const [, created] = await RoleBinding.findOrCreate({
       where: {
         robloxGroupId: message.guild.robloxGroupId,

@@ -199,7 +199,7 @@ class NSadminClient extends Commando.Client {
     if (roleMessages) {
       const emojiId = reaction.emoji.id || reaction.emoji.name
       for (const roleMessage of roleMessages) {
-        if (roleMessage.emojiId === emojiId) {
+        if (roleMessage.emojiId === emojiId || roleMessage.emoji === emojiId) {
           await member.roles[type](roleMessage.roleId)
         }
       }

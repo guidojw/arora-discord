@@ -46,7 +46,8 @@ module.exports = (sequelize, DataTypes) => {
       as: 'roles'
     })
     Group.hasMany(models.PermissionOverwrite, {
-      foreignKey: 'groupId'
+      foreignKey: 'groupId',
+      as: 'permissionOverwrites'
     })
   }
 

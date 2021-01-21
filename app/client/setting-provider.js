@@ -1,5 +1,5 @@
 'use strict'
-const { Guild, GuildCommand } = require('../models')
+const { Guild, Command } = require('../models')
 
 class SettingProvider {
   async init (client) {
@@ -12,8 +12,8 @@ class SettingProvider {
     }
 
     client.on('commandPrefixChange', this.commandPrefixChange.bind(this))
-    client.on('commandStatusChange', this.commandStatusChange.bind(this))
-    client.on('groupStatusChange', this.commandStatusChange.bind(this))
+    client.on('commandStatusChange', this.commandStatusChange.bind(this, 'command'))
+    client.on('groupStatusChange', this.commandStatusChange.bind(this, 'group'))
   }
 
   async setupGuild (guild, data) {
@@ -23,8 +23,8 @@ class SettingProvider {
       guild._commandPrefix = data.commandPrefix
     }
 
-    const guildCommands = await data.getCommands()
-    if (guildCommands) {
+    const commands = await data.getCommands()
+    if (commands) {
       if (!guild._commandsEnabled) {
         guild._groupsEnabled = {}
       }
@@ -33,7 +33,7 @@ class SettingProvider {
       }
 
       for (const command of this.client.registry.commands.values()) {
-        const commandSettings = guildCommands.find(guildCommand => guildCommand.commandName === command.name)
+        const commandSettings = commands.find(cmd => cmd.name === command.name)
         if (commandSettings) {
           if (!command.guarded && commandSettings.enabled !== undefined) {
             guild._commandsEnabled[command.name] = commandSettings.enabled
@@ -42,7 +42,7 @@ class SettingProvider {
       }
 
       for (const group of this.client.registry.groups.values()) {
-        const groupSettings = guildCommands.find(guildCommand => guildCommand.commandName === group.name)
+        const groupSettings = commands.find(cmd => cmd.name === group.name)
         if (groupSettings) {
           if (!group.guarded) {
             guild._groupsEnabled[group.id] = groupSettings.enabled !== undefined ? groupSettings.enabled : false
@@ -62,12 +62,19 @@ class SettingProvider {
     return guild.update({ commandPrefix: prefix })
   }
 
-  async commandStatusChange (guild, command, enabled) {
-    const guildCommand = await GuildCommand.findOne({ where: { guildId: guild.id, commandName: command.name } })
-    if (guildCommand) {
-      return guildCommand.update({ enabled })
-    } else {
-      return GuildCommand.create({ guildId: guild.id, commandName: command.name, enabled })
+  async commandStatusChange (type, guild, command, enabled) {
+    const [cmd, created] = await Command.findOrCreate({
+      where: {
+        guildId: guild.id,
+        name: command.name,
+        type
+      },
+      defaults: {
+        enabled
+      }
+    })
+    if (!created) {
+      await cmd.update({ enabled })
     }
   }
 }

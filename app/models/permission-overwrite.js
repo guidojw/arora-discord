@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
     }],
     validate: {
       roleXorGroup () {
-        if ((this.role !== null) !== (this.group !== null)) {
+        if ((this.role === null) === (this.group === null)) {
           throw new Error('Only one of roleId and groupId can be set.')
         }
       }

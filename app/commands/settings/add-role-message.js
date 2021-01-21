@@ -2,7 +2,7 @@
 const BaseCommand = require('../base')
 
 const { DiscordAPIError, GuildEmoji } = require('discord.js')
-const { RoleMessage } = require('../../models')
+const { Message, Role, RoleMessage } = require('../../models')
 
 class AddRoleMessageCommand extends BaseCommand {
   constructor (client) {
@@ -33,15 +33,29 @@ class AddRoleMessageCommand extends BaseCommand {
   }
 
   async run (message, { message: newMessage, emoji, role }) {
-    const roleMessage = await RoleMessage.findOne({
+    await Message.findOrCreate({
       where: {
-        emojiId: emoji instanceof GuildEmoji ? emoji.id : emoji,
+        id: newMessage.id,
+        guildId: message.guild.id,
+        channelId: message.channel.id
+      }
+    })
+    await Role.findOrCreate({
+      where: {
+        id: role.id,
+        guildId: message.guild.id
+      }
+    })
+    const [, created] = await RoleMessage.findOrCreate({
+      where: {
+        emojiId: emoji instanceof GuildEmoji ? emoji.id : null,
+        emoji: !(emoji instanceof GuildEmoji) ? emoji: null,
         messageId: newMessage.id,
         roleId: role.id,
         guildId: message.guild.id
       }
     })
-    if (roleMessage) {
+    if (!created) {
       return message.reply('A role message with that message, emoji and role already exists.')
     }
 
@@ -54,13 +68,6 @@ class AddRoleMessageCommand extends BaseCommand {
         throw err
       }
     }
-
-    await RoleMessage.create({
-      emojiId: emoji instanceof GuildEmoji ? emoji.id : emoji,
-      messageId: newMessage.id,
-      roleId: role.id,
-      guildId: message.guild.id
-    })
 
     return message.reply('Successfully added role message.')
   }

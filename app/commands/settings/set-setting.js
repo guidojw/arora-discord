@@ -2,7 +2,7 @@
 const BaseCommand = require('../base')
 
 const { Channel, CategoryChannel, Message } = require('discord.js')
-const { Guild } = require('../../models')
+const { Channel: ChannelModel, Guild, Message: MessageModel } = require('../../models')
 
 class SetSettingCommand extends BaseCommand {
   constructor (client) {
@@ -53,17 +53,19 @@ class SetSettingCommand extends BaseCommand {
         if (typeof value !== 'number') {
           error = 'Invalid ID.'
         }
-      } else if (key === 'ticketsCategoryId') {
-        if (!(value instanceof CategoryChannel)) {
-          error = 'Invalid category channel.'
-        }
       } else if (key === 'trainingsMessageId' || key === 'trainingsInfoMessageId' || key === 'supportMessageId') {
         if (!(value instanceof Message)) {
           error = 'Invalid message.'
+        } else {
+          await MessageModel.findOrCreate({ where: { id: value.id, guildId: message.guild.id } })
         }
       } else {
-        if (!(value instanceof Channel)) {
+        if (key === 'ticketsCategoryId' && !(value instanceof CategoryChannel)) {
+          error = 'Invalid category channel.'
+        } else if (!(value instanceof Channel)) {
           error = 'Invalid channel.'
+        } else {
+          await ChannelModel.findOrCreate({ where: { id: value.id, guildId: message.guild.id } })
         }
       }
 

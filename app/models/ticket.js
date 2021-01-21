@@ -1,11 +1,6 @@
 'use strict'
-module.exports = (sequelize, DataTypes) => {
-  const Ticket = sequelize.define('Ticket', {
-    type: {
-      type: DataTypes.STRING,
-      allowNull: false
-    }
-  }, {
+module.exports = sequelize => {
+  const Ticket = sequelize.define('Ticket', {}, {
     tableName: 'tickets'
   })
 
@@ -30,24 +25,27 @@ module.exports = (sequelize, DataTypes) => {
       }
     })
     Ticket.belongsTo(models.Channel, {
-      foreignKey: {
-        name: 'channelId'
-      },
+      foreignKey: 'channelId',
       onDelete: 'CASCADE'
     })
     Ticket.belongsTo(models.TicketType, {
       foreignKey: {
         name: 'typeId',
         allowNull: false
-      }
+      },
+      as: 'type'
     })
   }
 
   Ticket.loadScopes = models => {
     Ticket.addScope('defaultScope', {
       include: [{
-        model: models.TicketModerator,
-        as: 'moderators'
+        model: models.Member,
+        as: 'moderators',
+        through: { attributes: [] }
+      }, {
+        model: models.TicketType,
+        as: 'type'
       }],
       subQuery: false
     })
