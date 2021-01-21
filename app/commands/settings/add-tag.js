@@ -16,7 +16,7 @@ class AddTagCommand extends BaseCommand {
         key: 'name',
         prompt: 'What do you want the name of the tag to be?',
         type: 'string',
-        validate: _validateName
+        validate: validateName
       }, {
         key: 'content',
         prompt: 'What do you want the content of the tag to be?',
@@ -59,7 +59,7 @@ class AddTagCommand extends BaseCommand {
   }
 }
 
-function _validateName (name) {
+function validateName (name) {
   return name.includes(' ') ? 'Name cannot include spaces.' : true
 }
 

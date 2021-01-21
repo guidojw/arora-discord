@@ -16,7 +16,8 @@ class GetSettingCommand extends BaseCommand {
         prompt: 'What setting would you like to get?',
         type: 'string',
         oneOf: Object.keys(Guild.rawAttributes)
-          .filter(attribute => attribute !== 'id' && attribute !== 'supportEnabled' && attribute !== 'commandPrefix')
+          .filter(attribute => attribute !== 'id' && attribute !== 'supportEnabled' && attribute !== 'commandPrefix' &&
+            attribute !== 'trainingsInfoPanelId' && attribute !== 'trainingsPanelId')
           .map(attribute => attribute.endsWith('Id') ? attribute.slice(0, -2) : attribute)
           .map(attribute => attribute.toLowerCase())
       }]

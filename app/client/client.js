@@ -282,7 +282,7 @@ class NSadminClient extends Commando.Client {
   }
 }
 
-async function failSilently(fn, codes) {
+async function failSilently (fn, codes) {
   try {
     return await fn()
   } catch (err) {

@@ -1,8 +1,8 @@
 'use strict'
 const BaseCommand = require('../base')
 
-const { Channel, CategoryChannel, Message } = require('discord.js')
-const { Channel: ChannelModel, Guild, Message: MessageModel } = require('../../models')
+const { Channel, CategoryChannel } = require('discord.js')
+const { Channel: ChannelModel, Guild } = require('../../models')
 
 class SetSettingCommand extends BaseCommand {
   constructor (client) {
@@ -17,7 +17,8 @@ class SetSettingCommand extends BaseCommand {
         prompt: 'What setting would you like to change?',
         type: 'string',
         oneOf: Object.keys(Guild.rawAttributes)
-          .filter(attribute => attribute !== 'id' && attribute !== 'supportEnabled' && attribute !== 'commandPrefix')
+          .filter(attribute => attribute !== 'id' && attribute !== 'supportEnabled' && attribute !== 'commandPrefix' &&
+            attribute !== 'trainingsInfoPanelId' && attribute !== 'trainingsPanelId')
           .map(attribute => attribute.endsWith('Id') ? attribute.slice(0, -2) : attribute)
           .map(attribute => attribute.toLowerCase())
       }, {
@@ -53,12 +54,6 @@ class SetSettingCommand extends BaseCommand {
         if (typeof value !== 'number') {
           error = 'Invalid ID.'
         }
-      } else if (key === 'trainingsMessageId' || key === 'trainingsInfoMessageId' || key === 'supportMessageId') {
-        if (!(value instanceof Message)) {
-          error = 'Invalid message.'
-        } else {
-          await MessageModel.findOrCreate({ where: { id: value.id, guildId: message.guild.id } })
-        }
       } else {
         if (key === 'ticketsCategoryId' && !(value instanceof CategoryChannel)) {
           error = 'Invalid category channel.'
@@ -78,7 +73,7 @@ class SetSettingCommand extends BaseCommand {
       [key]: value !== null && key.endsWith('Id') && key !== 'robloxGroupId' ? value.id : value
     })
 
-    return message.reply(`Successfully changed ${key.endsWith('Id') ? key.slice(0, -2) : key} to **${value instanceof Message ? value.id : value}**.`)
+    return message.reply(`Successfully changed ${key.endsWith('Id') ? key.slice(0, -2) : key} to **${value}**.`)
   }
 }
 

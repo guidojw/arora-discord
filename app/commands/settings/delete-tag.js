@@ -15,7 +15,7 @@ class DeleteTagCommand extends BaseCommand {
         key: 'name',
         prompt: 'What tag would you like to delete?',
         type: 'string',
-        validate: _validateName
+        validate: validateName
       }]
     })
   }
@@ -36,7 +36,7 @@ class DeleteTagCommand extends BaseCommand {
   }
 }
 
-function _validateName (name) {
+function validateName (name) {
   return name.includes(' ') ? 'Name cannot include spaces.' : true
 }
 

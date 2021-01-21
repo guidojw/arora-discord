@@ -1,7 +1,7 @@
 'use strict'
 const BaseCommand = require('../base')
 
-const { RoleBinding } = require('../../models')
+const { Role, RoleBinding } = require('../../models')
 
 class AddRoleBindingCommand extends BaseCommand {
   constructor (client) {
@@ -19,12 +19,12 @@ class AddRoleBindingCommand extends BaseCommand {
         key: 'min',
         prompt: 'What do you want the lower limit of this binding to be?',
         type: 'integer',
-        validate: _validateRank
+        validate: validateRank
       }, {
         key: 'max',
         prompt: 'What do you want the upper limit of this binding to be? Reply with "0" if you don\'t want one.',
         type: 'integer',
-        validate: _validateRank
+        validate: validateRank
       }]
     })
   }
@@ -61,7 +61,7 @@ class AddRoleBindingCommand extends BaseCommand {
   }
 }
 
-function _validateRank (value) {
+function validateRank (value) {
   return (value >= 0 && value <= 255) || 'Invalid rank.'
 }
 

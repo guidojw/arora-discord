@@ -13,7 +13,7 @@ class AddGroupCommand extends BaseCommand {
         key: 'name',
         prompt: 'What do you want the name of the group to be?',
         type: 'string',
-        validate: _validateName
+        validate: validateName
       }, {
         key: 'type',
         prompt: 'What do you want the type of the group to be?',
@@ -41,7 +41,7 @@ class AddGroupCommand extends BaseCommand {
   }
 }
 
-function _validateName (name) {
+function validateName (name) {
   return name.includes(' ') ? 'Name cannot include spaces.' : true
 }
 

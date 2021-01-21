@@ -14,7 +14,7 @@ class EditTagCommand extends BaseCommand {
         key: 'name',
         prompt: 'What tag would you like to edit?',
         type: 'string',
-        validate: _validateName
+        validate: validateName
       }, {
         key: 'content',
         prompt: 'What do you want the new content of this tag to be?',
@@ -39,7 +39,7 @@ class EditTagCommand extends BaseCommand {
   }
 }
 
-function _validateName (name) {
+function validateName (name) {
   return name.includes(' ') ? 'Name cannot include spaces.' : true
 }
 

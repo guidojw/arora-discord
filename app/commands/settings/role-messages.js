@@ -45,7 +45,7 @@ class RoleMessagesCommand extends BaseCommand {
       const embeds = await discordService.getListEmbeds(
         'Role Messages',
         lodash.groupBy(roleMessages, 'messageId'),
-        _getGroupedRoleMessageRow,
+        getGroupedRoleMessageRow,
         { emojis: message.guild.emojis, roles: message.guild.roles }
       )
       for (const embed of embeds) {
@@ -55,10 +55,10 @@ class RoleMessagesCommand extends BaseCommand {
   }
 }
 
-function _getGroupedRoleMessageRow ([id, roleMessages], { emojis, roles }) {
+function getGroupedRoleMessageRow ([id, roleMessages], { emojis, roles }) {
   let result = `**${id}**\n`
   for (const roleMessage of roleMessages) {
-    const emoji = emojis.cache.get(roleMessage.emojiId) || roleMessage.emojiId
+    const emoji = roleMessage.emoji ?? emojis.cache.get(roleMessage.emojiId)
     const role = roles.cache.get(roleMessage.roleId) || 'Unknown'
     result += `${roleMessage.id}. ${emoji} => **${role}**`
   }

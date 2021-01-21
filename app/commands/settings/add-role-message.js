@@ -49,7 +49,7 @@ class AddRoleMessageCommand extends BaseCommand {
     const [, created] = await RoleMessage.findOrCreate({
       where: {
         emojiId: emoji instanceof GuildEmoji ? emoji.id : null,
-        emoji: !(emoji instanceof GuildEmoji) ? emoji: null,
+        emoji: emoji instanceof GuildEmoji ? null : emoji,
         messageId: newMessage.id,
         roleId: role.id,
         guildId: message.guild.id

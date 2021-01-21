@@ -32,7 +32,7 @@ class RoleBindingsCommand extends BaseCommand {
       const role = message.guild.roles.cache.get(roleBinding.roleId) || 'Unknown'
 
       const embed = new MessageEmbed()
-        .addField(`Role Binding ${roleBinding.id}`, `${_getRangeString(roleBinding.min, roleBinding.max)} => **${role}**`)
+        .addField(`Role Binding ${roleBinding.id}`, `${getRangeString(roleBinding.min, roleBinding.max)} => **${role}**`)
         .setColor(message.guild.primaryColor)
       return message.replyEmbed(embed)
     } else {
@@ -44,7 +44,7 @@ class RoleBindingsCommand extends BaseCommand {
       const embeds = await discordService.getListEmbeds(
         'Role Bindings',
         lodash.groupBy(roleBindings, 'roleId'),
-        _getGroupedRoleBindingRow,
+        getGroupedRoleBindingRow,
         { roles: message.guild.roles }
       )
       for (const embed of embeds) {
@@ -54,17 +54,17 @@ class RoleBindingsCommand extends BaseCommand {
   }
 }
 
-function _getGroupedRoleBindingRow ([id, roleBindings], { roles }) {
+function getGroupedRoleBindingRow ([id, roleBindings], { roles }) {
   let result = ''
   const role = roles.cache.get(id) || 'Unknown'
   result += `**${role}**\n`
   for (const roleBinding of roleBindings) {
-    result += `${roleBinding.id}. ${_getRangeString(roleBinding.min, roleBinding.max)}\n`
+    result += `${roleBinding.id}. ${getRangeString(roleBinding.min, roleBinding.max)}\n`
   }
   return result
 }
 
-function _getRangeString (min, max) {
+function getRangeString (min, max) {
   return `${max ? '[' : ''}**${min}**${max ? `, **${max}**]` : ''}`
 }
 

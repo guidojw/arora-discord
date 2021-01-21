@@ -15,7 +15,7 @@ class DeleteTagAliasCommand extends Base {
         key: 'alias',
         prompt: 'What tag alias would you like to delete?',
         type: 'string',
-        validate: _validateAlias
+        validate: validateAlias
       }]
     })
   }
@@ -43,7 +43,7 @@ class DeleteTagAliasCommand extends Base {
   }
 }
 
-function _validateAlias (alias) {
+function validateAlias (alias) {
   return alias.includes(' ') ? 'Alias cannot include spaces.' : true
 }
 

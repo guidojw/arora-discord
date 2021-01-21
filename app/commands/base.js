@@ -24,10 +24,10 @@ class BaseCommand extends Commando.Command {
       // const command = message.command
       // const group = command.group
       //
-      // if (!_checkPermissions(member, group, roleGroups)) {
+      // if (!checkPermissions(member, group, roleGroups)) {
       //   return false
       // }
-      // if (!_checkPermissions(member, command, roleGroups)) {
+      // if (!checkPermissions(member, command, roleGroups)) {
       //   return false
       // }
     }
@@ -40,7 +40,7 @@ class BaseCommand extends Commando.Command {
   }
 }
 
-function _checkPermissions (member, object, roleGroups) {
+function checkPermissions (member, object, roleGroups) {
   let { requiredRoles, bannedRoles } = object
   requiredRoles = discordService.convertRoles(requiredRoles, roleGroups)
   bannedRoles = discordService.convertRoles(bannedRoles, roleGroups)
