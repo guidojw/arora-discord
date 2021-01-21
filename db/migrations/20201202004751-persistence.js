@@ -174,7 +174,6 @@ module.exports = {
           model: 'channels',
           key: 'id'
         },
-        onDelete: 'CASCADE',
         field: 'logs_channel_id'
       },
       suggestionsChannelId: {
@@ -183,7 +182,6 @@ module.exports = {
           model: 'channels',
           key: 'id'
         },
-        onDelete: 'CASCADE',
         field: 'suggestions_channel_id'
       },
       ratingsChannelId: {
@@ -192,7 +190,6 @@ module.exports = {
           model: 'channels',
           key: 'id'
         },
-        onDelete: 'CASCADE',
         field: 'ratings_channel_id'
       },
       welcomeChannelId: {
@@ -201,7 +198,6 @@ module.exports = {
           model: 'channels',
           key: 'id'
         },
-        onDelete: 'CASCADE',
         field: 'welcome_channel_id'
       },
       ticketsCategoryId: {
@@ -210,7 +206,6 @@ module.exports = {
           model: 'channels',
           key: 'id'
         },
-        onDelete: 'CASCADE',
         field: 'tickets_category_id'
       },
       trainingsInfoPanelId: {
@@ -219,7 +214,6 @@ module.exports = {
           model: 'panels',
           key: 'id'
         },
-        onDelete: 'CASCADE',
         field: 'trainings_info_panel_id'
       },
       trainingsPanelId: {
@@ -228,7 +222,6 @@ module.exports = {
           model: 'panels',
           key: 'id'
         },
-        onDelete: 'CASCADE',
         field: 'trainings_panel_id'
       }
     })
@@ -334,7 +327,7 @@ module.exports = {
       },
       guildId: {
         type: Sequelize.BIGINT,
-          allowNull: false,
+        allowNull: false,
         unique: 'commands_name_type_guild_id_key',
         references: {
           model: 'guilds',
@@ -383,15 +376,61 @@ module.exports = {
       }
     })
 
+    await queryInterface.createTable('ticket_types', {
+      id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+      },
+      name: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        unique: 'ticket_types_name_guild_id_key'
+      },
+      guildId: {
+        type: Sequelize.BIGINT,
+        allowNull: false,
+        unique: 'ticket_types_name_guild_id_key',
+        references: {
+          model: 'guilds',
+          key: 'id'
+        },
+        onDelete: 'CASCADE',
+        field: 'guild_id'
+      },
+      emoji: Sequelize.STRING,
+      emojiId: {
+        type: Sequelize.BIGINT,
+        references: {
+          model: 'emojis',
+          key: 'id'
+        },
+        field: 'emoji_id'
+      },
+      panelId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'panels',
+          key: 'id'
+        },
+        field: 'panel_id'
+      }
+    })
+
     await queryInterface.createTable('tickets', {
       id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true
       },
-      type: {
-        type: Sequelize.STRING,
-        allowNull: false
+      typeId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'ticket_types',
+          key: 'id'
+        },
+        field: 'type_id'
       },
       authorId: {
         type: Sequelize.BIGINT,
@@ -421,33 +460,6 @@ module.exports = {
         },
         onDelete: 'CASCADE',
         field: 'guild_id'
-      }
-    })
-
-    await queryInterface.createTable('ticket_types', {
-      name: {
-        type: Sequelize.STRING,
-        primaryKey: true
-      },
-      guildId: {
-        type: Sequelize.BIGINT,
-        allowNull: false,
-        references: {
-          model: 'guilds',
-          key: 'id'
-        },
-        onDelete: 'CASCADE',
-        field: 'guild_id'
-      },
-      emoji: Sequelize.STRING,
-      emojiId: {
-        type: Sequelize.BIGINT,
-        references: {
-          model: 'emojis',
-          key: 'id'
-        },
-        onDelete: 'CASCADE',
-        field: 'emoji_id'
       }
     })
 
@@ -602,6 +614,17 @@ module.exports = {
         field: 'guild_id'
       }
     })
+
+    await queryInterface.sequelize.query(stripIndents`
+    ALTER TABLE role_messages
+    ADD CONSTRAINT role_messages_emoji_emoji_id_check
+    CHECK (
+      (
+        (emoji is not null)::INTEGER +
+        (emoji_id is not null)::INTEGER
+      ) = 1
+    );
+    `)
 
     await queryInterface.createTable('channels_channels', {
       from_channel_id: {
@@ -804,8 +827,8 @@ module.exports = {
     await queryInterface.dropTable('members_roles')
 
     await queryInterface.dropTable('tickets_moderators')
-    await queryInterface.dropTable('ticket_types')
     await queryInterface.dropTable('tickets')
+    await queryInterface.dropTable('ticket_types')
 
     await queryInterface.dropTable('tag_names')
     await queryInterface.dropTable('tags')
