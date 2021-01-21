@@ -5,6 +5,12 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BIGINT,
       primaryKey: true
     },
+    supportEnabled: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+      field: 'support_enabled'
+    },
     primaryColor: {
       type: DataTypes.INTEGER,
       field: 'primary_color'
@@ -13,55 +19,9 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       fied: 'command_prefix'
     },
-    supportEnabled: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: false,
-      field: 'support_enabled'
-    },
     robloxGroupId: {
       type: DataTypes.INTEGER,
       field: 'roblox_group_id'
-    },
-    logsChannelId: {
-      type: DataTypes.BIGINT,
-      field: 'logs_channel_id'
-    },
-    trainingsChannelId: {
-      type: DataTypes.BIGINT,
-      field: 'trainings_channel_id'
-    },
-    suggestionsChannelId: {
-      type: DataTypes.BIGINT,
-      field: 'suggestions_channel_id'
-    },
-    ratingsChannelId: {
-      type: DataTypes.BIGINT,
-      field: 'ratings_channel_id'
-    },
-    supportChannelId: {
-      type: DataTypes.BIGINT,
-      field: 'support_channel_id'
-    },
-    welcomeChannelId: {
-      type: DataTypes.BIGINT,
-      field: 'welcome_channel_id'
-    },
-    ticketsCategoryId: {
-      type: DataTypes.BIGINT,
-      field: 'tickets_category_id'
-    },
-    trainingsMessageId: {
-      type: DataTypes.BIGINT,
-      field: 'trainings_message_id'
-    },
-    trainingsInfoMessageId: {
-      type: DataTypes.BIGINT,
-      field: 'trainings_info_message_id'
-    },
-    supportMessageId: {
-      type: DataTypes.BIGINT,
-      field: 'support_message_id'
     }
   }, {
     hooks: {
@@ -82,10 +42,10 @@ module.exports = (sequelize, DataTypes) => {
   })
 
   Guild.associate = models => {
-    Guild.hasMany(models.GuildCommand, {
+    Guild.hasMany(models.Command, {
       foreignKey: {
         name: 'guildId',
-        primaryKey: true
+        allowNull: false
       },
       as: 'commands'
     })
@@ -107,7 +67,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false
       }
     })
-    Guild.hasMany(models.UserRole, {
+    Guild.hasMany(models.MemberRole, {
       foreignKey: {
         name: 'guildId',
         primaryKey: true
@@ -116,7 +76,7 @@ module.exports = (sequelize, DataTypes) => {
     Guild.hasMany(models.RoleMessage, {
       foreignKey: {
         name: 'guildId',
-        primaryKey: true
+        allowNull: false
       }
     })
     Guild.hasMany(models.ChannelChannel, {
@@ -138,6 +98,60 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false
       },
       as: 'roles'
+    })
+    Guild.hasMany(models.Panel, {
+      foreignKey: {
+        name: 'guildId',
+        allowNull: false
+      }
+    })
+    Guild.belongsTo(models.Panel, {
+      foreignKey: 'trainingsInfoPanelId'
+    })
+    Guild.belongsTo(models.Panel, {
+      foreignKey: 'trainingsPanelId'
+    })
+    Guild.hasMany(models.Channel, {
+      foreignKey: {
+        name: 'guildId',
+        allowNull: false
+      }
+    })
+    Guild.belongsTo(models.Channel, {
+      foreignKey: 'logsChannelId'
+    })
+    Guild.belongsTo(models.Channel, {
+      foreignKey: 'suggestionsChannelId'
+    })
+    Guild.belongsTo(models.Channel, {
+      foreignKey: 'ratingsChannelId'
+    })
+    Guild.belongsTo(models.Channel, {
+      foreignKey: 'ticketsCategoryId'
+    })
+    Guild.hasMany(models.TicketType, {
+      foreignKey: {
+        name: 'guildId',
+        allowNull: false
+      }
+    })
+    Guild.hasMany(models.Emoji, {
+      foreignKey: {
+        name: 'guildId',
+        allowNull: false
+      }
+    })
+    Guild.hasMany(models.Message, {
+      foreignKey: {
+        name: 'guildId',
+        allowNull: false
+      }
+    })
+    Guild.hasMany(models.Member, {
+      foreignKey: {
+        name: 'guildId',
+        allowNull: false
+      }
     })
   }
 

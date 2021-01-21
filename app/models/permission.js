@@ -20,6 +20,12 @@ module.exports = (sequelize, DataTypes) => {
       sourceKey: 'name',
       targetKey: 'id'
     })
+    Permission.hasMany(models.PermissionOverwrite, {
+      foreignKey: {
+        name: 'permissionName',
+        allowNull: false
+      }
+    })
   }
 
   return Permission

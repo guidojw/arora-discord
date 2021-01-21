@@ -1,11 +1,6 @@
 'use strict'
 module.exports = (sequelize, DataTypes) => {
   const RoleBinding = sequelize.define('RoleBinding', {
-    roleId: {
-      type: DataTypes.BIGINT,
-      allowNull: false,
-      field: 'role_id'
-    },
     robloxGroupId: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -24,6 +19,13 @@ module.exports = (sequelize, DataTypes) => {
     RoleBinding.belongsTo(models.Guild, {
       foreignKey: {
         name: 'guildId',
+        allowNull: false
+      },
+      onDelete: 'CASCADE'
+    })
+    RoleBinding.belongsTo(models.Role, {
+      foreignKey: {
+        name: 'roleId',
         allowNull: false
       },
       onDelete: 'CASCADE'

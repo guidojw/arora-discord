@@ -28,6 +28,24 @@ module.exports = (sequelize, DataTypes) => {
       sourceKey: 'id',
       targetKey: 'id'
     })
+    Role.hasMany(models.RoleMessage, {
+      foreignKey: {
+        name: 'roleId',
+        allowNull: false
+      }
+    })
+    Role.hasMany(models.RoleBinding, {
+      foreignKey: {
+        name: 'roleId',
+        allowNull: false
+      }
+    })
+    Role.hasMany(models.MemberRole, {
+      foreignKey: {
+        name: 'roleId',
+        allowNull: false
+      }
+    })
   }
 
   Role.loadScopes = models => {

@@ -33,11 +33,10 @@ module.exports = (sequelize, DataTypes) => {
       targetKey: 'name',
       as: 'permissions'
     })
-    Group.hasMany(models.ChannelGroup, {
-      foreignKey: {
-        name: 'groupId',
-        primaryKey: true
-      },
+    Group.belongsToMany(models.Channel, {
+      through: 'channels_groups',
+      sourceKey: 'id',
+      targetKey: 'id',
       as: 'channels'
     })
     Group.belongsToMany(models.Role, {
@@ -45,6 +44,9 @@ module.exports = (sequelize, DataTypes) => {
       sourceKey: 'id',
       targetKey: 'id',
       as: 'roles'
+    })
+    Group.hasMany(models.PermissionOverwrite, {
+      foreignKey: 'groupId'
     })
   }
 
@@ -54,12 +56,14 @@ module.exports = (sequelize, DataTypes) => {
         model: models.Permission,
         as: 'permissions'
       }, {
-        model: models.ChannelGroup,
-        as: 'channels',
-        attributes: ['channelId']
+        model: models.Channel,
+        as: 'channels'
       }, {
         model: models.Role,
         as: 'roles'
+      }, {
+        model: models.PermissionOverwrite,
+        as: 'permissionOverwrites'
       }],
       subQuery: false
     })

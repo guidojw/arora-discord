@@ -1,15 +1,6 @@
 'use strict'
 module.exports = (sequelize, DataTypes) => {
   const Ticket = sequelize.define('Ticket', {
-    authorId: {
-      type: DataTypes.BIGINT,
-      allowNull: false,
-      field: 'author_id'
-    },
-    channelId: {
-      type: DataTypes.BIGINT,
-      field: 'channel_id'
-    },
     type: {
       type: DataTypes.STRING,
       allowNull: false
@@ -26,12 +17,29 @@ module.exports = (sequelize, DataTypes) => {
       },
       onDelete: 'CASCADE'
     })
-    Ticket.hasMany(models.TicketModerator, {
-      foreignKey: {
-        name: 'ticketId',
-        primaryKey: true
-      },
+    Ticket.belongsToMany(models.Member, {
+      through: 'tickets_moderators',
+      sourceKey: 'id',
+      targetKey: 'id',
       as: 'moderators'
+    })
+    Ticket.belongsTo(models.Member, {
+      foreignKey: {
+        name: 'authorId',
+        allowNull: false
+      }
+    })
+    Ticket.belongsTo(models.Channel, {
+      foreignKey: {
+        name: 'channelId'
+      },
+      onDelete: 'CASCADE'
+    })
+    Ticket.belongsTo(models.TicketType, {
+      foreignKey: {
+        name: 'typeId',
+        allowNull: false
+      }
     })
   }
 
