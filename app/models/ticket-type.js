@@ -2,15 +2,19 @@
 module.exports = (sequelize, DataTypes) => {
   const TicketType = sequelize.define('TicketType', {
     name: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(16),
       allowNull: false,
       unique: 'ticket_types_name_guild_id_key'
     },
-    emoji: DataTypes.STRING(7)
+    emoji: {
+      type: DataTypes.STRING(7),
+      defaultValue: null
+    }
   }, {
     validate: {
-      emojiXorEmojiId () {
-        if ((this.emoji === null) === (this.emojiId === null)) {
+      emojiNandEmojiId () {
+        console.log(this.emoji, this.emojiId)
+        if (this.emoji !== null && this.emojiId !== null) {
           throw new Error('Only one of emoji and emojiId can be set.')
         }
       }
@@ -28,7 +32,10 @@ module.exports = (sequelize, DataTypes) => {
       onDelete: 'CASCADE'
     })
     TicketType.belongsTo(models.Emoji, {
-      foreignKey: 'emojiId'
+      foreignKey: {
+        name: 'emojiId',
+        defaultValue: null
+      }
     })
     TicketType.belongsTo(models.Panel, {
       foreignKey: 'panelId'

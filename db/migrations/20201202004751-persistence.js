@@ -383,7 +383,7 @@ module.exports = {
         autoIncrement: true
       },
       name: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(16),
         allowNull: false,
         unique: 'ticket_types_name_guild_id_key'
       },
@@ -468,9 +468,9 @@ module.exports = {
     ADD CONSTRAINT ticket_types_emoji_emoji_id_check
     CHECK (
       (
-        (emoji is not null)::INTEGER +
-        (emoji_id is not null)::INTEGER
-      ) = 1
+        (emoji IS NOT NULL)::INTEGER +
+        (emoji_id IS NOT NULL)::INTEGER
+      ) <= 1
     );
     `)
 
@@ -620,8 +620,8 @@ module.exports = {
     ADD CONSTRAINT role_messages_emoji_emoji_id_check
     CHECK (
       (
-        (emoji is not null)::INTEGER +
-        (emoji_id is not null)::INTEGER
+        (emoji IS NOT NULL)::INTEGER +
+        (emoji_id IS NOT NULL)::INTEGER
       ) = 1
     );
     `)
@@ -802,8 +802,8 @@ module.exports = {
     ADD CONSTRAINT permission_overwrites_permission_name_role_id_group_id_check
     CHECK (
       (
-        (role_id is not null)::INTEGER +
-        (group_id is not null)::INTEGER
+        (role_id IS NOT NULL)::INTEGER +
+        (group_id IS NOT NULL)::INTEGER
       ) = 1
     );
     `)
