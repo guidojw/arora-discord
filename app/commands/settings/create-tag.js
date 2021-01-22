@@ -52,7 +52,7 @@ class CreateTagCommand extends BaseCommand {
       }
     }
 
-    const tag = await Tag.create({ guildId: message.guild.id, authorId: message.author.id, content })
+    const tag = await Tag.create({ guildId: message.guild.id, content })
     await tag.createName({ name })
 
     return message.reply(`Successfully created tag **${name}**.`)
