@@ -25,15 +25,48 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {
     hooks: {
-      afterCreate: async guild => {
-        await guild.createRole({ id: guild.id, guildId: guild.id })
+      afterCreate: async (guild, { transaction }) => {
+        await guild.createRole({
+          id: guild.id,
+          guildId: guild.id
+        }, {
+          transaction
+        })
 
-        await guild.createGroup({ name: 'serverBoosterReportChannels', type: 'channel', guarded: true })
-        await guild.createGroup({ name: 'photoContestChannels', type: 'channel', guarded: true })
-        await guild.createGroup({ name: 'noTextChannels', type: 'channel', guarded: true })
+        await guild.createGroup({
+          name: 'serverBoosterReportChannels',
+          type: 'channel',
+          guarded: true
+        }, {
+          transaction
+        })
+        await guild.createGroup({
+          name: 'photoContestChannels',
+          type: 'channel',
+          guarded: true
+        }, { transaction })
+        await guild.createGroup({
+          name: 'noTextChannels',
+          type: 'channel',
+          guarded: true
+        }, {
+          transaction
+        })
 
-        const adminRoleGroup = await guild.createGroup({ name: 'admin', type: 'role', guarded: true })
-        const everyoneRoleGroup = await guild.createGroup({ name: 'everyone', type: 'role', guarded: true })
+        const adminRoleGroup = await guild.createGroup({
+          name: 'admin',
+          type: 'role',
+          guarded: true
+        }, {
+          transaction
+        })
+        const everyoneRoleGroup = await guild.createGroup({
+          name: 'everyone',
+          type: 'role',
+          guarded: true
+        }, {
+          transaction
+        })
         // await sequelize.models.GroupPermission.bulkCreate([])
         // await sequelize.models.GroupPermission.bulkCreate([])
       }

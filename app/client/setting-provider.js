@@ -6,8 +6,10 @@ class SettingProvider {
     this.client = client
 
     for (const guild of this.client.guilds.cache.values()) {
-      const data = await Guild.findOne({ where: { id: guild.id } }) ||
-        await (await Guild.create({ id: guild.id })).reload()
+      const [data, created] = await Guild.findOrCreate({ where: { id: guild.id } })
+      if (created) { // Creating doesn't automatically include the included models.
+        await data.reload()
+      }
       this.setupGuild(guild, data)
     }
 
