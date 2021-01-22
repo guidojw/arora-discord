@@ -14,7 +14,7 @@ class RoleBindingsCommand extends BaseCommand {
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
         key: 'typeId',
-        prompt: 'What ticket type would you like to know the information of?',
+        prompt: 'What ticket type ID would you like to know the information of?',
         type: 'integer',
         default: ''
       }]
