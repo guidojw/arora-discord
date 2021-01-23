@@ -10,7 +10,7 @@ class NSadminProvider extends SettingProvider {
     for (const guildId of client.guilds.cache.keys()) {
       await this.setupGuild(guildId)
     }
-    await this.setupGuild('0')
+    await this.setupGuild('0') // Global settings
   }
 
   async setupGuild (guildId) {
