@@ -14,7 +14,8 @@ class MessageEvent extends BaseEvent {
     const guild = this.client.guilds.cache.get(message.guild.id)
     const prefix = guild.commandPrefix ?? this.commandPrefix
 
-    if (message.content.startsWith(prefix)) {
+    const tagCommand = this.client.registry.commands.find(command => command.name === 'tag')
+    if (tagCommand.isEnabledIn(message.guild) && message.content.startsWith(prefix)) {
       const args = message.content.slice(prefix.length).trim().split(/ +/)
       const tagName = args.shift().toLowerCase()
       if (tagName) {
