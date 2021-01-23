@@ -5,9 +5,9 @@ const SettingProvider = require('./setting-provider')
 const TicketsController = require('./tickets')
 const WebSocketManager = require('./websocket/websocket')
 
-const { DiscordAPIError, Message, MessageEmbed } = require('discord.js')
-const { RoleMessage, Tag, TagName } = require('../models')
-const { stripIndents } = require('common-tags')
+const { DiscordAPIError, Message } = require('discord.js')
+const { EventManager } = require('./events')
+const { RoleMessage  } = require('../models')
 
 const applicationConfig = require('../../config/application')
 
@@ -62,6 +62,8 @@ class NSadminClient extends Commando.Client {
       })
       .registerCommandsIn(path.join(__dirname, '../commands'))
 
+    this.events = new EventManager(this)
+
     this.once('ready', this.ready.bind(this))
   }
 
@@ -76,12 +78,17 @@ class NSadminClient extends Commando.Client {
     this.ticketsController = new TicketsController(this)
     await this.ticketsController.init()
 
-    this.on('commandError', this.commandError.bind(this))
-    this.on('commandRun', this.commandRun.bind(this))
-    this.on('guildMemberAdd', this.guildMemberAdd.bind(this))
-    this.on('messageReactionAdd', this.messageReactionAdd.bind(this))
-    this.on('messageReactionRemove', this.messageReactionRemove.bind(this))
-    this.on('message', this.message.bind(this))
+    this.bindEvent('channelDelete')
+    this.bindEvent('commandError')
+    this.bindEvent('commandRun')
+    this.bindEvent('emojiDelete')
+    this.bindEvent('guildCreate')
+    this.bindEvent('guildMemberAdd')
+    this.bindEvent('message')
+    this.bindEvent('messageDelete')
+    this.bindEvent('messageReactionAdd')
+    this.bindEvent('messageReactionRemove')
+    this.bindEvent('roleDelete')
 
     if (applicationConfig.apiEnabled) {
       this.ws = new WebSocketManager(this)
@@ -93,48 +100,7 @@ class NSadminClient extends Commando.Client {
     console.log(`Ready to serve on ${this.guilds.cache.size} servers, for ${this.users.cache.size} users.`)
   }
 
-  async commandError (command, err, message, args, fromPattern, collResult) {
-    if (err.response && err.response.data.errors && err.response.data.errors.length > 0) {
-      await message.reply(err.response.data.errors[0].message || err.response.data.errors[0].msg)
-    } else {
-      await message.reply(err.message || err.msg)
-    }
-
-    await this.handleCommandDeleteMessages(command, err, message, args, fromPattern, collResult)
-
-    const guild = message.guild ? this.guilds.cache.get(message.guild.id) : this.mainGuild
-    await guild.log(
-      message.author,
-      stripIndents`
-      ${message.author} **used** \`${command.name}\` **command in** ${message.channel} [Jump to Message](${message.url})
-      ${message.content}
-      `,
-      { color: 0xff0000 }
-    )
-  }
-
-  async commandRun (command, promise, message, args, fromPattern, collResult) {
-    let result
-    try {
-      result = await promise
-    } catch (err) {
-      // Command execution errors are handled by the commandError event.
-      return
-    }
-
-    await this.handleCommandDeleteMessages(command, result, message, args, fromPattern, collResult)
-
-    const guild = message.guild ? this.guilds.cache.get(message.guild.id) : this.mainGuild
-    await guild.log(
-      message.author,
-      stripIndents`
-      ${message.author} **used** \`${command.name}\` **command in** ${message.channel} [Jump to Message](${message.url})
-      ${message.content}
-      `
-    )
-  }
-
-  async handleCommandDeleteMessages (command, result, message, _args, _fromPattern, collResult) {
+  async handleCommandDeleteMessages (command, result, message, collResult) {
     if (!command.deleteMessages) {
       return
     }
@@ -151,30 +117,6 @@ class NSadminClient extends Commando.Client {
         return Promise.all(result.map(this.deleteMessage.bind(this)))
       }, COMMAND_DELETE_MESSAGES_TIMEOUT)
     }
-  }
-
-  guildMemberAdd (member) {
-    if (member.user.bot) {
-      return
-    }
-
-    const guild = this.guilds.cache.get(member.guild.id)
-    if (guild.welcomeChannel) {
-      const embed = new MessageEmbed()
-        .setTitle(`Hey ${member.user.tag},`)
-        .setDescription(`You're the **${member.guild.memberCount}th** member on **${member.guild.name}**!`)
-        .setThumbnail(member.user.displayAvatarURL())
-        .setColor(guild.getData('primaryColor'))
-      return guild.welcomeChannel.send(embed)
-    }
-  }
-
-  async messageReactionAdd (reaction, user) {
-    await this.handleRoleMessage('add', reaction, user)
-  }
-
-  async messageReactionRemove (reaction, user) {
-    await this.handleRoleMessage('remove', reaction, user)
   }
 
   async handleRoleMessage (type, reaction, user) {
@@ -201,38 +143,6 @@ class NSadminClient extends Commando.Client {
       for (const roleMessage of roleMessages) {
         if (roleMessage.emojiId === emojiId || roleMessage.emoji === emojiId) {
           await member.roles[type](roleMessage.roleId)
-        }
-      }
-    }
-  }
-
-  async message (message) {
-    if (message.author.bot) {
-      return
-    }
-    if (!message.guild) {
-      return
-    }
-    const guild = this.guilds.cache.get(message.guild.id)
-    const prefix = guild.commandPrefix ?? this.commandPrefix
-
-    if (message.content.startsWith(prefix)) {
-      const args = message.content.slice(prefix.length).trim().split(/ +/)
-      const tagName = args.shift().toLowerCase()
-      if (tagName) {
-        const tag = await Tag.findOne({
-          where: { guildId: guild.id },
-          include: [{ model: TagName, as: 'names', where: { name: tagName } }]
-        })
-
-        if (tag) {
-          try {
-            const embed = new MessageEmbed(JSON.parse(tag.content))
-
-            return message.reply(embed)
-          } catch (err) {
-            return message.reply(tag.content)
-          }
         }
       }
     }
@@ -279,6 +189,11 @@ class NSadminClient extends Commando.Client {
   async login (token = this.token) {
     await super.login(token)
     this.ws.connect()
+  }
+
+  bindEvent (event) {
+    const handler = this.events[event]
+    this.on(event, handler.handle.bind(handler))
   }
 }
 
