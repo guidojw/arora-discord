@@ -1,7 +1,7 @@
 'use strict'
 const Commando = require('discord.js-commando')
 const path = require('path')
-const SettingProvider = require('./setting-provider')
+const NSadminProvider = require('./setting-provider')
 const TicketsController = require('./tickets')
 const WebSocketManager = require('./websocket/websocket')
 
@@ -68,7 +68,7 @@ class NSadminClient extends Commando.Client {
   }
 
   async ready () {
-    await this.setProvider(new SettingProvider())
+    await this.setProvider(new NSadminProvider())
 
     const mainGuildId = process.env.NODE_ENV === 'production'
       ? applicationConfig.productionMainGuildId
