@@ -80,8 +80,11 @@ class NSadminClient extends Commando.Client {
 
     this.bindEvent('channelDelete')
     this.bindEvent('commandError')
+    this.bindEvent('commandPrefixChange')
     this.bindEvent('commandRun')
+    this.bindEvent('commandStatusChange')
     this.bindEvent('emojiDelete')
+    this.bindEvent('groupStatusChange')
     this.bindEvent('guildCreate')
     this.bindEvent('guildMemberAdd')
     this.bindEvent('message')

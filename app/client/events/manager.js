@@ -7,8 +7,11 @@ class EventManager {
 
     this.register(require('./channel-delete'))
     this.register(require('./command-error'))
+    this.register(require('./command-prefix-change'))
     this.register(require('./command-run'))
+    this.register(require('./command-status-change'))
     this.register(require('./emoji-delete'))
+    this.register(require('./group-status-change'))
     this.register(require('./guild-create'))
     this.register(require('./guild-member-add'))
     this.register(require('./message'))

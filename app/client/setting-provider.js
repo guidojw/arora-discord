@@ -12,10 +12,6 @@ class SettingProvider {
       }
       this.setupGuild(guild, data)
     }
-
-    client.on('commandPrefixChange', this.commandPrefixChange.bind(this))
-    client.on('commandStatusChange', this.commandStatusChange.bind(this, 'command'))
-    client.on('groupStatusChange', this.commandStatusChange.bind(this, 'group'))
   }
 
   async setupGuild (guild, data) {
@@ -25,8 +21,8 @@ class SettingProvider {
       guild._commandPrefix = data.commandPrefix
     }
 
-    const commands = await data.getCommands()
-    if (commands) {
+    const settings = await data.getCommands()
+    if (settings) {
       if (!guild._commandsEnabled) {
         guild._groupsEnabled = {}
       }
@@ -35,7 +31,7 @@ class SettingProvider {
       }
 
       for (const command of this.client.registry.commands.values()) {
-        const commandSettings = commands.find(cmd => cmd.name === command.name)
+        const commandSettings = settings.find(cmd => cmd.name === command.name)
         if (commandSettings) {
           if (!command.guarded && commandSettings.enabled !== undefined) {
             guild._commandsEnabled[command.name] = commandSettings.enabled
@@ -44,7 +40,7 @@ class SettingProvider {
       }
 
       for (const group of this.client.registry.groups.values()) {
-        const groupSettings = commands.find(cmd => cmd.name === group.name)
+        const groupSettings = settings.find(cmd => cmd.name === group.name)
         if (groupSettings) {
           if (!group.guarded) {
             guild._groupsEnabled[group.id] = groupSettings.enabled !== undefined ? groupSettings.enabled : false
