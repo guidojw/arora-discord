@@ -226,82 +226,15 @@ module.exports = {
       }
     })
 
-    await queryInterface.addConstraint('roles', {
-      fields: ['guild_id'],
-      type: 'foreign key',
-      name: 'roles_guild_id_guilds_fk',
-      references: {
-        table: 'guilds',
-        field: 'id'
-      },
-      onDelete: 'CASCADE'
-    })
-
-    await queryInterface.addConstraint('channels', {
-      fields: ['guild_id'],
-      type: 'foreign key',
-      name: 'channels_guild_id_guilds_fk',
-      references: {
-        table: 'guilds',
-        field: 'id'
-      },
-      onDelete: 'CASCADE'
-    })
-
-    await queryInterface.addConstraint('messages', {
-      fields: ['guild_id'],
-      type: 'foreign key',
-      name: 'messages_guild_id_guilds_fk',
-      references: {
-        table: 'guilds',
-        field: 'id'
-      },
-      onDelete: 'CASCADE'
-    })
-
-    await queryInterface.addConstraint('members', {
-      fields: ['guild_id'],
-      type: 'foreign key',
-      name: 'members_guild_id_guilds_fk',
-      references: {
-        table: 'guilds',
-        field: 'id'
-      },
-      onDelete: 'CASCADE'
-    })
-
-    await queryInterface.addConstraint('emojis', {
-      fields: ['guild_id'],
-      type: 'foreign key',
-      name: 'emojis_guild_id_guilds_fk',
-      references: {
-        table: 'guilds',
-        field: 'id'
-      },
-      onDelete: 'CASCADE'
-    })
-
-    await queryInterface.addConstraint('panels', {
-      fields: ['guild_id'],
-      type: 'foreign key',
-      name: 'panels_guild_id_guilds_fk',
-      references: {
-        table: 'guilds',
-        field: 'id'
-      },
-      onDelete: 'CASCADE'
-    })
-
-    await queryInterface.addConstraint('groups', {
-      fields: ['guild_id'],
-      type: 'foreign key',
-      name: 'groups_guild_id_guilds_fk',
-      references: {
-        table: 'guilds',
-        field: 'id'
-      },
-      onDelete: 'CASCADE'
-    })
+    await Promise.all([
+      addGuildIDConstraint(queryInterface, 'roles'),
+      addGuildIDConstraint(queryInterface, 'channels'),
+      addGuildIDConstraint(queryInterface, 'messages'),
+      addGuildIDConstraint(queryInterface, 'members'),
+      addGuildIDConstraint(queryInterface, 'emojis'),
+      addGuildIDConstraint(queryInterface, 'panels'),
+      addGuildIDConstraint(queryInterface, 'groups')
+    ])
 
     await queryInterface.createTable('commands', {
       id: {
@@ -463,16 +396,7 @@ module.exports = {
       }
     })
 
-    await queryInterface.sequelize.query(stripIndents`
-    ALTER TABLE ticket_types
-    ADD CONSTRAINT ticket_types_emoji_emoji_id_check
-    CHECK (
-      (
-        (emoji IS NOT NULL)::INTEGER +
-        (emoji_id IS NOT NULL)::INTEGER
-      ) <= 1
-    );
-    `)
+    await addExclusiveBelongsToConstraint(queryInterface, 'ticket_types', ['emoji', 'emoji_id'])
 
     await queryInterface.createTable('tickets_moderators', {
       ticketId: {
@@ -615,16 +539,7 @@ module.exports = {
       }
     })
 
-    await queryInterface.sequelize.query(stripIndents`
-    ALTER TABLE role_messages
-    ADD CONSTRAINT role_messages_emoji_emoji_id_check
-    CHECK (
-      (
-        (emoji IS NOT NULL)::INTEGER +
-        (emoji_id IS NOT NULL)::INTEGER
-      ) = 1
-    );
-    `)
+    await addExclusiveBelongsToConstraint(queryInterface, 'role_messages', ['emoji', 'emoji_id'])
 
     await queryInterface.createTable('channels_channels', {
       from_channel_id: {
@@ -797,16 +712,11 @@ module.exports = {
       }]
     })
 
-    await queryInterface.sequelize.query(stripIndents`
-    ALTER TABLE permission_overwrites
-    ADD CONSTRAINT permission_overwrites_permission_name_role_id_group_id_check
-    CHECK (
-      (
-        (role_id IS NOT NULL)::INTEGER +
-        (group_id IS NOT NULL)::INTEGER
-      ) = 1
-    );
-    `)
+    await addExclusiveBelongsToConstraint(
+      queryInterface,
+      'permission_overwrites',
+      ['role_id', 'group_id']
+    )
   },
 
   down: async (queryInterface) => {
@@ -835,13 +745,15 @@ module.exports = {
 
     await queryInterface.dropTable('commands')
 
-    await queryInterface.removeConstraint('groups', 'groups_guild_id_guilds_fk')
-    await queryInterface.removeConstraint('panels', 'panels_guild_id_guilds_fk')
-    await queryInterface.removeConstraint('emojis', 'emojis_guild_id_guilds_fk')
-    await queryInterface.removeConstraint('members', 'members_guild_id_guilds_fk')
-    await queryInterface.removeConstraint('messages', 'messages_guild_id_guilds_fk')
-    await queryInterface.removeConstraint('channels', 'channels_guild_id_guilds_fk')
-    await queryInterface.removeConstraint('roles', 'roles_guild_id_guilds_fk')
+    await Promise.all([
+      queryInterface.removeConstraint('groups', 'groups_guild_id_guilds_fk'),
+      queryInterface.removeConstraint('panels', 'panels_guild_id_guilds_fk'),
+      queryInterface.removeConstraint('emojis', 'emojis_guild_id_guilds_fk'),
+      queryInterface.removeConstraint('members', 'members_guild_id_guilds_fk'),
+      queryInterface.removeConstraint('messages', 'messages_guild_id_guilds_fk'),
+      queryInterface.removeConstraint('channels', 'channels_guild_id_guilds_fk'),
+      queryInterface.removeConstraint('roles', 'roles_guild_id_guilds_fk')
+    ])
 
     await queryInterface.dropTable('guilds')
     await queryInterface.dropTable('groups')
@@ -854,4 +766,29 @@ module.exports = {
 
     await queryInterface.dropTable('sequelize_data')
   }
+}
+
+function addGuildIDConstraint (queryInterface, tableName) {
+  return queryInterface.addConstraint(tableName, {
+    fields: ['guild_id'],
+    type: 'foreign key',
+    name: `${tableName}_guild_id_guilds_fk`,
+    references: {
+      table: 'guilds',
+      field: 'id'
+    },
+    onDelete: 'CASCADE'
+  })
+}
+
+function addExclusiveBelongsToConstraint (queryInterface, tableName, columns) {
+  return queryInterface.sequelize.query(stripIndents`
+  ALTER TABLE ${tableName}
+  ADD CONSTRAINT ${tableName}_${columns.join('_')}_check
+  CHECK (
+    (
+      ${columns.map(column => `(${column} IS NOT NULL)::INTEGER`).join(' +\n')}
+    ) = 1
+  );
+  `)
 }
