@@ -2,7 +2,7 @@
 const BaseCommand = require('../base')
 
 const { DiscordAPIError, GuildEmoji } = require('discord.js')
-const { Message, Role, RoleMessage } = require('../../models')
+const { Channel, Message, Role, RoleMessage } = require('../../models')
 
 class CreateRoleMessageCommand extends BaseCommand {
   constructor (client) {
@@ -33,6 +33,12 @@ class CreateRoleMessageCommand extends BaseCommand {
   }
 
   async run (message, { message: newMessage, emoji, role }) {
+    await Channel.findOrCreate({
+      where: {
+        id: message.channel.id,
+        guildId: message.guild.id
+      }
+    })
     await Message.findOrCreate({
       where: {
         id: newMessage.id,
