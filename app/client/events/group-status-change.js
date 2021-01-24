@@ -1,10 +1,6 @@
 'use strict'
-const BaseEvent = require('./base')
-
-class GroupStatusChangeEvent extends BaseEvent {
-  async handle (guild, command, enabled) {
-    return this.client.provider.commandStatusChange('group', guild, command, enabled)
-  }
+const groupStatusChangeHandler = async (client, guild, command, enabled) => {
+  return client.provider.commandStatusChange('group', guild, command, enabled)
 }
 
-module.exports = GroupStatusChangeEvent
+module.exports = groupStatusChangeHandler

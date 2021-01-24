@@ -1,12 +1,12 @@
 'use strict'
 const Commando = require('discord.js-commando')
 const path = require('path')
+const eventHandlers = require('./events')
 const NSadminProvider = require('./setting-provider')
 const TicketsController = require('./tickets')
 const WebSocketManager = require('./websocket/websocket')
 
 const { DiscordAPIError, Message } = require('discord.js')
-const { EventManager } = require('./events')
 const { RoleMessage  } = require('../models')
 
 const applicationConfig = require('../../config/application')
@@ -61,8 +61,6 @@ class NSadminClient extends Commando.Client {
         prefix: true
       })
       .registerCommandsIn(path.join(__dirname, '../commands'))
-
-    this.events = new EventManager(this)
 
     this.once('ready', this.ready.bind(this))
   }
@@ -194,9 +192,9 @@ class NSadminClient extends Commando.Client {
     this.ws.connect()
   }
 
-  bindEvent (event) {
-    const handler = this.events[event]
-    this.on(event, handler.handle.bind(handler))
+  bindEvent (eventName) {
+    const handler = eventHandlers[eventName]
+    this.on(eventName, (...args) => handler(this, ...args))
   }
 }
 

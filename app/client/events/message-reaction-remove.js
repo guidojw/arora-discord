@@ -1,10 +1,6 @@
 'use strict'
-const BaseEvent = require('./base')
-
-class MessageReactionRemoveEvent extends BaseEvent {
-  handle (reaction, user) {
-    return this.handleRoleMessage('remove', reaction, user)
-  }
+const messageReactionRemoveHandler = (client, reaction, user) => {
+  return client.handleRoleMessage('remove', reaction, user)
 }
 
-module.exports = MessageReactionRemoveEvent
+module.exports = messageReactionRemoveHandler

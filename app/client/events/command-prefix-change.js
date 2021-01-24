@@ -1,10 +1,6 @@
 'use strict'
-const BaseEvent = require('./base')
-
-class CommandPrefixChangeEvent extends BaseEvent {
-   handle (guild, prefix) {
-     return this.client.provider.commandPrefixChange(guild, prefix)
-  }
+const commandPrefixChangeHandler = (client, guild, prefix) => {
+  return client.provider.commandPrefixChange(guild, prefix)
 }
 
-module.exports = CommandPrefixChangeEvent
+module.exports = commandPrefixChangeHandler()
