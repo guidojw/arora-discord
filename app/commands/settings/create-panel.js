@@ -29,8 +29,9 @@ class CreatePanelCommand extends BaseCommand {
   async run (message, { name, content }) {
     if (await Panel.findOne({
       where: {
-        name: { [Op.iLike] : name },
-        guildId: message.guild.id }
+        name: { [Op.iLike]: name },
+        guildId: message.guild.id
+      }
     })) {
       return message.reply('A panel with that name already exists.')
     }

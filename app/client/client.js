@@ -7,7 +7,7 @@ const TicketsController = require('./tickets')
 const WebSocketManager = require('./websocket/websocket')
 
 const { DiscordAPIError, Message } = require('discord.js')
-const { RoleMessage  } = require('../models')
+const { RoleMessage } = require('../models')
 
 const applicationConfig = require('../../config/application')
 

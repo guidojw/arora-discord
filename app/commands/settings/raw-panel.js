@@ -19,7 +19,7 @@ class RawPanelCommand extends BaseCommand {
     })
   }
 
-  async run (message, { panelId  }) {
+  async run (message, { panelId }) {
     const panel = await Panel.findByPk(panelId)
     if (!panel) {
       return message.reply('Panel not found.')

@@ -27,7 +27,7 @@ class DeletePanelCommand extends BaseCommand {
 
     await panel.destroy()
 
-    return message.reply(`Successfully deleted panel.`)
+    return message.reply('Successfully deleted panel.')
   }
 }
 

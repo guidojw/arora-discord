@@ -11,10 +11,10 @@ class RawTagCommand extends BaseCommand {
       description: 'Posts the raw content of a tag.',
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
-      key: 'name',
-      type: 'string',
-      prompt: 'What tag would you like the raw content of?'
-    }]
+        key: 'name',
+        type: 'string',
+        prompt: 'What tag would you like the raw content of?'
+      }]
     })
   }
 

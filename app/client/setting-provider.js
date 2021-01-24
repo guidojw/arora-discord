@@ -80,7 +80,7 @@ class NSadminProvider extends SettingProvider {
 
   commandPrefixChange (guild, prefix) {
     if (!guild) {
-      return Guild.update({ commandPrefix: prefix }, { where: { id: '0' }})
+      return Guild.update({ commandPrefix: prefix }, { where: { id: '0' } })
     }
     return guild.update({ commandPrefix: prefix })
   }
