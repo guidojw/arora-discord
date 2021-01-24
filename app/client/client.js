@@ -1,5 +1,4 @@
 'use strict'
-const Commando = require('discord.js-commando')
 const path = require('path')
 const eventHandlers = require('./events')
 const NSadminProvider = require('./setting-provider')
@@ -7,6 +6,7 @@ const TicketsController = require('./tickets')
 const WebSocketManager = require('./websocket/websocket')
 
 const { DiscordAPIError, Message } = require('discord.js')
+const { CommandoClient } = require('discord.js-commando')
 const { RoleMessage } = require('../models')
 
 const applicationConfig = require('../../config/application')
@@ -16,7 +16,7 @@ const COMMAND_DELETE_MESSAGES_TIMEOUT = 10 * 1000
 
 require('../extensions') // Extend Discord.js structures before the client's collections get instantiated.
 
-class NSadminClient extends Commando.Client {
+class NSadminClient extends CommandoClient {
   constructor (options = {}) {
     if (typeof options.commandPrefix === 'undefined') {
       options.commandPrefix = applicationConfig.defaultPrefix
