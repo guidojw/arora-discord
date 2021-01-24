@@ -176,7 +176,7 @@ class NSadminClient extends Commando.Client {
   }
 
   send (user, content) {
-    return failSilently(user.send.bind(this, content), [50007])
+    return failSilently(user.send.bind(user, content), [50007])
     // Most likely because the author has DMs closed,
     // do nothing.
   }
