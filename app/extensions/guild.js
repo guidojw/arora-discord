@@ -34,8 +34,9 @@ const NSadminGuild = Structures.extend('Guild', Guild => {
       this.supportMessageId = data.supportMessageId
 
       if (data.groups) {
-        for (const group of data.groups) {
-          this.groups.set(group.id, new Group(this.client, group))
+        for (const rawGroup of data.groups) {
+          const group = Group.create(this.client, rawGroup, this)
+          this.groups.set(group.id, group)
         }
       }
     }

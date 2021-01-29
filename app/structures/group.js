@@ -1,16 +1,12 @@
 'use strict'
-const Collection = require('@discordjs/collection')
 const BaseStructure = require('./base')
-const RoleController = require('./role')
 
-class GroupController extends BaseStructure {
+const { ChannelGroup, RoleGroup } = require('../structures')
+const { GroupTypes } = require('../util/constants')
+
+class Group extends BaseStructure {
   constructor (client, data) {
     super(client)
-
-    this.channels = []
-    this.permissions = []
-
-    this.roles = new Collection()
 
     this._patch(data)
   }
@@ -18,28 +14,24 @@ class GroupController extends BaseStructure {
   _patch (data) {
     this.id = data.id
     this.name = data.name
-    this.type = data.type
     this.guarded = data.guarded
     this.guildId = data.guildId
+  }
 
-    if (data.channels) {
-      for (const channel of data.channels) {
-        this.channels.push(channel.channelId)
+  static create (client, data) {
+    let group
+    switch (data.type) {
+      case GroupTypes.CHANNEL: {
+        group = new ChannelGroup(this.client, data)
+        break
+      }
+      case GroupTypes.ROLE: {
+        group = new RoleGroup(this.client, data)
+        break
       }
     }
-
-    if (data.permissions) {
-      for (const { name, GroupPermission: { type } } of data.permissions) {
-        this.permissions.push({ name, type })
-      }
-    }
-
-    if (data.roles) {
-      for (const role of data.roles) {
-        this.roles.set(role.id, new RoleController(this.client, role))
-      }
-    }
+    return group
   }
 }
 
-module.exports = GroupController
+module.exports = Group
