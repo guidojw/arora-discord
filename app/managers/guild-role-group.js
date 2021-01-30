@@ -7,12 +7,8 @@ class GuildRoleGroupManager {
     this.guild = role.guild
   }
 
-  get _roles () {
-    return this.guild.groups.filter(group => this.channel._groups.includes(group.id))
-  }
-
   get cache () {
-    return this._roles
+    return this.guild.groups.filter(group => group instanceof RoleGroup && group.roles.cache.has(this.id))
   }
 
   async add (group) {

@@ -11,15 +11,10 @@ const NSadminRole = Structures.extend('Role', Role => {
 
       this.groups = new GuildRoleGroupManager(this)
 
-      this._groups = []
       this.permissions = []
     }
 
     _setup (data) {
-      if (data.groups) {
-        this._groups = data.groups.map(group => group.id)
-      }
-
       if (data.permissions) {
         for (const { name } of data.permissions) {
           this.permissions.push(name)

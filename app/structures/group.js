@@ -18,7 +18,6 @@ class Group extends BaseStructure {
     this.id = data.id
     this.name = data.name
     this.guarded = data.guarded
-    this.guildId = data.guildId
   }
 
   async update (data) {

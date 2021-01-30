@@ -8,14 +8,6 @@ const NSadminChannel = Structures.extend('Channel', Channel => {
       super(...args)
 
       this.groups = new GuildChannelGroupManager(this)
-
-      this._groups = []
-    }
-
-    _setup (data) {
-      if (data.groups) {
-        this._groups = data.groups.map(group => group.id)
-      }
     }
   }
 

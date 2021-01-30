@@ -53,10 +53,6 @@ module.exports = (sequelize, DataTypes) => {
       include: [{
         model: models.Permission,
         as: 'permissions'
-      }, {
-        model: models.Group,
-        as: 'groups',
-        attributes: ['id']
       }],
       subQuery: false
     })

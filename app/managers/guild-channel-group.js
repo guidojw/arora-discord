@@ -7,12 +7,8 @@ class GuildChannelGroupManager {
     this.guild = channel.guild
   }
 
-  get _roles () {
-    return this.guild.groups.filter(group => this.channel._groups.includes(group.id))
-  }
-
   get cache () {
-    return this._roles
+    return this.guild.groups.filter(group => group instanceof ChannelGroup && group.channels.cache.has(this.channel.id))
   }
 
   async add (group) {
@@ -25,7 +21,7 @@ class GuildChannelGroupManager {
       }
     })
     await ChannelGroup.create({
-      channelId: this.channelId.id,
+      channelId: this.channel.id,
       groupId: group.id
     })
 

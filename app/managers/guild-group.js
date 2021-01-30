@@ -9,7 +9,7 @@ class GuildGroupManager extends BaseManager {
     this.guild = guild
   }
 
-  add (data) {
+  _add (data) {
     const existing = this.cache.get(data.id)
     if (existing) {
       return existing

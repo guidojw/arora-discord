@@ -43,7 +43,7 @@ const NSadminGuild = Structures.extend('Guild', Guild => {
 
       if (data.groups) {
         for (const rawGroup of data.groups) {
-          this.groups.add(rawGroup)
+          this.groups._add(rawGroup)
         }
       }
 

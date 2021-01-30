@@ -60,10 +60,12 @@ module.exports = (sequelize, DataTypes) => {
         as: 'permissions'
       }, {
         model: models.Channel,
-        as: 'channels'
+        as: 'channels',
+        attributes: ['id']
       }, {
         model: models.Role,
-        as: 'roles'
+        as: 'roles',
+        attributes: ['id']
       }, {
         model: models.PermissionOverwrite,
         as: 'permissionOverwrites'

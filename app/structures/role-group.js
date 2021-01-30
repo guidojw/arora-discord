@@ -1,13 +1,15 @@
 'use strict'
-const Collection = require('@discordjs/collection')
 const Permissible = require('./interfaces/permissible')
 const Group = require('./group')
+
+const { GroupGuildRoleManager } = require('../managers')
 
 class RoleGroup extends Group {
   constructor (client, data, guild) {
     super(client, data, guild)
 
-    this.roles = new Collection()
+    this.roles = new GroupGuildRoleManager(this)
+
     this.permissions = []
   }
 
@@ -22,10 +24,7 @@ class RoleGroup extends Group {
 
     if (data.roles) {
       for (const rawRole of data.roles) {
-        const role = this.guild.roles.cache.get(rawRole.id)
-        if (role) {
-          this.roles.set(role.id, role)
-        }
+        this.roles._add(rawRole)
       }
     }
   }
