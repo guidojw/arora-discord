@@ -64,5 +64,16 @@ module.exports = (sequelize, DataTypes) => {
     })
   }
 
+  Channel.loadScopes = models => {
+    Channel.addScope('defaultScope', {
+      include: [{
+        model: models.Group,
+        as: 'groups',
+        attributes: ['id']
+      }],
+      subQuery: false
+    })
+  }
+
   return Channel
 }

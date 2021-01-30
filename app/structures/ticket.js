@@ -15,10 +15,10 @@ class TicketController extends BaseStructure {
   constructor (client, data) {
     super(client)
 
-    this._patch(data)
+    this._setup(data)
   }
 
-  _patch (data) {
+  _setup (data) {
     this.id = data.id
     this.authorId = data.authorId || null
     this.channelId = data.channelId || null
@@ -221,7 +221,7 @@ class TicketController extends BaseStructure {
       if (!this.moderators.some(moderator => moderator.id === message.author.id)) {
         await TicketModerator.create({ ticketId: this.id, userId: message.author.id })
         const data = await Ticket.findByPk(this.id)
-        this._patch(data)
+        this._setup(data)
       }
     }
   }
@@ -234,7 +234,7 @@ class TicketController extends BaseStructure {
       type: data.type
     })
 
-    this._patch(newData)
+    this._setup(newData)
     return newData
   }
 }

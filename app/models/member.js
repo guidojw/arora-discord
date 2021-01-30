@@ -35,5 +35,15 @@ module.exports = (sequelize, DataTypes) => {
     })
   }
 
+  Member.loadScopes = models => {
+    Member.addScope('defaultScope', {
+      include: [{
+        model: models.Group,
+        as: 'groups'
+      }],
+      subQuery: false
+    })
+  }
+
   return Member
 }

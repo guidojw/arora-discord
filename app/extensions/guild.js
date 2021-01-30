@@ -1,10 +1,9 @@
 'use strict'
-const Collection = require('@discordjs/collection')
 const cron = require('node-cron')
 
 const { MessageEmbed, Structures } = require('discord.js')
+const { GuildGroupManager } = require('../managers')
 const { Guild: GuildModel } = require('../models')
-const { Group } = require('../structures')
 
 const applicationConfig = require('../../config/application')
 const cronConfig = require('../../config/cron')
@@ -14,7 +13,7 @@ const NSadminGuild = Structures.extend('Guild', Guild => {
     constructor (...args) {
       super(...args)
 
-      this.groups = new Collection()
+      this.groups = new GuildGroupManager(this)
     }
 
     _setup (data) {
@@ -33,10 +32,27 @@ const NSadminGuild = Structures.extend('Guild', Guild => {
       this.trainingsInfoMessageId = data.trainingsInfoMessageId
       this.supportMessageId = data.supportMessageId
 
+      if (data.channels) {
+        for (const rawChannel of data.channels) {
+          const channel = this.channels.cache.get(rawChannel.id)
+          if (channel) {
+            channel._setup(rawChannel)
+          }
+        }
+      }
+
       if (data.groups) {
         for (const rawGroup of data.groups) {
-          const group = Group.create(this.client, rawGroup, this)
-          this.groups.set(group.id, group)
+          this.groups.add(rawGroup)
+        }
+      }
+
+      if (data.roles) {
+        for (const rawRole of data.roles) {
+          const role = this.roles.cache.get(rawRole.id)
+          if (role) {
+            role._setup(rawRole)
+          }
         }
       }
     }

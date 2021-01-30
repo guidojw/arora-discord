@@ -1,5 +1,7 @@
 'use strict'
 const BaseCommand = require('../base')
+
+const { GroupTypes } = require('../../util/constants')
 const { Group } = require('../../models')
 
 class CreateGroupCommand extends BaseCommand {
@@ -18,7 +20,7 @@ class CreateGroupCommand extends BaseCommand {
         key: 'type',
         prompt: 'What do you want the type of the group to be?',
         type: 'string',
-        oneOf: ['role', 'channel']
+        oneOf: GroupTypes
       }]
     })
   }

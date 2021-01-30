@@ -4,7 +4,7 @@ class BaseStructure {
     this.client = client
   }
 
-  _patch (data) {
+  _setup (data) {
     return data
   }
 }

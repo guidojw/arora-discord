@@ -1,4 +1,6 @@
 'use strict'
+const { GroupTypes } = require('../util/constants')
+
 module.exports = (sequelize, DataTypes) => {
   const Group = sequelize.define('Group', {
     name: {
@@ -8,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
     type: {
       type: DataTypes.ENUM,
       allowNull: false,
-      values: ['role', 'channel']
+      values: GroupTypes
     },
     guarded: {
       type: DataTypes.BOOLEAN,
