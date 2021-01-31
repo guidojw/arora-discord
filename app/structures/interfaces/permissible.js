@@ -14,7 +14,7 @@ class Permissible {
       Object.defineProperty(
         structure.prototype,
         prop,
-        Object.getOwnPropertyDescriptor(Permissible, prop)
+        Object.getOwnPropertyDescriptor(Permissible.prototype, prop)
       )
     }
   }

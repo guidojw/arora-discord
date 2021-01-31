@@ -1,7 +1,7 @@
 'use strict'
 const { Role, RoleGroup } = require('../models')
 
-class GuildRoleGroupManager {
+class RoleGroupManager {
   constructor (role) {
     this.role = role
     this.guild = role.guild
@@ -29,4 +29,4 @@ class GuildRoleGroupManager {
   }
 }
 
-module.exports = GuildRoleGroupManager
+module.exports = RoleGroupManager

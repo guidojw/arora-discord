@@ -1,7 +1,7 @@
 'use strict'
 const { Channel, ChannelGroup } = require('../models')
 
-class GuildChannelGroupManager {
+class TextChannelGroupManager {
   constructor (channel) {
     this.channel = channel
     this.guild = channel.guild
@@ -29,4 +29,4 @@ class GuildChannelGroupManager {
   }
 }
 
-module.exports = GuildChannelGroupManager
+module.exports = TextChannelGroupManager

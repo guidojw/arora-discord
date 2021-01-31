@@ -20,7 +20,7 @@ class CreateGroupCommand extends BaseCommand {
         key: 'type',
         prompt: 'What do you want the type of the group to be?',
         type: 'string',
-        oneOf: GroupTypes
+        oneOf: Object.values(GroupTypes)
       }]
     })
   }

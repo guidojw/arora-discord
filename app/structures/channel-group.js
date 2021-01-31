@@ -1,13 +1,12 @@
 'use strict'
 const Group = require('./group')
-
-const { GroupGuildChannelManager } = require('../managers')
+const GroupTextChannelManager = require('../managers/group-text-channel')
 
 class ChannelGroup extends Group {
   constructor (client, data, guild) {
     super(client, data, guild)
 
-    this.channels = new GroupGuildChannelManager(this)
+    this.channels = new GroupTextChannelManager(this)
   }
 
   _setup (data) {

@@ -3,7 +3,7 @@ const Collection = require('@discordjs/collection')
 
 const { Role, RoleGroup } = require('../models')
 
-class GroupGuildRoleManager {
+class GroupRoleManager {
   constructor (group) {
     this.group = group
     this.guild = group.guild
@@ -45,4 +45,4 @@ class GroupGuildRoleManager {
   }
 }
 
-module.exports = GroupGuildRoleManager
+module.exports = GroupRoleManager

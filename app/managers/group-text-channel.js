@@ -3,7 +3,7 @@ const Collection = require('@discordjs/collection')
 
 const { Channel, ChannelGroup } = require('../models')
 
-class GroupGuildChannelManager {
+class GroupTextChannelManager {
   constructor (group) {
     this.group = group
     this.guild = group.guild
@@ -45,4 +45,4 @@ class GroupGuildChannelManager {
   }
 }
 
-module.exports = GroupGuildChannelManager
+module.exports = GroupTextChannelManager

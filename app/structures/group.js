@@ -2,7 +2,6 @@
 const BaseStructure = require('./base')
 
 const { Group: GroupModel } = require('../models')
-const { ChannelGroup, RoleGroup } = require('../structures')
 const { GroupTypes } = require('../util/constants')
 
 class Group extends BaseStructure {
@@ -35,10 +34,12 @@ class Group extends BaseStructure {
     let group
     switch (data.type) {
       case GroupTypes.CHANNEL: {
+        const ChannelGroup = require('./channel-group')
         group = new ChannelGroup(this.client, data, guild)
         break
       }
       case GroupTypes.ROLE: {
+        const RoleGroup = require('./role-group')
         group = new RoleGroup(this.client, data, guild)
         break
       }

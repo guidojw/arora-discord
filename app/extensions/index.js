@@ -1,6 +1,6 @@
 'use strict'
 module.exports = {
-  NSadminChannel: require('./channel'),
+  NSadminTextChannel: require('./text-channel'),
   NSadminGuild: require('./guild'),
   NSadminRole: require('./role')
 }

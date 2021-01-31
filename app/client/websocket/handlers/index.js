@@ -1,7 +1,7 @@
 'use strict'
 const lodash = require('lodash')
 
-const { WSEvents } = require('../../../util/Constants')
+const { WSEvents } = require('../../../util/constants')
 
 const handlers = {}
 

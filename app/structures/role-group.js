@@ -1,14 +1,13 @@
 'use strict'
-const Permissible = require('./interfaces/permissible')
 const Group = require('./group')
-
-const { GroupGuildRoleManager } = require('../managers')
+const Permissible = require('./interfaces/permissible')
+const GroupRoleManager = require('../managers/group-role')
 
 class RoleGroup extends Group {
   constructor (client, data, guild) {
     super(client, data, guild)
 
-    this.roles = new GroupGuildRoleManager(this)
+    this.roles = new GroupRoleManager(this)
 
     this.permissions = []
   }

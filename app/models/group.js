@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
     type: {
       type: DataTypes.ENUM,
       allowNull: false,
-      values: GroupTypes
+      values: Object.values(GroupTypes)
     },
     guarded: {
       type: DataTypes.BOOLEAN,
