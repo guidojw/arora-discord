@@ -1,8 +1,8 @@
 'use strict'
-const RoleGroupManager = require('../managers/role-group')
 const Permissible = require('../structures/interfaces/permissible')
 
 const { Structures } = require('discord.js')
+const { RoleGroupManager } = require('../managers')
 
 const NSadminRole = Structures.extend('Role', Role => {
   class NSadminRole extends Role {

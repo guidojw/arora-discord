@@ -1,8 +1,8 @@
 'use strict'
 const cron = require('node-cron')
-const GuildGroupManager = require('../managers/guild-group')
 
 const { MessageEmbed, Structures } = require('discord.js')
+const { GuildGroupManager } = require('../managers')
 const { Guild: GuildModel } = require('../models')
 
 const applicationConfig = require('../../config/application')

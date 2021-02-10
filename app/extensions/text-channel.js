@@ -1,7 +1,6 @@
 'use strict'
-const TextChannelGroupManager = require('../managers/text-channel-group')
-
 const { Structures } = require('discord.js')
+const { TextChannelGroupManager } = require('../managers')
 
 const NSadminTextChannel = Structures.extend('TextChannel', TextChannel => {
   class NSadminTextChannel extends TextChannel {
