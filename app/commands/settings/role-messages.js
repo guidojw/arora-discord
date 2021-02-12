@@ -25,7 +25,7 @@ class RoleMessagesCommand extends BaseCommand {
 
   async run (message, { roleMessageId }) {
     if (roleMessageId) {
-      const roleMessage = await RoleMessage.findByPk(roleMessageId)
+      const roleMessage = await RoleMessage.findOne({ where: { id: roleMessageId, guildId: message.guild.id } })
       if (!roleMessage) {
         return message.reply('Role message not found.')
       }

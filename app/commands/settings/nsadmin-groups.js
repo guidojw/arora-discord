@@ -24,7 +24,7 @@ class PanelsCommand extends BaseCommand {
 
   async run (message, { groupId }) {
     if (groupId) {
-      const group = await Group.findByPk(groupId)
+      const group = await Group.findOne({ where: { id: groupId, guildId: message.guild.id } })
       if (!group) {
         return message.reply('Group not found.')
       }

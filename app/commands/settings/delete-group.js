@@ -12,19 +12,16 @@ class DeleteGroupCommand extends BaseCommand {
       description: 'Deletes a group.',
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
-        key: 'name',
+        key: 'groupId',
         prompt: 'What group would you like to delete?',
-        type: 'string',
+        type: 'id',
         validate: validateName
       }]
     })
   }
 
-  async run (message, { name }) {
-    name = name.toLowerCase()
-    const group = await Group.findOne({
-      where: { name, guildId: message.guild.id }
-    })
+  async run (message, { groupId }) {
+    const group = await Group.findOne({ where: { id: groupId, guildId: message.guild.id } })
     if (!group) {
       return message.reply('Group not found.')
     }

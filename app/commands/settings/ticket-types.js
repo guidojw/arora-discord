@@ -23,7 +23,7 @@ class RoleBindingsCommand extends BaseCommand {
 
   async run (message, { typeId }) {
     if (typeId) {
-      const ticketType = await TicketType.findByPk(typeId)
+      const ticketType = await TicketType.findOne({ where: { id: typeId, guildId: message.guild.id } })
       if (!ticketType) {
         return message.reply('Ticket type not found.')
       }

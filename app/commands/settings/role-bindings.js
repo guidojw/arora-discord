@@ -25,7 +25,7 @@ class RoleBindingsCommand extends BaseCommand {
 
   async run (message, { roleBindingId }) {
     if (roleBindingId) {
-      const roleBinding = await RoleBinding.findByPk(roleBindingId)
+      const roleBinding = await RoleBinding.findOne({ where: { id: roleBindingId, guildId: message.guild.id } })
       if (!roleBinding) {
         return message.reply('Role binding not found.')
       }
