@@ -14,8 +14,7 @@ class DeleteGroupCommand extends BaseCommand {
       args: [{
         key: 'groupId',
         prompt: 'What group would you like to delete?',
-        type: 'id',
-        validate: validateName
+        type: 'integer'
       }]
     })
   }
@@ -31,10 +30,6 @@ class DeleteGroupCommand extends BaseCommand {
 
     return message.reply(`Successfully deleted group **${group.name}**.`)
   }
-}
-
-function validateName (name) {
-  return name.includes(' ') ? 'Name cannot include spaces.' : true
 }
 
 module.exports = DeleteGroupCommand
