@@ -1,8 +1,8 @@
 'use strict'
-const applicationAdapter = require('../../adapters/application')
 const BaseCommand = require('../base')
 
 const { MessageEmbed } = require('discord.js')
+const { applicationAdapter } = require('../../adapters')
 
 class MemberCountCommand extends BaseCommand {
   constructor (client) {

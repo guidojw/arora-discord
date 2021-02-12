@@ -1,9 +1,9 @@
 'use strict'
 const pluralize = require('pluralize')
 const BaseStructure = require('./base')
-const roVerAdapter = require('../adapters/rover')
 
 const { MessageEmbed } = require('discord.js')
+const { roVerAdapter } = require('../adapters')
 const { stripIndents } = require('common-tags')
 const { timeHelper } = require('../helpers')
 const { Ticket, TicketModerator } = require('../models')

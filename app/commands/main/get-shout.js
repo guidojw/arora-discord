@@ -1,7 +1,7 @@
 'use strict'
-const applicationAdapter = require('../../adapters/application')
 const Base = require('../base')
 
+const { applicationAdapter } = require('../../adapters')
 const { MessageEmbed } = require('discord.js')
 
 class GetShoutCommand extends Base {

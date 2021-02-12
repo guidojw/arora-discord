@@ -1,7 +1,7 @@
 'use strict'
-const applicationAdapter = require('../../adapters/application')
 const BaseCommand = require('../base')
 
+const { applicationAdapter } = require('../../adapters')
 const { userService } = require('../../services')
 
 class PromoteCommand extends BaseCommand {

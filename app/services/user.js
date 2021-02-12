@@ -1,6 +1,5 @@
 'use strict'
-const applicationAdapter = require('../adapters/application')
-
+const { applicationAdapter } = require('../adapters')
 const { dataHelper } = require('../helpers')
 
 exports.getIdFromUsername = async username => {

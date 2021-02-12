@@ -1,8 +1,8 @@
 'use strict'
-const applicationAdapter = require('../../adapters/application')
 const BaseCommand = require('../base')
 
 const { MessageEmbed } = require('discord.js')
+const { applicationAdapter } = require('../../adapters')
 const { stringHelper, timeHelper } = require('../../helpers')
 const { groupService, userService } = require('../../services')
 

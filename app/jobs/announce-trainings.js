@@ -1,9 +1,9 @@
 'use strict'
 const lodash = require('lodash')
 const pluralize = require('pluralize')
-const applicationAdapter = require('../adapters/application')
 
 const { MessageEmbed } = require('discord.js')
+const { applicationAdapter } = require('../adapters')
 const { timeHelper } = require('../helpers')
 const { groupService, userService } = require('../services')
 
