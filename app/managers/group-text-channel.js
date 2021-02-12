@@ -1,7 +1,7 @@
 'use strict'
 const Collection = require('@discordjs/collection')
 
-const { Channel, ChannelGroup } = require('../models')
+const { Channel } = require('../models')
 
 class GroupTextChannelManager {
   constructor (group) {
@@ -12,7 +12,7 @@ class GroupTextChannelManager {
   }
 
   get cache () {
-    return this.guild.channels.filter(channel => this._channels.has(channel.id))
+    return this.guild.channels.cache.filter(channel => this._channels.has(channel.id))
   }
 
   _add (data) {
@@ -29,19 +29,16 @@ class GroupTextChannelManager {
   async add (channel) {
     channel = this.guild.channels.resolve(channel)
 
-    await Channel.findOrCreate({
+    const [data] = await Channel.findOrCreate({
       where: {
         id: channel.id,
         guildId: this.guild.id
       }
     })
-    await ChannelGroup.create({
-      channelId: channel.id,
-      groupId: this.group.id
-    })
+    await data.addGroup(this.group.id)
     this._channels.set(channel.id, channel)
 
-    return this.channel
+    return channel
   }
 }
 

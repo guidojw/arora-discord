@@ -20,15 +20,16 @@ class DeleteGroupCommand extends BaseCommand {
   }
 
   async run (message, { groupId }) {
-    const group = await Group.findOne({ where: { id: groupId, guildId: message.guild.id } })
+    const group = message.guild.groups.cache.find(group => group.id === groupId)
     if (!group) {
       return message.reply('Group not found.')
+    } else if (group.guarded) {
+      return message.reply('Guarded groups cannot be deleted.')
     }
 
-    message.guild.groups.delete(group.id)
-    await group.destroy()
+    await group.delete()
 
-    return message.reply(`Successfully deleted group **${group.name}**.`)
+    return message.reply(`Successfully deleted group **${group.id}**.`)
   }
 }
 

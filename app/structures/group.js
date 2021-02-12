@@ -9,8 +9,6 @@ class Group extends BaseStructure {
     super(client)
 
     this.guild = guild
-
-    this._setup(data)
   }
 
   _setup (data) {
@@ -30,17 +28,22 @@ class Group extends BaseStructure {
     return newData
   }
 
+  delete () {
+    this.guild.groups.cache.delete(this.id)
+    return GroupModel.destroy({ where: { id: this.id } })
+  }
+
   static create (client, data, guild) {
     let group
     switch (data.type) {
       case GroupTypes.CHANNEL: {
         const ChannelGroup = require('./channel-group')
-        group = new ChannelGroup(this.client, data, guild)
+        group = new ChannelGroup(client, data, guild)
         break
       }
       case GroupTypes.ROLE: {
         const RoleGroup = require('./role-group')
-        group = new RoleGroup(this.client, data, guild)
+        group = new RoleGroup(client, data, guild)
         break
       }
     }

@@ -7,6 +7,8 @@ class ChannelGroup extends Group {
     super(client, data, guild)
 
     this.channels = new GroupTextChannelManager(this)
+
+    this._setup(data)
   }
 
   _setup (data) {

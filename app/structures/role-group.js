@@ -10,6 +10,8 @@ class RoleGroup extends Group {
     this.roles = new GroupRoleManager(this)
 
     this.permissions = []
+
+    this._setup(data)
   }
 
   _setup (data) {

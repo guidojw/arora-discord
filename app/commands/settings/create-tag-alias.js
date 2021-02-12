@@ -46,7 +46,7 @@ class CreateTagAliasCommand extends BaseCommand {
 
     await tag.createName({ name })
 
-    return message.reply(`Successfully created alias **${name}** to tag **${tag.names[0]?.name ?? 'Unknown'}**.`)
+    return message.reply(`Successfully added alias **${name}** to tag **${tag.names[0]?.name ?? 'Unknown'}**.`)
   }
 }
 

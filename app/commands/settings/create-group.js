@@ -43,9 +43,9 @@ class CreateGroupCommand extends BaseCommand {
       return message.reply('A group with that name already exists.')
     }
 
-    message.guild.groups.set(group.id, group)
+    message.guild.groups._add(group)
 
-    return message.reply(`Successfully create group **${name}**.`)
+    return message.reply(`Successfully created group **${group.id}**.`)
   }
 }
 

@@ -1,7 +1,7 @@
 'use strict'
 const Collection = require('@discordjs/collection')
 
-const { Role, RoleGroup } = require('../models')
+const { Role } = require('../models')
 
 class GroupRoleManager {
   constructor (group) {
@@ -12,7 +12,7 @@ class GroupRoleManager {
   }
 
   get cache () {
-    return this.guild.roles.filter(role => this._roles.has(role.id))
+    return this.guild.roles.cache.filter(role => this._roles.has(role.id))
   }
 
   _add (data) {
@@ -27,21 +27,18 @@ class GroupRoleManager {
   }
 
   async add (role) {
-    role = this.guild.channels.resolve(role)
+    role = this.guild.roles.resolve(role)
 
-    await Role.findOrCreate({
+    const [data] = await Role.findOrCreate({
       where: {
         id: role.id,
         guildId: this.guild.id
       }
     })
-    await RoleGroup.create({
-      roleId: role.id,
-      groupId: this.group.id
-    })
+    await data.addGroup(this.group.id)
     this._roles.set(role.id, role)
 
-    return this.channel
+    return role
   }
 }
 
