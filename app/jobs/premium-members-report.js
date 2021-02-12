@@ -1,8 +1,8 @@
 'use strict'
 const pluralize = require('pluralize')
-const timeHelper = require('../helpers/time')
 
 const { MessageEmbed } = require('discord.js')
+const { timeHelper } = require('../helpers')
 
 module.exports = async guild => {
   const members = await guild.members.fetch()

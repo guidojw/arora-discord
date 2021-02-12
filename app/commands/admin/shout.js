@@ -3,7 +3,7 @@ const applicationAdapter = require('../../adapters/application')
 const BaseCommand = require('../base')
 
 const { MessageEmbed } = require('discord.js')
-const { getChannels, getTags, getUrls } = require('../../helpers/string')
+const { stringHelper } = require('../../helpers')
 const { userService } = require('../../services')
 
 class ShoutCommand extends BaseCommand {
@@ -21,11 +21,11 @@ class ShoutCommand extends BaseCommand {
         prompt: 'What would you like to shout?',
         validate: val => val.length > 255
           ? 'Shout is too long.'
-          : getChannels(val)
+          : stringHelper.getChannels(val)
             ? 'Shout contains channels.'
-            : getTags(val)
+            : stringHelper.getTags(val)
               ? 'Shout contains tags.'
-              : getUrls(val)
+              : stringHelper.getUrls(val)
                 ? 'Shout contains URLs.'
                 : true
       }]

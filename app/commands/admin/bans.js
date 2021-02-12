@@ -1,9 +1,9 @@
 'use strict'
 const applicationAdapter = require('../../adapters/application')
 const BaseCommand = require('../base')
-const timeHelper = require('../../helpers/time')
 
 const { MessageEmbed } = require('discord.js')
+const { timeHelper } = require('../../helpers')
 const { banService, userService } = require('../../services')
 
 class BansCommand extends BaseCommand {

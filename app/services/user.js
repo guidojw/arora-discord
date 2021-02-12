@@ -1,7 +1,7 @@
 'use strict'
-const dataHelper = require('../helpers/data')
-
 const applicationAdapter = require('../adapters/application')
+
+const { dataHelper } = require('../helpers')
 
 exports.getIdFromUsername = async username => {
   const userId = (await applicationAdapter('get', `/v1/users/${username}/user-id`)).data

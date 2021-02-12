@@ -2,9 +2,9 @@
 const pluralize = require('pluralize')
 const applicationAdapter = require('../../adapters/application')
 const BaseCommand = require('../base')
-const timeHelper = require('../../helpers/time')
 
 const { MessageEmbed } = require('discord.js')
+const { timeHelper } = require('../../helpers')
 const { discordService, groupService, userService } = require('../../services')
 
 class SuspensionsCommand extends BaseCommand {

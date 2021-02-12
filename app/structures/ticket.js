@@ -2,10 +2,10 @@
 const pluralize = require('pluralize')
 const BaseStructure = require('./base')
 const roVerAdapter = require('../adapters/rover')
-const timeHelper = require('../helpers/time')
 
 const { MessageEmbed } = require('discord.js')
 const { stripIndents } = require('common-tags')
+const { timeHelper } = require('../helpers')
 const { Ticket, TicketModerator } = require('../models')
 const { discordService } = require('../services')
 

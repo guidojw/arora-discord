@@ -2,7 +2,7 @@
 const applicationAdapter = require('../../adapters/application')
 const BaseCommand = require('../base')
 
-const { getChannels, getTags, getUrls } = require('../../helpers/string')
+const { stringHelper } = require('../../helpers')
 const { userService } = require('../../services')
 
 class ExtendSuspensionCommand extends BaseCommand {
@@ -28,11 +28,11 @@ class ExtendSuspensionCommand extends BaseCommand {
         key: 'reason',
         type: 'string',
         prompt: 'With what reason are you extending this person\'s suspension?',
-        validate: val => getChannels(val)
+        validate: val => stringHelper.getChannels(val)
           ? 'Reason contains channels.'
-          : getTags(val)
+          : stringHelper.getTags(val)
             ? 'Reason contains tags.'
-            : getUrls(val)
+            : stringHelper.getUrls(val)
               ? 'Reason contains URLs.'
               : true
       }]

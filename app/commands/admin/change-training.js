@@ -1,9 +1,8 @@
 'use strict'
 const applicationAdapter = require('../../adapters/application')
 const BaseCommand = require('../base')
-const timeHelper = require('../../helpers/time')
 
-const { getChannels, getTags, getUrls } = require('../../helpers/string')
+const { stringHelper, timeHelper } = require('../../helpers')
 const { groupService, userService } = require('../../services')
 
 class ChangeTrainingCommand extends BaseCommand {
@@ -42,11 +41,11 @@ class ChangeTrainingCommand extends BaseCommand {
     if (key === 'author') {
       changes.authorId = await userService.getIdFromUsername(data)
     } else if (key === 'notes') {
-      const error = getChannels(data)
+      const error = stringHelper.getChannels(data)
         ? 'Notes contain channels.'
-        : getTags(data)
+        : stringHelper.getTags(data)
           ? 'Notes contain tags.'
-          : getUrls(data)
+          : stringHelper.getUrls(data)
             ? 'Notes contain URLs.'
             : undefined
       if (error) {

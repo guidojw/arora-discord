@@ -2,7 +2,7 @@
 const applicationAdapter = require('../../adapters/application')
 const BaseCommand = require('../base')
 
-const { getChannels, getTags, getUrls } = require('../../helpers/string')
+const { stringHelper } = require('../../helpers')
 const { userService } = require('../../services')
 
 class BanCommand extends BaseCommand {
@@ -21,11 +21,11 @@ class BanCommand extends BaseCommand {
         key: 'reason',
         type: 'string',
         prompt: 'With what reason would you like to ban this person?',
-        validate: val => getChannels(val)
+        validate: val => stringHelper.getChannels(val)
           ? 'Reason contains channels.'
-          : getTags(val)
+          : stringHelper.getTags(val)
             ? 'Reason contains tags.'
-            : getUrls(val)
+            : stringHelper.getUrls(val)
               ? 'Reason contains URLs.'
               : true
       }]

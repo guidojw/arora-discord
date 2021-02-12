@@ -1,9 +1,9 @@
 'use strict'
 const discordService = require('./discord')
 const groupService = require('./group')
-const stringHelper = require('../helpers/string')
-const timeHelper = require('../helpers/time')
 const userService = require('./user')
+
+const { stringHelper, timeHelper } = require('../helpers')
 
 exports.getBanEmbeds = async (groupId, bans) => {
   const userIds = [...new Set([

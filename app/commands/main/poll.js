@@ -2,7 +2,7 @@
 const BaseCommand = require('../base')
 
 const { MessageEmbed } = require('discord.js')
-const { getTags } = require('../../helpers/string')
+const { stringHelper } = require('../../helpers')
 const { discordService } = require('../../services')
 
 class PollCommand extends BaseCommand {
@@ -19,7 +19,7 @@ class PollCommand extends BaseCommand {
         key: 'poll',
         type: 'string',
         prompt: 'What would you like the question to be?',
-        validate: val => getTags(val) ? 'Poll contains tags.' : true
+        validate: val => stringHelper.getTags(val) ? 'Poll contains tags.' : true
       }]
     })
   }

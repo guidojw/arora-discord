@@ -2,9 +2,8 @@
 const applicationAdapter = require('../../adapters/application')
 const BaseCommand = require('../base')
 
+const { stringHelper } = require('../../helpers')
 const { userService } = require('../../services')
-
-const { getChannels, getTags, getUrls } = require('../../helpers/string')
 
 class SuspendCommand extends BaseCommand {
   constructor (client) {
@@ -30,11 +29,11 @@ class SuspendCommand extends BaseCommand {
         key: 'reason',
         type: 'string',
         prompt: 'For what reason are you suspending this person?',
-        validate: val => getChannels(val)
+        validate: val => stringHelper.getChannels(val)
           ? 'Reason contains channels.'
-          : getTags(val)
+          : stringHelper.getTags(val)
             ? 'Reason contains tags.'
-            : getUrls(val)
+            : stringHelper.getUrls(val)
               ? 'Reason contains URLs.'
               : true
       }, {

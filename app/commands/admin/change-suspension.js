@@ -2,7 +2,7 @@
 const applicationAdapter = require('../../adapters/application')
 const BaseCommand = require('../base')
 
-const { getChannels, getTags, getUrls } = require('../../helpers/string')
+const { stringHelper } = require('../../helpers')
 const { userService } = require('../../services')
 
 class ChangeSuspensionCommand extends BaseCommand {
@@ -42,11 +42,11 @@ class ChangeSuspensionCommand extends BaseCommand {
     if (key === 'author') {
       changes.authorId = await userService.getIdFromUsername(data)
     } else if (key === 'reason') {
-      const error = getChannels(data)
+      const error = stringHelper.getChannels(data)
         ? 'Reason contains channels.'
-        : getTags(data)
+        : stringHelper.getTags(data)
           ? 'Reason contains tags.'
-          : getUrls(data)
+          : stringHelper.getUrls(data)
             ? 'Reason contains URLs.'
             : undefined
       if (error) {

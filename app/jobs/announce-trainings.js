@@ -2,9 +2,9 @@
 const lodash = require('lodash')
 const pluralize = require('pluralize')
 const applicationAdapter = require('../adapters/application')
-const timeHelper = require('../helpers/time')
 
 const { MessageEmbed } = require('discord.js')
+const { timeHelper } = require('../helpers')
 const { groupService, userService } = require('../services')
 
 module.exports = async guild => {

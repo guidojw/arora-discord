@@ -2,7 +2,7 @@
 const BaseCommand = require('../base')
 
 const { MessageEmbed } = require('discord.js')
-const { getTags } = require('../../helpers/string')
+const { stringHelper } = require('../../helpers')
 
 class SuggestCommand extends BaseCommand {
   constructor (client) {
@@ -17,7 +17,7 @@ class SuggestCommand extends BaseCommand {
         key: 'suggestion',
         prompt: 'What would you like to suggest?',
         type: 'string',
-        validate: val => getTags(val) ? 'Suggestion contains tags.' : true
+        validate: val => stringHelper.getTags(val) ? 'Suggestion contains tags.' : true
       }],
       throttling: {
         usages: 1,

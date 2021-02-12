@@ -1,10 +1,9 @@
 'use strict'
 const applicationAdapter = require('../../adapters/application')
 const BaseCommand = require('../base')
-const timeHelper = require('../../helpers/time')
 
 const { MessageEmbed } = require('discord.js')
-const { getChannels, getTags, getUrls } = require('../../helpers/string')
+const { stringHelper, timeHelper } = require('../../helpers')
 const { groupService, userService } = require('../../services')
 
 class HostTrainingCommand extends BaseCommand {
@@ -36,11 +35,11 @@ class HostTrainingCommand extends BaseCommand {
         key: 'notes',
         type: 'string',
         prompt: 'What notes would you like to add? Reply with "none" if you don\'t want to add any.',
-        validate: val => getChannels(val)
+        validate: val => stringHelper.getChannels(val)
           ? 'Notes contain channels.'
-          : getTags(val)
+          : stringHelper.getTags(val)
             ? 'Notes contain tags.'
-            : getUrls(val)
+            : stringHelper.getUrls(val)
               ? 'Notes contain URLs.'
               : true
       }]
