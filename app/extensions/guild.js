@@ -22,15 +22,11 @@ const NSadminGuild = Structures.extend('Guild', Guild => {
       this.supportEnabled = data.supportEnabled
       this.robloxGroupId = data.robloxGroupId
       this.logsChannelId = data.logsChannelId
-      this.trainingsChannelId = data.trainingsChannelId
       this.suggestionsChannelId = data.suggestionsChannelId
       this.ratingsChannelId = data.ratingsChannelId
-      this.supportChannelId = data.supportChannelId
-      this.welcomeChannelId = data.welcomeChannelId
       this.ticketsCategoryId = data.ticketsCategoryId
-      this.trainingsMessageId = data.trainingsMessageId
-      this.trainingsInfoMessageId = data.trainingsInfoMessageId
-      this.supportMessageId = data.supportMessageId
+      this.trainingsPanelId = data.trainingsPanelId
+      this.trainingsInfoPanelId = data.trainingsInfoPanelId
 
       if (data.channels) {
         for (const rawChannel of data.channels) {
