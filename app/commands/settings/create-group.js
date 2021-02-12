@@ -27,9 +27,6 @@ class CreateGroupCommand extends BaseCommand {
 
   async run (message, { name, type }) {
     type = type.toLowerCase()
-    if (this.client.registry.commands.some(command => command.name === name || command.aliases?.includes(name))) {
-      return message.reply('Not allowed, name is reserved.')
-    }
     const [group, created] = await Group.findOrCreate({
       where: {
         guildId: message.guild.id,
