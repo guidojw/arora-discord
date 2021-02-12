@@ -17,11 +17,11 @@ class NSadminProvider extends SettingProvider {
     const guild = this.client.guilds.cache.get(guildId)
 
     const [data, created] = await Guild.findOrCreate({ where: { id: guildId } })
-    if (created) { // Creating doesn't automatically include the included models.
-      await data.reload()
-    }
-
     if (guild) {
+      if (created) { // Creating doesn't automatically include the included models.
+        await data.reload()
+      }
+
       guild._setup(data)
     }
 
