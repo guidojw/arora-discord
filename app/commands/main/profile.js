@@ -1,6 +1,7 @@
 'use strict'
 const BaseCommand = require('../base')
-const userService = require('../../services/user')
+
+const { userService } = require('../../services')
 
 class ProfileCommand extends BaseCommand {
   constructor (client) {

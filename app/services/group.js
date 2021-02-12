@@ -1,10 +1,10 @@
 'use strict'
 const pluralize = require('pluralize')
+const applicationAdapter = require('../adapters/application')
+const discordService = require('./discord')
 const stringHelper = require('../helpers/string')
 const timeHelper = require('../helpers/time')
 const userService = require('../services/user')
-const discordService = require('./discord')
-const applicationAdapter = require('../adapters/application')
 
 exports.getTrainingSentence = async training => {
   const date = new Date(training.date)

@@ -4,6 +4,7 @@ const BaseCommand = require('../base')
 const { stripIndents } = require('common-tags')
 const { MessageEmbed } = require('discord.js')
 const { Group } = require('../../models')
+const { discordService } = require('../../services')
 
 class PanelsCommand extends BaseCommand {
   constructor (client) {
@@ -29,11 +30,12 @@ class PanelsCommand extends BaseCommand {
       }
 
       const embed = new MessageEmbed()
-        .addField(`Group ${group.id}`, stripIndents`
-        Name: \`${group.name}\`
-        Type: \`${group.type}\`
-        Guarded: \`${group.guarded}\`
-        `)
+        .addField(`Group ${group.id}`,
+          stripIndents`
+          Name: \`${group.name}\`
+          Type: \`${group.type}\`
+          Guarded: \`${group.guarded}\`
+          `)
         .setColor(message.guild.primaryColor)
       return message.replyEmbed(embed)
     } else {

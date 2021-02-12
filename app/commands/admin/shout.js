@@ -1,10 +1,10 @@
 'use strict'
 const applicationAdapter = require('../../adapters/application')
 const BaseCommand = require('../base')
-const userService = require('../../services/user')
 
 const { MessageEmbed } = require('discord.js')
 const { getChannels, getTags, getUrls } = require('../../helpers/string')
+const { userService } = require('../../services')
 
 class ShoutCommand extends BaseCommand {
   constructor (client) {

@@ -1,9 +1,10 @@
 'use strict'
 const applicationAdapter = require('../../adapters/application')
 const BaseCommand = require('../base')
-const userService = require('../../services/user')
 
 const { getChannels, getTags, getUrls } = require('../../helpers/string')
+const { userService } = require('../../services')
+
 class ChangeSuspensionCommand extends BaseCommand {
   constructor (client) {
     super(client, {

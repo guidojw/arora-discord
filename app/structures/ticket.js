@@ -1,13 +1,13 @@
 'use strict'
 const pluralize = require('pluralize')
 const BaseStructure = require('./base')
-const discordService = require('../services/discord')
 const roVerAdapter = require('../adapters/rover')
 const timeHelper = require('../helpers/time')
 
 const { MessageEmbed } = require('discord.js')
 const { stripIndents } = require('common-tags')
 const { Ticket, TicketModerator } = require('../models')
+const { discordService } = require('../services')
 
 const SUBMISSION_TIME = 30 * 60 * 1000
 

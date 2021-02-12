@@ -2,11 +2,10 @@
 const lodash = require('lodash')
 const pluralize = require('pluralize')
 const applicationAdapter = require('../adapters/application')
-const userService = require('../services/user')
-const groupService = require('../services/group')
 const timeHelper = require('../helpers/time')
 
 const { MessageEmbed } = require('discord.js')
+const { groupService, userService } = require('../services')
 
 module.exports = async guild => {
   if (guild.robloxGroupId === null) {

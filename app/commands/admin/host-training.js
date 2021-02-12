@@ -1,12 +1,11 @@
 'use strict'
 const applicationAdapter = require('../../adapters/application')
 const BaseCommand = require('../base')
-const groupService = require('../../services/group')
 const timeHelper = require('../../helpers/time')
-const userService = require('../../services/user')
 
 const { MessageEmbed } = require('discord.js')
 const { getChannels, getTags, getUrls } = require('../../helpers/string')
+const { groupService, userService } = require('../../services')
 
 class HostTrainingCommand extends BaseCommand {
   constructor (client) {

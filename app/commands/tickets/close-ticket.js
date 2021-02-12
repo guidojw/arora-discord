@@ -1,8 +1,8 @@
 'use strict'
 const BaseCommand = require('../base')
-const discordService = require('../../services/discord')
 
 const { stripIndents } = require('common-tags')
+const { discordService } = require('../../services')
 
 class CloseTicketCommand extends BaseCommand {
   constructor (client) {

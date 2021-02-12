@@ -1,9 +1,9 @@
 'use strict'
 const pluralize = require('pluralize')
 const BaseCommand = require('../base')
-const userService = require('../../services/user')
 
 const { MessageEmbed } = require('discord.js')
+const { userService } = require('../../services')
 
 class AgeCommand extends BaseCommand {
   constructor (client) {

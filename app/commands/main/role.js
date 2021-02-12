@@ -1,8 +1,8 @@
 'use strict'
 const Base = require('../base')
-const userService = require('../../services/user')
 
 const { MessageEmbed } = require('discord.js')
+const { userService } = require('../../services')
 
 class RoleCommand extends Base {
   constructor (client) {

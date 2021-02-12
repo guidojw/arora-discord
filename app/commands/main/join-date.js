@@ -1,9 +1,9 @@
 'use strict'
 const BaseCommand = require('../base')
-const userService = require('../../services/user')
 const timeHelper = require('../../helpers/time')
 
 const { MessageEmbed } = require('discord.js')
+const { userService } = require('../../services')
 
 class JoinDateCommand extends BaseCommand {
   constructor (client) {

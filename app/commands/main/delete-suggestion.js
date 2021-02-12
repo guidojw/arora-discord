@@ -1,6 +1,7 @@
 'use strict'
 const BaseCommand = require('../base')
-const discordService = require('../../services/discord')
+
+const { discordService } = require('../../services')
 
 class DeleteSuggestionCommand extends BaseCommand {
   constructor (client) {

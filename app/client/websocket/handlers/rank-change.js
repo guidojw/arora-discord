@@ -1,8 +1,6 @@
 'use strict'
-const discordService = require('../../../services/discord')
-const userService = require('../../../services/user')
-
 const { RoleBinding } = require('../../../models')
+const { discordService, userService } = require('../../../services')
 
 const rankChangeHandler = async (client, { data }) => {
   const { groupId, userId, rank } = data.args

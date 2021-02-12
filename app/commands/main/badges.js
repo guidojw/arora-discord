@@ -1,8 +1,8 @@
 'use strict'
 const Base = require('../base')
-const userService = require('../../services/user')
 
 const { MessageEmbed } = require('discord.js')
+const { userService } = require('../../services')
 
 const TTDT_ID = 912438803
 const PTDT_ID = 496942494

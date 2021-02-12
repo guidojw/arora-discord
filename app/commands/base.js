@@ -1,6 +1,7 @@
 'use strict'
 const Commando = require('discord.js-commando')
-const discordService = require('../services/discord')
+
+const { discordService } = require('../services')
 
 class BaseCommand extends Commando.Command {
   constructor (client, info) {

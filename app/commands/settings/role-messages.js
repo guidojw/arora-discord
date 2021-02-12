@@ -1,10 +1,10 @@
 'use strict'
 const BaseCommand = require('../base')
 const lodash = require('lodash')
-const discordService = require('../../services/discord')
 
 const { MessageEmbed } = require('discord.js')
 const { RoleMessage } = require('../../models')
+const { discordService } = require('../../services')
 
 class RoleMessagesCommand extends BaseCommand {
   constructor (client) {

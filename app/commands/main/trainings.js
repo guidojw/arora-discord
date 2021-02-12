@@ -1,9 +1,9 @@
 'use strict'
 const applicationAdapter = require('../../adapters/application')
 const BaseCommand = require('../base')
-const groupService = require('../../services/group')
 
 const { MessageEmbed } = require('discord.js')
+const { groupService } = require('../../services')
 
 class TrainingsCommand extends BaseCommand {
   constructor (client) {

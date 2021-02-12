@@ -1,8 +1,8 @@
 'use strict'
 const pluralize = require('pluralize')
-const userService = require('../../../services/user')
 
 const { MessageEmbed } = require('discord.js')
+const { userService } = require('../../../services')
 
 const trainDevelopersPayoutHandler = async (client, { data }) => {
   const { developersSales } = data.args

@@ -1,9 +1,9 @@
 'use strict'
 const BaseCommand = require('../base')
-const discordService = require('../../services/discord')
 
 const { MessageEmbed } = require('discord.js')
 const { Panel } = require('../../models')
+const { discordService } = require('../../services')
 
 class PanelsCommand extends BaseCommand {
   constructor (client) {
