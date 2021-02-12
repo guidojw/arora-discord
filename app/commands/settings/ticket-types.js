@@ -51,7 +51,7 @@ class RoleBindingsCommand extends BaseCommand {
 }
 
 function getTicketTypeRow ([, ticketType]) {
-  return `${ticketType.id}. **${ticketType.name}**\n`
+  return `${ticketType.id}. **${ticketType.name}**`
 }
 
 module.exports = RoleBindingsCommand
