@@ -1,5 +1,5 @@
 'use strict'
-const { Role, RoleGroup } = require('../models')
+const { RoleGroup } = require('../structures')
 
 class RoleGroupManager {
   constructor (role) {
@@ -9,23 +9,6 @@ class RoleGroupManager {
 
   get cache () {
     return this.guild.groups.filter(group => group instanceof RoleGroup && group.roles.cache.has(this.id))
-  }
-
-  async add (group) {
-    group = this.guild.groups.resolve(group)
-
-    await Role.findOrCreate({
-      where: {
-        id: this.role.id,
-        guildId: this.guild.id
-      }
-    })
-    await RoleGroup.create({
-      roleId: this.role.id,
-      groupId: group.id
-    })
-
-    return this.role
   }
 }
 
