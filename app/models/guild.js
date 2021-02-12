@@ -148,7 +148,8 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: {
         name: 'guildId',
         allowNull: false
-      }
+      },
+      as: 'channels'
     })
     Guild.belongsTo(models.Channel, {
       foreignKey: 'logsChannelId'
@@ -196,6 +197,9 @@ module.exports = (sequelize, DataTypes) => {
       }, {
         model: models.Role,
         as: 'roles'
+      }, {
+        model: models.Channel,
+        as: 'channels'
       }],
       subQuery: false
     })

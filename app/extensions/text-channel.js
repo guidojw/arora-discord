@@ -9,6 +9,10 @@ const NSadminTextChannel = Structures.extend('TextChannel', TextChannel => {
 
       this.groups = new TextChannelGroupManager(this)
     }
+
+    _setup (data) {
+
+    }
   }
 
   return NSadminTextChannel
