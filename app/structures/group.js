@@ -18,10 +18,12 @@ class Group extends BaseStructure {
   }
 
   async update (data) {
-    const group = await GroupModel.findByPk(this.id)
-
-    const newData = await group.update({
+    const newData = await GroupModel.update({
       name: data.name
+    }, {
+      where: {
+        id: this.id
+      }
     })
 
     this._setup(newData)

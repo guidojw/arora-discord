@@ -71,7 +71,7 @@ class TicketController extends BaseStructure {
     const name = `${this.type}-${this.author.username}`
     const channel = await this.guild.channels.create(name)
 
-    await this.edit({ channelId: channel.id })
+    await this.update({ channelId: channel.id })
     await this.channel.setParent(this.guild.ticketsCategory)
     await this.channel.updateOverwrite(this.author, { VIEW_CHANNEL: true })
   }
@@ -226,12 +226,14 @@ class TicketController extends BaseStructure {
     }
   }
 
-  async edit (data) {
-    const ticket = await Ticket.findByPk(this.id)
-
-    const newData = await ticket.update({
+  async update (data) {
+    const newData = await Ticket.update({
       channelId: data.channelId,
       type: data.type
+    }, {
+      where: {
+        id: this.id
+      }
     })
 
     this._setup(newData)
