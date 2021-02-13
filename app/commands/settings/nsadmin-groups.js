@@ -3,7 +3,6 @@ const BaseCommand = require('../base')
 
 const { stripIndents } = require('common-tags')
 const { MessageEmbed } = require('discord.js')
-const { Group } = require('../../models')
 const { discordService } = require('../../services')
 
 class PanelsCommand extends BaseCommand {
@@ -24,7 +23,7 @@ class PanelsCommand extends BaseCommand {
 
   async run (message, { groupId }) {
     if (groupId) {
-      const group = await Group.findOne({ where: { id: groupId, guildId: message.guild.id } })
+      const group = message.guild.groups.cache.find(group => group.id === groupId )
       if (!group) {
         return message.reply('Group not found.')
       }
@@ -39,14 +38,13 @@ class PanelsCommand extends BaseCommand {
         .setColor(message.guild.primaryColor)
       return message.replyEmbed(embed)
     } else {
-      const groups = await Group.findAll({ where: { guildId: message.guild.id } })
-      if (groups.length === 0) {
+      if (message.guild.groups.cache.length === 0) {
         return message.reply('No groups found.')
       }
 
       const embeds = await discordService.getListEmbeds(
         'Groups',
-        groups,
+        [...message.guild.groups.cache.values()],
         getGroupRow
       )
       for (const embed of embeds) {
