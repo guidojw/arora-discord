@@ -33,40 +33,35 @@ module.exports = (sequelize, DataTypes) => {
           transaction
         })
 
-        await guild.createGroup({
+        await sequelize.models.Group.bulkCreate([{
           name: 'serverBoosterReportChannels',
           type: 'channel',
-          guarded: true
+          guarded: true,
+          guildId: guild.id
         }, {
-          transaction
-        })
-        await guild.createGroup({
           name: 'photoContestChannels',
           type: 'channel',
-          guarded: true
-        }, { transaction })
-        await guild.createGroup({
+          guarded: true,
+          guildId: guild.id
+        }, {
           name: 'noTextChannels',
           type: 'channel',
-          guarded: true
+          guarded: true,
+          guildId: guild.id
         }, {
+          name: 'admin',
+          type: 'role',
+          guarded: true,
+          guildId: guild.id
+        }, {
+          name: 'everyone',
+          type: 'role',
+          guarded: true,
+          guildId: guild.id
+        }], {
           transaction
         })
 
-        const adminRoleGroup = await guild.createGroup({
-          name: 'admin',
-          type: 'role',
-          guarded: true
-        }, {
-          transaction
-        })
-        const everyoneRoleGroup = await guild.createGroup({
-          name: 'everyone',
-          type: 'role',
-          guarded: true
-        }, {
-          transaction
-        })
         // await sequelize.models.GroupPermission.bulkCreate([])
         // await sequelize.models.GroupPermission.bulkCreate([])
       }
