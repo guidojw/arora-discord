@@ -22,7 +22,7 @@ class PanelsCommand extends BaseCommand {
 
   async run (message, { groupId }) {
     if (groupId) {
-      const group = message.guild.groups.cache.find(group => group.id === groupId )
+      const group = message.guild.groups.cache.find(group => group.id === groupId)
       if (!group) {
         return message.reply('Group not found.')
       }
@@ -35,8 +35,8 @@ class PanelsCommand extends BaseCommand {
         .setColor(message.guild.primaryColor)
       if (group.type === 'channel') {
         embed.addField('Channels', group.channels.cache
-            .map(channel => `<#${channel.id}>`)
-            .join(' ') || 'none'
+          .map(channel => `<#${channel.id}>`)
+          .join(' ') || 'none'
         )
       } else {
         embed.addField('Roles', group.roles.cache

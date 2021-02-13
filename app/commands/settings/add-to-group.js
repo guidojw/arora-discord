@@ -35,7 +35,6 @@ class AddToGroupCommand extends BaseCommand {
 
       return message.reply(`Successfully added role **${channelOrRole.id}** to group **${group.id}**.`)
     }
-
   }
 }
 

@@ -21,7 +21,7 @@ exports.getTrainingRow = (training, { users }) => {
   const readableDate = timeHelper.getDate(date)
   const readableTime = timeHelper.getTime(date)
 
-  return `${training.id}. **${training.type.abbreviation}** training on **${readableDate}** at **${readableTime} ${(timeHelper.isDST(date) && 'CEST') || 'CET'}**, hosted by **${username}**.`
+  return `${training.id}. **${training.type.abbreviation}** training on **${readableDate}** at **${readableTime} ${timeHelper.isDST(date) ? 'CEST' : 'CET'}**, hosted by **${username}**.`
 }
 
 exports.getSuspensionEmbeds = async (groupId, suspensions) => {
