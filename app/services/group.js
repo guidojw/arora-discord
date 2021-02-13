@@ -6,20 +6,22 @@ const userService = require('../services/user')
 const { applicationAdapter } = require('../adapters')
 const { stringHelper, timeHelper } = require('../helpers')
 
-exports.getTrainingSentence = async training => {
+exports.getTrainingEmbeds = async trainings => {
+  const userIds = [...new Set([
+    ...trainings.map(training => training.authorId)
+  ])]
+  const users = await userService.getUsers(userIds)
+
+  return discordService.getListEmbeds('Upcoming Trainings', trainings, exports.getTrainingRow, { users })
+}
+
+exports.getTrainingRow = (training, { users }) => {
+  const username = users.find(user => user.id === training.authorId).name
   const date = new Date(training.date)
   const readableDate = timeHelper.getDate(date)
   const readableTime = timeHelper.getTime(date)
 
-  return `**${training.type.abbreviation}** training on **${readableDate}** at **${readableTime} ${(timeHelper.isDst(date) && 'CEST') || 'CET'}**, hosted by **${(await userService.getUser(training.authorId)).name}**.`
-}
-
-exports.getTrainingEmbeds = async trainings => {
-  return discordService.getListEmbeds('Upcoming Trainings', trainings, exports.getTrainingRow)
-}
-
-exports.getTrainingRow = async training => {
-  return `${training.id}. ${await exports.getTrainingSentence(training)}`
+  return `${training.id}. **${training.type.abbreviation}** training on **${readableDate}** at **${readableTime} ${(timeHelper.isDst(date) && 'CEST') || 'CET'}**, hosted by **${username}**.`
 }
 
 exports.getSuspensionEmbeds = async (groupId, suspensions) => {

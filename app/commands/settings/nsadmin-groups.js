@@ -50,7 +50,7 @@ class PanelsCommand extends BaseCommand {
         return message.reply('No groups found.')
       }
 
-      const embeds = await discordService.getListEmbeds(
+      const embeds = discordService.getListEmbeds(
         'Groups',
         [...message.guild.groups.cache.values()],
         getGroupRow

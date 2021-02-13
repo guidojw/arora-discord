@@ -42,7 +42,7 @@ class RoleMessagesCommand extends BaseCommand {
         return message.reply('No role messages found.')
       }
 
-      const embeds = await discordService.getListEmbeds(
+      const embeds = discordService.getListEmbeds(
         'Role Messages',
         lodash.groupBy(roleMessages, 'messageId'),
         getGroupedRoleMessageRow,

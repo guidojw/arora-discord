@@ -37,7 +37,7 @@ class PanelsCommand extends BaseCommand {
         return message.reply('No panels found.')
       }
 
-      const embeds = await discordService.getListEmbeds(
+      const embeds = discordService.getListEmbeds(
         'Panels',
         panels,
         getPanelRow

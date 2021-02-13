@@ -73,7 +73,7 @@ exports.prompt = async (channel, author, message, options) => {
   return promise
 }
 
-exports.getListEmbeds = async (title, values, getRow, data) => {
+exports.getListEmbeds = (title, values, getRow, data) => {
   if (values instanceof Object) {
     values = Object.entries(values)
   }
@@ -83,7 +83,7 @@ exports.getListEmbeds = async (title, values, getRow, data) => {
     .setTitle(title)
 
   for (const value of values) {
-    const row = await getRow(value, data)
+    const row = getRow(value, data)
     const currentField = embed.fields.length - 1
     if (currentField === -1) {
       embed.addField('\u200b', `${row}\n`)

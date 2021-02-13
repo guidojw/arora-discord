@@ -38,7 +38,7 @@ class RoleBindingsCommand extends BaseCommand {
         return message.reply('No ticket types found.')
       }
 
-      const embeds = await discordService.getListEmbeds(
+      const embeds = discordService.getListEmbeds(
         'Ticket Types',
         ticketTypes,
         getTicketTypeRow

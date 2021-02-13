@@ -41,7 +41,7 @@ class RoleBindingsCommand extends BaseCommand {
         return message.reply('No role bindings found.')
       }
 
-      const embeds = await discordService.getListEmbeds(
+      const embeds = discordService.getListEmbeds(
         'Role Bindings',
         lodash.groupBy(roleBindings, 'roleId'),
         getGroupedRoleBindingRow,
