@@ -141,7 +141,7 @@ const NSadminGuild = Structures.extend('Guild', Guild => {
       })
 
       this._setup(newData)
-      return newData
+      return this
     }
   }
 

@@ -3,20 +3,20 @@ const BaseCommand = require('../base')
 
 const { ChannelGroup } = require('../../structures')
 
-class AddToGroupCommand extends BaseCommand {
+class RemoveFromGroupCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'settings',
-      name: 'addtogroup',
-      description: 'Adds a channel|role to a group.',
+      name: 'removefromgroup',
+      description: 'Removes a channel|role from a group.',
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
         key: 'groupId',
-        prompt: 'To what group do you want to add a channel|role?',
+        prompt: 'From what group do you want to remove a channel|role?',
         type: 'integer'
       }, {
         key: 'channelOrRole',
-        prompt: 'What channel|role do you want to add to this group?',
+        prompt: 'What channel|role do you want to remove from this group?',
         type: 'channel|role'
       }]
     })
@@ -29,16 +29,15 @@ class AddToGroupCommand extends BaseCommand {
     }
 
     if (group instanceof ChannelGroup) {
-      await group.channels.add(channelOrRole)
+      await group.channels.remove(channelOrRole)
 
-      return message.reply(`Successfully added channel **${channelOrRole.id}** to group **${group.id}**.`)
+      return message.reply(`Successfully removed channel **${channelOrRole.id}** from group **${group.id}**.`)
     } else {
-      await group.roles.add(channelOrRole)
+      await group.roles.remove(channelOrRole)
 
-      return message.reply(`Successfully added role **${channelOrRole.id}** to group **${group.id}**.`)
+      return message.reply(`Successfully removed role **${channelOrRole.id}** from group **${group.id}**.`)
     }
-
   }
 }
 
-module.exports = AddToGroupCommand
+module.exports = RemoveFromGroupCommand

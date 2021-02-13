@@ -2,7 +2,6 @@
 const BaseCommand = require('../base')
 
 const { GroupTypes } = require('../../util/constants')
-const { Group } = require('../../models')
 
 class CreateGroupCommand extends BaseCommand {
   constructor (client) {
@@ -27,20 +26,8 @@ class CreateGroupCommand extends BaseCommand {
 
   async run (message, { name, type }) {
     type = type.toLowerCase()
-    const [group, created] = await Group.findOrCreate({
-      where: {
-        guildId: message.guild.id,
-        name
-      },
-      defaults: {
-        type
-      }
-    })
-    if (!created) {
-      return message.reply('A group with that name already exists.')
-    }
 
-    message.guild.groups._add(group)
+    const group = await message.guild.groups.create({ name, type })
 
     return message.reply(`Successfully created group **${group.id}**.`)
   }

@@ -1,8 +1,6 @@
 'use strict'
 const BaseCommand = require('../base')
 
-const { Group } = require('../../models')
-
 class DeleteGroupCommand extends BaseCommand {
   constructor (client) {
     super(client, {
@@ -23,8 +21,6 @@ class DeleteGroupCommand extends BaseCommand {
     const group = message.guild.groups.cache.find(group => group.id === groupId)
     if (!group) {
       return message.reply('Group not found.')
-    } else if (group.guarded) {
-      return message.reply('Guarded groups cannot be deleted.')
     }
 
     await group.delete()

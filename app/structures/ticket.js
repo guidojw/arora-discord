@@ -237,7 +237,7 @@ class TicketController extends BaseStructure {
     })
 
     this._setup(newData)
-    return newData
+    return this
   }
 }
 

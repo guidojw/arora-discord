@@ -27,12 +27,18 @@ class Group extends BaseStructure {
     })
 
     this._setup(newData)
-    return newData
+    return this
   }
 
-  delete () {
+  async delete () {
+    if (this.guarded) {
+      throw new Error('Guarded groups cannot be deleted.')
+    }
+
+    await GroupModel.destroy({ where: { id: this.id } })
     this.guild.groups.cache.delete(this.id)
-    return GroupModel.destroy({ where: { id: this.id } })
+
+    return this
   }
 
   static create (client, data, guild) {
