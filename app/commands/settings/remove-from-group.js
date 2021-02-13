@@ -1,8 +1,6 @@
 'use strict'
 const BaseCommand = require('../base')
 
-const { ChannelGroup } = require('../../structures')
-
 class RemoveFromGroupCommand extends BaseCommand {
   constructor (client) {
     super(client, {
@@ -28,7 +26,7 @@ class RemoveFromGroupCommand extends BaseCommand {
       return message.reply('Group not found.')
     }
 
-    if (group instanceof ChannelGroup) {
+    if (group.type === 'channel') {
       await group.channels.remove(channelOrRole)
 
       return message.reply(`Successfully removed channel **${channelOrRole.id}** from group **${group.id}**.`)

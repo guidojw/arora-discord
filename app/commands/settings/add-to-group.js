@@ -1,8 +1,6 @@
 'use strict'
 const BaseCommand = require('../base')
 
-const { ChannelGroup } = require('../../structures')
-
 class AddToGroupCommand extends BaseCommand {
   constructor (client) {
     super(client, {
@@ -28,7 +26,7 @@ class AddToGroupCommand extends BaseCommand {
       return message.reply('Group not found.')
     }
 
-    if (group instanceof ChannelGroup) {
+    if (group.type === 'channel') {
       await group.channels.add(channelOrRole)
 
       return message.reply(`Successfully added channel **${channelOrRole.id}** to group **${group.id}**.`)

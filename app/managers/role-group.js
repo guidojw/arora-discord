@@ -1,6 +1,4 @@
 'use strict'
-const { RoleGroup } = require('../structures')
-
 class RoleGroupManager {
   constructor (role) {
     this.role = role
@@ -8,7 +6,7 @@ class RoleGroupManager {
   }
 
   get cache () {
-    return this.guild.groups.filter(group => group instanceof RoleGroup && group.roles.cache.has(this.id))
+    return this.guild.groups.filter(group => group.type === 'role' && group.roles.cache.has(this.id))
   }
 }
 

@@ -1,6 +1,4 @@
 'use strict'
-const { ChannelGroup } = require('../structures')
-
 class TextChannelGroupManager {
   constructor (channel) {
     this.channel = channel
@@ -8,7 +6,7 @@ class TextChannelGroupManager {
   }
 
   get cache () {
-    return this.guild.groups.filter(group => group instanceof ChannelGroup && group.channels.cache.has(this.channel.id))
+    return this.guild.groups.filter(group => group.type === 'channel' && group.channels.cache.has(this.channel.id))
   }
 }
 

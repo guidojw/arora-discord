@@ -8,6 +8,8 @@ class Group extends BaseStructure {
   constructor (client, data, guild) {
     super(client)
 
+    this.type = data.type
+
     this.guild = guild
   }
 
