@@ -38,7 +38,7 @@ class TrainingsCommand extends BaseCommand {
         .setTitle(`Training ${training.id}`)
         .addField('Type', training.type.abbreviation, true)
         .addField('Date', timeHelper.getDate(date), true)
-        .addField('Time', `${timeHelper.getTime(date)} ${timeHelper.isDst(date) && 'CEST' || 'CET'}`, true)
+        .addField('Time', `${timeHelper.getTime(date)} ${timeHelper.isDST(date) && 'CEST' || 'CET'}`, true)
         .addField('Host', username, true)
         .setColor(message.guild.primaryColor)
       return message.replyEmbed(embed)

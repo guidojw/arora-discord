@@ -23,7 +23,7 @@ exports.getTime = date => {
   return getReadableTime({ hours, minutes })
 }
 
-exports.isDst = date => {
+exports.isDST = date => {
   const jan = new Date(date.getFullYear(), 0, 1).getTimezoneOffset()
   const jul = new Date(date.getFullYear(), 6, 1).getTimezoneOffset()
   return Math.max(jan, jul) !== date.getTimezoneOffset()
