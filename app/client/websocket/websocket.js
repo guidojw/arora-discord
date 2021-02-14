@@ -30,7 +30,7 @@ class WebSocketManager {
 
   onMessage (message) {
     const packet = JSON.parse(message)
-    this.handlePacket(packet)
+    return this.handlePacket(packet)
   }
 
   onClose () {
@@ -54,7 +54,7 @@ class WebSocketManager {
 
   handlePacket (packet) {
     if (packet && packetHandlers[packet.event]) {
-      packetHandlers[packet.event](this.client, packet)
+      return packetHandlers[packet.event](this.client, packet)
     }
   }
 }
