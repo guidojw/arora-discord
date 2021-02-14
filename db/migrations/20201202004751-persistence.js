@@ -192,14 +192,6 @@ module.exports = {
         },
         field: 'ratings_channel_id'
       },
-      welcomeChannelId: {
-        type: Sequelize.BIGINT,
-        references: {
-          model: 'channels',
-          key: 'id'
-        },
-        field: 'welcome_channel_id'
-      },
       ticketsCategoryId: {
         type: Sequelize.BIGINT,
         references: {

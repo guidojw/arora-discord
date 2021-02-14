@@ -129,7 +129,6 @@ const NSadminGuild = Structures.extend('Guild', Guild => {
         suggestionsChannelId: data.suggestionsChannelId,
         ratingsChannelId: data.ratingsChannelId,
         supportChannelId: data.supportChannelId,
-        welcomeChannelId: data.welcomeChannelId,
         ticketsCategoryId: data.ticketsCategoryId,
         trainingsMessageId: data.trainingsMessageId,
         trainingsInfoMessageId: data.trainingsInfoMessageId,
