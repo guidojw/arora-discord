@@ -87,6 +87,7 @@ class NSadminClient extends CommandoClient {
     this.bindEvent('guildMemberAdd')
     this.bindEvent('message')
     this.bindEvent('messageDelete')
+    this.bindEvent('messageDeleteBulk')
     this.bindEvent('messageReactionAdd')
     this.bindEvent('messageReactionRemove')
     this.bindEvent('roleDelete')
