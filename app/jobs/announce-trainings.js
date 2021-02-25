@@ -22,7 +22,7 @@ module.exports = async guild => {
   const authorIds = [...new Set(trainings.map(training => training.authorId))]
   const authors = await userService.getUsers(authorIds)
   const trainingsEmbed = await getTrainingsEmbed(guild.robloxGroupId, trainings, authors)
-  trainingsEmbed.setColor(guild.getData('primaryColor'))
+  trainingsEmbed.setColor(guild.primaryColor)
   await message.edit(trainingsEmbed)
 
   const now = new Date()

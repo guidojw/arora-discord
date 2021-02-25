@@ -36,12 +36,8 @@ module.exports = async guild => {
       embed.addField(`${member.user.tag} ${emoji || ''}`, `Has been boosting this server for **${months}** ${pluralize('month', months)}!`)
     }
 
-    const channels = guild.getData('premiumMembersReportChannels')
-    for (const id of channels) {
-      const channel = guild.channels.cache.get(id)
-      if (!channel) {
-        throw new Error('Cannot get channel.')
-      }
+    const channelGroup = guild.groups.cache.find(group => group.name === 'serverBoosterReportChannels')
+    for (const channel of channelGroup.channels.cache) {
       channel.send(embed)
     }
   }
