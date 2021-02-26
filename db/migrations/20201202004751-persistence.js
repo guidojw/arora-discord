@@ -106,6 +106,7 @@ module.exports = {
       },
       guildId: {
         type: Sequelize.BIGINT,
+        allowNull: false,
         field: 'guild_id'
       },
       channelId: {
