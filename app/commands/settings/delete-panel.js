@@ -1,8 +1,6 @@
 'use strict'
 const BaseCommand = require('../base')
 
-const { Panel } = require('../../models')
-
 class DeletePanelCommand extends BaseCommand {
   constructor (client) {
     super(client, {
@@ -12,20 +10,15 @@ class DeletePanelCommand extends BaseCommand {
       description: 'Deletes a panel.',
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
-        key: 'panelId',
+        key: 'panelName',
         prompt: 'What panel would you like to delete?',
-        type: 'integer'
+        type: 'striing'
       }]
     })
   }
 
-  async run (message, { panelId }) {
-    const panel = await Panel.findOne({ where: { id: panelId, guildId: message.guild.id } })
-    if (!panel) {
-      return message.reply('Panel not found.')
-    }
-
-    await panel.destroy()
+  async run (message, { panelName }) {
+    await message.guild.panels.delete(panelName)
 
     return message.reply('Successfully deleted panel.')
   }

@@ -1,11 +1,6 @@
 'use strict'
 const BaseCommand = require('../base')
 
-const { MessageEmbed } = require('discord.js')
-const { Op } = require('sequelize')
-const { Panel } = require('../../models')
-const { discordService } = require('../../services')
-
 class CreatePanelCommand extends BaseCommand {
   constructor (client) {
     super(client, {
@@ -27,29 +22,9 @@ class CreatePanelCommand extends BaseCommand {
   }
 
   async run (message, { name, content }) {
-    if (await Panel.findOne({
-      where: {
-        name: { [Op.iLike]: name },
-        guildId: message.guild.id
-      }
-    })) {
-      return message.reply('A panel with that name already exists.')
-    }
-    try {
-      const embed = new MessageEmbed(JSON.parse(content))
-      const valid = discordService.validateEmbed(embed)
-      if (typeof valid === 'string') {
-        return message.reply(valid)
-      }
+    const panel = await message.guild.panels.create(name, content)
 
-      content = JSON.stringify(embed.toJSON())
-    } catch (err) {
-      return message.reply('Content has to be an embed object.')
-    }
-
-    await Panel.create({ guildId: message.guild.id, name, content })
-
-    return message.reply(`Successfully created panel **${name}**.`)
+    return message.reply(`Successfully created panel **${panel.name}**.`)
   }
 }
 

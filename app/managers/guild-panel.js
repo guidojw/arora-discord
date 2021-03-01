@@ -1,6 +1,7 @@
 'use strict'
-const { BaseManager } = require('discord.js')
+const { BaseManager, MessageEmbed } = require('discord.js')
 const { Panel: PanelModel } = require('../models')
+const { discordService } = require('../services')
 const { Panel } = require('../structures')
 
 class GuildPanelManager extends BaseManager {
@@ -10,27 +11,58 @@ class GuildPanelManager extends BaseManager {
     this.guild = guild
   }
 
-  add (data) {
-    // const existing = this.cache.get(data.id)
-    // if (existing) {
-    //   return existing
-    // }
-    //
-    // const role = this.guild.roles.cache.get(data.id)
-    // this._roles.set(role.id, role)
-    // return role
+  async create (name, content) {
+    if (this.cache.some(panel => panel.name === name)) {
+      throw new Error('A panel with that name already exists.')
+    }
+    let embed
+    try {
+      embed = new MessageEmbed(JSON.parse(content))
+    } catch (err) {
+      throw new Error('Content has to be a JSON object.')
+    }
+    const valid = discordService.validateEmbed(embed)
+    if (typeof valid === 'string') {
+      throw new Error(valid)
+    }
+    content = JSON.stringify(embed.toJSON())
+
+    const panel = await PanelModel.create({ guildId: this.guild.id, name, content })
+
+    return this.add(panel)
   }
 
-  async create () {
+  async delete (panel) {
+    const id = this.resolveID(panel)
+    if (!id) {
+      throw new Error('Invalid panel.')
+    }
+    if (!this.cache.has(id)) {
+      throw new Error('Guild does not contain panel.')
+    }
+
+    await PanelModel.destroy({ where: { id } })
+    this.cache.delete(id)
+  }
+
+  async post (name, channel) {
 
   }
 
-  async delete () {
-
+  resolve(idOrNameOrInstance) {
+    if (typeof idOrNameOrInstance === 'string') {
+      return this.cache.get(idOrNameOrInstance) ||
+        this.cache.find(panel => panel.name === idOrNameOrInstance) ||
+        null
+    }
+    return super.resolve(idOrNameOrInstance)
   }
 
-  async post () {
-
+  resolveID(idOrNameOrInstance) {
+    if (typeof idOrNameOrInstance === 'string') {
+      return this.cache.find(panel => panel.name === idOrNameOrInstance)?.id ?? idOrNameOrInstance
+    }
+    return super.resolveID(idOrNameOrInstance)
   }
 }
 
