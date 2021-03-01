@@ -10,15 +10,15 @@ class DeletePanelCommand extends BaseCommand {
       description: 'Deletes a panel.',
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
-        key: 'panelName',
+        key: 'name',
         prompt: 'What panel would you like to delete?',
-        type: 'striing'
+        type: 'string'
       }]
     })
   }
 
-  async run (message, { panelName }) {
-    await message.guild.panels.delete(panelName)
+  async run (message, { name }) {
+    await message.guild.panels.delete(name)
 
     return message.reply('Successfully deleted panel.')
   }

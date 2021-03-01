@@ -41,6 +41,19 @@ class GuildGroupManager extends BaseManager {
 
     return this.add(group)
   }
+
+  async delete(group) {
+    const id = this.resolveID(group)
+    if (!id) {
+      throw new Error('Invalid group.')
+    }
+    if (!this.cache.has(id)) {
+      throw new Error('Guild does not contain group.')
+    }
+
+    await GroupModel.destroy({ where: { id } })
+    this.cache.delete(id)
+  }
 }
 
 module.exports = GuildGroupManager
