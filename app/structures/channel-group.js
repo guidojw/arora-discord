@@ -6,7 +6,7 @@ class ChannelGroup extends Group {
   constructor (client, data, guild) {
     super(client, data, guild)
 
-    this.channels = new GroupTextChannelManager(this)
+    this._channels = []
 
     this._setup(data)
   }
@@ -15,10 +15,12 @@ class ChannelGroup extends Group {
     super._setup(data)
 
     if (data.channels) {
-      for (const rawChannel of data.channels) {
-        this.channels._add(rawChannel)
-      }
+      this._channels = data.channels.map(channel => channel.id)
     }
+  }
+
+  get channels () {
+    return new GroupTextChannelManager(this)
   }
 }
 

@@ -10,7 +10,7 @@ class GuildPanelManager extends BaseManager {
     this.guild = guild
   }
 
-  _add (data) {
+  add (data) {
     // const existing = this.cache.get(data.id)
     // if (existing) {
     //   return existing

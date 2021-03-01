@@ -1,6 +1,4 @@
 'use strict'
-const Collection = require('@discordjs/collection')
-
 const { TextChannel } = require('discord.js')
 const { Channel, Group } = require('../models')
 
@@ -8,23 +6,10 @@ class GroupTextChannelManager {
   constructor (group) {
     this.group = group
     this.guild = group.guild
-
-    this._channels = new Collection()
   }
 
   get cache () {
-    return this.guild.channels.cache.filter(channel => this._channels.has(channel.id))
-  }
-
-  _add (data) {
-    const existing = this.cache.get(data.id)
-    if (existing) {
-      return existing
-    }
-
-    const channel = this.guild.channels.cache.get(data.id)
-    this._channels.set(channel.id, channel)
-    return channel
+    return this.guild.channels.cache.filter(channel => this.group._channels.includes(channel.id))
   }
 
   async add (channel) {
@@ -32,7 +17,7 @@ class GroupTextChannelManager {
     if (!channel || !(channel instanceof TextChannel)) {
       throw new Error('Invalid channel.')
     }
-    if (this._channels.has(channel.id)) {
+    if (this.cache.has(channel.id)) {
       throw new Error('Group already contains channel.')
     }
 
@@ -43,9 +28,9 @@ class GroupTextChannelManager {
       }
     })
     await data.addGroup(this.group.id)
-    this._channels.set(channel.id, channel)
+    this.group._channels.push(channel.id)
 
-    return channel
+    return this.group
   }
 
   async remove (channel) {
@@ -53,22 +38,15 @@ class GroupTextChannelManager {
     if (!id) {
       throw new Error('Invalid channel.')
     }
-    if (!this._channels.has(id)) {
+    if (!this.group._channels.includes(id)) {
       throw new Error('Group does not contain channel.')
     }
 
     const group = await Group.findByPk(this.group.id)
     await group.removeChannel(id)
-    this._channels.delete(id)
+    this.group._channels = this.group._channels.filter(channelId => channelId !== id)
 
-    if (channel instanceof TextChannel) {
-      return channel
-    }
-    const _channel = this.guild.channels.cache.get(id)
-    if (_channel) {
-      return _channel
-    }
-    return id
+    return this.group
   }
 }
 

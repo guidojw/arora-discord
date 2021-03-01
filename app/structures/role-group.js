@@ -7,9 +7,9 @@ class RoleGroup extends Group {
   constructor (client, data, guild) {
     super(client, data, guild)
 
-    this.roles = new GroupRoleManager(this)
-
     this.permissions = []
+
+    this._roles = []
 
     this._setup(data)
   }
@@ -24,10 +24,12 @@ class RoleGroup extends Group {
     }
 
     if (data.roles) {
-      for (const rawRole of data.roles) {
-        this.roles._add(rawRole)
-      }
+      this._roles = data.roles.map(role => role.id)
     }
+  }
+
+  get roles () {
+    return new GroupRoleManager(this)
   }
 }
 

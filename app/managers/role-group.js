@@ -6,7 +6,7 @@ class RoleGroupManager {
   }
 
   get cache () {
-    return this.guild.groups.filter(group => group.type === 'role' && group.roles.cache.has(this.id))
+    return this.guild.groups.filter(group => group.type === 'role' && group.roles.cache.has(this.role.id))
   }
 }
 

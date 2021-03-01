@@ -1,30 +1,14 @@
 'use strict'
-const Collection = require('@discordjs/collection')
-
-const { Role: DiscordRole } = require('discord.js')
 const { Role, Group } = require('../models')
 
 class GroupRoleManager {
   constructor (group) {
     this.group = group
     this.guild = group.guild
-
-    this._roles = new Collection()
   }
 
   get cache () {
-    return this.guild.roles.cache.filter(role => this._roles.has(role.id))
-  }
-
-  _add (data) {
-    const existing = this.cache.get(data.id)
-    if (existing) {
-      return existing
-    }
-
-    const role = this.guild.roles.cache.get(data.id)
-    this._roles.set(role.id, role)
-    return role
+    return this.guild.roles.cache.filter(role => this.group._roles.includes(role.id))
   }
 
   async add (role) {
@@ -32,7 +16,7 @@ class GroupRoleManager {
     if (!role) {
       throw new Error('Invalid role.')
     }
-    if (this._roles.has(role.id)) {
+    if (this.cache.has(role.id)) {
       throw new Error('Group already contains role.')
     }
 
@@ -43,9 +27,9 @@ class GroupRoleManager {
       }
     })
     await data.addGroup(this.group.id)
-    this._roles.set(role.id, role)
+    this.group._roles.push(role.id)
 
-    return role
+    return this.group
   }
 
   async remove (role) {
@@ -53,22 +37,15 @@ class GroupRoleManager {
     if (!id) {
       throw new Error('Invalid role.')
     }
-    if (!this._roles.has(id)) {
+    if (!this.group._roles.includes(id)) {
       throw new Error('Group does not contain role.')
     }
 
     const group = await Group.findByPk(this.group.id)
     await group.removeRole(id)
-    this._roles.delete(id)
+    this.group._roles = this.group._roles.filter(roleId => roleId !== id)
 
-    if (role instanceof DiscordRole) {
-      return role
-    }
-    const _role = this.guild.roles.cache.get(id)
-    if (_role) {
-      return _role
-    }
-    return id
+    return this.group
   }
 }
 

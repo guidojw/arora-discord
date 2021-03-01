@@ -9,8 +9,6 @@ const NSadminRole = Structures.extend('Role', Role => {
     constructor (...args) {
       super(...args)
 
-      this.groups = new RoleGroupManager(this)
-
       this.permissions = []
     }
 
@@ -20,6 +18,10 @@ const NSadminRole = Structures.extend('Role', Role => {
           this.permissions.push(name)
         }
       }
+    }
+
+    get groups () {
+      return new RoleGroupManager(this)
     }
   }
 
