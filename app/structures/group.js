@@ -1,7 +1,6 @@
 'use strict'
 const BaseStructure = require('./base')
 
-const { Group: GroupModel } = require('../models')
 const { GroupTypes } = require('../util/constants')
 
 class Group extends BaseStructure {
@@ -19,28 +18,12 @@ class Group extends BaseStructure {
     this.guarded = data.guarded
   }
 
-  async update (data) {
-    const newData = await GroupModel.update({
-      name: data.name
-    }, {
-      where: {
-        id: this.id
-      }
-    })
-
-    this._setup(newData)
-    return this
+  update (data) {
+    return this.guild.groups.update(this, data)
   }
 
-  async delete () {
-    if (this.guarded) {
-      throw new Error('Guarded groups cannot be deleted.')
-    }
-
-    await GroupModel.destroy({ where: { id: this.id } })
-    this.guild.groups.cache.delete(this.id)
-
-    return this
+  delete () {
+    return this.guild.groups.delete(this)
   }
 
   static create (client, data, guild) {

@@ -1,8 +1,6 @@
 'use strict'
 const BaseCommand = require('../base')
 
-const { Panel } = require('../../models')
-
 class RawPanelCommand extends BaseCommand {
   constructor (client) {
     super(client, {
@@ -12,15 +10,15 @@ class RawPanelCommand extends BaseCommand {
       description: 'Posts the raw content of a panel.',
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
-        key: 'panelId',
-        prompt: 'What panel ID would you like to know the raw content of?',
-        type: 'integer'
+        key: 'idOrName',
+        prompt: 'What panel would you like to know the raw content of?',
+        type: 'integer|string'
       }]
     })
   }
 
-  async run (message, { panelId }) {
-    const panel = await Panel.findOne({ where: { id: panelId, guildId: message.guild.id } })
+  run (message, { idOrName }) {
+    const panel = message.guild.panels.resolve(idOrName)
     if (!panel) {
       return message.reply('Panel not found.')
     }

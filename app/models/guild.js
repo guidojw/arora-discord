@@ -131,7 +131,8 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: {
         name: 'guildId',
         allowNull: false
-      }
+      },
+      as: 'panels'
     })
     Guild.belongsTo(models.Panel, {
       foreignKey: 'trainingsInfoPanelId'
@@ -195,6 +196,9 @@ module.exports = (sequelize, DataTypes) => {
       }, {
         model: models.Channel,
         as: 'channels'
+      }, {
+        model: models.Panel,
+        as: 'panels'
       }],
       subQuery: false
     })

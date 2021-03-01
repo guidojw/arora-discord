@@ -27,7 +27,7 @@ class CreateGroupCommand extends BaseCommand {
   async run (message, { name, type }) {
     type = type.toLowerCase()
 
-    const group = await message.guild.groups.create({ name, type })
+    const group = await message.guild.groups.create(name, type)
 
     return message.reply(`Successfully created group **${group.id}**.`)
   }

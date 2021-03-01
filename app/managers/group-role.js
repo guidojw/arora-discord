@@ -17,7 +17,7 @@ class GroupRoleManager {
       throw new Error('Invalid role.')
     }
     if (this.cache.has(role.id)) {
-      throw new Error('Group already contains role.')
+      throw new Error('Role not found.')
     }
 
     const [data] = await Role.findOrCreate({
@@ -38,7 +38,7 @@ class GroupRoleManager {
       throw new Error('Invalid role.')
     }
     if (!this.group._roles.includes(id)) {
-      throw new Error('Group does not contain role.')
+      throw new Error('Role not found.')
     }
 
     const group = await Group.findByPk(this.group.id)

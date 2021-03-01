@@ -1,9 +1,6 @@
 'use strict'
 const BaseCommand = require('../base')
 
-const { MessageEmbed } = require('discord.js')
-const { Channel, Panel } = require('../../models')
-
 class PostPanelCommand extends BaseCommand {
   constructor (client) {
     super(client, {
@@ -13,34 +10,30 @@ class PostPanelCommand extends BaseCommand {
       description: 'Posts a panel in a channel.',
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
-        key: 'panelId',
+        key: 'idOrName',
         prompt: 'What panel would you like to post?',
-        type: 'integer'
+        type: 'integer|string'
       }, {
         key: 'channel',
-        prompt: 'In what channel do you want to post this panel?',
-        type: 'channel'
+        prompt: 'In what channel do you want to post this panel? Reply with "none" if you want to remove the panel ' +
+          'from the channel it\'s posted in.',
+        type: 'text-channel|string'
       }]
     })
   }
 
-  async run (message, { panelId, channel }) {
-    const panel = await Panel.findOne({ where: { id: panelId, guildId: message.guild.id } })
-    if (!panel) {
-      return message.reply('Panel not found.')
+  async run (message, { idOrName, channel }) {
+    channel = channel === 'none' ? null : channel
+    if (typeof channel === 'string') {
+      return message.reply('Invalid channel.')
     }
 
-    const embed = new MessageEmbed(JSON.parse(panel.content))
-    await channel.send(embed)
-    await Channel.findOrCreate({
-      where: {
-        id: channel.id,
-        guildId: message.guild.id
-      }
-    })
-    await panel.update({ channelId: channel.id })
+    const panel = await message.guild.panels.post(idOrName, channel)
 
-    return message.reply(`Successfully posted panel **${panelId}** in ${channel}.`)
+    return message.reply(channel
+      ? `Successfully posted panel **${panel.name}** in ${channel}.`
+      : `Successfully removed panel **${panel.name}** from channel.`
+    )
   }
 }
 

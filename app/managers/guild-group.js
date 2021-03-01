@@ -1,5 +1,6 @@
 'use strict'
-const { BaseManager } = require('discord.js')
+const BaseManager = require('./base')
+
 const { Group: GroupModel } = require('../models')
 const { Group } = require('../structures')
 const { GroupTypes } = require('../util/constants')
@@ -22,7 +23,7 @@ class GuildGroupManager extends BaseManager {
     return group
   }
 
-  async create ({ name, type }) {
+  async create (name, type) {
     if (name.includes(' ')) {
       throw new Error('Name cannot include spaces.')
     }
@@ -42,17 +43,59 @@ class GuildGroupManager extends BaseManager {
     return this.add(group)
   }
 
-  async delete(group) {
+  async delete (group) {
+    group = this.resolve(group)
+    if (!group) {
+      throw new Error('Invalid group.')
+    }
+    if (!this.cache.has(group.id)) {
+      throw new Error('Group not found.')
+    }
+    if (group.guarded) {
+      throw new Error('Guarded groups cannot be deleted.')
+    }
+
+    await GroupModel.destroy({ where: { id: group.id } })
+    this.cache.delete(group.id)
+
+    return group
+  }
+
+  async update (group, data) {
     const id = this.resolveID(group)
     if (!id) {
       throw new Error('Invalid group.')
     }
     if (!this.cache.has(id)) {
-      throw new Error('Guild does not contain group.')
+      throw new Error('Group not found.')
     }
 
-    await GroupModel.destroy({ where: { id } })
-    this.cache.delete(id)
+    const [, [newData]] = await GroupModel.update({
+      name: data.name
+    }, {
+      where: { id },
+      returning: true
+    })
+
+    const _group = this.cache.get(id)
+    _group?._setup(newData)
+    return _group ?? this.add(newData, false)
+  }
+
+  resolve (idOrNameOrInstance) {
+    if (typeof idOrNameOrInstance === 'string') {
+      return this.cache.get(idOrNameOrInstance) ||
+        this.cache.find(group => group.name === idOrNameOrInstance) ||
+        null
+    }
+    return super.resolve(idOrNameOrInstance)
+  }
+
+  resolveID (idOrNameOrInstance) {
+    if (typeof idOrNameOrInstance === 'string') {
+      return this.cache.find(group => group.name === idOrNameOrInstance)?.id ?? idOrNameOrInstance
+    }
+    return super.resolveID(idOrNameOrInstance)
   }
 }
 

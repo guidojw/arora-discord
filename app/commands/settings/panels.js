@@ -1,8 +1,6 @@
 'use strict'
 const BaseCommand = require('../base')
 
-const { MessageEmbed } = require('discord.js')
-const { Panel } = require('../../models')
 const { discordService } = require('../../services')
 
 class PanelsCommand extends BaseCommand {
@@ -14,32 +12,30 @@ class PanelsCommand extends BaseCommand {
       description: 'Lists all panels.',
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
-        key: 'panelId',
-        prompt: 'What panel ID would you like to know the information of?',
-        type: 'integer',
+        key: 'idOrName',
+        prompt: 'What panel would you like to know the information of?',
+        type: 'integer|string',
         default: ''
       }]
     })
   }
 
-  async run (message, { panelId }) {
-    if (panelId) {
-      const panel = await Panel.findOne({ where: { id: panelId, guildId: message.guild.id } })
+  async run (message, { idOrName }) {
+    if (idOrName) {
+      const panel = message.guild.panels.resolve(idOrName)
       if (!panel) {
         return message.reply('Panel not found.')
       }
 
-      const embed = new MessageEmbed(JSON.parse(panel.content))
-      return message.replyEmbed(embed)
+      return message.replyEmbed(panel.embed)
     } else {
-      const panels = await Panel.findAll({ where: { guildId: message.guild.id } })
-      if (panels.length === 0) {
+      if (message.guild.panels.cache.size === 0) {
         return message.reply('No panels found.')
       }
 
       const embeds = discordService.getListEmbeds(
         'Panels',
-        panels,
+        message.guild.panels.cache,
         getPanelRow
       )
       for (const embed of embeds) {

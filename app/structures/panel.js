@@ -2,7 +2,6 @@
 const BaseStructure = require('./base')
 
 const { MessageEmbed } = require('discord.js')
-const { Panel: PanelModel } = require('../models')
 
 class Panel extends BaseStructure {
   constructor (client, data, guild) {
@@ -22,50 +21,30 @@ class Panel extends BaseStructure {
   }
 
   get embed () {
-    return new MessageEmbed(this.content)
+    return new MessageEmbed(JSON.parse(this.content))
   }
 
   get channel () {
-    return this.guild.channels.cache.get(this.channelId)
+    return this.guild.channels.cache.get(this.channelId) || null
   }
 
   get message () {
-    return this.channel.messages.cache.get(this.messageId) ||
+    return this.channel?.messages.cache.get(this.messageId) ||
       (this.client.options.partials.includes('MESSAGE')
-        ? this.channel.messages.add({ id: this.messageId })
+        ? this.channel?.messages.add({ id: this.messageId })
         : null)
   }
 
-  async update (data) {
-    const newData = await PanelModel.update({
-      name: data.name,
-      content: data.content,
-      channelId: data.channelId,
-      messageId: data.messageId
-    }, {
-      where: {
-        id: this.id
-      }
-    })
-
-    this._setup(newData)
-    return this
+  update (data) {
+    return this.guild.panels.update(this, data)
   }
 
-  async delete () {
-    await PanelModel.destroy({ where: { id: this.id } })
-
-    return this
+  delete () {
+    return this.guild.panels.delete(this)
   }
 
-  async post (channel) {
-    const message = await channel.send(this.embed)
-    await this.update({
-      channelId: channel.id,
-      messageId: message.id
-    })
-
-    return message
+  post (channel) {
+    return this.guild.panels.post(this, channel)
   }
 }
 

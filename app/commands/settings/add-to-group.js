@@ -9,9 +9,9 @@ class AddToGroupCommand extends BaseCommand {
       description: 'Adds a channel|role to a group.',
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
-        key: 'groupId',
+        key: 'idOrName',
         prompt: 'To what group do you want to add a channel|role?',
-        type: 'integer'
+        type: 'integer|string'
       }, {
         key: 'channelOrRole',
         prompt: 'What channel|role do you want to add to this group?',
@@ -20,8 +20,8 @@ class AddToGroupCommand extends BaseCommand {
     })
   }
 
-  async run (message, { groupId, channelOrRole }) {
-    const group = message.guild.groups.cache.find(group => group.id === groupId)
+  async run (message, { idOrName, channelOrRole }) {
+    const group = message.guild.groups.resolve(idOrName)
     if (!group) {
       return message.reply('Group not found.')
     }

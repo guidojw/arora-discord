@@ -10,17 +10,17 @@ class DeleteGroupCommand extends BaseCommand {
       description: 'Deletes a group.',
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
-        key: 'groupId',
+        key: 'idOrName',
         prompt: 'What group would you like to delete?',
-        type: 'integer'
+        type: 'integer|string'
       }]
     })
   }
 
-  async run (message, { groupId }) {
-    await message.guild.groups.delete(groupId)
+  async run (message, { idOrName }) {
+    await message.guild.groups.delete(idOrName)
 
-    return message.reply(`Successfully deleted group.`)
+    return message.reply('Successfully deleted group.')
   }
 }
 

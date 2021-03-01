@@ -2,7 +2,6 @@
 const BaseCommand = require('../base')
 
 const { MessageEmbed } = require('discord.js')
-const { Panel } = require('../../models')
 const { discordService } = require('../../services')
 
 class EditPanelCommand extends BaseCommand {
@@ -14,9 +13,9 @@ class EditPanelCommand extends BaseCommand {
       description: 'Edits a panel\'s content.',
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
-        key: 'panelId',
+        key: 'idOrName',
         prompt: 'What panel would you like to edit?',
-        type: 'integer'
+        type: 'integer|string'
       }, {
         key: 'content',
         prompt: 'What would you like to change the panel\'s content to?',
@@ -25,8 +24,8 @@ class EditPanelCommand extends BaseCommand {
     })
   }
 
-  async run (message, { panelId, content }) {
-    const panel = await Panel.findOne({ where: { id: panelId, guildId: message.guild.id } })
+  async run (message, { idOrName, content }) {
+    const panel = message.guild.panels.resolve(idOrName)
     if (!panel) {
       return message.reply('Panel not found.')
     }
@@ -40,13 +39,12 @@ class EditPanelCommand extends BaseCommand {
 
       content = JSON.stringify(embed.toJSON())
     } catch (err) {
-      return message.reply('Content has to be an embed object.')
+      return message.reply('Content has to be an JSON object.')
     }
 
     await panel.update({ content })
 
-
-    return message.reply(`Successfully edited panel **${panelId}**.`)
+    return message.reply(`Successfully edited panel **${panel.name}**.`)
   }
 }
 

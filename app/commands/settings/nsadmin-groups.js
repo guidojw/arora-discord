@@ -12,17 +12,17 @@ class PanelsCommand extends BaseCommand {
       description: 'Lists all role and channel groups.',
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
-        key: 'groupId',
-        prompt: 'What group ID would you like to know the information of?',
-        type: 'integer',
+        key: 'idOrName',
+        prompt: 'What group would you like to know the information of?',
+        type: 'integer|string',
         default: ''
       }]
     })
   }
 
-  async run (message, { groupId }) {
-    if (groupId) {
-      const group = message.guild.groups.cache.find(group => group.id === groupId)
+  async run (message, { idOrName }) {
+    if (idOrName) {
+      const group = message.guild.groups.resolve(idOrName)
       if (!group) {
         return message.reply('Group not found.')
       }
@@ -46,7 +46,7 @@ class PanelsCommand extends BaseCommand {
       }
       return message.replyEmbed(embed)
     } else {
-      if (message.guild.groups.cache.length === 0) {
+      if (message.guild.groups.cache.size === 0) {
         return message.reply('No groups found.')
       }
 

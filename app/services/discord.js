@@ -74,7 +74,9 @@ exports.prompt = async (channel, author, message, options) => {
 }
 
 exports.getListEmbeds = (title, values, getRow, data) => {
-  if (values instanceof Object) {
+  if (values instanceof Map) {
+    values = values.entries()
+  } else if (values instanceof Object) {
     values = Object.entries(values)
   }
 
