@@ -92,16 +92,16 @@ class GuildGroupManager extends BaseManager {
 
   resolve (idOrNameOrInstance) {
     if (typeof idOrNameOrInstance === 'string') {
-      return this.cache.get(idOrNameOrInstance) ||
-        this.cache.find(group => group.name === idOrNameOrInstance) ||
-        null
+      idOrNameOrInstance = idOrNameOrInstance.toLowerCase()
+      return this.cache.find(group => group.name === idOrNameOrInstance) || null
     }
     return super.resolve(idOrNameOrInstance)
   }
 
   resolveID (idOrNameOrInstance) {
     if (typeof idOrNameOrInstance === 'string') {
-      return this.cache.find(group => group.name === idOrNameOrInstance)?.id ?? idOrNameOrInstance
+      idOrNameOrInstance = idOrNameOrInstance.toLowerCase()
+      return this.cache.find(group => group.name === idOrNameOrInstance)?.id ?? null
     }
     return super.resolveID(idOrNameOrInstance)
   }

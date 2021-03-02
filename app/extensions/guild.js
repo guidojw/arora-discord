@@ -2,7 +2,7 @@
 const cron = require('node-cron')
 
 const { MessageEmbed, Structures } = require('discord.js')
-const { GuildGroupManager, GuildPanelManager } = require('../managers')
+const { GuildGroupManager, GuildPanelManager, GuildTagManager } = require('../managers')
 const { Guild: GuildModel } = require('../models')
 
 const applicationConfig = require('../../config/application')
@@ -15,6 +15,7 @@ const NSadminGuild = Structures.extend('Guild', Guild => {
 
       this.groups = new GuildGroupManager(this)
       this.panels = new GuildPanelManager(this)
+      this.tags = new GuildTagManager(this)
     }
 
     _setup (data) {
@@ -56,6 +57,12 @@ const NSadminGuild = Structures.extend('Guild', Guild => {
           if (role) {
             role._setup(rawRole)
           }
+        }
+      }
+
+      if (data.tags) {
+        for (const rawTag of data.tags) {
+          this.tags.add(rawTag)
         }
       }
     }

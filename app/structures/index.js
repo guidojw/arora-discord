@@ -4,5 +4,7 @@ module.exports = {
   Group: require('./group'),
   Panel: require('./panel'),
   RoleGroup: require('./role-group'),
+  Tag: require('./tag'),
+  TagName: require('./tag-name'),
   Ticket: require('./ticket')
 }

@@ -67,7 +67,7 @@ class GuildPanelManager extends BaseManager {
 
     const changes = {}
     if (data.name) {
-      const lowerCaseName = name.toLowerCase()
+      const lowerCaseName = data.name.toLowerCase()
       if (this.cache.some(panel => panel.name.toLowerCase() === lowerCaseName)) {
         throw new Error('A panel with that name already exists.')
       }
@@ -141,16 +141,16 @@ class GuildPanelManager extends BaseManager {
 
   resolve (idOrNameOrInstance) {
     if (typeof idOrNameOrInstance === 'string') {
-      return this.cache.get(idOrNameOrInstance) ||
-        this.cache.find(panel => panel.name.toLowerCase() === idOrNameOrInstance) ||
-        null
+      idOrNameOrInstance = idOrNameOrInstance.toLowerCase()
+      return this.cache.find(panel => panel.name.toLowerCase() === idOrNameOrInstance) || null
     }
     return super.resolve(idOrNameOrInstance)
   }
 
   resolveID (idOrNameOrInstance) {
     if (typeof idOrNameOrInstance === 'string') {
-      return this.cache.find(panel => panel.name.toLowerCase() === idOrNameOrInstance)?.id ?? idOrNameOrInstance
+      idOrNameOrInstance = idOrNameOrInstance.toLowerCase()
+      return this.cache.find(panel => panel.name.toLowerCase() === idOrNameOrInstance)?.id ?? null
     }
     return super.resolveID(idOrNameOrInstance)
   }
