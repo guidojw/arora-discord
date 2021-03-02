@@ -32,7 +32,7 @@ module.exports = async guild => {
   const embed = infoMessage.embeds[0]
 
   // Update timezone if the timezone in the embed is incorrect.
-  const dstNow = timeHelper.isDST(now)
+  const dstNow = timeHelper.isDst(now)
   const change = (dstNow && embed.description.indexOf('CET') !== -1) ||
     (!dstNow && embed.description.indexOf('CEST') !== -1)
   if (change) {
