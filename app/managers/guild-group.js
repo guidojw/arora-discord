@@ -30,14 +30,15 @@ class GuildGroupManager extends BaseManager {
     if (!Object.values(GroupTypes).includes(type)) {
       throw new Error('Invalid type.')
     }
-    if (this.cache.some(group => group.name === name)) {
+    const lowerCaseName = name.toLowerCase()
+    if (this.cache.some(group => group.name.toLowerCase() === lowerCaseName)) {
       throw new Error('A group with that name already exists.')
     }
 
     const group = await GroupModel.create({
+      guildId: this.guild.id,
       name,
-      type: type.toLowerCase(),
-      guildId: this.guild.id
+      type
     })
 
     return this.add(group)
@@ -70,9 +71,16 @@ class GuildGroupManager extends BaseManager {
       throw new Error('Group not found.')
     }
 
-    const [, [newData]] = await GroupModel.update({
-      name: data.name
-    }, {
+    const changes = {}
+    if (changes.name) {
+      const lowerCaseName = data.name.toLowerCase()
+      if (this.cache.some(group => group.name.toLowerCase() === lowerCaseName)) {
+        throw new Error('A group with that name already exists.')
+      }
+      changes.name = data.name
+    }
+
+    const [, [newData]] = await GroupModel.update(changes, {
       where: { id },
       returning: true
     })

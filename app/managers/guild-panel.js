@@ -18,7 +18,8 @@ class GuildPanelManager extends BaseManager {
   }
 
   async create (name, content) {
-    if (this.cache.some(panel => panel.name === name)) {
+    const lowerCaseName = name.toLowerCase()
+    if (this.cache.some(panel => panel.name.toLowerCase() === lowerCaseName)) {
       throw new Error('A panel with that name already exists.')
     }
     let embed
@@ -33,7 +34,11 @@ class GuildPanelManager extends BaseManager {
     }
     content = JSON.stringify(embed.toJSON())
 
-    const panel = await PanelModel.create({ guildId: this.guild.id, name, content })
+    const panel = await PanelModel.create({
+      content,
+      guildId: this.guild.id,
+      name
+    })
 
     return this.add(panel)
   }
@@ -60,16 +65,25 @@ class GuildPanelManager extends BaseManager {
       throw new Error('Panel not found.')
     }
 
-    if (data.content && panel.message) {
-      if (panel.message.partial) {
-        await panel.message.fetch()
+    const changes = {}
+    if (data.name) {
+      const lowerCaseName = name.toLowerCase()
+      if (this.cache.some(panel => panel.name.toLowerCase() === lowerCaseName)) {
+        throw new Error('A panel with that name already exists.')
       }
-      await panel.message.edit(new MessageEmbed(JSON.parse(data.content)))
+      changes.name = data.name
     }
-    const [, [newData]] = await PanelModel.update({
-      name: data.name,
-      content: data.content
-    }, {
+    if (data.content) {
+      changes.content = data.content
+      if (panel.message) {
+        if (panel.message.partial) {
+          await panel.message.fetch()
+        }
+        await panel.message.edit(new MessageEmbed(JSON.parse(data.content)))
+      }
+    }
+
+    const [, [newData]] = await PanelModel.update(changes, {
       where: { id: panel.id },
       returning: true
     })
@@ -128,7 +142,7 @@ class GuildPanelManager extends BaseManager {
   resolve (idOrNameOrInstance) {
     if (typeof idOrNameOrInstance === 'string') {
       return this.cache.get(idOrNameOrInstance) ||
-        this.cache.find(panel => panel.name === idOrNameOrInstance) ||
+        this.cache.find(panel => panel.name.toLowerCase() === idOrNameOrInstance) ||
         null
     }
     return super.resolve(idOrNameOrInstance)
@@ -136,7 +150,7 @@ class GuildPanelManager extends BaseManager {
 
   resolveID (idOrNameOrInstance) {
     if (typeof idOrNameOrInstance === 'string') {
-      return this.cache.find(panel => panel.name === idOrNameOrInstance)?.id ?? idOrNameOrInstance
+      return this.cache.find(panel => panel.name.toLowerCase() === idOrNameOrInstance)?.id ?? idOrNameOrInstance
     }
     return super.resolveID(idOrNameOrInstance)
   }
