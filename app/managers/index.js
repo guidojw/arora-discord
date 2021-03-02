@@ -1,5 +1,6 @@
 'use strict'
 module.exports = {
+  BaseManager: require('./base'),
   GroupRoleManager: require('./group-role'),
   GroupTextChannelManager: require('./group-text-channel'),
   GuildGroupManager: require('./guild-group'),
