@@ -72,7 +72,10 @@ class GuildGroupManager extends BaseManager {
     }
 
     const changes = {}
-    if (changes.name) {
+    if (data.name) {
+      if (data.name.includes(' ')) {
+        throw new Error('Name cannot include spaces.')
+      }
       const lowerCaseName = data.name.toLowerCase()
       if (this.cache.some(group => group.name.toLowerCase() === lowerCaseName)) {
         throw new Error('A group with that name already exists.')
