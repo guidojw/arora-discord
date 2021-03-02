@@ -227,13 +227,12 @@ class TicketController extends BaseStructure {
   }
 
   async update (data) {
-    const newData = await Ticket.update({
+    const [, [newData]] = await Ticket.update({
       channelId: data.channelId,
       type: data.type
     }, {
-      where: {
-        id: this.id
-      }
+      where: { id: this.id },
+      returning: true
     })
 
     this._setup(newData)

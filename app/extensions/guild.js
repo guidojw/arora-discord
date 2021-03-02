@@ -133,7 +133,7 @@ const NSadminGuild = Structures.extend('Guild', Guild => {
     }
 
     async update (data) {
-      const newData = await GuildModel.update({
+      const [, [newData]] = await GuildModel.update({
         primaryColor: data.primaryColor,
         commandPrefix: data.commandPrefix,
         supportEnabled: data.supportEnabled,
@@ -148,9 +148,8 @@ const NSadminGuild = Structures.extend('Guild', Guild => {
         trainingsInfoMessageId: data.trainingsInfoMessageId,
         supportMessageId: data.supportMessageId
       }, {
-        where: {
-          id: this.id
-        }
+        where: { id: this.id },
+        returning: true
       })
 
       this._setup(newData)
