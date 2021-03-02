@@ -5,7 +5,7 @@ const BaseCommand = require('../base')
 const { MessageEmbed } = require('discord.js')
 const { applicationAdapter } = require('../../adapters')
 const { timeHelper } = require('../../helpers')
-const { discordService, groupService, userService } = require('../../services')
+const { groupService, userService } = require('../../services')
 
 class SuspensionsCommand extends BaseCommand {
   constructor (client) {
@@ -29,7 +29,7 @@ class SuspensionsCommand extends BaseCommand {
     if (message.guild.robloxGroupId === null) {
       return message.reply('This server is not bound to a Roblox group yet.')
     }
-    const adminGroup = message.guild.groups.cache.find(group => group.name === 'admin')
+    const adminGroup = message.guild.groups.resolve('admin')
     if (message.member.roles.cache.some(role => adminGroup.roles.cache.includes(role.id))) {
       if (!username) {
         username = message.member.displayName

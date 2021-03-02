@@ -81,12 +81,17 @@ class GuildPanelManager extends BaseManager {
 
   async post (panel, channel) {
     panel = this.resolve(panel)
-    channel = this.guild.channels.resolve(channel)
     if (!panel) {
       throw new Error('Invalid panel.')
     }
     if (!this.cache.has(panel.id)) {
       throw new Error('Panel not found.')
+    }
+    if (typeof channel !== 'undefined') {
+      channel = this.guild.channels.resolve(channel)
+      if (!channel) {
+        throw new Error('Invalid channel.')
+      }
     }
 
     const data = {

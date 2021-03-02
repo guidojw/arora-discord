@@ -20,7 +20,8 @@ class HostTrainingCommand extends BaseCommand {
       args: [{
         key: 'type',
         type: 'string',
-        prompt: 'What kind of training is this?'
+        prompt: 'What kind of training is this?',
+        parse: val => val.toLowerCase()
       }, {
         key: 'date',
         type: 'string',
@@ -35,13 +36,8 @@ class HostTrainingCommand extends BaseCommand {
         key: 'notes',
         type: 'string',
         prompt: 'What notes would you like to add? Reply with "none" if you don\'t want to add any.',
-        validate: val => stringHelper.getChannels(val)
-          ? 'Notes contain channels.'
-          : stringHelper.getTags(val)
-            ? 'Notes contain tags.'
-            : stringHelper.getUrls(val)
-              ? 'Notes contain URLs.'
-              : true
+        validate: validateNotes,
+        parse: parseNotes
       }]
     })
   }
@@ -50,7 +46,6 @@ class HostTrainingCommand extends BaseCommand {
     if (message.guild.robloxGroupId === null) {
       return message.reply('This server is not bound to a Roblox group yet.')
     }
-    type = type.toLowerCase()
     const dateInfo = timeHelper.getDateInfo(date)
     const timeInfo = timeHelper.getTimeInfo(time)
     const dateUnix = Math.floor(new Date(
@@ -72,10 +67,10 @@ class HostTrainingCommand extends BaseCommand {
     const authorId = await userService.getIdFromUsername(message.member.displayName)
 
     const training = (await applicationAdapter('post', `/v1/groups/${message.guild.robloxGroupId}/trainings`, {
-      notes: notes.toLowerCase() === 'none' ? undefined : notes,
+      authorId,
       date: dateUnix,
-      typeId: trainingType.id,
-      authorId
+      notes,
+      typeId: trainingType.id
     })).data
 
     const embed = new MessageEmbed()
@@ -84,6 +79,23 @@ class HostTrainingCommand extends BaseCommand {
       .setColor(message.guild.primaryColor)
     return message.replyEmbed(embed)
   }
+}
+
+function validateNotes (val, msg) {
+  const valid = this.type.validate(val, msg, this)
+  return !valid || typeof valid === 'string'
+    ? valid
+    : stringHelper.getChannels(val)
+      ? 'Notes contain channels.'
+      : stringHelper.getTags(val)
+        ? 'Notes contain tags.'
+        : stringHelper.getUrls(val)
+          ? 'Notes contain URLs.'
+          : true
+}
+
+function parseNotes (val, msg) {
+  return val.toLowerCase() === 'none' ? undefined : this.type.parse(val, msg, this)
 }
 
 module.exports = HostTrainingCommand

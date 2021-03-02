@@ -1,4 +1,5 @@
 'use strict'
+const pluralize = require('pluralize')
 const BaseCommand = require('../base')
 
 class AddToGroupCommand extends BaseCommand {
@@ -14,8 +15,8 @@ class AddToGroupCommand extends BaseCommand {
         type: 'integer|string'
       }, {
         key: 'channelOrRole',
-        prompt: 'What channel|role do you want to add to this group?',
-        type: 'channel|role'
+        prompt: 'What channel or role do you want to add to this group?',
+        type: 'text-channel|role'
       }]
     })
   }
@@ -26,15 +27,9 @@ class AddToGroupCommand extends BaseCommand {
       return message.reply('Group not found.')
     }
 
-    if (group.type === 'channel') {
-      await group.channels.add(channelOrRole)
+    await group[pluralize(group.type)].add(channelOrRole)
 
-      return message.reply(`Successfully added channel **${channelOrRole.id}** to group **${group.id}**.`)
-    } else {
-      await group.roles.add(channelOrRole)
-
-      return message.reply(`Successfully added role **${channelOrRole.id}** to group **${group.id}**.`)
-    }
+    return message.reply(`Successfully added ${group.type} **${channelOrRole.id}** to group **${group.id}**.`)
   }
 }
 

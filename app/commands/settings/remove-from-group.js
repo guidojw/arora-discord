@@ -1,4 +1,5 @@
 'use strict'
+const pluralize = require('pluralize')
 const BaseCommand = require('../base')
 
 class RemoveFromGroupCommand extends BaseCommand {
@@ -14,8 +15,8 @@ class RemoveFromGroupCommand extends BaseCommand {
         type: 'integer|string'
       }, {
         key: 'channelOrRole',
-        prompt: 'What channel|role do you want to remove from this group?',
-        type: 'channel|role'
+        prompt: 'What channel or role do you want to remove from this group?',
+        type: 'text-channel|role'
       }]
     })
   }
@@ -26,15 +27,9 @@ class RemoveFromGroupCommand extends BaseCommand {
       return message.reply('Group not found.')
     }
 
-    if (group.type === 'channel') {
-      await group.channels.remove(channelOrRole)
+    await group[pluralize(group.type)].remove(channelOrRole)
 
-      return message.reply(`Successfully removed channel **${channelOrRole.id}** from group **${group.id}**.`)
-    } else {
-      await group.roles.remove(channelOrRole)
-
-      return message.reply(`Successfully removed role **${channelOrRole.id}** from group **${group.id}**.`)
-    }
+    return message.reply(`Successfully removed ${group.type} **${channelOrRole.id}** from group **${group.id}**.`)
   }
 }
 

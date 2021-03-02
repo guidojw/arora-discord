@@ -17,17 +17,14 @@ class PostPanelCommand extends BaseCommand {
         key: 'channel',
         prompt: 'In what channel do you want to post this panel? Reply with "none" if you want to remove the panel ' +
           'from the channel it\'s posted in.',
-        type: 'text-channel|string'
+        type: 'text-channel',
+        validate: validateChannel,
+        parse: parseChannel
       }]
     })
   }
 
   async run (message, { idOrName, channel }) {
-    channel = channel === 'none' ? null : channel
-    if (typeof channel === 'string') {
-      return message.reply('Invalid channel.')
-    }
-
     const panel = await message.guild.panels.post(idOrName, channel)
 
     return message.reply(channel
@@ -35,6 +32,14 @@ class PostPanelCommand extends BaseCommand {
       : `Successfully removed panel **${panel.name}** from channel.`
     )
   }
+}
+
+function validateChannel (val, msg) {
+  return val === 'none' || this.type.validate(val, msg, this)
+}
+
+function parseChannel (val, msg) {
+  return val === 'none' ? undefined : this.type.parse(val, msg, this)
 }
 
 module.exports = PostPanelCommand
