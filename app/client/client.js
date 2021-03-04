@@ -60,6 +60,7 @@ class NSadminClient extends CommandoClient {
         eval: true,
         prefix: true
       })
+      .registerTypesIn(path.join(__dirname, '../types'))
       .registerCommandsIn(path.join(__dirname, '../commands'))
 
     this.once('ready', this.ready.bind(this))
