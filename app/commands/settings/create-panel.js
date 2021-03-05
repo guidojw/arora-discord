@@ -16,7 +16,8 @@ class CreatePanelCommand extends BaseCommand {
       }, {
         key: 'content',
         prompt: 'What do you want the content of the panel to be?',
-        type: 'string'
+        type: 'json-object',
+        validate: validateContent
       }]
     })
   }
@@ -26,6 +27,13 @@ class CreatePanelCommand extends BaseCommand {
 
     return message.reply(`Successfully created panel **${panel.name}**.`)
   }
+}
+
+function validateContent (val, msg) {
+  const valid = this.type.validate(val, msg, this)
+  return !valid || typeof valid === 'string'
+    ? valid
+    : Object.prototype.toString.call(val) === '[object Object]'
 }
 
 module.exports = CreatePanelCommand

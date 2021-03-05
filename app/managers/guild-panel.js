@@ -22,12 +22,7 @@ class GuildPanelManager extends BaseManager {
     if (this.cache.some(panel => panel.name.toLowerCase() === lowerCaseName)) {
       throw new Error('A panel with that name already exists.')
     }
-    let embed
-    try {
-      embed = new MessageEmbed(JSON.parse(content))
-    } catch (err) {
-      throw new Error('Content has to be a JSON object.')
-    }
+    const embed = new MessageEmbed(content)
     const valid = discordService.validateEmbed(embed)
     if (typeof valid === 'string') {
       throw new Error(valid)
@@ -74,12 +69,18 @@ class GuildPanelManager extends BaseManager {
       changes.name = data.name
     }
     if (data.content) {
-      changes.content = data.content
+      const embed = new MessageEmbed(data.content)
+      const valid = discordService.validateEmbed(embed)
+      if (typeof valid === 'string') {
+        throw new Error(valid)
+      }
+      changes.content = JSON.stringify(embed.toJSON())
+
       if (panel.message) {
         if (panel.message.partial) {
           await panel.message.fetch()
         }
-        await panel.message.edit(new MessageEmbed(JSON.parse(data.content)))
+        await panel.message.edit(embed)
       }
     }
 

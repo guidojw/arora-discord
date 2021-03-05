@@ -1,9 +1,6 @@
 'use strict'
 const BaseCommand = require('../base')
 
-const { MessageEmbed } = require('discord.js')
-const { discordService } = require('../../services')
-
 class EditPanelCommand extends BaseCommand {
   constructor (client) {
     super(client, {
@@ -19,7 +16,8 @@ class EditPanelCommand extends BaseCommand {
       }, {
         key: 'content',
         prompt: 'What would you like to change the panel\'s content to?',
-        type: 'string'
+        type: 'json-object',
+        validate: validateContent
       }]
     })
   }
@@ -29,23 +27,18 @@ class EditPanelCommand extends BaseCommand {
     if (!panel) {
       return message.reply('Panel not found.')
     }
-    let embed
-    try {
-      embed = new MessageEmbed(JSON.parse(content))
-      const valid = discordService.validateEmbed(embed)
-      if (typeof valid === 'string') {
-        return message.reply(valid)
-      }
-
-      content = JSON.stringify(embed.toJSON())
-    } catch (err) {
-      return message.reply('Content has to be an JSON object.')
-    }
 
     await panel.update({ content })
 
     return message.reply(`Successfully edited panel **${panel.name}**.`)
   }
+}
+
+function validateContent (val, msg) {
+  const valid = this.type.validate(val, msg, this)
+  return !valid || typeof valid === 'string'
+    ? valid
+    : Object.prototype.toString.call(val) === '[object Object]'
 }
 
 module.exports = EditPanelCommand
