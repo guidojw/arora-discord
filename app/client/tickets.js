@@ -1,8 +1,7 @@
 'use strict'
-const Collection = require('@discordjs/collection')
 const TicketController = require('../structures/ticket')
 
-const { MessageEmbed } = require('discord.js')
+const { Collection, MessageEmbed } = require('discord.js')
 const { Ticket } = require('../models')
 const { discordService } = require('../services')
 
