@@ -3,7 +3,10 @@ module.exports = (sequelize, DataTypes) => {
   const TagName = sequelize.define('TagName', {
     name: {
       type: DataTypes.STRING,
-      primaryKey: true
+      primaryKey: true,
+      validate: {
+        isLowerCase: true
+      }
     }
   }, {
     tableName: 'tag_names'
