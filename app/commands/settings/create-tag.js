@@ -1,10 +1,6 @@
 'use strict'
 const BaseCommand = require('../base')
 
-const { MessageEmbed } = require('discord.js')
-const { Tag, TagName } = require('../../models')
-const { discordService } = require('../../services')
-
 class CreateTagCommand extends BaseCommand {
   constructor (client) {
     super(client, {
@@ -16,51 +12,35 @@ class CreateTagCommand extends BaseCommand {
         key: 'name',
         prompt: 'What do you want the name of the tag to be?',
         type: 'string',
-        validate: validateName
+        validate: validateName,
+        parse: val => val.toLowerCase()
       }, {
         key: 'content',
         prompt: 'What do you want the content of the tag to be?',
-        type: 'string'
+        type: 'json-object|string',
+        validate: validateContent
       }]
     })
   }
 
   async run (message, { name, content }) {
-    name = name.toLowerCase()
-    if (this.client.registry.commands.some(command => command.name === name || command.aliases?.includes(name))) {
-      return message.reply('Not allowed, name is reserved.')
-    }
-    if (await Tag.findOne({
-      where: { guildId: message.guild.id },
-      include: [{ model: TagName, as: 'names', where: { name } }]
-    })) {
-      return message.reply('A tag with that name already exists.')
-    }
-    try {
-      const embed = new MessageEmbed(JSON.parse(content))
-      const valid = discordService.validateEmbed(embed)
-      if (typeof valid === 'string') {
-        return message.reply(valid)
-      }
+    const tag = await message.guild.tags.create(name, content)
 
-      content = JSON.stringify(embed.toJSON())
-    } catch (err) {
-      // Once a user fetches a tag, the bot replies to them with the tag content.
-      // Tagging a user takes up 23 characters: 21 for tag format (<@snowflake>) + 2 for ", ".
-      if (content.length + 23 > 2000) {
-        return message.reply('Tag is too long.')
-      }
-    }
-
-    const tag = await Tag.create({ guildId: message.guild.id, content })
-    await tag.createName({ name })
-
-    return message.reply(`Successfully created tag **${name}**.`)
+    return message.reply(`Successfully created tag **${tag.names.cache.first()?.name ?? 'Unknown'}**.`)
   }
 }
 
 function validateName (name) {
   return name.includes(' ') ? 'Name cannot include spaces.' : true
+}
+
+function validateContent (val, msg) {
+  const valid = this.type.validate(val, msg, this)
+  if (!valid || typeof valid === 'string') {
+    return valid
+  }
+  const parsed = this.type.parse(val, msg, this)
+  return typeof parsed === 'string' || Object.prototype.toString.call(parsed) === '[object Object]'
 }
 
 module.exports = CreateTagCommand

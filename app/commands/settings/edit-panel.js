@@ -23,12 +23,7 @@ class EditPanelCommand extends BaseCommand {
   }
 
   async run (message, { idOrName, content }) {
-    const panel = message.guild.panels.resolve(idOrName)
-    if (!panel) {
-      return message.reply('Panel not found.')
-    }
-
-    await panel.update({ content })
+    const panel = await message.guild.panels.update(idOrName, { content })
 
     return message.reply(`Successfully edited panel **${panel.name}**.`)
   }
@@ -38,7 +33,7 @@ function validateContent (val, msg) {
   const valid = this.type.validate(val, msg, this)
   return !valid || typeof valid === 'string'
     ? valid
-    : Object.prototype.toString.call(val) === '[object Object]'
+    : Object.prototype.toString.call(this.type.parse(val, msg, this)) === '[object Object]'
 }
 
 module.exports = EditPanelCommand

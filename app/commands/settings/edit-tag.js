@@ -1,8 +1,6 @@
 'use strict'
 const BaseCommand = require('../base')
 
-const { Tag, TagName } = require('../../models')
-
 class EditTagCommand extends BaseCommand {
   constructor (client) {
     super(client, {
@@ -13,34 +11,30 @@ class EditTagCommand extends BaseCommand {
       args: [{
         key: 'name',
         prompt: 'What tag would you like to edit?',
-        type: 'string',
-        validate: validateName
+        type: 'string'
       }, {
         key: 'content',
         prompt: 'What do you want the new content of this tag to be?',
-        type: 'string'
+        type: 'json-object|string',
+        validate: validateContent
       }]
     })
   }
 
   async run (message, { name, content }) {
-    name = name.toLowerCase()
-    const tag = await Tag.findOne({
-      where: { guildId: message.guild.id },
-      include: [{ model: TagName, as: 'names', where: { name } }]
-    })
-    if (!tag) {
-      return message.reply('Tag not found.')
-    }
+    const tag = await message.guild.tags.update(name, { content })
 
-    await tag.edit({ content })
-
-    return message.reply(`Successfully edited tag **${tag.names[0]?.name ?? 'Unknown'}**.`)
+    return message.reply(`Successfully edited tag **${tag.names.cache.first()?.name ?? 'Unknown'}**.`)
   }
 }
 
-function validateName (name) {
-  return name.includes(' ') ? 'Name cannot include spaces.' : true
+function validateContent (val, msg) {
+  const valid = this.type.validate(val, msg, this)
+  if (!valid || typeof valid === 'string') {
+    return valid
+  }
+  const parsed = this.type.parse(val, msg, this)
+  return typeof parsed === 'string' || Object.prototype.toString.call(parsed) === '[object Object]'
 }
 
 module.exports = EditTagCommand

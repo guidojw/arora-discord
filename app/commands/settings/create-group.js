@@ -19,14 +19,13 @@ class CreateGroupCommand extends BaseCommand {
         key: 'type',
         prompt: 'What do you want the type of the group to be?',
         type: 'string',
-        oneOf: Object.values(GroupTypes)
+        oneOf: Object.values(GroupTypes),
+        parse: val => val.toLowerCase()
       }]
     })
   }
 
   async run (message, { name, type }) {
-    type = type.toLowerCase()
-
     const group = await message.guild.groups.create(name, type)
 
     return message.reply(`Successfully created group **${group.id}**.`)

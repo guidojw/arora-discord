@@ -33,7 +33,7 @@ function validateContent (val, msg) {
   const valid = this.type.validate(val, msg, this)
   return !valid || typeof valid === 'string'
     ? valid
-    : Object.prototype.toString.call(val) === '[object Object]'
+    : Object.prototype.toString.call(this.type.parse(val, msg, this)) === '[object Object]'
 }
 
 module.exports = CreatePanelCommand

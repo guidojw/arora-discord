@@ -24,6 +24,7 @@ class GuildGroupManager extends BaseManager {
   }
 
   async create (name, type) {
+    type = type.toLowerCase()
     if (name.includes(' ')) {
       throw new Error('Name cannot include spaces.')
     }
