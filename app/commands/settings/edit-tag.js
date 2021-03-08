@@ -9,9 +9,9 @@ class EditTagCommand extends BaseCommand {
       description: 'Edits a tag.',
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
-        key: 'name',
+        key: 'idOrName',
         prompt: 'What tag would you like to edit?',
-        type: 'string'
+        type: 'integer|string'
       }, {
         key: 'content',
         prompt: 'What do you want the new content of this tag to be?',
@@ -21,8 +21,8 @@ class EditTagCommand extends BaseCommand {
     })
   }
 
-  async run (message, { name, content }) {
-    const tag = await message.guild.tags.update(name, { content })
+  async run (message, { idOrName, content }) {
+    const tag = await message.guild.tags.update(idOrName, { content })
 
     return message.reply(`Successfully edited tag **${tag.names.cache.first()?.name ?? 'Unknown'}**.`)
   }

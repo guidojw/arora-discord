@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       primaryKey: true,
       validate: {
-        isLowerCase: true
+        isLowercase: true
       }
     }
   }, {

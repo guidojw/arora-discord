@@ -19,7 +19,7 @@ class GuildTagManager extends BaseManager {
 
   async create (name, content) {
     name = name.toLowerCase()
-    if (this.cache.some(tag => tag.names.resolve(name) !== null)) {
+    if (this.resolve(name) !== null) {
       throw new Error('A tag with that name already exists.')
     }
     if (name === 'all' ||
@@ -41,10 +41,10 @@ class GuildTagManager extends BaseManager {
       }
     }
 
-    const tag = await TagModel.create({ guildId: this.guild.id, content })
-    await tag.createName({ name })
+    const newData = await TagModel.create({ guildId: this.guild.id, content })
+    await newData.createName({ name })
 
-    return this.add(tag)
+    return this.add(newData)
   }
 
   async delete (tag) {

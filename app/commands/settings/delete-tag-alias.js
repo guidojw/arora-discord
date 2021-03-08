@@ -1,8 +1,6 @@
 'use strict'
 const Base = require('../base')
 
-const { Tag, TagName } = require('../../models')
-
 class DeleteTagAliasCommand extends Base {
   constructor (client) {
     super(client, {
@@ -14,37 +12,21 @@ class DeleteTagAliasCommand extends Base {
       args: [{
         key: 'alias',
         prompt: 'What tag alias would you like to delete?',
-        type: 'string',
-        validate: validateAlias
+        type: 'string'
       }]
     })
   }
 
   async run (message, { alias }) {
-    alias = alias.toLowerCase()
-    let tagName
-    const tag = await Tag.findOne({
-      where: { guildId: message.guild.id },
-      include: [{ model: TagName, as: 'names', where: { name: alias } }]
-    })
-    if (tag) {
-      tagName = tag.names.find(tagName => tagName.name === alias)
-    }
-    if (!tagName) {
-      return message.reply('Tag alias not found.')
+    const tag = message.guild.tags.resolve(alias)
+    if (!tag) {
+      return message.reply('Tag not found')
     }
 
-    await tagName.destroy()
-    if (tag.names.length - 1 === 0) {
-      await tag.destroy()
-    }
+    await tag.names.delete(alias)
 
-    return message.reply(`Successfully deleted tag alias **${tag.names[0]?.name ?? 'Unknown'}**.`)
+    return message.reply(`Successfully deleted alias from tag **${tag.names.cache.first()?.name ?? 'Unknown'}**.`)
   }
-}
-
-function validateAlias (alias) {
-  return alias.includes(' ') ? 'Alias cannot include spaces.' : true
 }
 
 module.exports = DeleteTagAliasCommand

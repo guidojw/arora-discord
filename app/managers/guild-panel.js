@@ -29,13 +29,13 @@ class GuildPanelManager extends BaseManager {
     }
     content = JSON.stringify(embed.toJSON())
 
-    const panel = await PanelModel.create({
+    const newData = await PanelModel.create({
       content,
       guildId: this.guild.id,
       name
     })
 
-    return this.add(panel)
+    return this.add(newData)
   }
 
   async delete (panel) {
