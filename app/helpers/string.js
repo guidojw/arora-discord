@@ -16,7 +16,8 @@ exports.getUrls = string => {
 
 exports.getAbbreviation = string => {
   return string
-    .split(' ')
+    .trim()
+    .split(/ +/)
     .map(word => word.charAt(0))
     .join('')
 }
