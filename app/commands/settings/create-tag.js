@@ -12,8 +12,7 @@ class CreateTagCommand extends BaseCommand {
         key: 'name',
         prompt: 'What do you want the name of the tag to be?',
         type: 'string',
-        validate: validateName,
-        parse: val => val.toLowerCase()
+        validate: validateName
       }, {
         key: 'content',
         prompt: 'What do you want the content of the tag to be?',
