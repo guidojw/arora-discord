@@ -12,7 +12,8 @@ class CreatePanelCommand extends BaseCommand {
       args: [{
         key: 'name',
         prompt: 'What do you want the name of the panel to be?',
-        type: 'string'
+        type: 'string',
+        validate: validateName
       }, {
         key: 'content',
         prompt: 'What do you want the content of the panel to be?',
@@ -27,6 +28,18 @@ class CreatePanelCommand extends BaseCommand {
 
     return message.reply(`Successfully created panel **${panel.name}**.`)
   }
+}
+
+function validateName (val, msg) {
+  const valid = this.type.validate(val, msg, this)
+  if (!valid || typeof valid === 'string') {
+    return valid
+  }
+  return !isNaN(parseInt(val))
+    ? 'Name cannot be a number.'
+    : val.includes(' ')
+      ? 'Name cannot include spaces.'
+      : true
 }
 
 function validateContent (val, msg) {

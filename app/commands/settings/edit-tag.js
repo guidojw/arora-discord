@@ -28,12 +28,12 @@ class EditTagCommand extends BaseCommand {
   }
 }
 
-function validateContent (val, msg) {
-  const valid = this.type.validate(val, msg, this)
+async function validateContent (val, msg) {
+  const valid = await this.type.validate(val, msg, this)
   if (!valid || typeof valid === 'string') {
     return valid
   }
-  const parsed = this.type.parse(val, msg, this)
+  const parsed = await this.type.parse(val, msg, this)
   return typeof parsed === 'string' || Object.prototype.toString.call(parsed) === '[object Object]'
 }
 

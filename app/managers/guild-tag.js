@@ -22,8 +22,9 @@ class GuildTagManager extends BaseManager {
     if (this.resolve(name) !== null) {
       throw new Error('A tag with that name already exists.')
     }
+    const first = name.split(/ +/)[0]
     if (name === 'all' ||
-      this.client.registry.commands.some(command => command.name === name || command.aliases?.includes(name))) {
+      this.client.registry.commands.some(command => command.name === first || command.aliases?.includes(first))) {
       throw new Error('Not allowed, name is reserved.')
     }
     if (typeof content !== 'string') {
@@ -43,6 +44,7 @@ class GuildTagManager extends BaseManager {
 
     const newData = await TagModel.create({ guildId: this.guild.id, content })
     await newData.createName({ name })
+    await newData.reload()
 
     return this.add(newData)
   }

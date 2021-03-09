@@ -34,8 +34,16 @@ class CreateTagAliasCommand extends BaseCommand {
   }
 }
 
-function validateAlias (name) {
-  return name.includes(' ') ? 'Alias cannot include spaces.' : true
+function validateAlias (val, msg) {
+  const valid = this.type.validate(val, msg, this)
+  if (!valid || typeof valid === 'string') {
+    return valid
+  }
+  return !isNaN(parseInt(val))
+    ? 'Alias cannot be a number.'
+    : val.includes(' ')
+      ? 'Alias cannot include spaces.'
+      : true
 }
 
 module.exports = CreateTagAliasCommand

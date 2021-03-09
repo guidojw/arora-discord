@@ -19,8 +19,7 @@ class CreateGroupCommand extends BaseCommand {
         key: 'type',
         prompt: 'What do you want the type of the group to be?',
         type: 'string',
-        oneOf: Object.values(GroupTypes),
-        parse: val => val.toLowerCase()
+        oneOf: Object.values(GroupTypes)
       }]
     })
   }
@@ -32,8 +31,16 @@ class CreateGroupCommand extends BaseCommand {
   }
 }
 
-function validateName (name) {
-  return name.includes(' ') ? 'Name cannot include spaces.' : true
+function validateName (val, msg) {
+  const valid = this.type.validate(val, msg, this)
+  if (!valid || typeof valid === 'string') {
+    return valid
+  }
+  return !isNaN(parseInt(val))
+    ? 'Name cannot be a number.'
+    : val.includes(' ')
+      ? 'Name cannot include spaces.'
+      : true
 }
 
 module.exports = CreateGroupCommand

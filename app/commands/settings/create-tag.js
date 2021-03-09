@@ -29,16 +29,22 @@ class CreateTagCommand extends BaseCommand {
   }
 }
 
-function validateName (name) {
-  return name.includes(' ') ? 'Name cannot include spaces.' : true
-}
-
-function validateContent (val, msg) {
+function validateName (val, msg) {
   const valid = this.type.validate(val, msg, this)
   if (!valid || typeof valid === 'string') {
     return valid
   }
-  const parsed = this.type.parse(val, msg, this)
+  return !isNaN(parseInt(val))
+    ? 'Name cannot be a number.'
+    : true
+}
+
+async function validateContent (val, msg) {
+  const valid = await this.type.validate(val, msg, this)
+  if (!valid || typeof valid === 'string') {
+    return valid
+  }
+  const parsed = await this.type.parse(val, msg, this)
   return typeof parsed === 'string' || Object.prototype.toString.call(parsed) === '[object Object]'
 }
 

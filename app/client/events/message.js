@@ -11,14 +11,11 @@ const messageHandler = (client, message) => {
   if (message.content.startsWith(guild.commandPrefix)) {
     const tagCommand = client.registry.commands.find(command => command.name === 'tag')
     if (tagCommand.isEnabledIn(message.guild)) {
-      const args = message.content.slice(guild.commandPrefix.length).trim().split(/ +/)
-      const tagName = args.shift().toLowerCase()
-      if (tagName) {
-        const tag = message.guild.tags.resolve(tagName)
+      const name = message.content.slice(guild.commandPrefix.length)
+      const tag = message.guild.tags.resolve(name)
 
-        if (tag) {
-          return message.reply(tag.content, { allowedMentions: { users: [message.author.id] } })
-        }
+      if (tag) {
+        return message.reply(tag.content, { allowedMentions: { users: [message.author.id] } })
       }
     }
   }

@@ -31,7 +31,7 @@ class TagCommand extends BaseCommand {
       let list = ''
       let count = 0
       for (const tag of message.guild.tags.cache.values()) {
-        list += `${tag.id}. ${makeCommaSeparatedString(tag.names.cache.map(tagName => tagName.name))}`
+        list += `${tag.id}. ${makeCommaSeparatedString(tag.names.cache.map(tagName => `**${tagName.name}**`))}\n`
         count += tag.names.cache.size
       }
 
