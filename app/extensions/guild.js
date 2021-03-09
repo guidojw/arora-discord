@@ -87,24 +87,12 @@ const NSadminGuild = Structures.extend('Guild', Guild => {
       return this.channels.cache.get(this.logsChannelId) || null
     }
 
-    get trainingsChannel () {
-      return this.channels.cache.get(this.trainingsChannelId) || null
-    }
-
     get suggestionsChannel () {
       return this.channels.cache.get(this.suggestionsChannelId) || null
     }
 
     get ratingsChannel () {
       return this.channels.cache.get(this.ratingsChannelId) || null
-    }
-
-    get supportChannel () {
-      return this.channels.cache.get(this.supportChannelId) || null
-    }
-
-    get welcomeChannel () {
-      return this.channels.cache.get(this.welcomeChannelId) || null
     }
 
     get ticketsCategory () {
@@ -139,14 +127,11 @@ const NSadminGuild = Structures.extend('Guild', Guild => {
         supportEnabled: data.supportEnabled,
         robloxGroupId: data.robloxGroupId,
         logsChannelId: data.logsChannelId,
-        trainingsChannelId: data.trainingsChannelId,
         suggestionsChannelId: data.suggestionsChannelId,
         ratingsChannelId: data.ratingsChannelId,
-        supportChannelId: data.supportChannelId,
         ticketsCategoryId: data.ticketsCategoryId,
-        trainingsMessageId: data.trainingsMessageId,
-        trainingsInfoMessageId: data.trainingsInfoMessageId,
-        supportMessageId: data.supportMessageId
+        trainingsPanelId: data.trainingsPanelId,
+        trainingsInfoPanelId: data.trainingsInfoPanelId
       }, {
         where: { id: this.id },
         returning: true
