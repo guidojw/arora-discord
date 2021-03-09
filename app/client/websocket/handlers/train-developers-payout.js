@@ -34,7 +34,7 @@ const trainDevelopersPayoutHandler = async (client, { data }) => {
     }
   }
 
-  for (const owner of this.owners) {
+  for (const owner of client.owners) {
     if (owner.partial) {
       await owner.fetch()
     }

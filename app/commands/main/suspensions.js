@@ -30,7 +30,7 @@ class SuspensionsCommand extends BaseCommand {
       return message.reply('This server is not bound to a Roblox group yet.')
     }
     const adminGroup = message.guild.groups.resolve('admin')
-    if (message.member.roles.cache.some(role => adminGroup.roles.cache.includes(role.id))) {
+    if (!message.member.roles.cache.some(role => adminGroup.roles.cache.includes(role.id))) {
       if (!username) {
         username = message.member.displayName
       } else {

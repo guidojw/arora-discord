@@ -19,7 +19,7 @@ class PollCommand extends BaseCommand {
         key: 'poll',
         type: 'string',
         prompt: 'What would you like the question to be?',
-        validate: val => stringHelper.getTags(val) ? 'Poll contains tags.' : true
+        validate: validatePoll
       }]
     })
   }
@@ -46,6 +46,16 @@ class PollCommand extends BaseCommand {
       await newMessage.react('✖')
     }
   }
+}
+
+function validatePoll (val, msg) {
+  const valid = this.type.validate(val, msg, this)
+  if (!valid || typeof valid === 'string') {
+    return valid
+  }
+  return stringHelper.getTags(val)
+    ? 'Poll contains tags.'
+    : true
 }
 
 module.exports = PollCommand

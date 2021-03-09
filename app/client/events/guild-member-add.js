@@ -7,14 +7,29 @@ const guildMemberAddHandler = (client, member) => {
   }
 
   const guild = client.guilds.cache.get(member.guild.id)
-  if (guild.welcomeChannel) {
+  const group = guild.groups.resolve('welcomeChannels')
+  if (group.channels.cache.size > 0) {
     const embed = new MessageEmbed()
       .setTitle(`Hey ${member.user.tag},`)
-      .setDescription(`You're the **${member.guild.memberCount}th** member on **${member.guild.name}**!`)
+      .setDescription(`You're the **${getOrdinalNum(member.guild.memberCount)}** member on **${member.guild.name}**!`)
       .setThumbnail(member.user.displayAvatarURL())
       .setColor(guild.primaryColor)
-    return guild.welcomeChannel.send(embed)
+    return Promise.all([...group.channels.cache.mapValues(channel => channel.send(embed))])
   }
+}
+
+function getOrdinalNum (number) {
+  let selector
+
+  if (number < 0) {
+    selector = 4
+  } else if ((number > 3 && number < 21) || number % 10 > 3) {
+    selector = 0
+  } else {
+    selector = number % 10
+  }
+
+  return number + ['th', 'st', 'nd', 'rd', ''][selector]
 }
 
 module.exports = guildMemberAddHandler

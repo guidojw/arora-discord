@@ -15,15 +15,12 @@ class BoostInfoCommand extends BaseCommand {
         key: 'member',
         prompt: 'Whose boost info do you want to know?',
         type: 'member',
-        default: ''
+        default: message => message.member
       }]
     })
   }
 
   async run (message, { member }) {
-    if (!member) {
-      member = message.member
-    }
     if (!member.premiumSince) {
       return message.reply(`${message.argString ? 'Member is not' : 'You\'re not'} a booster.`)
     }
@@ -46,7 +43,7 @@ class BoostInfoCommand extends BaseCommand {
     const embed = new MessageEmbed()
       .setTitle(`${member.user.tag}${emoji ? ` ${emoji}` : ''}`)
       .setThumbnail(member.user.displayAvatarURL())
-      .setDescription(`Has been boosting this server for ${years > 0 ? `**${years}** ${pluralize('year', years)}, ` : ''}**${months}** ${pluralize('month', months)} and **${days}** ${pluralize('day', days)}!`)
+      .setDescription(`Has been boosting this server for ${years > 0 ? `**${pluralize('year', years, true)}**, ` : ''}**${pluralize('month', months, true)}** and **${pluralize('day', days, true)}**!`)
       .setColor(0xff73fa)
     return message.replyEmbed(embed)
   }

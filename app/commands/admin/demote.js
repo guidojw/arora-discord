@@ -24,7 +24,7 @@ class DemoteCommand extends BaseCommand {
     if (message.guild.robloxGroupId === null) {
       return message.reply('This server is not bound to a Roblox group yet.')
     }
-    username = username ? typeof username === 'string' ? username : username.displayName : message.member.displayName
+    username = typeof username === 'string' ? username : username.displayName
     const [userId, authorId] = await Promise.all([
       userService.getIdFromUsername(username),
       userService.getIdFromUsername(message.member.displayName)

@@ -22,13 +22,7 @@ class CancelTrainingCommand extends BaseCommand {
         key: 'reason',
         type: 'string',
         prompt: 'With what reason would you like to cancel this training?',
-        validate: val => stringHelper.getChannels(val)
-          ? 'Reason contains channels.'
-          : stringHelper.getTags(val)
-            ? 'Reason contains tags.'
-            : stringHelper.getUrls(val)
-              ? 'Reason contains URLs.'
-              : true
+        validate: validateReason
       }]
     })
   }
@@ -46,6 +40,20 @@ class CancelTrainingCommand extends BaseCommand {
 
     return message.reply(`Successfully cancelled training with ID **${trainingId}**.`)
   }
+}
+
+function validateReason (val, msg) {
+  const valid = this.type.validate(val, msg, this)
+  if (!valid || typeof valid === 'string') {
+    return valid
+  }
+  return stringHelper.getChannels(val)
+    ? 'Reason contains channels.'
+    : stringHelper.getTags(val)
+      ? 'Reason contains tags.'
+      : stringHelper.getUrls(val)
+        ? 'Reason contains URLs.'
+        : true
 }
 
 module.exports = CancelTrainingCommand

@@ -16,19 +16,19 @@ class JoinDateCommand extends BaseCommand {
       args: [{
         key: 'username',
         prompt: 'Of which user would you like to know the join date?',
-        default: '',
-        type: 'member|string'
+        type: 'member|string',
+        default: message => message.member.displayName
       }]
     })
   }
 
   async run (message, { username }) {
-    username = username ? typeof username === 'string' ? username : username.displayName : message.member.displayName
+    username = typeof username === 'string' ? username : username.displayName
     const userId = await userService.getIdFromUsername(username)
     const user = await userService.getUser(userId)
 
     const embed = new MessageEmbed()
-      .addField(`${message.argString ? username : 'Your'} join date`, `${timeHelper.getDate(new Date(user.created))}`)
+      .addField(`${message.argString ? `${username}'s` : 'Your'} join date`, `${timeHelper.getDate(new Date(user.created))}`)
       .setColor(message.guild.primaryColor)
     return message.replyEmbed(embed)
   }

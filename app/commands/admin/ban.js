@@ -21,13 +21,7 @@ class BanCommand extends BaseCommand {
         key: 'reason',
         type: 'string',
         prompt: 'With what reason would you like to ban this person?',
-        validate: val => stringHelper.getChannels(val)
-          ? 'Reason contains channels.'
-          : stringHelper.getTags(val)
-            ? 'Reason contains tags.'
-            : stringHelper.getUrls(val)
-              ? 'Reason contains URLs.'
-              : true
+        validate: validateReason
       }]
     })
   }
@@ -51,6 +45,20 @@ class BanCommand extends BaseCommand {
 
     return message.reply(`Successfully banned **${username}**.`)
   }
+}
+
+function validateReason (val, msg) {
+  const valid = this.type.validate(val, msg, this)
+  if (!valid || typeof valid === 'string') {
+    return valid
+  }
+  return stringHelper.getChannels(val)
+    ? 'Reason contains channels.'
+    : stringHelper.getTags(val)
+      ? 'Reason contains tags.'
+      : stringHelper.getUrls(val)
+        ? 'Reason contains URLs.'
+        : true
 }
 
 module.exports = BanCommand

@@ -21,13 +21,7 @@ class CancelSuspensionCommand extends BaseCommand {
         key: 'reason',
         type: 'string',
         prompt: 'With what reason would you like to cancel this person\'s suspension?',
-        validate: val => stringHelper.getChannels(val)
-          ? 'Reason contains channels.'
-          : stringHelper.getTags(val)
-            ? 'Reason contains tags.'
-            : stringHelper.getUrls(val)
-              ? 'Reason contains URLs.'
-              : true
+        validate: validateReason
       }]
     })
   }
@@ -49,6 +43,20 @@ class CancelSuspensionCommand extends BaseCommand {
 
     return message.reply(`Successfully cancelled **${username}**'s suspension.`)
   }
+}
+
+function validateReason (val, msg) {
+  const valid = this.type.validate(val, msg, this)
+  if (!valid || typeof valid === 'string') {
+    return valid
+  }
+  return stringHelper.getChannels(val)
+    ? 'Reason contains channels.'
+    : stringHelper.getTags(val)
+      ? 'Reason contains tags.'
+      : stringHelper.getUrls(val)
+        ? 'Reason contains URLs.'
+        : true
 }
 
 module.exports = CancelSuspensionCommand

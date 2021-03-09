@@ -18,7 +18,7 @@ class DeleteSuggestionCommand extends BaseCommand {
       return message.reply('This server has no suggestionsChannel set yet.')
     }
     const messages = await message.guild.suggestionsChannel.messages.fetch()
-    const authorUrl = `https://discordapp.com/users/${message.author.id}`
+    const authorUrl = `https://discord.com/users/${message.author.id}`
 
     for (const suggestion of messages.values()) {
       if (suggestion.embeds.length === 1 && suggestion.embeds[0].author && suggestion.embeds[0].author.url ===

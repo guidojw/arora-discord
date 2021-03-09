@@ -34,7 +34,7 @@ module.exports = (sequelize, DataTypes) => {
         })
 
         await sequelize.models.Group.bulkCreate([{
-          name: 'serverBoosterReportChannels',
+          name: 'noTextChannels',
           type: 'channel',
           guarded: true,
           guildId: guild.id
@@ -44,7 +44,12 @@ module.exports = (sequelize, DataTypes) => {
           guarded: true,
           guildId: guild.id
         }, {
-          name: 'noTextChannels',
+          name: 'serverBoosterReportChannels',
+          type: 'channel',
+          guarded: true,
+          guildId: guild.id
+        }, {
+          name: 'welcomeChannels',
           type: 'channel',
           guarded: true,
           guildId: guild.id

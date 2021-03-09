@@ -15,15 +15,15 @@ class ProfileCommand extends BaseCommand {
       args: [{
         key: 'username',
         prompt: 'Of which user would you like to know the profile?',
-        default: '',
-        type: 'member|string'
+        type: 'member|string',
+        default: message => message.member.displayName
       }]
     })
   }
 
   async run (message, { username }) {
-    username = username ? typeof username === 'string' ? username : username.displayName : message.member.displayName
-    const userId = await userService.getIdFromUsername(username || message.member.displayName)
+    username = typeof username === 'string' ? username : username.displayName
+    const userId = await userService.getIdFromUsername(username)
 
     return message.reply(`https://www.roblox.com/users/${userId}/profile`)
   }

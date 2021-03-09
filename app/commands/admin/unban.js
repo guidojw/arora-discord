@@ -22,13 +22,7 @@ class UnbanCommand extends BaseCommand {
         key: 'reason',
         type: 'string',
         prompt: 'With what reason would you like to unban this person?',
-        validate: val => stringHelper.getChannels(val)
-          ? 'Reason contains channels.'
-          : stringHelper.getTags(val)
-            ? 'Reason contains tags.'
-            : stringHelper.getUrls(val)
-              ? 'Reason contains URLs.'
-              : true
+        validate: validateReason
       }]
     })
   }
@@ -47,6 +41,20 @@ class UnbanCommand extends BaseCommand {
 
     return message.reply(`Successfully unbanned **${username}**.`)
   }
+}
+
+function validateReason (val, msg) {
+  const valid = this.type.validate(val, msg, this)
+  if (!valid || typeof valid === 'string') {
+    return valid
+  }
+  return stringHelper.getChannels(val)
+    ? 'Reason contains channels.'
+    : stringHelper.getTags(val)
+      ? 'Reason contains tags.'
+      : stringHelper.getUrls(val)
+        ? 'Reason contains URLs.'
+        : true
 }
 
 module.exports = UnbanCommand

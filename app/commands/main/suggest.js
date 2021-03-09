@@ -12,12 +12,12 @@ class SuggestCommand extends BaseCommand {
       description: 'Suggests given suggestion.',
       details: 'Suggestion can be encapsulated in quotes (but this is not necessary).',
       examples: ['suggest Add cool new thing', 'suggest "Add cool new thing"'],
-      clientPermissions: ['ADD_REACTIONS', 'SEND_MESSAGES', 'USE_EXTERNAL_EMOJIS'],
+      clientPermissions: ['ADD_REACTIONS', 'SEND_MESSAGES'],
       args: [{
         key: 'suggestion',
         prompt: 'What would you like to suggest?',
         type: 'string',
-        validate: val => stringHelper.getTags(val) ? 'Suggestion contains tags.' : true
+        validate: validateSuggestion
       }],
       throttling: {
         usages: 1,
@@ -30,7 +30,7 @@ class SuggestCommand extends BaseCommand {
     if (!message.guild.suggestionsChannel) {
       return message.reply('This server has no suggestionsChannel set yet.')
     }
-    const authorUrl = `https://discordapp.com/users/${message.author.id}`
+    const authorUrl = `https://discord.com/users/${message.author.id}`
     const embed = new MessageEmbed()
       .setDescription(suggestion)
       .setAuthor(message.author.tag, message.author.displayAvatarURL(), authorUrl)
@@ -48,6 +48,16 @@ class SuggestCommand extends BaseCommand {
 
     return message.reply('Successfully suggested', { embed })
   }
+}
+
+function validateSuggestion (val, msg) {
+  const valid = this.type.validate(val, msg, this)
+  if (!valid || typeof valid === 'string') {
+    return valid
+  }
+  return stringHelper.getTags(val)
+    ? 'Suggestion contains tags.'
+    : true
 }
 
 module.exports = SuggestCommand

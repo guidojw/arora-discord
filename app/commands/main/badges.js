@@ -20,13 +20,13 @@ class BadgesCommand extends Base {
         key: 'username',
         type: 'member|string',
         prompt: 'Whose badges would you like to check?',
-        default: ''
+        default: message => message.member.displayName
       }]
     })
   }
 
   async run (message, { username }) {
-    username = username ? typeof username === 'string' ? username : username.displayName : message.member.displayName
+    username = typeof username === 'string' ? username : username.displayName
     const userId = await userService.getIdFromUsername(username)
     const hasTtdt = await userService.hasBadge(userId, TTDT_ID)
     const hasPtdt = await userService.hasBadge(userId, PTDT_ID)

@@ -19,15 +19,7 @@ class ShoutCommand extends BaseCommand {
         key: 'body',
         type: 'string',
         prompt: 'What would you like to shout?',
-        validate: val => val.length > 255
-          ? 'Shout is too long.'
-          : stringHelper.getChannels(val)
-            ? 'Shout contains channels.'
-            : stringHelper.getTags(val)
-              ? 'Shout contains tags.'
-              : stringHelper.getUrls(val)
-                ? 'Shout contains URLs.'
-                : true
+        validate: validateBody
       }]
     })
   }
@@ -52,6 +44,22 @@ class ShoutCommand extends BaseCommand {
       return message.replyEmbed(embed)
     }
   }
+}
+
+function validateBody (val, msg) {
+  const valid = this.type.validate(val, msg, this)
+  if (!valid || typeof valid === 'string') {
+    return valid
+  }
+  return val.length > 255
+    ? 'Shout is too long.'
+    : stringHelper.getChannels(val)
+      ? 'Shout contains channels.'
+      : stringHelper.getTags(val)
+        ? 'Shout contains tags.'
+        : stringHelper.getUrls(val)
+          ? 'Shout contains URLs.'
+          : true
 }
 
 module.exports = ShoutCommand

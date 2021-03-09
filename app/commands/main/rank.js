@@ -17,7 +17,7 @@ class RankCommand extends BaseCommand {
         key: 'username',
         type: 'member|string',
         prompt: 'Of which user would you like to know the group rank?',
-        default: ''
+        default: message => message.member.displayName
       }]
     })
   }
@@ -26,12 +26,12 @@ class RankCommand extends BaseCommand {
     if (message.guild.robloxGroupId === null) {
       return message.reply('This server is not bound to a Roblox group yet.')
     }
-    username = username ? typeof username === 'string' ? username : username.displayName : message.member.displayName
+    username = typeof username === 'string' ? username : username.displayName
     const userId = await userService.getIdFromUsername(username)
     const rank = await userService.getRank(userId, message.guild.robloxGroupId)
 
     const embed = new MessageEmbed()
-      .addField(`${message.argString ? username + '\'s' : 'Your'} rank`, rank)
+      .addField(`${message.argString ? `${username}'s` : 'Your'} rank`, rank)
       .setColor(message.guild.primaryColor)
     return message.replyEmbed(embed)
   }

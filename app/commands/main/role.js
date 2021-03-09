@@ -17,7 +17,7 @@ class RoleCommand extends Base {
         key: 'username',
         type: 'member|string',
         prompt: 'Of which user would you like to know the group role?',
-        default: ''
+        default: message => message.member.displayName
       }]
     })
   }
@@ -26,12 +26,12 @@ class RoleCommand extends Base {
     if (message.guild.robloxGroupId === null) {
       return message.reply('This server is not bound to a Roblox group yet.')
     }
-    username = username ? typeof username === 'string' ? username : username.displayName : message.member.displayName
+    username = typeof username === 'string' ? username : username.displayName
     const userId = await userService.getIdFromUsername(username)
     const role = await userService.getRole(userId, message.guild.robloxGroupId)
 
     const embed = new MessageEmbed()
-      .addField(`${message.argString ? username + '\'s' : 'Your'} role`, role)
+      .addField(`${message.argString ? `${username}'s` : 'Your'} role`, role)
       .setColor(message.guild.primaryColor)
     return message.replyEmbed(embed)
   }

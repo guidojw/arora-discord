@@ -17,20 +17,20 @@ class AgeCommand extends BaseCommand {
       args: [{
         key: 'username',
         prompt: 'Of which user would you like to know the age?',
-        default: '',
-        type: 'member|string'
+        type: 'member|string',
+        default: message => message.member.displayName
       }]
     })
   }
 
   async run (message, { username }) {
-    username = username ? typeof username === 'string' ? username : username.displayName : message.member.displayName
+    username = typeof username === 'string' ? username : username.displayName
     const userId = await userService.getIdFromUsername(username)
     const user = await userService.getUser(userId)
     const age = Math.floor((Date.now() - new Date(user.created).getTime()) / 86400000)
 
     const embed = new MessageEmbed()
-      .addField(`${message.argString ? username + '\'s' : 'Your'} age`, `${age} ${pluralize('day', age)}`)
+      .addField(`${message.argString ? `${username}'s` : 'Your'} age`, pluralize('day', age, true))
       .setColor(message.guild.primaryColor)
     return message.replyEmbed(embed)
   }
