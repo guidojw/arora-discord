@@ -5,6 +5,11 @@ const { MessageEmbed } = require('discord.js')
 const { timeHelper } = require('../helpers')
 
 module.exports = async guild => {
+  const group = guild.groups.resolve('serverBoosterReportChannels')
+  if (group.cache.size === 0) {
+    return
+  }
+
   const members = await guild.members.fetch()
   const premiumMembers = []
   for (const member of members.values()) {
@@ -33,11 +38,10 @@ module.exports = async guild => {
     const emoji = guild.emojis.cache.find(emoji => emoji.name.toLowerCase() === 'boost')
 
     for (const { member, months } of monthlyPremiumMembers) {
-      embed.addField(`${member.user.tag} ${emoji || ''}`, `Has been boosting this server for **${months}** ${pluralize('month', months)}!`)
+      embed.addField(`${member.user.tag} ${emoji || ''}`, `Has been boosting this server for **${pluralize('month', months, true)}**!`)
     }
 
-    const channelGroup = guild.groups.resolve('serverBoosterReportChannels')
-    for (const channel of channelGroup.channels.cache) {
+    for (const channel of group.channels.cache.values()) {
       channel.send(embed)
     }
   }

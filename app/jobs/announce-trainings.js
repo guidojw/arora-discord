@@ -11,45 +11,49 @@ module.exports = async guild => {
   if (guild.robloxGroupId === null) {
     return
   }
-  const channels = guild.getData('channels')
-  const messages = guild.getData('messages')
-  const channel = guild.channels.cache.get(channels.trainingsChannel)
-
-  // Update the trainings list embed.
-  const message = await channel.messages.fetch(messages.trainingsMessage)
-  const trainings = (await applicationAdapter('get', `/v1/groups/${guild.robloxGroupId}/trainings?sort=date`))
-    .data
-  const authorIds = [...new Set(trainings.map(training => training.authorId))]
-  const authors = await userService.getUsers(authorIds)
-  const trainingsEmbed = await getTrainingsEmbed(guild.robloxGroupId, trainings, authors)
-  trainingsEmbed.setColor(guild.primaryColor)
-  await message.edit(trainingsEmbed)
-
-  const now = new Date()
-
-  // Get the message and its embed.
-  const infoMessage = await channel.messages.fetch(messages.trainingInfoMessage)
-  const embed = infoMessage.embeds[0]
-
-  // Update timezone if the timezone in the embed is incorrect.
-  const dstNow = timeHelper.isDst(now)
-  const change = (dstNow && embed.description.indexOf('CET') !== -1) ||
-    (!dstNow && embed.description.indexOf('CEST') !== -1)
-  if (change) {
-    embed.description = embed.description.replace(
-      dstNow ? 'CET' : 'CEST',
-      dstNow ? 'CEST' : 'CET'
-    )
+  const trainingsInfoPanel = guild.panels.resolve('trainingsInfoPanel')
+  const trainingsPanel = guild.panels.resolve('trainingsPanel')
+  if (!trainingsInfoPanel.message && !trainingsPanel.message) {
+    return
   }
 
-  // Change the next training field.
-  const nextTraining = trainings.find(training => new Date(training.date) > now)
-  embed.fields[1].value = nextTraining
-    ? getNextTrainingMessage(nextTraining, authors)
-    : ':x: There are currently no scheduled trainings.'
+  const trainings = (await applicationAdapter('get', `/v1/groups/${guild.robloxGroupId}/trainings?sort=date`)).data
+  const authorIds = [...new Set(trainings.map(training => training.authorId))]
+  const authors = await userService.getUsers(authorIds)
 
-  // Edit the actual message.
-  await infoMessage.edit(infoMessage.embeds)
+  // Trainings Info Panel
+  if (trainingsInfoPanel.message) {
+    const embed = trainingsInfoPanel.content
+    const now = new Date()
+
+    const dstNow = timeHelper.isDst(now)
+    embed.setDescription(embed.description.replace('{timezone}', dstNow ? 'CEST' : 'CET'))
+
+    const nextTraining = trainings.find(training => new Date(training.date) > now)
+    embed.addField(
+      ':pushpin: Next training',
+      nextTraining
+        ? getNextTrainingMessage(nextTraining, authors)
+        : ':x: There are currently no scheduled trainings.'
+    )
+
+    if (trainingsInfoPanel.message.partial) {
+      await trainingsInfoPanel.message.fetch()
+    }
+    await trainingsInfoPanel.message.edit(embed)
+  }
+
+  // Trainings Panel
+  if (trainingsPanel.message) {
+    const embed = await getTrainingsEmbed(guild.robloxGroupId, trainings, authors)
+
+    embed.setColor(guild.primaryColor)
+
+    if (trainingsPanel.message.partial) {
+      await trainingsPanel.message.fetch()
+    }
+    await trainingsPanel.message.edit(embed)
+  }
 }
 
 async function getTrainingsEmbed (groupId, trainings, authors) {
@@ -102,14 +106,12 @@ function getTrainingMessage (training, authors) {
     if (hourDifference === 0) {
       const minuteDifference = date.getMinutes() - now.getMinutes()
       if (minuteDifference >= 0) {
-        result += `\n> :alarm_clock: Starts in: **${minuteDifference} ${pluralize('minute',
-          minuteDifference)}**`
+        result += `\n> :alarm_clock: Starts in: **${pluralize('minute', minuteDifference, true)}**`
       } else {
-        result += `\n> :alarm_clock: Started **${-1 * minuteDifference} ${pluralize('minute',
-          minuteDifference)}** ago`
+        result += `\n> :alarm_clock: Started **${pluralize('minute', -1 * minuteDifference, true)}** ago`
       }
     } else {
-      result += `\n> :alarm_clock: Starts in: **${hourDifference} ${pluralize('hour', hourDifference)}**`
+      result += `\n> :alarm_clock: Starts in: **${pluralize('hour', hourDifference, true)}**`
     }
   }
 
