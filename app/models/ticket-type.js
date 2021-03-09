@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
     validate: {
       emojiNandEmojiId () {
         if (this.emoji !== null && this.emojiId !== null) {
-          throw new Error('Only one of emoji and emojiId can be set.')
+          throw new Error('Only one of emoji and emojiId or none can be set.')
         }
       }
     },

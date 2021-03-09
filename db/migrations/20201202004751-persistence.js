@@ -389,7 +389,7 @@ module.exports = {
       }
     })
 
-    await addExclusiveBelongsToConstraint(queryInterface, 'ticket_types', ['emoji', 'emoji_id'])
+    await addNandConstraint(queryInterface, 'ticket_types', ['emoji', 'emoji_id'])
 
     await queryInterface.createTable('tickets_moderators', {
       ticketId: {
@@ -532,7 +532,7 @@ module.exports = {
       }
     })
 
-    await addExclusiveBelongsToConstraint(queryInterface, 'role_messages', ['emoji', 'emoji_id'])
+    await addExclusiveArcConstraint(queryInterface, 'role_messages', ['emoji', 'emoji_id'])
 
     await queryInterface.createTable('channels_channels', {
       from_channel_id: {
@@ -705,11 +705,7 @@ module.exports = {
       }]
     })
 
-    await addExclusiveBelongsToConstraint(
-      queryInterface,
-      'permission_overwrites',
-      ['role_id', 'group_id']
-    )
+    await addExclusiveArcConstraint(queryInterface, 'permission_overwrites', ['role_id', 'group_id'])
   },
 
   down: async (queryInterface) => {
@@ -774,14 +770,22 @@ function addGuildIDConstraint (queryInterface, tableName) {
   })
 }
 
-function addExclusiveBelongsToConstraint (queryInterface, tableName, columns) {
+function addExclusiveArcConstraint (queryInterface, tableName, column) {
+  return addCardinalityConstraint(queryInterface, tableName, column, '= 1')
+}
+
+function addNandConstraint (queryInterface, tableName, column) {
+  return addCardinalityConstraint(queryInterface, tableName, column, '<= 1')
+}
+
+function addCardinalityConstraint (queryInterface, tableName, columns, condition) {
   return queryInterface.sequelize.query(stripIndents`
   ALTER TABLE ${tableName}
   ADD CONSTRAINT ${tableName}_${columns.join('_')}_check
   CHECK (
     (
       ${columns.map(column => `(${column} IS NOT NULL)::INTEGER`).join(' +\n')}
-    ) = 1
+    ) ${condition}
   );
   `)
 }

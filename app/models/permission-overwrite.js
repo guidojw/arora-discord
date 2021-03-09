@@ -15,8 +15,8 @@ module.exports = (sequelize, DataTypes) => {
       fields: ['permission_name', 'group_id']
     }],
     validate: {
-      roleNandGroup () {
-        if (this.role !== null && this.group !== null) {
+      roleXorGroup () {
+        if ((this.role === null) !== (this.group === null)) {
           throw new Error('Only one of roleId and groupId can be set.')
         }
       }
