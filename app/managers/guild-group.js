@@ -24,8 +24,7 @@ class GuildGroupManager extends BaseManager {
 
   async create (name, type) {
     type = type.toLowerCase()
-    const lowerCaseName = name.toLowerCase()
-    if (this.cache.some(group => group.name.toLowerCase() === lowerCaseName)) {
+    if (this.resolve(name)) {
       throw new Error('A group with that name already exists.')
     }
 
@@ -67,8 +66,7 @@ class GuildGroupManager extends BaseManager {
 
     const changes = {}
     if (data.name) {
-      const lowerCaseName = data.name.toLowerCase()
-      if (this.cache.some(group => group.name.toLowerCase() === lowerCaseName)) {
+      if (this.resolve(data.name) !== null) {
         throw new Error('A group with that name already exists.')
       }
       changes.name = data.name

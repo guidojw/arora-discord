@@ -6,6 +6,7 @@ module.exports = {
   GuildGroupManager: require('./guild-group'),
   GuildPanelManager: require('./guild-panel'),
   GuildTagManager: require('./guild-tag'),
+  GuildTicketTypeManager: require('./guild-ticket-type'),
   RoleGroupManager: require('./role-group'),
   TagTagNameManager: require('./tag-tag-name'),
   TextChannelGroupManager: require('./text-channel-group')

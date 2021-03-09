@@ -20,10 +20,10 @@ class TicketController extends BaseStructure {
 
   _setup (data) {
     this.id = data.id
-    this.authorId = data.authorId || null
-    this.channelId = data.channelId || null
-    this.guildId = data.guildId || null
-    this.type = data.type || null
+    this.authorId = data.authorId
+    this.channelId = data.channelId
+    this.guildId = data.guildId
+    this.type = data.type
     this._moderators = data.moderators
   }
 
@@ -41,7 +41,7 @@ class TicketController extends BaseStructure {
   }
 
   get channel () {
-    return this.guild.channels.cache.get(this.channelId)
+    return this.guild.channels.cache.get(this.channelId) || null
   }
 
   get guild () {
@@ -101,14 +101,14 @@ class TicketController extends BaseStructure {
       .setDescription(stripIndents`
       Username: ${username ? '**' + username + '**' : '*unknown (user is not verified with RoVer)*'}
       User ID: ${userId ? '**' + userId + '**' : '*unknown (user is not verified with RoVer)*'}
-      Start time: ${readableDate + ' ' + readableTime}
+      Start time: ${readableDate} ${readableTime}
       `)
       .setFooter(`Ticket ID: ${this.id} | ${this.type
         .split(/(?=[A-Z])/)
         .map(string => string.toLowerCase())
         .join(' ')
       }`)
-    return this.channel.send(`${this.author}`, { embed })
+    return this.channel.send(this.author.toString(), { embed })
   }
 
   async submit () {

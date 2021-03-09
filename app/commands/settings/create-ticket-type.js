@@ -1,8 +1,6 @@
 'use strict'
 const BaseCommand = require('../base')
 
-const { TicketType } = require('../../models')
-
 class CreateTicketTypeCommand extends BaseCommand {
   constructor (client) {
     super(client, {
@@ -20,27 +18,20 @@ class CreateTicketTypeCommand extends BaseCommand {
   }
 
   async run (message, { name }) {
-    name = name.toLowerCase()
-    const [, created] = await TicketType.findOrCreate({
-      where: {
-        guildId: message.guild.id,
-        name
-      }
-    })
-    if (!created) {
-      return message.reply('A ticket type with that name already exists.')
-    }
+    const ticketType = await message.guild.ticketTypes.create(name)
 
-    return message.reply(`Successfully created ticket type **${name}**.`)
+    return message.reply(`Successfully created ticket type **${ticketType.name}**.`)
   }
 }
 
-function validateName (name) {
-  return name.includes(' ')
-    ? 'Name cannot include spaces.'
-    : name.length > 16
-      ? 'Name is too long.'
-      : true
+function validateName (val, msg) {
+  const valid = this.type.validate(val, msg, this)
+  if (!valid || typeof valid === 'string') {
+    return valid
+  }
+  return name.length > 16
+    ? 'Name is too long.'
+    : true
 }
 
 module.exports = CreateTicketTypeCommand

@@ -28,9 +28,9 @@ class CreateTagAliasCommand extends BaseCommand {
       return message.reply('Tag not found')
     }
 
-    await tag.names.create(alias)
+    const tagName = await tag.names.create(alias)
 
-    return message.reply(`Successfully created alias **${alias}** for tag **${tag.names.cache.first()?.name ?? 'Unknown'}**.`)
+    return message.reply(`Successfully created alias **${tagName.name}** for tag **${tag.names.cache.first()?.name ?? 'Unknown'}**.`)
   }
 }
 
@@ -41,9 +41,7 @@ function validateAlias (val, msg) {
   }
   return !isNaN(parseInt(val))
     ? 'Alias cannot be a number.'
-    : val.includes(' ')
-      ? 'Alias cannot include spaces.'
-      : true
+    : true
 }
 
 module.exports = CreateTagAliasCommand

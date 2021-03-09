@@ -169,7 +169,8 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: {
         name: 'guildId',
         allowNull: false
-      }
+      },
+      as: 'ticketTypes'
     })
     Guild.hasMany(models.Emoji, {
       foreignKey: {
@@ -209,6 +210,9 @@ module.exports = (sequelize, DataTypes) => {
         model: models.Tag,
         as: 'tags',
         include: [{ model: models.TagName, as: 'names' }]
+      }, {
+        model: models.TicketType,
+        as: 'ticketTypes'
       }],
       subQuery: false
     })

@@ -6,5 +6,6 @@ module.exports = {
   RoleGroup: require('./role-group'),
   Tag: require('./tag'),
   TagName: require('./tag-name'),
-  Ticket: require('./ticket')
+  Ticket: require('./ticket'),
+  TicketType: require('./ticket-type')
 }

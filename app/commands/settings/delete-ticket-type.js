@@ -1,8 +1,6 @@
 'use strict'
 const BaseCommand = require('../base')
 
-const { TicketType } = require('../../models')
-
 class DeleteTicketTypeCommand extends BaseCommand {
   constructor (client) {
     super(client, {
@@ -12,20 +10,15 @@ class DeleteTicketTypeCommand extends BaseCommand {
       description: 'Deletes a ticket type.',
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
-        key: 'typeId',
+        key: 'idOrName',
         prompt: 'What ticket type would you like to delete?',
-        type: 'integer'
+        type: 'integer|string'
       }]
     })
   }
 
-  async run (message, { typeId }) {
-    const ticketType = await TicketType.findOne({ where: { id: typeId, guildId: message.guild.id } })
-    if (!ticketType) {
-      return message.reply('Ticket type not found.')
-    }
-
-    await ticketType.destroy()
+  async run (message, { idOrName }) {
+    await message.guild.ticketTypes.delete(idOrName)
 
     return message.reply('Successfully deleted ticket type.')
   }

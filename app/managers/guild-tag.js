@@ -19,7 +19,7 @@ class GuildTagManager extends BaseManager {
 
   async create (name, content) {
     name = name.toLowerCase()
-    if (this.resolve(name) !== null) {
+    if (this.resolve(name)) {
       throw new Error('A tag with that name already exists.')
     }
     const first = name.split(/ +/)[0]
