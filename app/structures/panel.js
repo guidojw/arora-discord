@@ -29,10 +29,12 @@ class Panel extends BaseStructure {
   }
 
   get message () {
-    return this.channel?.messages.cache.get(this.messageId) ||
-      (this.client.options.partials.includes('MESSAGE')
-        ? this.channel?.messages.add({ id: this.messageId })
-        : null)
+    return this.messageId !== null
+      ? this.channel?.messages.cache.get(this.messageId) ||
+        (this.client.options.partials.includes('MESSAGE')
+          ? this.channel?.messages.add({ id: this.messageId })
+          : null)
+      : null
   }
 
   update (data) {

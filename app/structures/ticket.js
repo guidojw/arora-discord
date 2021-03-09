@@ -32,10 +32,12 @@ class TicketController extends BaseStructure {
   }
 
   get author () {
-    return this.client.users.cache.get(this.authorId) ||
-      (this.client.options.partials.includes('USER')
-        ? this.client.users.add({ id: this.authorId })
-        : null)
+    return this.authorId !== null
+      ? this.client.users.cache.get(this.authorId) ||
+        (this.client.options.partials.includes('USER')
+          ? this.client.users.add({ id: this.authorId })
+          : null)
+      : null
   }
 
   get channel () {
