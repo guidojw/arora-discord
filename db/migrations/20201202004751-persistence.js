@@ -389,7 +389,7 @@ module.exports = {
       }
     })
 
-    await addNandConstraint(queryInterface, 'ticket_types', ['emoji', 'emoji_id'])
+    await addExclusiveArcOrNoneConstraint(queryInterface, 'ticket_types', ['emoji', 'emoji_id'])
 
     await queryInterface.createTable('tickets_moderators', {
       ticketId: {
@@ -770,12 +770,12 @@ function addGuildIDConstraint (queryInterface, tableName) {
   })
 }
 
-function addExclusiveArcConstraint (queryInterface, tableName, column) {
-  return addCardinalityConstraint(queryInterface, tableName, column, '= 1')
+function addExclusiveArcConstraint (queryInterface, tableName, columns) {
+  return addCardinalityConstraint(queryInterface, tableName, columns, '= 1')
 }
 
-function addNandConstraint (queryInterface, tableName, column) {
-  return addCardinalityConstraint(queryInterface, tableName, column, '<= 1')
+function addExclusiveArcOrNoneConstraint (queryInterface, tableName, columns) {
+  return addCardinalityConstraint(queryInterface, tableName, columns, '<= 1')
 }
 
 function addCardinalityConstraint (queryInterface, tableName, columns, condition) {
