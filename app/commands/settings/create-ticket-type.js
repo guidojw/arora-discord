@@ -29,7 +29,7 @@ function validateName (val, msg) {
   if (!valid || typeof valid === 'string') {
     return valid
   }
-  return name.length > 16
+  return val.length > 16
     ? 'Name is too long.'
     : true
 }

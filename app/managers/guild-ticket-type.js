@@ -42,7 +42,7 @@ class GuildTicketTypeManager extends BaseManager {
   async update (ticketType, data) {
     const id = this.resolveID(ticketType)
     if (!id) {
-      throw new Error('Invalid ticke ttype.')
+      throw new Error('Invalid ticket type.')
     }
     if (!this.cache.has(id)) {
       throw new Error('Ticket type not found.')
@@ -55,7 +55,6 @@ class GuildTicketTypeManager extends BaseManager {
       }
       changes.name = data.name.toLowerCase()
     }
-
 
     const [, [newData]] = await TicketTypeModel.update(changes, {
       where: { id },

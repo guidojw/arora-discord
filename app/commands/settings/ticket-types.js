@@ -2,7 +2,6 @@
 const BaseCommand = require('../base')
 
 const { MessageEmbed } = require('discord.js')
-const { TicketType } = require('../../models')
 const { discordService } = require('../../services')
 
 class RoleBindingsCommand extends BaseCommand {
@@ -13,17 +12,17 @@ class RoleBindingsCommand extends BaseCommand {
       description: 'Lists all ticket types.',
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
-        key: 'typeId',
+        key: 'idOrName',
         prompt: 'What ticket type ID would you like to know the information of?',
-        type: 'integer',
+        type: 'integer|string',
         default: ''
       }]
     })
   }
 
-  async run (message, { typeId }) {
-    if (typeId) {
-      const ticketType = await TicketType.findOne({ where: { id: typeId, guildId: message.guild.id } })
+  async run (message, { idOrName }) {
+    if (idOrName) {
+      const ticketType = message.guild.ticketTypes.resolve(idOrName)
       if (!ticketType) {
         return message.reply('Ticket type not found.')
       }
@@ -33,14 +32,13 @@ class RoleBindingsCommand extends BaseCommand {
         .setColor(message.guild.primaryColor)
       return message.replyEmbed(embed)
     } else {
-      const ticketTypes = await TicketType.findAll({ where: { guildId: message.guild.id } })
-      if (ticketTypes.length === 0) {
+      if (message.guild.ticketTypes.cache.size === 0) {
         return message.reply('No ticket types found.')
       }
 
       const embeds = discordService.getListEmbeds(
         'Ticket Types',
-        ticketTypes,
+        message.guild.ticketTypes.cache,
         getTicketTypeRow
       )
       for (const embed of embeds) {
