@@ -34,13 +34,7 @@ const trainDevelopersPayoutHandler = async (client, { data }) => {
     }
   }
 
-  for (const owner of client.owners) {
-    if (owner.partial) {
-      await owner.fetch()
-    }
-
-    await owner.send(embed)
-  }
+  return Promise.all(client.owners.map(owner => owner.send(embed)))
 }
 
 module.exports = trainDevelopersPayoutHandler

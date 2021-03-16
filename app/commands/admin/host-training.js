@@ -55,7 +55,7 @@ class HostTrainingCommand extends BaseCommand {
       timeInfo.hours,
       timeInfo.minutes
     ).getTime())
-    const afterNow = dateUnix - Math.floor(Date.now()) > 0
+    const afterNow = dateUnix - Date.now() > 0
     if (!afterNow) {
       return message.reply('Please give a date and time that are after now.')
     }
