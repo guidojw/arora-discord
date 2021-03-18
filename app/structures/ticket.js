@@ -25,7 +25,7 @@ class Ticket extends BaseStructure {
     this.authorId = data.authorId
     this.channelId = data.channelId
     this.guildId = data.guildId
-    this.type = this.guild.ticketTypes.resolve(data.type.id)
+    this.typeId = data.typeId
 
     if (data.moderators) {
       this._moderators = data.moderators.map(moderator => moderator.id)
@@ -43,6 +43,10 @@ class Ticket extends BaseStructure {
 
   get channel () {
     return this.guild.channels.cache.get(this.channelId) || null
+  }
+
+  get ticketType () {
+    return this.guild.ticketTypes.cache.get(this.typeId)
   }
 
   get moderators () {
@@ -95,9 +99,9 @@ class Ticket extends BaseStructure {
       .setColor(color || success ? 0x00ff00 : 0xff0000)
       .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
       .setTitle(message)
-    await this.client.send(this.author, embed)
+    const sent = typeof await this.client.send(this.author, embed) !== 'undefined'
 
-    if (success && this.guild.ratingsChannel && this.author) {
+    if (sent && success && this.guild.ratingsChannel && this.author) {
       const rating = await this.requestRating()
       if (rating) {
         this.logRating(rating)

@@ -50,8 +50,7 @@ module.exports = sequelize => {
       foreignKey: {
         name: 'typeId',
         allowNull: false
-      },
-      as: 'type'
+      }
     })
   }
 
@@ -61,9 +60,6 @@ module.exports = sequelize => {
         model: models.Member,
         as: 'moderators',
         through: { attributes: [] }
-      }, {
-        model: models.TicketType,
-        as: 'type'
       }],
       subQuery: false
     })
