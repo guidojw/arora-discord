@@ -2,7 +2,6 @@
 const path = require('path')
 const eventHandlers = require('./events')
 const NSadminProvider = require('./setting-provider')
-const TicketsController = require('./tickets')
 const WebSocketManager = require('./websocket/websocket')
 
 const { DiscordAPIError, Message } = require('discord.js')
@@ -29,6 +28,9 @@ class NSadminClient extends CommandoClient {
     }
     if (!options.partials) {
       options.partials = []
+    }
+    if (!options.partials.some(partial => partial === 'GUILD_MEMBER')) {
+      options.partials.push('GUILD_MEMBER')
     }
     if (!options.partials.some(partial => partial === 'REACTION')) {
       options.partials.push('REACTION')
@@ -73,9 +75,6 @@ class NSadminClient extends CommandoClient {
       ? applicationConfig.productionMainGuildId
       : applicationConfig.developmentMainGuildId
     this.mainGuild = this.guilds.cache.get(mainGuildId)
-
-    this.ticketsController = new TicketsController(this)
-    await this.ticketsController.init()
 
     this.bindEvent('channelDelete')
     this.bindEvent('commandError')
@@ -123,17 +122,8 @@ class NSadminClient extends CommandoClient {
   }
 
   async handleRoleMessage (type, reaction, user) {
-    if (user.bot) {
-      return
-    }
-    if (reaction.message.partial) {
-      await reaction.message.fetch()
-    }
-    if (!reaction.message.guild) {
-      return
-    }
-    const guild = this.guilds.cache.get(reaction.message.guild.id)
-    const member = await guild.members.fetch(user)
+    const guild = reaction.message.guild
+    const member = guild.members.resolve(user)
 
     const roleMessages = await RoleMessage.findAll({
       where: {

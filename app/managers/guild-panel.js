@@ -61,14 +61,14 @@ class GuildPanelManager extends BaseManager {
     }
 
     const changes = {}
-    if (data.name) {
+    if (typeof data.name !== 'undefined') {
       const lowerCaseName = data.name.toLowerCase()
       if (this.cache.some(panel => panel.name.toLowerCase() === lowerCaseName)) {
         throw new Error('A panel with that name already exists.')
       }
       changes.name = data.name
     }
-    if (data.content) {
+    if (typeof data.content !== 'undefined') {
       const embed = new MessageEmbed(data.content)
       const valid = discordService.validateEmbed(embed)
       if (typeof valid === 'string') {
@@ -113,7 +113,7 @@ class GuildPanelManager extends BaseManager {
       channelId: channel?.id ?? null,
       messageId: null
     }
-    if (channel) {
+    if (typeof channel !== 'undefined') {
       const newMessage = await channel.send(panel.embed)
       data.messageId = newMessage.id
       await Channel.findOrCreate({
@@ -140,20 +140,20 @@ class GuildPanelManager extends BaseManager {
     return _panel ?? this.add(newData, false)
   }
 
-  resolve (idOrNameOrInstance) {
-    if (typeof idOrNameOrInstance === 'string') {
-      idOrNameOrInstance = idOrNameOrInstance.toLowerCase()
-      return this.cache.find(panel => panel.name.toLowerCase() === idOrNameOrInstance) || null
+  resolve (panel) {
+    if (typeof panel === 'string') {
+      panel = panel.toLowerCase()
+      return this.cache.find(otherPanel => otherPanel.name.toLowerCase() === panel) || null
     }
-    return super.resolve(idOrNameOrInstance)
+    return super.resolve(panel)
   }
 
-  resolveID (idOrNameOrInstance) {
-    if (typeof idOrNameOrInstance === 'string') {
-      idOrNameOrInstance = idOrNameOrInstance.toLowerCase()
-      return this.cache.find(panel => panel.name.toLowerCase() === idOrNameOrInstance)?.id ?? null
+  resolveID (panel) {
+    if (typeof panel === 'string') {
+      panel = panel.toLowerCase()
+      return this.cache.find(otherPanel => otherPanel.name.toLowerCase() === panel)?.id ?? null
     }
-    return super.resolveID(idOrNameOrInstance)
+    return super.resolveID(panel)
   }
 }
 

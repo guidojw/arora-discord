@@ -19,11 +19,11 @@ class TicketType extends BaseStructure {
   }
 
   get emoji () {
-    return this._emoji || this.guild.emojis.get(this.emojiId) || null
+    return this._emoji || this.guild.emojis.cache.get(this.emojiId) || null
   }
 
   get panel () {
-    return this.guild.panels.get(this.panelId)
+    return this.guild.panels.cache.get(this.panelId) || null
   }
 
   update (data) {

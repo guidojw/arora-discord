@@ -93,7 +93,8 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: {
         name: 'guildId',
         allowNull: false
-      }
+      },
+      as: 'tickets'
     })
     Guild.hasMany(models.RoleBinding, {
       foreignKey: {
@@ -208,8 +209,10 @@ module.exports = (sequelize, DataTypes) => {
         as: 'panels'
       }, {
         model: models.Tag,
-        as: 'tags',
-        include: [{ model: models.TagName, as: 'names' }]
+        as: 'tags'
+      }, {
+        model: models.Ticket,
+        as: 'tickets'
       }, {
         model: models.TicketType,
         as: 'ticketTypes'

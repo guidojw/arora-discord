@@ -1,19 +1,21 @@
 'use strict'
 const pluralize = require('pluralize')
 const BaseStructure = require('./base')
+const TicketGuildMemberManager = require('../managers/ticket-guild-member')
 
 const { MessageEmbed } = require('discord.js')
 const { roVerAdapter } = require('../adapters')
 const { stripIndents } = require('common-tags')
 const { timeHelper } = require('../helpers')
-const { Ticket, TicketModerator } = require('../models')
 const { discordService } = require('../services')
 
-const SUBMISSION_TIME = 30 * 60 * 1000
-
-class TicketController extends BaseStructure {
-  constructor (client, data) {
+class Ticket extends BaseStructure {
+  constructor (client, data, guild) {
     super(client)
+
+    this.guild = guild
+
+    this._moderators = []
 
     this._setup(data)
   }
@@ -23,19 +25,18 @@ class TicketController extends BaseStructure {
     this.authorId = data.authorId
     this.channelId = data.channelId
     this.guildId = data.guildId
-    this.type = data.type
-    this._moderators = data.moderators
-  }
+    this.type = this.guild.ticketTypes.resolve(data.type.id)
 
-  get ticketsController () {
-    return this.client.ticketsController || null
+    if (data.moderators) {
+      this._moderators = data.moderators.map(moderator => moderator.id)
+    }
   }
 
   get author () {
     return this.authorId !== null
-      ? this.client.users.cache.get(this.authorId) ||
-        (this.client.options.partials.includes('USER')
-          ? this.client.users.add({ id: this.authorId })
+      ? this.guild.members.cache.get(this.authorId) ||
+        (this.client.options.partials.includes('GUILD_MEMBER')
+          ? this.guild.members.add({ id: this.authorId })
           : null)
       : null
   }
@@ -44,45 +45,15 @@ class TicketController extends BaseStructure {
     return this.guild.channels.cache.get(this.channelId) || null
   }
 
-  get guild () {
-    return this.client.guilds.cache.get(this.guildId) || null
-  }
-
   get moderators () {
-    return this._moderators.map(moderator => {
-      return this.client.users.cache.get(moderator.userId) ||
-        (this.client.options.partials.includes('USER')
-          ? this.client.users.add({ id: moderator.userId })
-          : null)
-    })
-  }
-
-  async start () {
-    await this.createChannel()
-    await this.populateChannel()
-
-    this.timeout = setTimeout(this.close.bind(this, 'Timeout: ticket closed'), SUBMISSION_TIME)
-
-    await this.submit()
-  }
-
-  async createChannel () {
-    if (this.author.partial) {
-      await this.author.fetch()
-    }
-    const name = `${this.type}-${this.author.username}`
-    const channel = await this.guild.channels.create(name)
-
-    await this.update({ channelId: channel.id })
-    await this.channel.setParent(this.guild.ticketsCategory)
-    await this.channel.updateOverwrite(this.author, { VIEW_CHANNEL: true })
+    return new TicketGuildMemberManager(this)
   }
 
   async populateChannel () {
     let username
     let userId
     try {
-      const response = (await roVerAdapter('get', `/user/${this.author.id}`)).data
+      const response = (await roVerAdapter('get', `/user/${this.authorId}`)).data
       username = response.robloxUsername
       userId = response.robloxId
     } catch (err) {
@@ -95,7 +66,7 @@ class TicketController extends BaseStructure {
     const readableDate = timeHelper.getDate(date)
     const readableTime = timeHelper.getTime(date)
 
-    const embed = new MessageEmbed()
+    const ticketInfoEmbed = new MessageEmbed()
       .setColor(this.guild.primaryColor)
       .setTitle('Ticket Information')
       .setDescription(stripIndents`
@@ -103,31 +74,16 @@ class TicketController extends BaseStructure {
       User ID: ${userId ? '**' + userId + '**' : '*unknown (user is not verified with RoVer)*'}
       Start time: ${readableDate} ${readableTime}
       `)
-      .setFooter(`Ticket ID: ${this.id} | ${this.type
-        .split(/(?=[A-Z])/)
-        .map(string => string.toLowerCase())
-        .join(' ')
-      }`)
-    return this.channel.send(this.author.toString(), { embed })
-  }
+      .setFooter(`Ticket ID: ${this.id} | ${this.type.name}`)
+    await this.channel.send(this.author.toString(), { embed: ticketInfoEmbed })
 
-  async submit () {
-    const embed = new MessageEmbed()
+    const modInfoEmbed = new MessageEmbed()
       .setColor(this.guild.primaryColor)
       .setDescription(stripIndents`
       A Ticket Moderator will be with you shortly.
       This may take up to 24 hours. You can still close your ticket by using the \`/closeticket\` command.
       `)
-    await this.channel.send(embed)
-
-    // const roles = this.guild.getData('roles')
-    // await this.channel.updateOverwrite(roles.ticketModeratorRole, { VIEW_CHANNEL: true })
-
-    this.guild.log(
-      this.author,
-      `${this.author} **opened ticket** \`${this.id}\` **in** ${this.channel}`,
-      { footer: `Ticket ID: ${this.id}` }
-    )
+    return this.channel.send(modInfoEmbed)
   }
 
   async close (message, success, color) {
@@ -141,9 +97,8 @@ class TicketController extends BaseStructure {
       .setTitle(message)
     await this.client.send(this.author, embed)
 
-    if (this.guild.ratingsChannel && success) {
+    if (success && this.guild.ratingsChannel && this.author) {
       const rating = await this.requestRating()
-
       if (rating) {
         this.logRating(rating)
 
@@ -162,9 +117,7 @@ class TicketController extends BaseStructure {
       }
     }
 
-    await Ticket.destroy({ where: { id: this.id } })
-
-    this.client.emit('ticketClose', this)
+    return this.delete()
   }
 
   async requestRating () {
@@ -185,61 +138,51 @@ class TicketController extends BaseStructure {
   }
 
   async logRating (rating) {
-    let result = ''
-    for (let i = 0; i < this.moderators.length; i++) {
-      const moderator = this.moderators[i]
-      if (moderator.partial) {
-        await moderator.fetch()
-      }
-
-      result += `**${moderator.tag}**`
-      if (i < this.moderators.length - 2) {
-        result += ', '
-      } else if (i === this.moderators.length - 2) {
-        result += ' & '
-      }
-    }
-    result = result || 'none'
+    await Promise.all([...this.moderators.cache.map(moderator => moderator.fetch())])
+    const moderatorsString = makeCommaSeparatedString(this.moderators.cache.map(moderator => `**${moderator.tag}**`)) ||
+      'none'
 
     const embed = new MessageEmbed()
       .setColor(this.guild.primaryColor)
       .setAuthor(this.author.tag, this.author.displayAvatarURL())
       .setTitle('Ticket Rating')
       .setDescription(stripIndents`
-      ${pluralize('Moderator', this.moderators.length)}: ${result}
+      ${pluralize('Moderator', this.moderators.cache.size)}: ${moderatorsString}
       Rating: **${rating}**
       `)
       .setFooter(`Ticket ID: ${this.id}`)
     return this.guild.ratingsChannel.send(embed)
   }
 
-  async message (message) {
-    if (this.timeout) {
-      clearTimeout(this.timeout)
-      this.timeout = undefined
-    }
+  update (data) {
+    return this.guild.tickets.update(this, data)
+  }
 
-    if (message.author.id !== this.authorId) {
-      if (!this.moderators.some(moderator => moderator.id === message.author.id)) {
-        await TicketModerator.create({ ticketId: this.id, userId: message.author.id })
-        const data = await Ticket.findByPk(this.id)
-        this._setup(data)
+  delete () {
+    return this.guild.tickets.delete(this)
+  }
+
+  onMessage (message) {
+    if (message.member.id === this.authorId) {
+      if (this.timeout) {
+        this.client.clearTimeout(this.timeout)
+        this.timeout = undefined
+      }
+    } else {
+      if (!this.moderators.cache.has(message.member.id)) {
+        return this.moderators.add(message.member)
       }
     }
   }
-
-  async update (data) {
-    const [, [newData]] = await Ticket.update({
-      channelId: data.channelId,
-      type: data.type
-    }, {
-      where: { id: this.id },
-      returning: true
-    })
-
-    this._setup(newData)
-    return this
-  }
 }
 
-module.exports = TicketController
+function makeCommaSeparatedString (arr) {
+  if (arr.length === 1) {
+    return arr[0]
+  }
+  const firsts = arr.slice(0, arr.length - 1)
+  const last = arr[arr.length - 1]
+  return firsts.join(', ') + ' & ' + last
+}
+
+module.exports = Ticket

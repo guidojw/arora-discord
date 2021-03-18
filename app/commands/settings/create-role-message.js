@@ -23,7 +23,7 @@ class CreateRoleMessageCommand extends BaseCommand {
       }, {
         key: 'emoji',
         prompt: 'What emoji do you want to bind to this message?',
-        type: 'custom-emoji|string'
+        type: 'custom-emoji|default-emoji'
       }, {
         key: 'role',
         prompt: 'What role do you want to bind to this emoji?',
