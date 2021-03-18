@@ -3,9 +3,9 @@ const pluralize = require('pluralize')
 const BaseStructure = require('./base')
 const TicketGuildMemberManager = require('../managers/ticket-guild-member')
 
+const { stripIndents } = require('common-tags')
 const { MessageEmbed } = require('discord.js')
 const { roVerAdapter } = require('../adapters')
-const { stripIndents } = require('common-tags')
 const { timeHelper } = require('../helpers')
 const { discordService } = require('../services')
 
@@ -36,7 +36,7 @@ class Ticket extends BaseStructure {
     return this.authorId !== null
       ? this.guild.members.cache.get(this.authorId) ||
         (this.client.options.partials.includes('GUILD_MEMBER')
-          ? this.guild.members.add({ id: this.authorId })
+          ? this.guild.members.add({ user: { id: this.authorId } })
           : null)
       : null
   }
@@ -138,14 +138,23 @@ class Ticket extends BaseStructure {
   }
 
   async logRating (rating) {
-    await Promise.allSettled([...this.moderators.cache.map(moderator => moderator.fetch())])
+    if (this.author.partial) {
+      try {
+        await this.author.fetch()
+      } catch {} // eslint-disable-line no-empty
+    }
+    await Promise.allSettled([...this.moderators.cache.map(moderator => {
+      if (moderator.partial) {
+        return moderator.fetch()
+      }
+    })])
     const moderatorsString = makeCommaSeparatedString(this.moderators.cache.map(moderator => {
-      return `**${moderator.tag ?? moderator.id}**`
+      return `**${moderator.user.tag ?? moderator.id}**`
     })) || 'none'
 
     const embed = new MessageEmbed()
       .setColor(this.guild.primaryColor)
-      .setAuthor(this.author.tag, this.author.displayAvatarURL())
+      .setAuthor(this.author.user.tag ?? this.author.id, this.author.user.displayAvatarURL())
       .setTitle('Ticket Rating')
       .setDescription(stripIndents`
       ${pluralize('Moderator', this.moderators.cache.size)}: ${moderatorsString}

@@ -21,12 +21,14 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: {
         name: 'authorId',
         allowNull: false
-      }
+      },
+      as: 'tickets'
     })
     Member.belongsToMany(models.Ticket, {
       through: 'tickets_moderators',
       sourceKey: 'id',
-      targetKey: 'id'
+      targetKey: 'id',
+      as: 'moderatingTickets'
     })
     Member.belongsToMany(models.Role, {
       through: models.MemberRole,

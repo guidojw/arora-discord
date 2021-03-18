@@ -14,12 +14,12 @@ class TicketType extends BaseStructure {
     this.id = data.id
     this.name = data.name
     this._emoji = data.emoji
-    this.emojiId = data.emojiId
+    this._emojiId = data.emojiId
     this.panelId = data.panelId
   }
 
   get emoji () {
-    return this._emoji || this.guild.emojis.cache.get(this.emojiId) || null
+    return this._emoji || this.guild.emojis.cache.get(this._emojiId) || null
   }
 
   get panel () {
@@ -32,6 +32,10 @@ class TicketType extends BaseStructure {
 
   delete () {
     return this.guild.ticketTypes.delete(this)
+  }
+
+  bind (panel, emoji) {
+    return this.guild.ticketTypes.bind(this, panel, emoji)
   }
 }
 

@@ -14,7 +14,7 @@ class TicketGuildMemberManager {
     for (const moderator of this.ticket._moderators) {
       cache.set(moderator, this.guild.members.cache.get(moderator) ||
         (this.client.options.partials.includes('GUILD_MEMBER')
-          ? this.guild.members.add({ id: moderator.id })
+          ? this.guild.members.add({ user: { id: moderator.id } })
           : null)
       )
     }
@@ -36,7 +36,7 @@ class TicketGuildMemberManager {
         guildId: this.guild.id
       }
     })
-    await data.addTicket(this.ticket.id)
+    await data.addModeratingTicket(this.ticket.id)
     this.ticket._moderators.push(member.id)
 
     return this.ticket

@@ -120,7 +120,11 @@ class GuildTicketTypeManager extends BaseManager {
         .remove(this.client.user)
     }
     if (typeof emoji !== 'undefined') {
-      data.emojiId = emoji instanceof GuildEmoji ? emoji.id : emoji
+      if (emoji instanceof GuildEmoji) {
+        data.emojiId = emoji.id
+      } else {
+        data.emoji = emoji
+      }
       if (panel.message.partial) {
         await panel.message.fetch()
       }
