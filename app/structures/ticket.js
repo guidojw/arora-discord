@@ -138,9 +138,10 @@ class Ticket extends BaseStructure {
   }
 
   async logRating (rating) {
-    await Promise.all([...this.moderators.cache.map(moderator => moderator.fetch())])
-    const moderatorsString = makeCommaSeparatedString(this.moderators.cache.map(moderator => `**${moderator.tag}**`)) ||
-      'none'
+    await Promise.allSettled([...this.moderators.cache.map(moderator => moderator.fetch())])
+    const moderatorsString = makeCommaSeparatedString(this.moderators.cache.map(moderator => {
+      return `**${moderator.tag ?? moderator.id}**`
+    })) || 'none'
 
     const embed = new MessageEmbed()
       .setColor(this.guild.primaryColor)
