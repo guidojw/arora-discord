@@ -98,18 +98,18 @@ class GuildTagManager extends BaseManager {
     return _tag ?? this.add(newData, false)
   }
 
-  resolve (idOrNameOrInstance) {
-    if (typeof idOrNameOrInstance === 'string') {
-      return this.cache.find(tag => tag.names.resolve(idOrNameOrInstance) !== null) || null
+  resolve (tag) {
+    if (typeof tag === 'string') {
+      return this.cache.find(otherTag => otherTag.names.resolve(tag) !== null) || null
     }
-    return super.resolve(idOrNameOrInstance)
+    return super.resolve(tag)
   }
 
-  resolveID (idOrNameOrInstance) {
-    if (typeof idOrNameOrInstance === 'string') {
-      return this.cache.find(tag => tag.names.resolve(idOrNameOrInstance) !== null)?.id ?? null
+  resolveID (tag) {
+    if (typeof tag === 'string') {
+      return this.cache.find(otherTag => otherTag.names.resolve(tag) !== null)?.id ?? null
     }
-    return super.resolveID(idOrNameOrInstance)
+    return super.resolveID(tag)
   }
 }
 

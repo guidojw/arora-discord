@@ -82,20 +82,20 @@ class GuildGroupManager extends BaseManager {
     return _group ?? this.add(newData, false)
   }
 
-  resolve (idOrNameOrInstance) {
-    if (typeof idOrNameOrInstance === 'string') {
-      idOrNameOrInstance = idOrNameOrInstance.toLowerCase()
-      return this.cache.find(group => group.name === idOrNameOrInstance) || null
+  resolve (group) {
+    if (typeof group === 'string') {
+      group = group.toLowerCase()
+      return this.cache.find(otherGroup => otherGroup.name === group) || null
     }
-    return super.resolve(idOrNameOrInstance)
+    return super.resolve(group)
   }
 
-  resolveID (idOrNameOrInstance) {
-    if (typeof idOrNameOrInstance === 'string') {
-      idOrNameOrInstance = idOrNameOrInstance.toLowerCase()
-      return this.cache.find(group => group.name === idOrNameOrInstance)?.id ?? null
+  resolveID (group) {
+    if (typeof group === 'string') {
+      group = group.toLowerCase()
+      return this.cache.find(otherGroup => otherGroup.name === group)?.id ?? null
     }
-    return super.resolveID(idOrNameOrInstance)
+    return super.resolveID(group)
   }
 }
 

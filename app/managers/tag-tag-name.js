@@ -48,21 +48,21 @@ class TagTagNameManager extends BaseManager {
     this.cache.delete(id)
   }
 
-  resolve (nameOrInstance) {
-    if (typeof nameOrInstance === 'string') {
-      nameOrInstance = nameOrInstance.toLowerCase()
-      return this.cache.find(tagName => tagName.name.toLowerCase() === nameOrInstance) || null
+  resolve (tagName) {
+    if (typeof tagName === 'string') {
+      tagName = tagName.toLowerCase()
+      return this.cache.find(otherTagName => otherTagName.name.toLowerCase() === tagName) || null
     }
     return super.resolve(nameOrInstance)
   }
 
-  resolveID (nameOrInstance) {
-    if (nameOrInstance instanceof this.holds) {
-      return nameOrInstance.name
+  resolveID (tagName) {
+    if (tagName instanceof this.holds) {
+      return tagName.name
     }
-    if (typeof nameOrInstance === 'string') {
-      nameOrInstance = nameOrInstance.toLowerCase()
-      return this.cache.find(tagName => tagName.name.toLowerCase() === nameOrInstance)?.name ?? nameOrInstance
+    if (typeof tagName === 'string') {
+      tagName = tagName.toLowerCase()
+      return this.cache.find(otherTagName => otherTagName.name.toLowerCase() === tagName)?.name ?? tagName
     }
     return null
   }
