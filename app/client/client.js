@@ -181,7 +181,7 @@ class NSadminClient extends CommandoClient {
 
   async login (token = this.token) {
     await super.login(token)
-    this.nsadminWs.connect()
+    this.nsadminWs?.connect()
   }
 
   bindEvent (eventName) {
