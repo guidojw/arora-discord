@@ -4,7 +4,7 @@ const messageHandler = (client, message) => {
     return
   }
   const guild = message.guild
-  if (!message.guild) {
+  if (!guild) {
     return
   }
 

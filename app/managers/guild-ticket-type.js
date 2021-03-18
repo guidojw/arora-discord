@@ -128,7 +128,8 @@ class GuildTicketTypeManager extends BaseManager {
     }
     const [, [newData]] = await TicketTypeModel.update(data, {
       where: { id: ticketType.id },
-      returning: true
+      returning: true,
+      individualHooks: true
     })
 
     const _ticketType = this.cache.get(ticketType.id)
