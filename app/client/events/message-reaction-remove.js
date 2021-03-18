@@ -1,5 +1,15 @@
 'use strict'
-const messageReactionRemoveHandler = (client, reaction, user) => {
+const messageReactionRemoveHandler = async (client, reaction, user) => {
+  if (user.bot) {
+    return
+  }
+  if (reaction.message.partial) {
+    await reaction.message.fetch()
+  }
+  if (!reaction.message.guild) {
+    return
+  }
+
   return client.handleRoleMessage('remove', reaction, user)
 }
 
