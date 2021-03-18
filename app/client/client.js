@@ -93,7 +93,7 @@ class NSadminClient extends CommandoClient {
     this.bindEvent('roleDelete')
 
     if (applicationConfig.apiEnabled) {
-      this.ws = new WebSocketManager(this)
+      this.nsadminWs = new WebSocketManager(this)
     }
 
     this.setActivity()
@@ -181,7 +181,7 @@ class NSadminClient extends CommandoClient {
 
   async login (token = this.token) {
     await super.login(token)
-    this.ws.connect()
+    this.nsadminWs.connect()
   }
 
   bindEvent (eventName) {

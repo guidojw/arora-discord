@@ -10,17 +10,17 @@ class WebSocketManager {
   }
 
   connect () {
-    this.ws = new WebSocket(`${this.host}/v1`, {
+    const ws = (this.connection = new WebSocket(`${this.host}/v1`, {
       headers: {
         Authorization: `Bearer ${process.env.TOKEN}`
       }
-    })
+    }))
 
-    this.ws.on('open', this.onOpen.bind(this))
-    this.ws.on('message', this.onMessage.bind(this))
-    this.ws.on('close', this.onClose.bind(this))
-    this.ws.on('error', this.onError.bind(this))
-    this.ws.on('ping', this.onPing.bind(this))
+    ws.on('open', this.onOpen.bind(this))
+    ws.on('message', this.onMessage.bind(this))
+    ws.on('ping', this.onPing.bind(this))
+    ws.on('error', this.onError.bind(this))
+    ws.on('close', this.onClose.bind(this))
   }
 
   onOpen () {
@@ -40,7 +40,7 @@ class WebSocketManager {
   }
 
   onError (error) {
-    this.client.emit('webhookError', error)
+    this.client.emit('webSocketError', error)
   }
 
   onPing () {
@@ -49,13 +49,17 @@ class WebSocketManager {
 
   heartbeat () {
     clearTimeout(this.pingTimeout)
-    this.pingTimeout = setTimeout(this.ws.terminate, 30000 + 1000)
+    this.pingTimeout = setTimeout(this.connection.terminate, 30000 + 1000)
   }
 
   handlePacket (packet) {
     if (packet && packetHandlers[packet.event]) {
       return packetHandlers[packet.event](this.client, packet)
     }
+  }
+
+  _cleanupConnection() {
+    this.connection.onopen = this.connection.onclose = this.connection.onerror = this.connection.onmessage = null
   }
 }
 
