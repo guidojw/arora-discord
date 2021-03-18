@@ -10,15 +10,15 @@ class RawPanelCommand extends BaseCommand {
       description: 'Posts the raw content of a panel.',
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
-        key: 'idOrName',
+        key: 'panel',
         prompt: 'What panel would you like to know the raw content of?',
         type: 'integer|string'
       }]
     })
   }
 
-  run (message, { idOrName }) {
-    const panel = message.guild.panels.resolve(idOrName)
+  run (message, { panel }) {
+    panel = message.guild.panels.resolve(panel)
     if (!panel) {
       return message.reply('Panel not found.')
     }

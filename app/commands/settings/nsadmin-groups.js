@@ -12,7 +12,7 @@ class PanelsCommand extends BaseCommand {
       description: 'Lists all role and channel groups.',
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
-        key: 'idOrName',
+        key: 'group',
         prompt: 'What group would you like to know the information of?',
         type: 'integer|string',
         default: ''
@@ -20,9 +20,9 @@ class PanelsCommand extends BaseCommand {
     })
   }
 
-  async run (message, { idOrName }) {
-    if (idOrName) {
-      const group = message.guild.groups.resolve(idOrName)
+  async run (message, { group }) {
+    if (group) {
+      group = message.guild.groups.resolve(group)
       if (!group) {
         return message.reply('Group not found.')
       }

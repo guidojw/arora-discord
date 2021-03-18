@@ -10,15 +10,15 @@ class DeleteTagCommand extends BaseCommand {
       description: 'Deletes a tag.',
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
-        key: 'idOrName',
+        key: 'tag',
         prompt: 'What tag would you like to delete?',
         type: 'integer|string'
       }]
     })
   }
 
-  async run (message, { idOrName }) {
-    await message.guild.tags.delete(idOrName)
+  async run (message, { tag }) {
+    await message.guild.tags.delete(tag)
 
     return message.reply('Successfully deleted tag.')
   }

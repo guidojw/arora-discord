@@ -10,7 +10,7 @@ class RemoveFromGroupCommand extends BaseCommand {
       description: 'Removes a channel|role from a group.',
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
-        key: 'idOrName',
+        key: 'group',
         prompt: 'From what group do you want to remove a channel|role?',
         type: 'integer|string'
       }, {
@@ -21,8 +21,8 @@ class RemoveFromGroupCommand extends BaseCommand {
     })
   }
 
-  async run (message, { idOrName, channelOrRole }) {
-    const group = message.guild.groups.resolve(idOrName)
+  async run (message, { group, channelOrRole }) {
+    group = message.guild.groups.resolve(group)
     if (!group) {
       return message.reply('Group not found.')
     }

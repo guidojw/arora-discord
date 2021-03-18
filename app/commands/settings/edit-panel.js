@@ -10,7 +10,7 @@ class EditPanelCommand extends BaseCommand {
       description: 'Edits a panel\'s content.',
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
-        key: 'idOrName',
+        key: 'panel',
         prompt: 'What panel would you like to edit?',
         type: 'integer|string'
       }, {
@@ -22,8 +22,8 @@ class EditPanelCommand extends BaseCommand {
     })
   }
 
-  async run (message, { idOrName, content }) {
-    const panel = await message.guild.panels.update(idOrName, { content })
+  async run (message, { panel, content }) {
+    panel = await message.guild.panels.update(panel, { content })
 
     return message.reply(`Successfully edited panel **${panel.name}**.`)
   }

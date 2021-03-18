@@ -9,15 +9,15 @@ class RawTagCommand extends BaseCommand {
       description: 'Posts the raw content of a tag.',
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
-        key: 'idOrName',
+        key: 'tag',
         type: 'integer|string',
         prompt: 'What tag would you like the raw content of?'
       }]
     })
   }
 
-  run (message, { idOrName }) {
-    const tag = message.guild.tags.resolve(idOrName)
+  run (message, { tag }) {
+    tag = message.guild.tags.resolve(tag)
     if (!tag) {
       return message.reply('Tag not found.')
     }

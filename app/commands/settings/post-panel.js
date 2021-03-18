@@ -10,7 +10,7 @@ class PostPanelCommand extends BaseCommand {
       description: 'Posts a panel in a channel.',
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
-        key: 'idOrName',
+        key: 'panel',
         prompt: 'What panel would you like to post?',
         type: 'integer|string'
       }, {
@@ -24,8 +24,8 @@ class PostPanelCommand extends BaseCommand {
     })
   }
 
-  async run (message, { idOrName, channel }) {
-    const panel = await message.guild.panels.post(idOrName, channel)
+  async run (message, { panel, channel }) {
+    panel = await message.guild.panels.post(panel, channel)
 
     return message.reply(channel
       ? `Successfully posted panel **${panel.name}** in ${channel}.`

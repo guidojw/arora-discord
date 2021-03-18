@@ -12,7 +12,7 @@ class PanelsCommand extends BaseCommand {
       description: 'Lists all panels.',
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
-        key: 'idOrName',
+        key: 'panel',
         prompt: 'What panel would you like to know the information of?',
         type: 'integer|string',
         default: ''
@@ -20,9 +20,9 @@ class PanelsCommand extends BaseCommand {
     })
   }
 
-  async run (message, { idOrName }) {
-    if (idOrName) {
-      const panel = message.guild.panels.resolve(idOrName)
+  async run (message, { panel }) {
+    if (panel) {
+      panel = message.guild.panels.resolve(panel)
       if (!panel) {
         return message.reply('Panel not found.')
       }

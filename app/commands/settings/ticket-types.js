@@ -12,17 +12,17 @@ class RoleBindingsCommand extends BaseCommand {
       description: 'Lists all ticket types.',
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
-        key: 'idOrName',
-        prompt: 'What ticket type ID would you like to know the information of?',
+        key: 'ticketType',
+        prompt: 'What ticket type would you like to know the information of?',
         type: 'integer|string',
         default: ''
       }]
     })
   }
 
-  async run (message, { idOrName }) {
-    if (idOrName) {
-      const ticketType = message.guild.ticketTypes.resolve(idOrName)
+  async run (message, { ticketType }) {
+    if (ticketType) {
+      ticketType = message.guild.ticketTypes.resolve(ticketType)
       if (!ticketType) {
         return message.reply('Ticket type not found.')
       }
