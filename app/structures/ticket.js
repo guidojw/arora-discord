@@ -138,16 +138,10 @@ class Ticket extends BaseStructure {
   }
 
   async logRating (rating) {
-    if (this.author.partial) {
-      try {
-        await this.author.fetch()
-      } catch {} // eslint-disable-line no-empty
-    }
-    await Promise.allSettled([...this.moderators.cache.map(moderator => {
-      if (moderator.partial) {
-        return moderator.fetch()
-      }
-    })])
+    await Promise.allSettled([
+      this.author.partial && this.author.fetch(),
+      ...this.moderators.cache.map(moderator => moderator.partial && moderator.fetch())
+    ])
     const moderatorsString = makeCommaSeparatedString(this.moderators.cache.map(moderator => {
       return `**${moderator.user.tag ?? moderator.id}**`
     })) || 'none'
