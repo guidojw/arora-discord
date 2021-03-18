@@ -10,6 +10,27 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     }
   }, {
+    hooks: {
+      beforeUpdate: async panel => {
+        if (panel.changed('channelId') && panel.channelId) {
+          await sequelize.models.Channel.findOrCreate({
+            where: {
+              id: panel.channelId,
+              guildId: panel.guildId
+            }
+          })
+        }
+        if (panel.changed('messageId') && panel.messageId) {
+          await sequelize.models.Message.findOrCreate({
+            where: {
+              id: panel.messageId,
+              channelId: panel.channelId,
+              guildId: panel.guildId
+            }
+          })
+        }
+      }
+    },
     tableName: 'panels'
   })
 

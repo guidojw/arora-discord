@@ -18,6 +18,18 @@ module.exports = (sequelize, DataTypes) => {
         }
       }
     },
+    hooks: {
+      beforeUpdate: ticketType => {
+        if (ticketType.changed('emojiId') && ticketType.emojiId) {
+          return sequelize.models.Emoji.findOrCreate({
+            where: {
+              id: ticketType.emojiId,
+              guildId: ticketType.guildId
+            }
+          })
+        }
+      }
+    },
     tableName: 'ticket_types'
   })
 

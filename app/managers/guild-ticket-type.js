@@ -2,7 +2,7 @@
 const BaseManager = require('./base')
 
 const { GuildEmoji } = require('discord.js')
-const { Emoji, TicketType: TicketTypeModel } = require('../models')
+const { TicketType: TicketTypeModel } = require('../models')
 const { TicketType } = require('../structures')
 
 class GuildTicketTypeManager extends BaseManager {
@@ -120,17 +120,7 @@ class GuildTicketTypeManager extends BaseManager {
         .remove(this.client.user)
     }
     if (typeof emoji !== 'undefined') {
-      if (emoji instanceof GuildEmoji) {
-        data.emojiId = emoji.id
-        await Emoji.findOrCreate({
-          where: {
-            id: emoji.id,
-            guildId: this.guild.id
-          }
-        })
-      } else {
-        data.emoji = emoji
-      }
+      data.emojiId = emoji instanceof GuildEmoji ? emoji.id : emoji
       if (panel.message.partial) {
         await panel.message.fetch()
       }

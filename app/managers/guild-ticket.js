@@ -2,7 +2,7 @@
 const BaseManager = require('./base')
 
 const { GuildEmoji, MessageEmbed, TextChannel } = require('discord.js')
-const { Channel, Member, Ticket: TicketModel } = require('../models')
+const { Ticket: TicketModel } = require('../models')
 const { Ticket } = require('../structures')
 
 const TICKETS_INTERVAL = 60 * 1000
@@ -35,18 +35,6 @@ class GuildTicketManager extends BaseManager {
     const channel = await this.guild.channels.create(channelName, { parent: this.guild.ticketsCategory })
     await channel.updateOverwrite(author, { VIEW_CHANNEL: true })
 
-    await Channel.findOrCreate({
-      where: {
-        id: channel.id,
-        guildId: this.guild.id
-      }
-    })
-    await Member.findOrCreate({
-      where: {
-        id: author.id,
-        guildId: this.guild.id
-      }
-    })
     const newData = await TicketModel.create({
       authorId: author.id,
       guildId: this.guild.id,
@@ -110,7 +98,7 @@ class GuildTicketManager extends BaseManager {
     const ticketType = this.guild.ticketTypes.cache.find(ticketType => {
       return ticketType.panel?.message?.id === reaction.message.id && reaction.emoji instanceof GuildEmoji
         ? ticketType.emoji instanceof GuildEmoji && reaction.emoji.id === ticketType.emoji?.id
-        : !(ticketType.emoji instanceof GuildEmoji) && reaction.emoji.name === ticketType.emoji.name
+        : !(ticketType.emoji instanceof GuildEmoji) && reaction.emoji.name === ticketType.emoji
     })
     if (ticketType) {
       await reaction.users.remove(user)

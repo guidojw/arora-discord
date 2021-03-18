@@ -1,6 +1,24 @@
 'use strict'
 module.exports = sequelize => {
   const Ticket = sequelize.define('Ticket', {}, {
+    hooks: {
+      beforeCreate: ticket => {
+        return Promise.all([
+          sequelize.models.Channel.findOrCreate({
+            where: {
+              id: ticket.channelId,
+              guildId: ticket.guildId
+            }
+          }),
+          sequelize.models.Member.findOrCreate({
+            where: {
+              id: ticket.authorId,
+              guildId: ticket.guildId
+            }
+          })
+        ])
+      }
+    },
     tableName: 'tickets'
   })
 

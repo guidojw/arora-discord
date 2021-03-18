@@ -2,7 +2,7 @@
 const BaseManager = require('./base')
 
 const { MessageEmbed } = require('discord.js')
-const { Channel, Message, Panel: PanelModel } = require('../models')
+const { Panel: PanelModel } = require('../models')
 const { discordService } = require('../services')
 const { Panel } = require('../structures')
 
@@ -116,23 +116,11 @@ class GuildPanelManager extends BaseManager {
     if (typeof channel !== 'undefined') {
       const newMessage = await channel.send(panel.embed)
       data.messageId = newMessage.id
-      await Channel.findOrCreate({
-        where: {
-          id: channel.id,
-          guildId: this.guild.id
-        }
-      })
-      await Message.findOrCreate({
-        where: {
-          id: newMessage.id,
-          channelId: channel.id,
-          guildId: this.guild.id
-        }
-      })
     }
     const [, [newData]] = await PanelModel.update(data, {
       where: { id: panel.id },
-      returning: true
+      returning: true,
+      individualHooks: true
     })
 
     const _panel = this.cache.get(panel.id)
