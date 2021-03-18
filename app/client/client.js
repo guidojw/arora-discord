@@ -29,16 +29,16 @@ class NSadminClient extends CommandoClient {
     if (!options.partials) {
       options.partials = []
     }
-    if (!options.partials.some(partial => partial === 'GUILD_MEMBER')) {
+    if (!options.partials.includes('GUILD_MEMBER')) {
       options.partials.push('GUILD_MEMBER')
     }
-    if (!options.partials.some(partial => partial === 'REACTION')) {
+    if (!options.partials.includes('REACTION')) {
       options.partials.push('REACTION')
     }
-    if (!options.partials.some(partial => partial === 'MESSAGE')) {
+    if (!options.partials.includes('MESSAGE')) {
       options.partials.push('MESSAGE')
     }
-    if (!options.partials.some(partial => partial === 'USER')) {
+    if (!options.partials.includes('USER')) {
       options.partials.push('USER')
     }
     super(options)
