@@ -57,10 +57,6 @@ class WebSocketManager {
       return packetHandlers[packet.event](this.client, packet)
     }
   }
-
-  _cleanupConnection() {
-    this.connection.onopen = this.connection.onclose = this.connection.onerror = this.connection.onmessage = null
-  }
 }
 
 module.exports = WebSocketManager
