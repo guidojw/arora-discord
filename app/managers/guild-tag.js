@@ -42,9 +42,16 @@ class GuildTagManager extends BaseManager {
       }
     }
 
-    const newData = await TagModel.create({ guildId: this.guild.id, content })
-    await newData.createName({ name })
-    await newData.reload()
+    const newData = await TagModel.create({
+      guildId: this.guild.id,
+      content,
+      names: [{ name }]
+    }, {
+      include: [{
+        model: TagName,
+        as: 'names'
+      }]
+    })
 
     return this.add(newData)
   }

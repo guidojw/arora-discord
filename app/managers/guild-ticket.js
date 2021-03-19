@@ -41,7 +41,6 @@ class GuildTicketManager extends BaseManager {
       channelId: channel.id,
       typeId: type.id
     })
-    await newData.reload()
     const ticket = this.add(newData)
 
     this.guild.log(
