@@ -22,7 +22,7 @@ class TagTagNameManager extends BaseManager {
       throw new Error('A tag with that name already exists.')
     }
     if (name === 'all' ||
-      this.client.registry.commands.some(command => command.name === name || command.aliases?.includes(name))) {
+      this.client.registry.commands.some(command => command.name === name || command.aliases.includes(name))) {
       throw new Error('Not allowed, name is reserved.')
     }
 

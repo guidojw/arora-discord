@@ -9,7 +9,7 @@ const messageHandler = (client, message) => {
   }
 
   if (message.content.startsWith(guild.commandPrefix)) {
-    const tagCommand = client.registry.resolveCommand('tag')
+    const tagCommand = client.registry.commands.find(command => command.name === 'tag')
     if (tagCommand.isEnabledIn(guild)) {
       const name = message.content.slice(guild.commandPrefix.length)
       const tag = guild.tags.resolve(name)
