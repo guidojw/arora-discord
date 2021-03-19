@@ -12,16 +12,16 @@ class TagCommand extends BaseCommand {
       examples: ['tag rr'],
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
-        key: 'idOrName',
+        key: 'tag',
         type: 'integer|string',
         prompt: 'What tag would you like to check out?'
       }]
     })
   }
 
-  run (message, { idOrName }) {
-    if (idOrName !== 'all') {
-      const tag = message.guild.tags.resolve(idOrName)
+  run (message, { tag }) {
+    if (tag !== 'all') {
+      tag = message.guild.tags.resolve(tag)
       if (!tag) {
         return message.reply('Tag not found.')
       }
