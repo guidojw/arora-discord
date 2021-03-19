@@ -15,15 +15,29 @@ class TicketType extends BaseStructure {
     this.name = data.name
     this._emoji = data.emoji
     this._emojiId = data.emojiId
-    this.panelId = data.panelId
+    this.messageId = data.message?.id || null
+    this.channelId = data.message?.channelId || null
+  }
+
+  get channel () {
+    return this.guild.channels.cache.get(this.channelId) || null
   }
 
   get emoji () {
     return this._emoji || this.guild.emojis.cache.get(this._emojiId) || null
   }
 
-  get panel () {
-    return this.guild.panels.cache.get(this.panelId) || null
+  get emojiId () {
+    return this._emoji || this._emojiId
+  }
+
+  get message () {
+    return this.messageId !== null
+      ? this.channel?.messages.cache.get(this.messageId) ||
+      (this.client.options.partials.includes('MESSAGE')
+        ? this.channel?.messages.add({ id: this.messageId })
+        : null)
+      : null
   }
 
   update (data) {

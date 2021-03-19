@@ -108,14 +108,6 @@ module.exports = {
         type: Sequelize.BIGINT,
         allowNull: false,
         field: 'guild_id'
-      },
-      channelId: {
-        type: Sequelize.BIGINT,
-        references: {
-          model: 'channels',
-          key: 'id'
-        },
-        field: 'channel_id'
       }
     })
 
@@ -333,13 +325,13 @@ module.exports = {
         },
         field: 'emoji_id'
       },
-      panelId: {
-        type: Sequelize.INTEGER,
+      messageId: {
+        type: Sequelize.BIGINT,
         references: {
-          model: 'panels',
+          model: 'messages',
           key: 'id'
         },
-        field: 'panel_id'
+        field: 'message_id'
       }
     })
 

@@ -19,9 +19,18 @@ module.exports = (sequelize, DataTypes) => {
       }
     },
     hooks: {
-      beforeUpdate: ticketType => {
+      beforeUpdate: async (ticketType, { channelId }) => {
+        if (ticketType.changed('messageId') && ticketType.messageId) {
+          await sequelize.models.Message.findOrCreate({
+            where: {
+              id: ticketType.messageId,
+              channelId: channelId,
+              guildId: ticketType.guildId
+            }
+          })
+        }
         if (ticketType.changed('emojiId') && ticketType.emojiId) {
-          return sequelize.models.Emoji.findOrCreate({
+          await sequelize.models.Emoji.findOrCreate({
             where: {
               id: ticketType.emojiId,
               guildId: ticketType.guildId
@@ -48,14 +57,24 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: null
       }
     })
-    TicketType.belongsTo(models.Panel, {
-      foreignKey: 'panelId'
+    TicketType.belongsTo(models.Message, {
+      foreignKey: 'messageId',
+      as: 'message'
     })
     TicketType.hasMany(models.Ticket, {
       foreignKey: {
         name: 'typeId',
         allowNull: false
       }
+    })
+  }
+
+  TicketType.loadScopes = models => {
+    TicketType.addScope('defaultScope', {
+      include: [{
+        model: models.Message,
+        as: 'message'
+      }]
     })
   }
 

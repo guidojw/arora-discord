@@ -51,8 +51,6 @@ class GuildGroupManager extends BaseManager {
 
     await GroupModel.destroy({ where: { id: group.id } })
     this.cache.delete(group.id)
-
-    return group
   }
 
   async update (group, data) {

@@ -45,7 +45,7 @@ class Ticket extends BaseStructure {
     return this.guild.channels.cache.get(this.channelId) || null
   }
 
-  get ticketType () {
+  get type () {
     return this.guild.ticketTypes.cache.get(this.typeId)
   }
 

@@ -18,9 +18,9 @@ class CreateTicketTypeCommand extends BaseCommand {
   }
 
   async run (message, { name }) {
-    const ticketType = await message.guild.ticketTypes.create(name)
+    const type = await message.guild.ticketTypes.create(name)
 
-    return message.reply(`Successfully created ticket type **${ticketType.name}**.`)
+    return message.reply(`Successfully created ticket type **${type.name}**.`)
   }
 }
 

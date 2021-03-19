@@ -16,8 +16,8 @@ class Panel extends BaseStructure {
     this.id = data.id
     this.name = data.name
     this.content = data.content
-    this.channelId = data.channelId
-    this.messageId = data.messageId
+    this.messageId = data.message?.id || null
+    this.channelId = data.message?.channelId || null
   }
 
   get embed () {

@@ -21,17 +21,17 @@ class GuildTicketManager extends BaseManager {
     return super.add(data, cache, { extras: [this.guild] })
   }
 
-  async create ({ author, ticketType }) {
+  async create ({ author, type }) {
     author = this.guild.members.resolve(author)
     if (!author) {
       throw new Error('Invalid author.')
     }
-    ticketType = this.guild.ticketTypes.resolve(ticketType)
-    if (!ticketType) {
+    type = this.guild.ticketTypes.resolve(type)
+    if (!type) {
       throw new Error('Invalid ticket type.')
     }
 
-    const channelName = `${ticketType.name}-${author.user.username}`
+    const channelName = `${type.name}-${author.user.username}`
     const channel = await this.guild.channels.create(channelName, { parent: this.guild.ticketsCategory })
     await channel.updateOverwrite(author, { VIEW_CHANNEL: true })
 
@@ -39,7 +39,7 @@ class GuildTicketManager extends BaseManager {
       authorId: author.id,
       guildId: this.guild.id,
       channelId: channel.id,
-      typeId: ticketType.id
+      typeId: type.id
     })
     await newData.reload()
     const ticket = this.add(newData)
@@ -95,12 +95,12 @@ class GuildTicketManager extends BaseManager {
   }
 
   async onMessageReactionAdd (reaction, user) {
-    const ticketType = this.guild.ticketTypes.cache.find(ticketType => {
-      return ticketType.panel?.message?.id === reaction.message.id && reaction.emoji instanceof GuildEmoji
-        ? ticketType.emoji instanceof GuildEmoji && reaction.emoji.id === ticketType.emoji?.id
-        : !(ticketType.emoji instanceof GuildEmoji) && reaction.emoji.name === ticketType.emoji
+    const type = this.guild.ticketTypes.cache.find(type => {
+      return type.message?.id === reaction.message.id && type.emoji && reaction.emoji instanceof GuildEmoji
+        ? type.emoji instanceof GuildEmoji && reaction.emoji.id === type.emojiId
+        : !(type.emoji instanceof GuildEmoji) && reaction.emoji.name === type.emojiId
     })
-    if (ticketType) {
+    if (type) {
       await reaction.users.remove(user)
 
       if (!this.debounces.has(user.id)) {
@@ -117,7 +117,7 @@ class GuildTicketManager extends BaseManager {
             return this.client.send(user, embed)
           }
 
-          const ticket = await this.create({ author: user, ticketType })
+          const ticket = await this.create({ author: user, type })
           ticket.populateChannel()
           ticket.timeout = this.client.setTimeout(ticket.close.bind(this, 'Timeout: ticket closed'), SUBMISSION_TIME)
         } else {

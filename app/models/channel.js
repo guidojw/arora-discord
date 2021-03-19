@@ -38,9 +38,6 @@ module.exports = (sequelize, DataTypes) => {
       otherKey: 'fromChannelId',
       as: 'toLinks'
     })
-    Channel.hasMany(models.Panel, {
-      foreignKey: 'channelId'
-    })
     Channel.hasMany(models.Message, {
       foreignKey: {
         name: 'channelId',

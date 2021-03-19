@@ -6,6 +6,16 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true
     }
   }, {
+    hooks: {
+      beforeCreate: message => {
+        return sequelize.models.Channel.findOrCreate({
+          where: {
+            id: message.channelId,
+            guildId: message.guildId
+          }
+        })
+      }
+    },
     tableName: 'messages'
   })
 

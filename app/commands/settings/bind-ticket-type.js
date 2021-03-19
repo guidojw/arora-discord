@@ -6,47 +6,43 @@ class BindTicketTypeCommand extends BaseCommand {
     super(client, {
       group: 'settings',
       name: 'bindtickettype',
-      aliases: ['bindtickettype'],
-      description: 'Binds a ticket type to a panel and connects a reaction.',
+      aliases: ['bindtickettype', 'bindtt', 'bndtt'],
+      description: 'Binds a ticket type to a message and connects a reaction.',
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
-        key: 'ticketType',
+        key: 'type',
         prompt: 'What ticket type would you like to bind?',
         type: 'integer|string'
       }, {
-        key: 'panel',
-        prompt: 'To what panel would you like to bind this ticket type?. Reply with "none" if you want to unbind the ' +
-          'ticket type.',
-        type: 'integer|string',
-        validate: validateNoneOrType,
-        parse: parseNoneOrType
+        key: 'message',
+        prompt: 'To what message would you like to bind this ticket type?',
+        type: 'string',
+        validate: validateMessage
+      }, {
+        key: 'channel',
+        prompt: 'In what channel is this message?',
+        type: 'text-channel'
       }, {
         key: 'emoji',
-        prompt: 'What emoji would you like to bind to this ticket type? Reply with "none" if you replied with none ' +
-          'on the previous prompt as well.',
-        type: 'custom-emoji|default-emoji',
-        validate: validateNoneOrType,
-        parse: parseNoneOrType
+        prompt: 'What emoji would you like to bind to this ticket type?',
+        type: 'custom-emoji|default-emoji'
       }]
     })
   }
 
-  async run (message, { ticketType, panel, emoji }) {
-    ticketType = await message.guild.ticketTypes.bind(ticketType, panel, emoji)
+  async run (message, { type, message: bindMessage, channel, emoji }) {
+    type = await message.guild.ticketTypes.bind(type, channel, bindMessage, emoji)
 
-    return message.reply(ticketType.panel
-      ? `Successfully bound ticket type **${ticketType.name}** to emoji **${emoji}** on panel **${ticketType.panel.name}**.`
-      : `Successfully unbound ticket type **${ticketType.name}** from panel.`
-    )
+    return message.reply(`Successfully bound ticket type **${type.name}** to emoji **${emoji}** on message **${message.id}**.`)
   }
 }
 
-function validateNoneOrType (val, msg) {
-  return val === 'none' || this.type.validate(val, msg, this)
-}
-
-function parseNoneOrType (val, msg) {
-  return val === 'none' ? undefined : this.type.parse(val, msg, this)
+function validateMessage (val, msg) {
+  const valid = this.type.validate(val, msg, this)
+  if (!valid || typeof valid === 'string') {
+    return valid
+  }
+  return /^[0-9]+$/.test(val) || 'Message must be a snowflake ID.'
 }
 
 module.exports = BindTicketTypeCommand

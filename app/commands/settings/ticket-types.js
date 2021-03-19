@@ -12,7 +12,7 @@ class RoleBindingsCommand extends BaseCommand {
       description: 'Lists all ticket types.',
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
-        key: 'ticketType',
+        key: 'type',
         prompt: 'What ticket type would you like to know the information of?',
         type: 'integer|string',
         default: ''
@@ -20,15 +20,15 @@ class RoleBindingsCommand extends BaseCommand {
     })
   }
 
-  async run (message, { ticketType }) {
-    if (ticketType) {
-      ticketType = message.guild.ticketTypes.resolve(ticketType)
-      if (!ticketType) {
+  async run (message, { type }) {
+    if (type) {
+      type = message.guild.ticketTypes.resolve(type)
+      if (!type) {
         return message.reply('Ticket type not found.')
       }
 
       const embed = new MessageEmbed()
-        .addField(`Ticket Type ${ticketType.id}`, `**${ticketType.name}**`)
+        .addField(`Ticket Type ${type.id}`, `**${type.name}**`)
         .setColor(message.guild.primaryColor)
       return message.replyEmbed(embed)
     } else {
@@ -48,8 +48,8 @@ class RoleBindingsCommand extends BaseCommand {
   }
 }
 
-function getTicketTypeRow ([, ticketType]) {
-  return `${ticketType.id}. **${ticketType.name}**`
+function getTicketTypeRow ([, type]) {
+  return `${type.id}. **${type.name}**`
 }
 
 module.exports = RoleBindingsCommand

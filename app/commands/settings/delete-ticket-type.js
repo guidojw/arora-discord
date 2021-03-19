@@ -6,19 +6,19 @@ class DeleteTicketTypeCommand extends BaseCommand {
     super(client, {
       group: 'settings',
       name: 'deletetickettype',
-      aliases: ['deltickettype'],
+      aliases: ['deltickettype', 'deletett', 'deltt'],
       description: 'Deletes a ticket type.',
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
-        key: 'ticketType',
+        key: 'type',
         prompt: 'What ticket type would you like to delete?',
         type: 'integer|string'
       }]
     })
   }
 
-  async run (message, { ticketType }) {
-    await message.guild.ticketTypes.delete(ticketType)
+  async run (message, { type }) {
+    await message.guild.ticketTypes.delete(type)
 
     return message.reply('Successfully deleted ticket type.')
   }

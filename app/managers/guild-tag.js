@@ -23,8 +23,7 @@ class GuildTagManager extends BaseManager {
       throw new Error('A tag with that name already exists.')
     }
     const first = name.split(/ +/)[0]
-    if (name === 'all' ||
-      this.client.registry.commands.some(command => command.name === first || command.aliases?.includes(first))) {
+    if (name === 'all' || this.client.registry.resolveCommand(first)) {
       throw new Error('Not allowed, name is reserved.')
     }
     if (typeof content !== 'string') {

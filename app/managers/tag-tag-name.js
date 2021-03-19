@@ -53,7 +53,7 @@ class TagTagNameManager extends BaseManager {
       tagName = tagName.toLowerCase()
       return this.cache.find(otherTagName => otherTagName.name.toLowerCase() === tagName) || null
     }
-    return super.resolve(nameOrInstance)
+    return super.resolve(tagName)
   }
 
   resolveID (tagName) {

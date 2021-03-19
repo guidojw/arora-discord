@@ -27,29 +27,28 @@ class GuildTicketTypeManager extends BaseManager {
     return this.add(newData)
   }
 
-  async delete (ticketType) {
-    ticketType = this.resolve(ticketType)
-    if (!ticketType) {
+  async delete (type) {
+    type = this.resolve(type)
+    if (!type) {
       throw new Error('Invalid ticket type.')
     }
-    if (!this.cache.has(ticketType.id)) {
+    if (!this.cache.has(type.id)) {
       throw new Error('Ticket type not found.')
     }
 
-    if (ticketType.emoji && ticketType.panel?.message) {
-      if (ticketType.panel.message.partial) {
-        await ticketType.panel.message.fetch()
+    if (type.emoji && type.message) {
+      if (type.message.partial) {
+        await type.message.fetch()
       }
-      await ticketType.panel.message.reactions.resolve(ticketType.emoji.id || ticketType.emoji)?.users
-        .remove(this.client.user)
+      await type.message.reactions.resolve(type.emojiId)?.users.remove(this.client.user)
     }
 
-    await TicketTypeModel.destroy({ where: { id: ticketType.id } })
-    this.cache.delete(ticketType.id)
+    await TicketTypeModel.destroy({ where: { id: type.id } })
+    this.cache.delete(type.id)
   }
 
-  async update (ticketType, data) {
-    const id = this.resolveID(ticketType)
+  async update (type, data) {
+    const id = this.resolveID(type)
     if (!id) {
       throw new Error('Invalid ticket type.')
     }
@@ -70,95 +69,117 @@ class GuildTicketTypeManager extends BaseManager {
       returning: true
     })
 
-    const _ticketType = this.cache.get(id)
-    _ticketType?._setup(newData)
-    return _ticketType ?? this.add(newData, false)
+    const _type = this.cache.get(id)
+    _type?._setup(newData)
+    return _type ?? this.add(newData, false)
   }
 
-  async bind (ticketType, panel, emoji) {
-    ticketType = this.resolve(ticketType)
-    if (!ticketType) {
+  async bind (type, channel, message, emoji) {
+    type = this.resolve(type)
+    if (!type) {
       throw new Error('Invalid ticket type.')
     }
-    if (!this.cache.has(ticketType.id)) {
+    if (!this.cache.has(type.id)) {
       throw new Error('Ticket type not found.')
     }
-    if ((typeof panel === 'undefined') !== (typeof emoji === 'undefined')) {
-      throw new Error('Either both panel and emoji have to be specified or none.')
+    channel = this.guild.channels.resolve(channel)
+    if (!channel) {
+      throw new Error('Invalid channel.')
     }
-    if (typeof panel !== 'undefined') {
-      panel = this.guild.panels.resolve(panel)
-      if (!panel) {
-        throw new Error('Invalid panel.')
+    message = channel.messages.resolve(message) ?? message
+    try {
+      if (message.partial) {
+        message = await message.fetch()
+      } else if (typeof message === 'string') {
+        message = await channel.messages.fetch(message)
       }
-      if (!panel.message) {
-        throw new Error('Can only bind ticket types to posted panels.')
-      }
+    } catch {} // eslint-disable-line no-empty
+    if (!message) {
+      throw new Error('Invalid message.')
     }
-    if (typeof emoji !== 'undefined') {
-      if (emoji instanceof GuildEmoji) {
-        emoji = this.guild.emojis.resolve(emoji)
-      } else {
-        const valid = this.client.registry.types.get('default-emoji').validate(emoji, null, {})
-        emoji = !valid || typeof valid === 'string' ? null : emoji
-      }
-      if (!emoji) {
-        throw new Error('Invalid emoji.')
-      }
+    if (emoji instanceof GuildEmoji) {
+      emoji = this.guild.emojis.resolve(emoji)
+    } else {
+      const valid = this.client.registry.types.get('default-emoji').validate(emoji, null, {})
+      emoji = !valid || typeof valid === 'string' ? null : emoji
+    }
+    if (!emoji) {
+      throw new Error('Invalid emoji.')
     }
 
     const data = {
-      panelId: panel?.id ?? null,
+      messageId: message.id,
+      emojiId: emoji instanceof GuildEmoji ? emoji.id : null,
+      emoji: !(emoji instanceof GuildEmoji) ? emoji : null
+    }
+    if (type.emoji && type.message) {
+      if (type.message.partial) {
+        await type.message.fetch()
+      }
+      await type.message.reactions.resolve(type.emojiId)?.users.remove(this.client.user)
+    }
+    await message.react(emoji)
+    const [, [newData]] = await TicketTypeModel.update(data, {
+      where: { id: type.id },
+      channelId: channel?.id ?? null,
+      returning: true,
+      individualHooks: true
+    })
+    await newData.reload()
+
+    const _type = this.cache.get(type.id)
+    _type?._setup(newData)
+    return _type ?? this.add(newData, false)
+  }
+
+  async unbind (type) {
+    type = this.resolve(type)
+    if (!type) {
+      throw new Error('Invalid ticket type.')
+    }
+    if (!this.cache.has(type.id)) {
+      throw new Error('Ticket type not found.')
+    }
+
+    if (type.emoji && type.message) {
+      if (type.message.partial) {
+        await type.message.fetch()
+      }
+      await type.message.reactions.resolve(type.emojiId)?.users.remove(this.client.user)
+    }
+    const [, [newData]] = await TicketTypeModel.update({
+      messageId: null,
       emojiId: null,
       emoji: null
-    }
-    if (ticketType.emoji && ticketType.panel?.message) {
-      if (ticketType.panel.message.partial) {
-        await ticketType.panel.message.fetch()
-      }
-      await ticketType.panel.message.reactions.resolve(ticketType.emoji.id || ticketType.emoji)?.users
-        .remove(this.client.user)
-    }
-    if (typeof emoji !== 'undefined') {
-      if (emoji instanceof GuildEmoji) {
-        data.emojiId = emoji.id
-      } else {
-        data.emoji = emoji
-      }
-      if (panel.message.partial) {
-        await panel.message.fetch()
-      }
-      await panel.message.react(emoji)
-    }
-    const [, [newData]] = await TicketTypeModel.update(data, {
-      where: { id: ticketType.id },
+    }, {
+      where: { id: type.id },
       returning: true,
       individualHooks: true
     })
 
-    const _ticketType = this.cache.get(ticketType.id)
-    _ticketType?._setup(newData)
-    return _ticketType ?? this.add(newData, false)
+    const _type = this.cache.get(type.id)
+    _type?._setup(newData)
+    return _type ?? this.add(newData, false)
   }
 
-  resolve (ticketType) {
-    if (typeof ticketType === 'string') {
-      ticketType = ticketType.toLowerCase().replace(/\s/g, '')
-      return this.cache.find(otherTicketType => {
-        return otherTicketType.name.toLowerCase().replace(/\s/g, '') === ticketType
+  resolve (type) {
+    if (typeof type === 'string') {
+      type = type.toLowerCase().replace(/\s/g, '')
+      return this.cache.find(otherType => {
+        return otherType.name.toLowerCase().replace(/\s/g, '') === type
       }) || null
     }
-    return super.resolve(ticketType)
+    return super.resolve(type)
   }
 
-  resolveID (ticketType) {
-    if (typeof ticketType === 'string') {
-      ticketType = ticketType.toLowerCase().replace(/\s/g, '')
-      return this.cache.find(otherTicketType => {
-        return otherTicketType.name.toLowerCase().replace(/\s/g, '') === ticketType
+  resolveID (type) {
+    if (typeof type === 'string') {
+      type = type.toLowerCase().replace(/\s/g, '')
+      return this.cache.find(otherType => {
+        return otherType.name.toLowerCase().replace(/\s/g, '') === type
       })?.id ?? null
     }
-    return super.resolveID(ticketType)
+    return super.resolveID(type)
   }
 }
 

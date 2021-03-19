@@ -11,20 +11,12 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {
     hooks: {
-      beforeUpdate: async panel => {
-        if (panel.changed('channelId') && panel.channelId) {
-          await sequelize.models.Channel.findOrCreate({
-            where: {
-              id: panel.channelId,
-              guildId: panel.guildId
-            }
-          })
-        }
+      beforeUpdate: async (panel, { channelId }) => {
         if (panel.changed('messageId') && panel.messageId) {
           await sequelize.models.Message.findOrCreate({
             where: {
               id: panel.messageId,
-              channelId: panel.channelId,
+              channelId: channelId,
               guildId: panel.guildId
             }
           })
@@ -44,10 +36,8 @@ module.exports = (sequelize, DataTypes) => {
     })
     Panel.belongsTo(models.Message, {
       foreignKey: 'messageId',
-      unique: true
-    })
-    Panel.belongsTo(models.Channel, {
-      foreignKey: 'channelId'
+      unique: true,
+      as: 'message'
     })
     Panel.hasOne(models.Guild, {
       foreignKey: 'trainingsInfoPanelId'
@@ -55,8 +45,14 @@ module.exports = (sequelize, DataTypes) => {
     Panel.hasOne(models.Guild, {
       foreignKey: 'trainingsPanelId'
     })
-    Panel.hasOne(models.TicketType, {
-      foreignKey: 'panelId'
+  }
+
+  Panel.loadScopes = models => {
+    Panel.addScope('defaultScope', {
+      include: [{
+        model: models.Message,
+        as: 'message'
+      }]
     })
   }
 

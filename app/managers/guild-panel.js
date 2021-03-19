@@ -110,15 +110,15 @@ class GuildPanelManager extends BaseManager {
     }
 
     const data = {
-      channelId: channel?.id ?? null,
       messageId: null
     }
     if (typeof channel !== 'undefined') {
-      const newMessage = await channel.send(panel.embed)
-      data.messageId = newMessage.id
+      const message = await channel.send(panel.embed)
+      data.messageId = message.id
     }
     const [, [newData]] = await PanelModel.update(data, {
       where: { id: panel.id },
+      channelId: channel?.id ?? null,
       returning: true,
       individualHooks: true
     })
