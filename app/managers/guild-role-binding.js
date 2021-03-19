@@ -23,7 +23,7 @@ class GuildRoleBindingManager extends BaseManager {
     if (!role) {
       throw new Error('Invalid role.')
     }
-    if (max !== null && max < min) {
+    if (typeof max !== 'undefined' && max < min) {
       [min, max] = [max, min]
     }
     if (this.cache.some(roleBinding => {
@@ -36,8 +36,8 @@ class GuildRoleBindingManager extends BaseManager {
       robloxGroupId: this.guild.robloxGroupId,
       guildId: this.guild.id,
       roleId: role.id,
-      min,
-      max
+      max: max ?? null,
+      min
     })
 
     return this.add(newData)

@@ -49,7 +49,7 @@ function validateMax (val, msg) {
 }
 
 function parseMax (val, msg) {
-  return val === 'none' ? null : this.type.parse(val, msg, this)
+  return val === 'none' ? undefined : this.type.parse(val, msg, this)
 }
 
 function getRangeString (min, max) {
