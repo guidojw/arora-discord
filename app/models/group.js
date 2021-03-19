@@ -69,8 +69,7 @@ module.exports = (sequelize, DataTypes) => {
       }, {
         model: models.PermissionOverwrite,
         as: 'permissionOverwrites'
-      }],
-      subQuery: false
+      }]
     })
   }
 

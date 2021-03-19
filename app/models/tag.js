@@ -31,8 +31,7 @@ module.exports = (sequelize, DataTypes) => {
       include: [{
         model: models.TagName,
         as: 'names'
-      }],
-      subQuery: false
+      }]
     })
   }
 

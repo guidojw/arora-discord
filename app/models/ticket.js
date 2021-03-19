@@ -60,8 +60,7 @@ module.exports = sequelize => {
         model: models.Member,
         as: 'moderators',
         through: { attributes: [] }
-      }],
-      subQuery: false
+      }]
     })
   }
 

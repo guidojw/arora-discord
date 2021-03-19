@@ -53,8 +53,7 @@ module.exports = (sequelize, DataTypes) => {
       include: [{
         model: models.Permission,
         as: 'permissions'
-      }],
-      subQuery: false
+      }]
     })
   }
 

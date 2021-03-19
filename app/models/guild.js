@@ -216,8 +216,7 @@ module.exports = (sequelize, DataTypes) => {
       }, {
         model: models.TicketType,
         as: 'ticketTypes'
-      }],
-      subQuery: false
+      }]
     })
   }
 
