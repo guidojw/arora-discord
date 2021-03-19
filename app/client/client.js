@@ -4,7 +4,8 @@ const eventHandlers = require('./events')
 const NSadminProvider = require('./setting-provider')
 const WebSocketManager = require('./websocket/websocket')
 
-const { DiscordAPIError, GuildEmoji, Message } = require('discord.js')
+const { Constants, DiscordAPIError, GuildEmoji, Message } = require('discord.js')
+const { PartialTypes } = Constants
 const { CommandoClient } = require('discord.js-commando')
 
 const applicationConfig = require('../../config/application')
@@ -28,17 +29,17 @@ class NSadminClient extends CommandoClient {
     if (!options.partials) {
       options.partials = []
     }
-    if (!options.partials.includes('GUILD_MEMBER')) {
-      options.partials.push('GUILD_MEMBER')
+    if (!options.partials.includes(PartialTypes.GUILD_MEMBER)) {
+      options.partials.push(PartialTypes.GUILD_MEMBER)
     }
-    if (!options.partials.includes('REACTION')) {
-      options.partials.push('REACTION')
+    if (!options.partials.includes(PartialTypes.REACTION)) {
+      options.partials.push(PartialTypes.REACTION)
     }
-    if (!options.partials.includes('MESSAGE')) {
-      options.partials.push('MESSAGE')
+    if (!options.partials.includes(PartialTypes.MESSAGE)) {
+      options.partials.push(PartialTypes.MESSAGE)
     }
-    if (!options.partials.includes('USER')) {
-      options.partials.push('USER')
+    if (!options.partials.includes(PartialTypes.USER)) {
+      options.partials.push(PartialTypes.USER)
     }
     super(options)
 

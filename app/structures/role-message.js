@@ -1,6 +1,9 @@
 'use strict'
 const BaseStructure = require('./base')
 
+const { Constants } = require('discord.js')
+const { PartialTypes } = Constants
+
 class RoleMessage extends BaseStructure {
   constructor (client, data, guild) {
     super(client)
@@ -34,7 +37,7 @@ class RoleMessage extends BaseStructure {
   get message () {
     return this.messageId !== null
       ? this.channel?.messages.cache.get(this.messageId) ||
-      (this.client.options.partials.includes('MESSAGE')
+      (this.client.options.partials.includes(PartialTypes.MESSAGE)
         ? this.channel?.messages.add({ id: this.messageId })
         : null)
       : null

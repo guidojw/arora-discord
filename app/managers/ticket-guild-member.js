@@ -1,5 +1,6 @@
 'use strict'
-const { Collection } = require('discord.js')
+const { Collection, Constants } = require('discord.js')
+const { PartialTypes } = Constants
 const { Member } = require('../models')
 
 class TicketGuildMemberManager {
@@ -13,7 +14,7 @@ class TicketGuildMemberManager {
     const cache = new Collection()
     for (const moderator of this.ticket._moderators) {
       cache.set(moderator, this.guild.members.cache.get(moderator) ||
-        (this.client.options.partials.includes('GUILD_MEMBER')
+        (this.client.options.partials.includes(PartialTypes.GUILD_MEMBER)
           ? this.guild.members.add({ user: { id: moderator.id } })
           : null)
       )

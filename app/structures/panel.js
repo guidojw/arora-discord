@@ -1,7 +1,8 @@
 'use strict'
 const BaseStructure = require('./base')
 
-const { MessageEmbed } = require('discord.js')
+const { Constants, MessageEmbed } = require('discord.js')
+const { PartialTypes } = Constants
 
 class Panel extends BaseStructure {
   constructor (client, data, guild) {
@@ -31,7 +32,7 @@ class Panel extends BaseStructure {
   get message () {
     return this.messageId !== null
       ? this.channel?.messages.cache.get(this.messageId) ||
-        (this.client.options.partials.includes('MESSAGE')
+        (this.client.options.partials.includes(PartialTypes.MESSAGE)
           ? this.channel?.messages.add({ id: this.messageId })
           : null)
       : null

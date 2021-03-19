@@ -4,7 +4,8 @@ const BaseStructure = require('./base')
 const TicketGuildMemberManager = require('../managers/ticket-guild-member')
 
 const { stripIndents } = require('common-tags')
-const { MessageEmbed } = require('discord.js')
+const { Constants, MessageEmbed } = require('discord.js')
+const { PartialTypes } = Constants
 const { roVerAdapter } = require('../adapters')
 const { timeHelper } = require('../helpers')
 const { discordService } = require('../services')
@@ -35,7 +36,7 @@ class Ticket extends BaseStructure {
   get author () {
     return this.authorId !== null
       ? this.guild.members.cache.get(this.authorId) ||
-        (this.client.options.partials.includes('GUILD_MEMBER')
+        (this.client.options.partials.includes(PartialTypes.GUILD_MEMBER)
           ? this.guild.members.add({ user: { id: this.authorId } })
           : null)
       : null
