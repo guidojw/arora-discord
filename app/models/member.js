@@ -1,9 +1,9 @@
 'use strict'
 module.exports = (sequelize, DataTypes) => {
   const Member = sequelize.define('Member', {
-    id: {
+    userId: {
       type: DataTypes.BIGINT,
-      primaryKey: true
+      allowNull: false
     }
   }, {
     tableName: 'members'
@@ -31,10 +31,20 @@ module.exports = (sequelize, DataTypes) => {
       as: 'moderatingTickets'
     })
     Member.belongsToMany(models.Role, {
-      through: models.MemberRole,
+      through: 'members_roles',
       sourceKey: 'id',
-      targetKey: 'id'
+      targetKey: 'id',
+      as: 'roles'
     })
+
+    Member.loadScopes = models => {
+      Member.addScope('withRoles', {
+        include: [{
+          model: models.Role,
+          as: 'roles'
+        }]
+      })
+    }
   }
 
   return Member

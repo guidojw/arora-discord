@@ -40,11 +40,10 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false
       }
     })
-    Role.hasMany(models.MemberRole, {
-      foreignKey: {
-        name: 'roleId',
-        allowNull: false
-      }
+    Role.belongsToMany(models.Member, {
+      through: 'members_roles',
+      sourceKey: 'id',
+      targetKey: 'id'
     })
   }
 

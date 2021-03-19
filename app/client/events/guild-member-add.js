@@ -1,7 +1,7 @@
 'use strict'
 const { MessageEmbed } = require('discord.js')
 
-const guildMemberAddHandler = (client, member) => {
+const guildMemberAddHandler = async (client, member) => {
   if (member.user.bot) {
     return
   }
@@ -14,8 +14,11 @@ const guildMemberAddHandler = (client, member) => {
       .setDescription(`You're the **${getOrdinalNum(member.guild.memberCount)}** member on **${member.guild.name}**!`)
       .setThumbnail(member.user.displayAvatarURL())
       .setColor(guild.primaryColor)
-    return Promise.all(group.channels.cache.map(channel => channel.send(embed)))
+    await Promise.all(group.channels.cache.map(channel => channel.send(embed)))
   }
+
+  const persistentRoles = await member.fetchPersistentRoles()
+  return member.roles.add(persistentRoles)
 }
 
 function getOrdinalNum (number) {

@@ -59,8 +59,14 @@ module.exports = {
 
     await queryInterface.createTable('members', {
       id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+      },
+      userId: {
         type: Sequelize.BIGINT,
-        primaryKey: true
+        allowNull: false,
+        field: 'user_id'
       },
       guildId: {
         type: Sequelize.BIGINT,
@@ -426,16 +432,6 @@ module.exports = {
         },
         onDelete: 'CASCADE',
         field: 'role_id'
-      },
-      guildId: {
-        type: Sequelize.BIGINT,
-        primaryKey: true,
-        references: {
-          model: 'guilds',
-          key: 'id'
-        },
-        onDelete: 'CASCADE',
-        field: 'guild_id'
       }
     })
 

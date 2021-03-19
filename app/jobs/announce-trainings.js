@@ -37,9 +37,6 @@ module.exports = async guild => {
         : ':x: There are currently no scheduled trainings.'
     )
 
-    if (trainingsInfoPanel.message.partial) {
-      await trainingsInfoPanel.message.fetch()
-    }
     await trainingsInfoPanel.message.edit(embed)
   }
 
@@ -49,9 +46,6 @@ module.exports = async guild => {
 
     embed.setColor(guild.primaryColor)
 
-    if (trainingsPanel.message.partial) {
-      await trainingsPanel.message.fetch()
-    }
     await trainingsPanel.message.edit(embed)
   }
 }

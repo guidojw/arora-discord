@@ -103,12 +103,6 @@ module.exports = (sequelize, DataTypes) => {
       },
       as: 'roleBindings'
     })
-    Guild.hasMany(models.MemberRole, {
-      foreignKey: {
-        name: 'guildId',
-        primaryKey: true
-      }
-    })
     Guild.hasMany(models.RoleMessage, {
       foreignKey: {
         name: 'guildId',
