@@ -95,9 +95,9 @@ class GuildTicketManager extends BaseManager {
 
   async onMessageReactionAdd (reaction, user) {
     const type = this.guild.ticketTypes.cache.find(type => {
-      return type.message?.id === reaction.message.id && type.emoji && reaction.emoji instanceof GuildEmoji
+      return type.message?.id === reaction.message.id && type.emoji && (reaction.emoji instanceof GuildEmoji
         ? type.emoji instanceof GuildEmoji && reaction.emoji.id === type.emojiId
-        : !(type.emoji instanceof GuildEmoji) && reaction.emoji.name === type.emojiId
+        : !(type.emoji instanceof GuildEmoji) && reaction.emoji.name === type.emojiId)
     })
     if (type) {
       await reaction.users.remove(user)

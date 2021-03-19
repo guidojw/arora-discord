@@ -100,7 +100,8 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: {
         name: 'guildId',
         allowNull: false
-      }
+      },
+      as: 'roleBindings'
     })
     Guild.hasMany(models.MemberRole, {
       foreignKey: {
@@ -112,7 +113,8 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: {
         name: 'guildId',
         allowNull: false
-      }
+      },
+      as: 'roleMessages'
     })
     Guild.hasMany(models.ChannelChannel, {
       foreignKey: {
@@ -207,6 +209,12 @@ module.exports = (sequelize, DataTypes) => {
       }, {
         model: models.Panel,
         as: 'panels'
+      }, {
+        model: models.RoleBinding,
+        as: 'roleBindings'
+      }, {
+        model: models.RoleMessage,
+        as: 'roleMessages'
       }, {
         model: models.Tag,
         as: 'tags'

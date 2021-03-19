@@ -5,6 +5,8 @@ const { MessageEmbed, Structures } = require('discord.js')
 const {
   GuildGroupManager,
   GuildPanelManager,
+  GuildRoleBindingManager,
+  GuildRoleMessageManager,
   GuildTagManager,
   GuildTicketManager,
   GuildTicketTypeManager
@@ -21,6 +23,8 @@ const NSadminGuild = Structures.extend('Guild', Guild => {
 
       this.groups = new GuildGroupManager(this)
       this.panels = new GuildPanelManager(this)
+      this.roleBindings = new GuildRoleBindingManager(this)
+      this.roleMessages = new GuildRoleMessageManager(this)
       this.tags = new GuildTagManager(this)
       this.tickets = new GuildTicketManager(this)
       this.ticketTypes = new GuildTicketTypeManager(this)
@@ -65,6 +69,18 @@ const NSadminGuild = Structures.extend('Guild', Guild => {
           if (role) {
             role._setup(rawRole)
           }
+        }
+      }
+
+      if (data.roleBindings) {
+        for (const rawRoleBinding of data.roleBindings) {
+          this.roleBindings.add(rawRoleBinding)
+        }
+      }
+
+      if (data.roleMessages) {
+        for (const rawRoleMessage of data.roleMessages) {
+          this.roleMessages.add(rawRoleMessage)
         }
       }
 

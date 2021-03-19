@@ -1,8 +1,6 @@
 'use strict'
 const BaseCommand = require('../base')
 
-const { RoleBinding } = require('../../models')
-
 class DeleteRoleBindingCommand extends BaseCommand {
   constructor (client) {
     super(client, {
@@ -12,20 +10,15 @@ class DeleteRoleBindingCommand extends BaseCommand {
       description: 'Deletes a Roblox rank to Discord role binding.',
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
-        key: 'roleBindingId',
+        key: 'roleBinding',
         prompt: 'What role binding would you like to delete?',
         type: 'integer'
       }]
     })
   }
 
-  async run (message, { roleBindingId }) {
-    const roleBinding = await RoleBinding.findOne({ where: { id: roleBindingId, guildId: message.guild.id } })
-    if (!roleBinding) {
-      return message.reply('Role binding not found.')
-    }
-
-    await roleBinding.destroy()
+  async run (message, { roleBinding }) {
+    await message.guild.roleBindings.delete(roleBinding)
 
     return message.reply('Successfully deleted role binding.')
   }

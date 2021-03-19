@@ -52,7 +52,7 @@ class PanelsCommand extends BaseCommand {
 
       const embeds = discordService.getListEmbeds(
         'Groups',
-        [...message.guild.groups.cache.values()],
+        message.guild.groups.cache,
         getGroupRow
       )
       for (const embed of embeds) {

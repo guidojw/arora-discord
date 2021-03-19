@@ -5,9 +5,34 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     validate: {
       emojiXorEmojiId () {
-        if ((this.emoji === null) !== (this.emojiId === null)) {
+        if ((this.emoji === null) === (this.emojiId === null)) {
           throw new Error('Only one of emoji and emojiId can be set.')
         }
+      }
+    },
+    hooks: {
+      beforeCreate: (roleMessage, { channelId }) => {
+        return Promise.all([
+          sequelize.models.Role.findOrCreate({
+            where: {
+              id: roleMessage.roleId,
+              guildId: roleMessage.guildId
+            }
+          }),
+          sequelize.models.Message.findOrCreate({
+            where: {
+              id: roleMessage.messageId,
+              channelId: channelId,
+              guildId: roleMessage.guildId
+            }
+          }),
+          roleMessage.emojiId && sequelize.models.Emoji.findOrCreate({
+            where: {
+              id: roleMessage.emojiId,
+              guildId: roleMessage.guildId
+            }
+          })
+        ])
       }
     },
     tableName: 'role_messages'
@@ -37,7 +62,17 @@ module.exports = (sequelize, DataTypes) => {
         name: 'messageId',
         allowNull: false
       },
+      as: 'message',
       onDelete: 'CASCADE'
+    })
+  }
+
+  RoleMessage.loadScopes = models => {
+    RoleMessage.addScope('defaultScope', {
+      include: [{
+        model: models.Message,
+        as: 'message'
+      }]
     })
   }
 

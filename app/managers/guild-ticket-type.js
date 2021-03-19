@@ -93,8 +93,7 @@ class GuildTicketTypeManager extends BaseManager {
       } else if (typeof message === 'string') {
         message = await channel.messages.fetch(message)
       }
-    } catch {} // eslint-disable-line no-empty
-    if (!message) {
+    } catch {
       throw new Error('Invalid message.')
     }
     if (emoji instanceof GuildEmoji) {
@@ -107,11 +106,6 @@ class GuildTicketTypeManager extends BaseManager {
       throw new Error('Invalid emoji.')
     }
 
-    const data = {
-      messageId: message.id,
-      emojiId: emoji instanceof GuildEmoji ? emoji.id : null,
-      emoji: !(emoji instanceof GuildEmoji) ? emoji : null
-    }
     if (type.emoji && type.message) {
       if (type.message.partial) {
         await type.message.fetch()
@@ -119,9 +113,13 @@ class GuildTicketTypeManager extends BaseManager {
       await type.message.reactions.resolve(type.emojiId)?.users.remove(this.client.user)
     }
     await message.react(emoji)
-    const [, [newData]] = await TicketTypeModel.update(data, {
+    const [, [newData]] = await TicketTypeModel.update({
+      messageId: message.id,
+      emojiId: emoji instanceof GuildEmoji ? emoji.id : null,
+      emoji: !(emoji instanceof GuildEmoji) ? emoji : null
+    }, {
       where: { id: type.id },
-      channelId: channel?.id ?? null,
+      channelId: channel.id,
       returning: true,
       individualHooks: true
     })

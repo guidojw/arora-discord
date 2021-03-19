@@ -33,7 +33,7 @@ class BindTicketTypeCommand extends BaseCommand {
   async run (message, { type, message: bindMessage, channel, emoji }) {
     type = await message.guild.ticketTypes.bind(type, channel, bindMessage, emoji)
 
-    return message.reply(`Successfully bound ticket type **${type.name}** to emoji **${emoji}** on message **${message.id}**.`)
+    return message.reply(`Successfully bound ticket type **${type.name}** to emoji ${type.emoji} on message **${type.messageId}**.`)
   }
 }
 

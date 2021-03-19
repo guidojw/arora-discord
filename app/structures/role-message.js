@@ -1,7 +1,7 @@
 'use strict'
 const BaseStructure = require('./base')
 
-class TicketType extends BaseStructure {
+class RoleMessage extends BaseStructure {
   constructor (client, data, guild) {
     super(client)
 
@@ -12,15 +12,15 @@ class TicketType extends BaseStructure {
 
   _setup (data) {
     this.id = data.id
-    this.name = data.name
+    this.roleId = data.roleId
     this._emoji = data.emoji
     this._emojiId = data.emojiId
-    this.messageId = data.message?.id || null
-    this.channelId = data.message?.channelId || null
+    this.messageId = data.message.id
+    this.channelId = data.message.channelId
   }
 
   get channel () {
-    return this.guild.channels.cache.get(this.channelId) || null
+    return this.guild.channels.cache.get(this.channelId)
   }
 
   get emoji () {
@@ -40,17 +40,13 @@ class TicketType extends BaseStructure {
       : null
   }
 
-  update (data) {
-    return this.guild.ticketTypes.update(this, data)
+  get role () {
+    return this.guild.roles.cache.get(this.roleId)
   }
 
   delete () {
-    return this.guild.ticketTypes.delete(this)
-  }
-
-  bind (panel, emoji) {
-    return this.guild.ticketTypes.bind(this, panel, emoji)
+    return this.guild.roleMessages.delete(this)
   }
 }
 
-module.exports = TicketType
+module.exports = RoleMessage

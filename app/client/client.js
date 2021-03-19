@@ -4,9 +4,8 @@ const eventHandlers = require('./events')
 const NSadminProvider = require('./setting-provider')
 const WebSocketManager = require('./websocket/websocket')
 
-const { DiscordAPIError, Message } = require('discord.js')
+const { DiscordAPIError, GuildEmoji, Message } = require('discord.js')
 const { CommandoClient } = require('discord.js-commando')
-const { RoleMessage } = require('../models')
 
 const applicationConfig = require('../../config/application')
 
@@ -123,20 +122,13 @@ class NSadminClient extends CommandoClient {
 
   async handleRoleMessage (type, reaction, user) {
     const guild = reaction.message.guild
-    const member = guild.members.resolve(user)
+    const member = guild.members.resolve(user) || await guild.members.fetch(user)
 
-    const roleMessages = await RoleMessage.findAll({
-      where: {
-        guildId: guild.id,
-        messageId: reaction.message.id
-      }
-    })
-    if (roleMessages) {
-      const emojiId = reaction.emoji.id || reaction.emoji.name
-      for (const roleMessage of roleMessages) {
-        if (roleMessage.emojiId === emojiId || roleMessage.emoji === emojiId) {
-          await member.roles[type](roleMessage.roleId)
-        }
+    for (const roleMessage of guild.roleMessages.cache.values()) {
+      if (reaction.emoji instanceof GuildEmoji
+        ? roleMessage.emoji instanceof GuildEmoji && reaction.emoji.id === roleMessage.emojiId
+        : !(roleMessage.emoji instanceof GuildEmoji) && reaction.emoji.name === roleMessage.emojiId) {
+        await member.roles[type](roleMessage.roleId)
       }
     }
   }

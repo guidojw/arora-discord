@@ -1,5 +1,4 @@
 'use strict'
-const { RoleBinding } = require('../../../models')
 const { discordService, userService } = require('../../../services')
 
 const rankChangeHandler = async (client, { data }) => {
@@ -13,8 +12,7 @@ const rankChangeHandler = async (client, { data }) => {
       const member = await discordService.getMemberByName(guild, username)
 
       if (member) {
-        const roleBindings = await RoleBinding.findAll({ where: { guildId: guild.id, robloxGroupId: groupId } })
-        for (const roleBinding of roleBindings) {
+        for (const roleBinding of guild.roleBindings.cache.values()) {
           if (rank === roleBinding.min || (roleBinding.max && rank >= roleBinding.min && rank <= roleBinding.max)) {
             await member.roles.add(roleBinding.roleId)
           } else {

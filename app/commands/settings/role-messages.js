@@ -3,7 +3,6 @@ const BaseCommand = require('../base')
 const lodash = require('lodash')
 
 const { MessageEmbed } = require('discord.js')
-const { RoleMessage } = require('../../models')
 const { discordService } = require('../../services')
 
 class RoleMessagesCommand extends BaseCommand {
@@ -15,7 +14,7 @@ class RoleMessagesCommand extends BaseCommand {
       description: 'Lists all role messages.',
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
-        key: 'roleMessageId',
+        key: 'roleMessage',
         prompt: 'What role message would you like to know the information of?',
         type: 'integer',
         default: ''
@@ -23,30 +22,26 @@ class RoleMessagesCommand extends BaseCommand {
     })
   }
 
-  async run (message, { roleMessageId }) {
-    if (roleMessageId) {
-      const roleMessage = await RoleMessage.findOne({ where: { id: roleMessageId, guildId: message.guild.id } })
+  async run (message, { roleMessage }) {
+    if (roleMessage) {
+      roleMessage = message.guild.roleMessages.resolve(roleMessage)
       if (!roleMessage) {
         return message.reply('Role message not found.')
       }
-      const emoji = message.guild.emojis.cache.get(roleMessage.emojiId) || roleMessage.emojiId
-      const role = message.guild.roles.cache.get(roleMessage.roleId) || 'Unknown'
 
       const embed = new MessageEmbed()
-        .addField(`Role Message ${roleMessage.id}`, `Message ID: **${roleMessage.messageId}**, ${emoji} => **${role}**`)
+        .addField(`Role Message ${roleMessage.id}`, `Message ID: **${roleMessage.messageId}**, ${roleMessage.emoji} => **${roleMessage.role}**`)
         .setColor(message.guild.primaryColor)
       return message.replyEmbed(embed)
     } else {
-      const roleMessages = await RoleMessage.findAll({ where: { guildId: message.guild.id } })
-      if (roleMessages.length === 0) {
+      if (message.guild.roleMessages.cache.size === 0) {
         return message.reply('No role messages found.')
       }
 
       const embeds = discordService.getListEmbeds(
         'Role Messages',
-        lodash.groupBy(roleMessages, 'messageId'),
-        getGroupedRoleMessageRow,
-        { emojis: message.guild.emojis, roles: message.guild.roles }
+        lodash.groupBy(Array.from(message.guild.roleMessages.cache.values()), 'messageId'),
+        getGroupedRoleMessageRow
       )
       for (const embed of embeds) {
         await message.replyEmbed(embed)
@@ -55,12 +50,10 @@ class RoleMessagesCommand extends BaseCommand {
   }
 }
 
-function getGroupedRoleMessageRow ([id, roleMessages], { emojis, roles }) {
+function getGroupedRoleMessageRow ([id, roleMessages]) {
   let result = `**${id}**\n`
   for (const roleMessage of roleMessages) {
-    const emoji = roleMessage.emoji ?? emojis.cache.get(roleMessage.emojiId)
-    const role = roles.cache.get(roleMessage.roleId) || 'Unknown'
-    result += `${roleMessage.id}. ${emoji} => **${role}**`
+    result += `${roleMessage.id}. ${roleMessage.emoji} => **${roleMessage.role}**\n`
   }
   return result
 }

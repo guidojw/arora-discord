@@ -11,9 +11,9 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {
     hooks: {
-      beforeUpdate: async (panel, { channelId }) => {
+      beforeUpdate: (panel, { channelId }) => {
         if (panel.changed('messageId') && panel.messageId) {
-          await sequelize.models.Message.findOrCreate({
+          return sequelize.models.Message.findOrCreate({
             where: {
               id: panel.messageId,
               channelId: channelId,

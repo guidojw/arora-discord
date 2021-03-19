@@ -14,7 +14,7 @@ const guildMemberAddHandler = (client, member) => {
       .setDescription(`You're the **${getOrdinalNum(member.guild.memberCount)}** member on **${member.guild.name}**!`)
       .setThumbnail(member.user.displayAvatarURL())
       .setColor(guild.primaryColor)
-    return Promise.all([...group.channels.cache.map(channel => channel.send(embed))])
+    return Promise.all(group.channels.cache.map(channel => channel.send(embed)))
   }
 }
 

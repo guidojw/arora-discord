@@ -1,9 +1,6 @@
 'use strict'
 const BaseCommand = require('../base')
 
-const { DiscordAPIError, GuildEmoji } = require('discord.js')
-const { Channel, Message, Role, RoleMessage } = require('../../models')
-
 class CreateRoleMessageCommand extends BaseCommand {
   constructor (client) {
     super(client, {
@@ -11,72 +8,41 @@ class CreateRoleMessageCommand extends BaseCommand {
       name: 'createrolemessage',
       aliases: ['createrolemsg'],
       description: 'Creates a new role message.',
-      details: 'Can only be used in the channel of the message you want to make a role message. Because of this, the ' +
-        'message that fires this command, the response, the argument prompts and the answers will all be deleted when' +
-        ' the command has finished.',
       clientPermissions: ['SEND_MESSAGES', 'ADD_REACTIONS'],
-      deleteMessages: true,
       args: [{
+        key: 'role',
+        prompt: 'For what role do you want to make a role message?',
+        type: 'role'
+      }, {
         key: 'message',
         prompt: 'What message would you like to make a role message?',
-        type: 'message'
+        type: 'string',
+        validate: validateMessage
+      }, {
+        key: 'channel',
+        prompt: 'In what channel is this message?',
+        type: 'text-channel'
       }, {
         key: 'emoji',
         prompt: 'What emoji do you want to bind to this message?',
         type: 'custom-emoji|default-emoji'
-      }, {
-        key: 'role',
-        prompt: 'What role do you want to bind to this emoji?',
-        type: 'role'
       }]
     })
   }
 
-  async run (message, { message: newMessage, emoji, role }) {
-    await Channel.findOrCreate({
-      where: {
-        id: message.channel.id,
-        guildId: message.guild.id
-      }
-    })
-    await Message.findOrCreate({
-      where: {
-        id: newMessage.id,
-        guildId: message.guild.id,
-        channelId: message.channel.id
-      }
-    })
-    await Role.findOrCreate({
-      where: {
-        id: role.id,
-        guildId: message.guild.id
-      }
-    })
-    const [, created] = await RoleMessage.findOrCreate({
-      where: {
-        emojiId: emoji instanceof GuildEmoji ? emoji.id : null,
-        emoji: emoji instanceof GuildEmoji ? null : emoji,
-        messageId: newMessage.id,
-        roleId: role.id,
-        guildId: message.guild.id
-      }
-    })
-    if (!created) {
-      return message.reply('A role message with that message, emoji and role already exists.')
-    }
+  async run (message, { role, message: newMessage, channel, emoji }) {
+    const roleMessage = await message.guild.roleMessages.create({ role, message: newMessage, channel, emoji })
 
-    try {
-      await newMessage.react(emoji)
-    } catch (err) {
-      if (err instanceof DiscordAPIError && err.code === 10014) {
-        return message.reply('Unknown emoji.')
-      } else {
-        throw err
-      }
-    }
-
-    return message.reply('Successfully created role message.')
+    return message.reply(`Successfully bound role ${roleMessage.role} to emoji ${roleMessage.emoji} on message **${roleMessage.messageId}**.`)
   }
+}
+
+function validateMessage (val, msg) {
+  const valid = this.type.validate(val, msg, this)
+  if (!valid || typeof valid === 'string') {
+    return valid
+  }
+  return /^[0-9]+$/.test(val) || 'Message must be a snowflake ID.'
 }
 
 module.exports = CreateRoleMessageCommand

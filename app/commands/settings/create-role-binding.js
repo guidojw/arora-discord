@@ -1,8 +1,6 @@
 'use strict'
 const BaseCommand = require('../base')
 
-const { Role, RoleBinding } = require('../../models')
-
 class CreateRoleBindingCommand extends BaseCommand {
   constructor (client) {
     super(client, {
@@ -19,50 +17,43 @@ class CreateRoleBindingCommand extends BaseCommand {
         key: 'min',
         prompt: 'What do you want the lower limit of this binding to be?',
         type: 'integer',
-        validate: validateRank
+        validate: validateMin
       }, {
         key: 'max',
-        prompt: 'What do you want the upper limit of this binding to be? Reply with "0" if you don\'t want one.',
+        prompt: 'What do you want the upper limit of this binding to be? Reply with "none" if you don\'t want one.',
         type: 'integer',
-        validate: validateRank
+        validate: validateMax,
+        parse: parseMax
       }]
     })
   }
 
   async run (message, { role, min, max }) {
-    if (message.guild.robloxGroupId === null) {
-      return message.reply('This server is not bound to a Roblox group yet.')
-    }
-    max = max === 0 ? undefined : max
-    if (typeof max !== 'undefined' && max < min) {
-      [min, max] = [max, min]
-    }
+    const roleBinding = await message.guild.roleBindings.create({ role, min, max })
 
-    await Role.findOrCreate({
-      where: {
-        id: role.id,
-        guildId: message.guild.id
-      }
-    })
-    const [, created] = await RoleBinding.findOrCreate({
-      where: {
-        robloxGroupId: message.guild.robloxGroupId,
-        guildId: message.guild.id,
-        roleId: role.id,
-        min,
-        max: max ?? null
-      }
-    })
-    if (!created) {
-      return message.reply('A role message with that message and range already exists.')
-    }
-
-    return message.reply('Successfully created role binding.')
+    return message.reply(`Successfully bound group **${roleBinding.robloxGroupId}** rank ${getRangeString(roleBinding.min, roleBinding.max)} to role ${roleBinding.role}.`)
   }
 }
 
-function validateRank (value) {
-  return (value >= 0 && value <= 255) || 'Invalid rank.'
+function validateMin (val, msg) {
+  const valid = this.type.validate(val, msg, this)
+  if (!valid || typeof valid === 'string') {
+    return valid
+  }
+  val = parseInt(val)
+  return (val >= 0 && val <= 255) || 'Invalid rank.'
+}
+
+function validateMax (val, msg) {
+  return val === 'none' || validateMin.call(this, val, msg)
+}
+
+function parseMax (val, msg) {
+  return val === 'none' ? null : this.type.parse(val, msg, this)
+}
+
+function getRangeString (min, max) {
+  return `${max ? '[' : ''}**${min}**${max ? `, **${max}**]` : ''}`
 }
 
 module.exports = CreateRoleBindingCommand

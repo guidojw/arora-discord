@@ -12,6 +12,16 @@ module.exports = (sequelize, DataTypes) => {
     },
     max: DataTypes.INTEGER
   }, {
+    hooks: {
+      beforeCreate: roleBinding => {
+        return sequelize.models.Role.findOrCreate({
+          where: {
+            id: roleBinding.roleId,
+            guildId: roleBinding.guildId
+          }
+        })
+      }
+    },
     tableName: 'role_bindings'
   })
 
