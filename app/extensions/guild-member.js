@@ -1,16 +1,12 @@
 'use strict'
 const { Structures } = require('discord.js')
-const { Member } = require('../models')
+const { Member, Role } = require('../models')
 
 const NSadminGuildMember = Structures.extend('GuildMember', GuildMember => {
   class NSadminGuildMember extends GuildMember {
     async fetchPersistentRoles () {
-      const data = await Member.scope('withRoles').findOne({
-        where: {
-          userId: this.id,
-          guildId: this.guild.id
-        }
-      })
+      const data = await getData(this)
+
       return this.guild.roles.cache.filter(role => {
         return data?.roles.some(persistentRole => persistentRole.id === role.id) || false
       })
@@ -18,29 +14,39 @@ const NSadminGuildMember = Structures.extend('GuildMember', GuildMember => {
 
     async persistRole (role) {
       await this.roles.add(role)
-      const data = await getData(this)
-      await data.createRole({ id: role.id, guildId: role.guild.id })
-      return this
+      const [data] = await Member.findOrCreate({ where: { userId: this.id, guildId: this.guild.id } })
+      await Role.findOrCreate({ where: { id: role.id, guildId: this.guild.id } })
+      const added = typeof await data.addRole(role.id) !== 'undefined'
+
+      if (!added) {
+        throw new Error('Member does already have role.')
+      } else {
+        return this
+      }
     }
 
     async unpersistRole (role) {
       const data = await getData(this)
-      await data.removeRole(role.id)
-      return this.roles.remove(role)
+      const removed = await data?.removeRole(role.id) === 1
+
+      if (!removed) {
+        throw new Error('Member does not have role.')
+      } else {
+        return this.roles.remove(role)
+      }
     }
   }
 
   return NSadminGuildMember
 })
 
-async function getData (member) {
-  const [data] = await Member.findOrCreate({
+function getData (member) {
+  return Member.scope('withRoles').findOne({
     where: {
       userId: member.id,
       guildId: member.guild.id
     }
   })
-  return data
 }
 
 module.exports = NSadminGuildMember
