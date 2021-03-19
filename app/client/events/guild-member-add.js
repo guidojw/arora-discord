@@ -6,12 +6,12 @@ const guildMemberAddHandler = async (client, member) => {
     return
   }
 
-  const guild = client.guilds.cache.get(member.guild.id)
+  const guild = member.guild
   const group = guild.groups.resolve('welcomeChannels')
   if (group.channels.cache.size > 0) {
     const embed = new MessageEmbed()
       .setTitle(`Hey ${member.user.tag},`)
-      .setDescription(`You're the **${getOrdinalNum(member.guild.memberCount)}** member on **${member.guild.name}**!`)
+      .setDescription(`You're the **${getOrdinalNum(guild.memberCount)}** member on **${guild.name}**!`)
       .setThumbnail(member.user.displayAvatarURL())
       .setColor(guild.primaryColor)
     await Promise.all(group.channels.cache.map(channel => channel.send(embed)))

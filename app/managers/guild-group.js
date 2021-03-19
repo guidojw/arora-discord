@@ -83,7 +83,7 @@ class GuildGroupManager extends BaseManager {
   resolve (group) {
     if (typeof group === 'string') {
       group = group.toLowerCase()
-      return this.cache.find(otherGroup => otherGroup.name === group) || null
+      return this.cache.find(otherGroup => otherGroup.name.toLowerCase() === group) || null
     }
     return super.resolve(group)
   }
@@ -91,7 +91,7 @@ class GuildGroupManager extends BaseManager {
   resolveID (group) {
     if (typeof group === 'string') {
       group = group.toLowerCase()
-      return this.cache.find(otherGroup => otherGroup.name === group)?.id ?? null
+      return this.cache.find(otherGroup => otherGroup.name.toLowerCase() === group)?.id ?? null
     }
     return super.resolveID(group)
   }
