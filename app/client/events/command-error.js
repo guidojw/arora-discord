@@ -9,8 +9,8 @@ const commandErrorHandler = (client, command, err, message, _args, _fromPattern,
     message.reply(err.message || err.msg)
   }
 
-  collResult.prompts.forEach(client.deleteMessage.bind(client))
-  collResult.answers.forEach(client.deleteMessage.bind(client))
+  collResult?.prompts.forEach(client.deleteMessage.bind(client))
+  collResult?.answers.forEach(client.deleteMessage.bind(client))
 
   const guild = message.guild || client.mainGuild
   guild.log(

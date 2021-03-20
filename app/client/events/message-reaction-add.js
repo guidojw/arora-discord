@@ -11,6 +11,7 @@ const messageReactionAddHandler = async (client, reaction, user) => {
   }
 
   client.handleRoleMessage('add', reaction, user)
+
   reaction.message.guild.tickets.onMessageReactionAdd(reaction, user)
 }
 
