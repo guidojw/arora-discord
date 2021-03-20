@@ -11,24 +11,24 @@ const NSadminVoiceChannel = Structures.extend('VoiceChannel', VoiceChannel => {
       return this.guild.channels.cache.filter(channel => toLinks.some(link => link.id === channel.id))
     }
 
-    async bindChannel (channel) {
+    async linkChannel (channel) {
       const [data] = await Channel.findOrCreate({ where: { id: this.id, guildId: this.guild.id } })
       await Channel.findOrCreate({ where: { id: channel.id, guildId: this.guild.id } })
       const added = typeof await data.addToLink(channel.id) !== 'undefined'
 
       if (!added) {
-        throw new Error('Voice channel does already have bound text channel.')
+        throw new Error('Voice channel does already have linked text channel.')
       } else {
         return this
       }
     }
 
-    async unbindChannel (channel) {
+    async unlinkChannel (channel) {
       const data = await getData(this)
       const removed = await data?.removeToLink(channel.id) === 1
 
       if (!removed) {
-        throw new Error('Voice channel does not have bound text channel.')
+        throw new Error('Voice channel does not have linked text channel.')
       } else {
         return this
       }

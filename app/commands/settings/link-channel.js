@@ -1,31 +1,31 @@
 'use strict'
 const BaseCommand = require('../base')
 
-class BindChannelCommand extends BaseCommand {
+class LinkChannelCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'settings',
-      name: 'bindchannel',
-      aliases: ['bndchannel', 'bindc', 'bndc'],
-      description: 'Binds a text channel to a voice channel.',
+      name: 'linkchannel',
+      aliases: ['linkc'],
+      description: 'Links a voice channel to a text channel.',
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
         key: 'fromChannel',
-        prompt: 'What text channel would you like to bind?',
-        type: 'text-channel'
+        prompt: 'What voice channel would you like to link?',
+        type: 'voice-channel'
       }, {
         key: 'toChannel',
-        prompt: 'To what voice channel would you like to bind this text channel?',
-        type: 'voice-channel'
+        prompt: 'What text channel would you like to link to this voice channel?',
+        type: 'text-channel'
       }]
     })
   }
 
   async run (message, { fromChannel, toChannel }) {
-    await toChannel.bindChannel(fromChannel)
+    await fromChannel.linkChannel(toChannel)
 
-    return message.reply(`Successfully bound text channel ${fromChannel} to voice channel ${toChannel}.`)
+    return message.reply(`Successfully linked voice channel ${fromChannel} to text channel ${toChannel}.`)
   }
 }
 
-module.exports = BindChannelCommand
+module.exports = LinkChannelCommand

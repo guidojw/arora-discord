@@ -74,7 +74,7 @@ class GuildTicketTypeManager extends BaseManager {
     return _type ?? this.add(newData, false)
   }
 
-  async bind (type, channel, message, emoji) {
+  async link (type, emoji, message, channel) {
     type = this.resolve(type)
     if (!type) {
       throw new Error('Invalid ticket type.')
@@ -130,7 +130,7 @@ class GuildTicketTypeManager extends BaseManager {
     return _type ?? this.add(newData, false)
   }
 
-  async unbind (type) {
+  async unlink (type) {
     type = this.resolve(type)
     if (!type) {
       throw new Error('Invalid ticket type.')
