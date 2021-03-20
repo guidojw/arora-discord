@@ -14,7 +14,7 @@ const guildMemberAddHandler = async (client, member) => {
       .setDescription(`You're the **${getOrdinalNum(guild.memberCount)}** member on **${guild.name}**!`)
       .setThumbnail(member.user.displayAvatarURL())
       .setColor(guild.primaryColor)
-    group.channels.cache.map(channel => channel.send(embed))
+    group.channels.cache.forEach(channel => channel.send(embed))
   }
 
   const persistentRoles = await member.fetchPersistentRoles()

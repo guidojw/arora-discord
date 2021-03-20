@@ -34,7 +34,7 @@ const trainDevelopersPayoutHandler = async (client, { data }) => {
     }
   }
 
-  client.owners.map(owner => owner.send(embed))
+  client.owners.forEach(owner => owner.send(embed))
 }
 
 module.exports = trainDevelopersPayoutHandler

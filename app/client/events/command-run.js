@@ -9,8 +9,8 @@ const commandRunHandler = async (client, command, promise, message, _args, _from
     return
   }
 
-  collResult.prompts.map(client.deleteMessage.bind(client))
-  collResult.answers.map(client.deleteMessage.bind(client))
+  collResult.prompts.forEach(client.deleteMessage.bind(client))
+  collResult.answers.forEach(client.deleteMessage.bind(client))
 
   const guild = message.guild || client.mainGuild
   guild.log(
