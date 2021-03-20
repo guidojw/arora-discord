@@ -9,8 +9,6 @@ class BaseCommand extends Commando.Command {
     info.argsPromptLimit = info.argsPromptLimit || (info.group === 'admin' || info.group === 'settings') ? 3 : 1
     info.guildOnly = info.guildOnly !== undefined ? info.guildOnly : true
     super(client, info)
-
-    this.deleteMessages = typeof info.deleteMessages !== 'undefined' ? info.deleteMessages : false
   }
 
   hasPermission (message, ownerOverride) {

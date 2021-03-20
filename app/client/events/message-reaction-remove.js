@@ -10,7 +10,7 @@ const messageReactionRemoveHandler = async (client, reaction, user) => {
     return
   }
 
-  return client.handleRoleMessage('remove', reaction, user)
+  client.handleRoleMessage('remove', reaction, user)
 }
 
 module.exports = messageReactionRemoveHandler

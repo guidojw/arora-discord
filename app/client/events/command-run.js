@@ -2,18 +2,18 @@
 const { stripIndents } = require('common-tags')
 
 const commandRunHandler = async (client, command, promise, message, _args, _fromPattern, collResult) => {
-  let result
   try {
-    result = await promise
+    await promise
   } catch (err) {
-    // Command execution errors are handled by the commandError event.
+    // Command execution errors are handled by the commandError event handler.
     return
   }
 
-  await client.handleCommandDeleteMessages(command, result, message, collResult)
+  collResult.prompts.map(client.deleteMessage.bind(client))
+  collResult.answers.map(client.deleteMessage.bind(client))
 
-  const guild = message.guild ? client.guilds.cache.get(message.guild.id) : client.mainGuild
-  await guild.log(
+  const guild = message.guild || client.mainGuild
+  guild.log(
     message.author,
     stripIndents`
     ${message.author} **used** \`${command.name}\` **command in** ${message.channel} [Jump to Message](${message.url})

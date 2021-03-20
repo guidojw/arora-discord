@@ -15,11 +15,11 @@ const messageHandler = (client, message) => {
       const tag = guild.tags.resolve(name)
 
       if (tag) {
-        return message.reply(tag.content, { allowedMentions: { users: [message.author.id] } })
+        message.reply(tag.content, { allowedMentions: { users: [message.author.id] } })
       }
     }
   } else {
-    return guild.tickets.resolve(message.channel)?.onMessage(message)
+    guild.tickets.resolve(message.channel)?.onMessage(message)
   }
 }
 

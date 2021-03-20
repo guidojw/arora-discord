@@ -10,10 +10,8 @@ const messageReactionAddHandler = async (client, reaction, user) => {
     return
   }
 
-  return Promise.all([
-    client.handleRoleMessage('add', reaction, user),
-    reaction.message.guild.tickets.onMessageReactionAdd(reaction, user)
-  ])
+  client.handleRoleMessage('add', reaction, user)
+  reaction.message.guild.tickets.onMessageReactionAdd(reaction, user)
 }
 
 module.exports = messageReactionAddHandler

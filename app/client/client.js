@@ -4,14 +4,13 @@ const eventHandlers = require('./events')
 const NSadminProvider = require('./setting-provider')
 const WebSocketManager = require('./websocket/websocket')
 
-const { Constants, DiscordAPIError, GuildEmoji, Message } = require('discord.js')
+const { Constants, DiscordAPIError, GuildEmoji } = require('discord.js')
 const { PartialTypes } = Constants
 const { CommandoClient } = require('discord.js-commando')
 
 const applicationConfig = require('../../config/application')
 
 const ACTIVITY_CAROUSEL_INTERVAL = 60 * 1000
-const COMMAND_DELETE_MESSAGES_TIMEOUT = 10 * 1000
 
 require('../extensions') // Extend Discord.js structures before the client's collections get instantiated.
 
@@ -103,25 +102,6 @@ class NSadminClient extends CommandoClient {
     console.log(`Ready to serve on ${this.guilds.cache.size} servers, for ${this.users.cache.size} users.`)
   }
 
-  async handleCommandDeleteMessages (command, result, message, collResult) {
-    if (!command.deleteMessages) {
-      return
-    }
-
-    await Promise.all([
-      ...collResult.prompts.map(this.deleteMessage.bind(this)),
-      ...collResult.answers.map(this.deleteMessage.bind(this)),
-      message.delete()
-    ])
-    if (result instanceof Message) {
-      setTimeout(this.deleteMessage.bind(this, result), COMMAND_DELETE_MESSAGES_TIMEOUT)
-    } else if (result instanceof Array) {
-      setTimeout(() => {
-        return Promise.all(result.map(this.deleteMessage.bind(this)))
-      }, COMMAND_DELETE_MESSAGES_TIMEOUT)
-    }
-  }
-
   async handleRoleMessage (type, reaction, user) {
     const guild = reaction.message.guild
     const member = guild.members.resolve(user) || await guild.members.fetch(user)
@@ -168,7 +148,7 @@ class NSadminClient extends CommandoClient {
   }
 
   deleteMessage (message) {
-    return failSilently(message.delete, [10008])
+    return failSilently(message.delete.bind(message), [10008])
     // Discord API Unknown message error, the message
     // was probably already deleted.
   }
@@ -188,7 +168,7 @@ async function failSilently (fn, codes) {
   try {
     return await fn()
   } catch (err) {
-    if (err instanceof DiscordAPIError && !codes.includes(err.code)) {
+    if (!(err instanceof DiscordAPIError) || !codes.includes(err.code)) {
       throw err
     }
   }
