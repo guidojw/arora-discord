@@ -19,7 +19,7 @@ const trainDevelopersPayoutHandler = async (client, { data }) => {
     embed.addField(username, `Has sold **${developerSales.total.amount}** ${pluralize('train', developerSales.total.amount)} and earned ${emoji || ''}${emoji ? ' ' : ''}**${total}**${!emoji ? ' Robux' : ''}.`)
 
     try {
-      const user = await client.users.fetch(developerSales.discordId)
+      const user = client.users.resolve(developerSales.discordId) || await client.users.fetch(developerSales.discordId)
       const userEmbed = new MessageEmbed()
         .setTitle('Weekly Train Payout Report')
         .setColor(0xffffff)
@@ -34,7 +34,7 @@ const trainDevelopersPayoutHandler = async (client, { data }) => {
     }
   }
 
-  return Promise.all(client.owners.map(owner => owner.send(embed)))
+  client.owners.map(owner => owner.send(embed))
 }
 
 module.exports = trainDevelopersPayoutHandler

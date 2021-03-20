@@ -14,9 +14,9 @@ const rankChangeHandler = async (client, { data }) => {
       if (member) {
         for (const roleBinding of guild.roleBindings.cache.values()) {
           if (rank === roleBinding.min || (roleBinding.max && rank >= roleBinding.min && rank <= roleBinding.max)) {
-            await member.roles.add(roleBinding.roleId)
+            member.roles.add(roleBinding.roleId)
           } else {
-            await member.roles.remove(roleBinding.roleId)
+            member.roles.remove(roleBinding.roleId)
           }
         }
       }
