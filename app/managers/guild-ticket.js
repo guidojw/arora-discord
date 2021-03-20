@@ -31,7 +31,7 @@ class GuildTicketManager extends BaseManager {
       throw new Error('Invalid ticket type.')
     }
 
-    const channelName = `${type.name}-${author.user.username}`
+    const channelName = `${type.name}-${author.user.tag}`
     const channel = await this.guild.channels.create(channelName, { parent: this.guild.ticketsCategory })
     await channel.updateOverwrite(author, { VIEW_CHANNEL: true })
 
@@ -41,6 +41,7 @@ class GuildTicketManager extends BaseManager {
       channelId: channel.id,
       typeId: type.id
     })
+    await newData.reload()
     const ticket = this.add(newData)
 
     this.guild.log(

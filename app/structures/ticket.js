@@ -23,13 +23,13 @@ class Ticket extends BaseStructure {
 
   _setup (data) {
     this.id = data.id
-    this.authorId = data.authorId
     this.channelId = data.channelId
     this.guildId = data.guildId
     this.typeId = data.typeId
+    this.authorId = data.author.userId
 
     if (data.moderators) {
-      this._moderators = data.moderators.map(moderator => moderator.id)
+      this._moderators = data.moderators.map(moderator => moderator.userId)
     }
   }
 

@@ -66,12 +66,14 @@ module.exports = {
       userId: {
         type: Sequelize.BIGINT,
         allowNull: false,
-        field: 'user_id'
+        field: 'user_id',
+        unique: 'members_user_id_guild_id_key'
       },
       guildId: {
         type: Sequelize.BIGINT,
         allowNull: false,
-        field: 'guild_id'
+        field: 'guild_id',
+        unique: 'members_user_id_guild_id_key'
       },
     })
 
@@ -357,7 +359,7 @@ module.exports = {
         field: 'type_id'
       },
       authorId: {
-        type: Sequelize.BIGINT,
+        type: Sequelize.INTEGER,
         allowNull: false,
         references: {
           model: 'members',
@@ -401,7 +403,7 @@ module.exports = {
         field: 'ticket_id'
       },
       memberId: {
-        type: Sequelize.BIGINT,
+        type: Sequelize.INTEGER,
         primaryKey: true,
         references: {
           model: 'members',
@@ -414,7 +416,7 @@ module.exports = {
 
     await queryInterface.createTable('members_roles', {
       memberId: {
-        type: Sequelize.BIGINT,
+        type: Sequelize.INTEGER,
         primaryKey: true,
         references: {
           model: 'members',

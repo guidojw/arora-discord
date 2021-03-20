@@ -6,6 +6,7 @@ class CreateTicketTypeCommand extends BaseCommand {
     super(client, {
       group: 'settings',
       name: 'createtickettype',
+      aliases: ['creatett'],
       description: 'Creates a new ticket type.',
       clientPermissions: ['SEND_MESSAGES'],
       args: [{

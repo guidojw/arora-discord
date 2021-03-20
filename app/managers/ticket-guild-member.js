@@ -12,10 +12,10 @@ class TicketGuildMemberManager {
 
   get cache () {
     const cache = new Collection()
-    for (const moderator of this.ticket._moderators) {
-      cache.set(moderator, this.guild.members.cache.get(moderator) ||
+    for (const moderatorId of this.ticket._moderators) {
+      cache.set(moderatorId, this.guild.members.cache.get(moderatorId) ||
         (this.client.options.partials.includes(PartialTypes.GUILD_MEMBER)
-          ? this.guild.members.add({ user: { id: moderator.id } })
+          ? this.guild.members.add({ user: { id: moderatorId } })
           : null)
       )
     }
@@ -33,7 +33,7 @@ class TicketGuildMemberManager {
 
     const [data] = await Member.findOrCreate({
       where: {
-        id: member.id,
+        userId: member.id,
         guildId: this.guild.id
       }
     })

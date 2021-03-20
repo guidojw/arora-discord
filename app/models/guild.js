@@ -110,12 +110,6 @@ module.exports = (sequelize, DataTypes) => {
       },
       as: 'roleMessages'
     })
-    Guild.hasMany(models.ChannelChannel, {
-      foreignKey: {
-        name: 'guildId',
-        primaryKey: true
-      }
-    })
     Guild.hasMany(models.Group, {
       foreignKey: {
         name: 'guildId',

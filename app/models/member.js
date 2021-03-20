@@ -3,7 +3,8 @@ module.exports = (sequelize, DataTypes) => {
   const Member = sequelize.define('Member', {
     userId: {
       type: DataTypes.BIGINT,
-      allowNull: false
+      allowNull: false,
+      field: 'user_id'
     }
   }, {
     tableName: 'members'

@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
       targetKey: 'id'
     })
     Channel.belongsToMany(models.Channel, {
-      through: models.ChannelChannel,
+      through: 'channels_channels',
       sourceKey: 'id',
       targetKey: 'id',
       foreignKey: 'fromChannelId',
@@ -31,7 +31,7 @@ module.exports = (sequelize, DataTypes) => {
       as: 'fromLinks'
     })
     Channel.belongsToMany(models.Channel, {
-      through: models.ChannelChannel,
+      through: 'channels_channels',
       sourceKey: 'id',
       targetKey: 'id',
       foreignKey: 'toChannelId',

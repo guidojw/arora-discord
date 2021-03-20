@@ -18,9 +18,9 @@ const messageHandler = (client, message) => {
         message.reply(tag.content, { allowedMentions: { users: [message.author.id] } })
       }
     }
-  } else {
-    guild.tickets.resolve(message.channel)?.onMessage(message)
   }
+
+  guild.tickets.resolve(message.channel)?.onMessage(message)
 }
 
 module.exports = messageHandler
