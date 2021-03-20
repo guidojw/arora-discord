@@ -6,7 +6,7 @@ const { timeHelper } = require('../helpers')
 
 module.exports = async guild => {
   const group = guild.groups.resolve('serverBoosterReportChannels')
-  if (group.cache.size === 0) {
+  if (group.channels.cache.size === 0) {
     return
   }
 

@@ -20,6 +20,13 @@ const messageHandler = (client, message) => {
     }
   }
 
+  const photoContestChannelsGroup = guild.groups.resolve('photoContestChannels')
+  if (photoContestChannelsGroup.channels.cache.some(channel => channel.id === message.channel.id)) {
+    if (message.attachments.size > 0 || message.embeds > 0) {
+      message.react('👍')
+    }
+  }
+
   guild.tickets.resolve(message.channel)?.onMessage(message)
 }
 
