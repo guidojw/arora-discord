@@ -1,12 +1,11 @@
 'use strict'
-
 const { stripIndents } = require('common-tags')
 
 const commandErrorHandler = (client, command, err, message, _args, _fromPattern, collResult) => {
-  if (err.response && err.response.data.errors && err.response.data.errors.length > 0) {
-    message.reply(err.response.data.errors[0].message || err.response.data.errors[0].msg)
+  if (err.response?.data.errors?.length > 0) {
+    message.reply(err.response.data.errors[0].message ?? err.response.data.errors[0].msg)
   } else {
-    message.reply(err.message || err.msg)
+    message.reply(err.message ?? err.msg)
   }
 
   collResult?.prompts.forEach(client.deleteMessage.bind(client))
