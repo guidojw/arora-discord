@@ -3,5 +3,6 @@ module.exports = {
   NSadminTextChannel: require('./text-channel'),
   NSadminGuild: require('./guild'),
   NSadminGuildMember: require('./guild-member'),
-  NSadminRole: require('./role')
+  NSadminRole: require('./role'),
+  NSadminVoiceChannel: require('./voice-channel')
 }

@@ -91,6 +91,7 @@ class NSadminClient extends CommandoClient {
     this.bindEvent('messageReactionAdd')
     this.bindEvent('messageReactionRemove')
     this.bindEvent('roleDelete')
+    this.bindEvent('voiceStateUpdate')
 
     if (applicationConfig.apiEnabled) {
       this.nsadminWs = new WebSocketManager(this)

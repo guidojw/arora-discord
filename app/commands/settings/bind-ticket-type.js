@@ -6,7 +6,7 @@ class BindTicketTypeCommand extends BaseCommand {
     super(client, {
       group: 'settings',
       name: 'bindtickettype',
-      aliases: ['bindtickettype', 'bindtt', 'bndtt'],
+      aliases: ['bndtickettype', 'bindtt', 'bndtt'],
       description: 'Binds a ticket type to a message and connects a reaction.',
       clientPermissions: ['SEND_MESSAGES'],
       args: [{

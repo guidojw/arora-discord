@@ -27,7 +27,7 @@ class PersistentRolesCommand extends BaseCommand {
 
     const embed = new MessageEmbed()
       .setTitle(`${member.user.tag}'s Persistent Roles`)
-      .setDescription(persistentRoles.map(role => `${role}\n`))
+      .setDescription(persistentRoles.map(role => role.toString()))
       .setColor(message.guild.primaryColor)
     return message.replyEmbed(embed)
   }
