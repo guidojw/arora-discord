@@ -39,17 +39,17 @@ module.exports = (sequelize, DataTypes) => {
       sourceKey: 'id',
       targetKey: 'id'
     })
-    Role.hasMany(models.PermissionOverwrite, {
+    Role.hasMany(models.Permission, {
       foreignKey: 'roleId',
-      as: 'permissionOverwrites'
+      as: 'permissions'
     })
   }
 
   Role.loadScopes = models => {
     Role.addScope('defaultScope', {
       include: [{
-        model: models.PermissionOverwrite,
-        as: 'permissionOverwrites'
+        model: models.Permission,
+        as: 'permissions'
       }]
     })
   }

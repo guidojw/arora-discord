@@ -9,23 +9,14 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.ENUM,
       allowNull: false,
       values: ['command', 'group']
-    },
-    enabled: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: true
     }
   })
 
   Command.associate = models => {
-    Command.belongsTo(models.Guild, {
-      foreignKey: {
-        name: 'guildId',
-        allowNull: false
-      },
-      onDelete: 'CASCADE'
+    Command.belongsToMany(models.Guild, {
+      through: models.GuildCommand
     })
-    Command.hasMany(models.PermissionOverwrite, {
+    Command.hasMany(models.Permission, {
       foreignKey: {
         name: 'commandId',
         allowNull: false

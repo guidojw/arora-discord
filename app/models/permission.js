@@ -1,6 +1,6 @@
 'use strict'
 module.exports = (sequelize, DataTypes) => {
-  const PermissionOverwrite = sequelize.define('PermissionOverwrite', {
+  const Permission = sequelize.define('Permission', {
     allow: {
       type: DataTypes.BOOLEAN,
       allowNull: false
@@ -13,19 +13,19 @@ module.exports = (sequelize, DataTypes) => {
         }
       }
     },
-    tableName: 'permission_overwrites'
+    tableName: 'permissions'
   })
 
-  PermissionOverwrite.associate = models => {
-    PermissionOverwrite.belongsTo(models.Role, {
+  Permission.associate = models => {
+    Permission.belongsTo(models.Role, {
       foreignKey: 'roleId',
       onDelete: 'CASCADE'
     })
-    PermissionOverwrite.belongsTo(models.Group, {
+    Permission.belongsTo(models.Group, {
       foreignKey: 'groupId',
       onDelete: 'CASCADE'
     })
-    PermissionOverwrite.belongsTo(models.Command, {
+    Permission.belongsTo(models.Command, {
       foreignKey: {
         name: 'commandId',
         allowNull: false
@@ -34,5 +34,5 @@ module.exports = (sequelize, DataTypes) => {
     })
   }
 
-  return PermissionOverwrite
+  return Permission
 }

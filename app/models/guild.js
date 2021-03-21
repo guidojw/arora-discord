@@ -66,20 +66,14 @@ module.exports = (sequelize, DataTypes) => {
         }], {
           transaction
         })
-
-        // await sequelize.models.GroupPermission.bulkCreate([])
-        // await sequelize.models.GroupPermission.bulkCreate([])
       }
     },
     tableName: 'guilds'
   })
 
   Guild.associate = models => {
-    Guild.hasMany(models.Command, {
-      foreignKey: {
-        name: 'guildId',
-        allowNull: false
-      },
+    Guild.belongsToMany(models.Command, {
+      through: models.GuildCommand,
       as: 'commands'
     })
     Guild.hasMany(models.Tag, {

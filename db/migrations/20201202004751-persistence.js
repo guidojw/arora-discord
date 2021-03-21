@@ -3,143 +3,139 @@ const { stripIndents } = require('common-tags')
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('roles', {
-      id: {
-        type: Sequelize.BIGINT,
-        primaryKey: true
-      },
-      guildId: {
-        type: Sequelize.BIGINT,
-        allowNull: false,
-        field: 'guild_id'
-      }
-    })
-
-    await queryInterface.createTable('channels', {
-      id: {
-        type: Sequelize.BIGINT,
-        primaryKey: true
-      },
-      guildId: {
-        type: Sequelize.BIGINT,
-        allowNull: false,
-        field: 'guild_id'
-      }
-    })
-
-    await queryInterface.createTable('messages', {
-      id: {
-        type: Sequelize.BIGINT,
-        primaryKey: true
-      },
-      guildId: {
-        type: Sequelize.BIGINT,
-        allowNull: false,
-        field: 'guild_id'
-      },
-      channelId: {
-        type: Sequelize.BIGINT,
-        allowNull: false,
-        references: {
-          model: 'channels',
-          key: 'id'
+    await Promise.all([
+      queryInterface.createTable('roles', {
+        id: {
+          type: Sequelize.BIGINT,
+          primaryKey: true
         },
-        field: 'channel_id'
-      }
-    })
-
-    await queryInterface.createTable('members', {
-      id: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
-      },
-      userId: {
-        type: Sequelize.BIGINT,
-        allowNull: false,
-        field: 'user_id'
-      },
-      guildId: {
-        type: Sequelize.BIGINT,
-        allowNull: false,
-        field: 'guild_id'
-      }
-    }, {
-      uniqueKeys: {
-        members_guild_id_user_id_key: {
-          fields: ['guild_id', 'user_id']
+        guildId: {
+          type: Sequelize.BIGINT,
+          allowNull: false,
+          field: 'guild_id'
         }
-      }
-    })
-
-    await queryInterface.createTable('emojis', {
-      id: {
-        type: Sequelize.BIGINT,
-        primaryKey: true
-      },
-      guildId: {
-        type: Sequelize.BIGINT,
-        allowNull: false,
-        field: 'guild_id'
-      }
-    })
-
-    await queryInterface.createTable('panels', {
-      id: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
-      },
-      name: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
-      content: {
-        type: Sequelize.STRING(7000),
-        allowNull: false
-      },
-      messageId: {
-        type: Sequelize.BIGINT,
-        unique: true,
-        references: {
-          model: 'messages',
-          key: 'id'
+      }),
+      queryInterface.createTable('channels', {
+        id: {
+          type: Sequelize.BIGINT,
+          primaryKey: true
         },
-        field: 'message_id'
-      },
-      guildId: {
-        type: Sequelize.BIGINT,
-        allowNull: false,
-        field: 'guild_id'
-      }
-    })
-
-    await queryInterface.createTable('groups', {
-      id: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
-      },
-      name: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
-      type: {
-        type: Sequelize.ENUM,
-        allowNull: false,
-        values: ['role', 'channel']
-      },
-      guarded: {
-        type: Sequelize.BOOLEAN,
-        allowNull: false,
-        defaultValue: false
-      },
-      guildId: {
-        type: Sequelize.BIGINT,
-        allowNull: false,
-        field: 'guild_id'
-      }
-    })
+        guildId: {
+          type: Sequelize.BIGINT,
+          allowNull: false,
+          field: 'guild_id'
+        }
+      }),
+      queryInterface.createTable('messages', {
+        id: {
+          type: Sequelize.BIGINT,
+          primaryKey: true
+        },
+        guildId: {
+          type: Sequelize.BIGINT,
+          allowNull: false,
+          field: 'guild_id'
+        },
+        channelId: {
+          type: Sequelize.BIGINT,
+          allowNull: false,
+          references: {
+            model: 'channels',
+            key: 'id'
+          },
+          field: 'channel_id'
+        }
+      }),
+      queryInterface.createTable('members', {
+        id: {
+          type: Sequelize.INTEGER,
+          primaryKey: true,
+          autoIncrement: true
+        },
+        userId: {
+          type: Sequelize.BIGINT,
+          allowNull: false,
+          field: 'user_id'
+        },
+        guildId: {
+          type: Sequelize.BIGINT,
+          allowNull: false,
+          field: 'guild_id'
+        }
+      }, {
+        uniqueKeys: {
+          members_guild_id_user_id_key: {
+            fields: ['guild_id', 'user_id']
+          }
+        }
+      }),
+      queryInterface.createTable('emojis', {
+        id: {
+          type: Sequelize.BIGINT,
+          primaryKey: true
+        },
+        guildId: {
+          type: Sequelize.BIGINT,
+          allowNull: false,
+          field: 'guild_id'
+        }
+      }),
+      queryInterface.createTable('panels', {
+        id: {
+          type: Sequelize.INTEGER,
+          primaryKey: true,
+          autoIncrement: true
+        },
+        name: {
+          type: Sequelize.STRING,
+          allowNull: false
+        },
+        content: {
+          type: Sequelize.STRING(7000),
+          allowNull: false
+        },
+        messageId: {
+          type: Sequelize.BIGINT,
+          unique: true,
+          references: {
+            model: 'messages',
+            key: 'id'
+          },
+          field: 'message_id'
+        },
+        guildId: {
+          type: Sequelize.BIGINT,
+          allowNull: false,
+          field: 'guild_id'
+        }
+      }),
+      queryInterface.createTable('groups', {
+        id: {
+          type: Sequelize.INTEGER,
+          primaryKey: true,
+          autoIncrement: true
+        },
+        name: {
+          type: Sequelize.STRING,
+          allowNull: false
+        },
+        type: {
+          type: Sequelize.ENUM,
+          allowNull: false,
+          values: ['role', 'channel']
+        },
+        guarded: {
+          type: Sequelize.BOOLEAN,
+          allowNull: false,
+          defaultValue: false
+        },
+        guildId: {
+          type: Sequelize.BIGINT,
+          allowNull: false,
+          field: 'guild_id'
+        }
+      })
+    ])
 
     await queryInterface.createTable('guilds', {
       id: {
@@ -238,29 +234,41 @@ module.exports = {
         type: Sequelize.ENUM,
         allowNull: false,
         values: ['command', 'group']
-      },
-      enabled: {
-        type: Sequelize.BOOLEAN,
-        allowNull: false,
-        defaultValue: true
-      },
+      }
+    }, {
+      uniqueKeys: {
+        commands_name_type_key: {
+          fields: ['name', 'type']
+        }
+      }
+    })
+    await queryInterface.createTable('guilds_commands', {
       guildId: {
         type: Sequelize.BIGINT,
-        allowNull: false,
+        primaryKey: true,
         references: {
           model: 'guilds',
           key: 'id'
         },
         onDelete: 'CASCADE',
         field: 'guild_id'
-      }
-    }, {
-      uniqueKeys: {
-        commands_guild_id_name_type_key: {
-          fields: ['guild_id', 'name', 'type']
-        }
+      },
+      commandId: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        references: {
+          model: 'commands',
+          key: 'id'
+        },
+        onDelete: 'CASCADE',
+        field: 'command_id'
+      },
+      enabled: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false
       }
     })
+
     await queryInterface.createTable('tags', {
       id: {
         type: Sequelize.INTEGER,
@@ -282,7 +290,6 @@ module.exports = {
         field: 'guild_id'
       }
     })
-
     await queryInterface.createTable('tag_names', {
       name: {
         type: Sequelize.STRING,
@@ -344,6 +351,7 @@ module.exports = {
         }
       }
     })
+    await addExclusiveArcOrNoneConstraint(queryInterface, 'ticket_types', ['emoji', 'emoji_id'])
 
     await queryInterface.createTable('tickets', {
       id: {
@@ -390,9 +398,6 @@ module.exports = {
         field: 'guild_id'
       }
     })
-
-    await addExclusiveArcOrNoneConstraint(queryInterface, 'ticket_types', ['emoji', 'emoji_id'])
-
     await queryInterface.createTable('tickets_moderators', {
       ticketId: {
         type: Sequelize.INTEGER,
@@ -416,186 +421,186 @@ module.exports = {
       }
     })
 
-    await queryInterface.createTable('members_roles', {
-      memberId: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        references: {
-          model: 'members',
-          key: 'id'
+    await Promise.all([
+      queryInterface.createTable('members_roles', {
+        memberId: {
+          type: Sequelize.INTEGER,
+          primaryKey: true,
+          references: {
+            model: 'members',
+            key: 'id'
+          },
+          onDelete: 'CASCADE',
+          field: 'member_id'
         },
-        onDelete: 'CASCADE',
-        field: 'member_id'
-      },
-      roleId: {
-        type: Sequelize.BIGINT,
-        primaryKey: true,
-        references: {
-          model: 'roles',
-          key: 'id'
+        roleId: {
+          type: Sequelize.BIGINT,
+          primaryKey: true,
+          references: {
+            model: 'roles',
+            key: 'id'
+          },
+          onDelete: 'CASCADE',
+          field: 'role_id'
+        }
+      }),
+      queryInterface.createTable('role_bindings', {
+        id: {
+          type: Sequelize.INTEGER,
+          primaryKey: true,
+          autoIncrement: true
         },
-        onDelete: 'CASCADE',
-        field: 'role_id'
-      }
-    })
-
-    await queryInterface.createTable('role_bindings', {
-      id: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
-      },
-      min: {
-        type: Sequelize.INTEGER,
-        allowNull: false
-      },
-      max: Sequelize.INTEGER,
-      roleId: {
-        type: Sequelize.BIGINT,
-        allowNull: false,
-        references: {
-          model: 'roles',
-          key: 'id'
+        min: {
+          type: Sequelize.INTEGER,
+          allowNull: false
         },
-        field: 'role_id'
-      },
-      robloxGroupId: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        field: 'roblox_group_id'
-      },
-      guildId: {
-        type: Sequelize.BIGINT,
-        allowNull: false,
-        references: {
-          model: 'guilds',
-          key: 'id'
+        max: Sequelize.INTEGER,
+        roleId: {
+          type: Sequelize.BIGINT,
+          allowNull: false,
+          references: {
+            model: 'roles',
+            key: 'id'
+          },
+          field: 'role_id'
         },
-        onDelete: 'CASCADE',
-        field: 'guild_id'
-      }
-    })
-
-    await queryInterface.createTable('role_messages', {
-      id: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
-      },
-      emoji: Sequelize.STRING,
-      emojiId: {
-        type: Sequelize.BIGINT,
-        references: {
-          model: 'emojis',
-          key: 'id'
+        robloxGroupId: {
+          type: Sequelize.INTEGER,
+          allowNull: false,
+          field: 'roblox_group_id'
         },
-        onDelete: 'CASCADE',
-        field: 'emoji_id'
-      },
-      roleId: {
-        type: Sequelize.BIGINT,
-        allowNull: false,
-        references: {
-          model: 'roles',
-          key: 'id'
+        guildId: {
+          type: Sequelize.BIGINT,
+          allowNull: false,
+          references: {
+            model: 'guilds',
+            key: 'id'
+          },
+          onDelete: 'CASCADE',
+          field: 'guild_id'
+        }
+      }),
+      queryInterface.createTable('role_messages', {
+        id: {
+          type: Sequelize.INTEGER,
+          primaryKey: true,
+          autoIncrement: true
         },
-        onDelete: 'CASCADE',
-        field: 'role_id'
-      },
-      messageId: {
-        type: Sequelize.BIGINT,
-        allowNull: false,
-        references: {
-          model: 'messages',
-          key: 'id'
+        emoji: Sequelize.STRING,
+        emojiId: {
+          type: Sequelize.BIGINT,
+          references: {
+            model: 'emojis',
+            key: 'id'
+          },
+          onDelete: 'CASCADE',
+          field: 'emoji_id'
         },
-        onDelete: 'CASCADE',
-        field: 'message_id'
-      },
-      guildId: {
-        type: Sequelize.BIGINT,
-        allowNull: false,
-        references: {
-          model: 'guilds',
-          key: 'id'
+        roleId: {
+          type: Sequelize.BIGINT,
+          allowNull: false,
+          references: {
+            model: 'roles',
+            key: 'id'
+          },
+          onDelete: 'CASCADE',
+          field: 'role_id'
         },
-        onDelete: 'CASCADE',
-        field: 'guild_id'
-      }
-    })
+        messageId: {
+          type: Sequelize.BIGINT,
+          allowNull: false,
+          references: {
+            model: 'messages',
+            key: 'id'
+          },
+          onDelete: 'CASCADE',
+          field: 'message_id'
+        },
+        guildId: {
+          type: Sequelize.BIGINT,
+          allowNull: false,
+          references: {
+            model: 'guilds',
+            key: 'id'
+          },
+          onDelete: 'CASCADE',
+          field: 'guild_id'
+        }
+      })
+    ])
 
     await addExclusiveArcConstraint(queryInterface, 'role_messages', ['emoji', 'emoji_id'])
 
-    await queryInterface.createTable('channels_channels', {
-      from_channel_id: {
-        type: Sequelize.BIGINT,
-        primaryKey: true,
-        references: {
-          model: 'channels',
-          key: 'id'
+    await Promise.all([
+      queryInterface.createTable('channels_channels', {
+        from_channel_id: {
+          type: Sequelize.BIGINT,
+          primaryKey: true,
+          references: {
+            model: 'channels',
+            key: 'id'
+          },
+          onDelete: 'CASCADE',
+          field: 'from_channel_id'
         },
-        onDelete: 'CASCADE',
-        field: 'from_channel_id'
-      },
-      to_channel_id: {
-        type: Sequelize.BIGINT,
-        primaryKey: true,
-        references: {
-          model: 'channels',
-          key: 'id'
+        to_channel_id: {
+          type: Sequelize.BIGINT,
+          primaryKey: true,
+          references: {
+            model: 'channels',
+            key: 'id'
+          },
+          onDelete: 'CASCADE',
+          field: 'to_channel_id'
+        }
+      }),
+      queryInterface.createTable('channels_groups', {
+        channelId: {
+          type: Sequelize.BIGINT,
+          primaryKey: true,
+          references: {
+            model: 'channels',
+            key: 'id'
+          },
+          onDelete: 'CASCADE',
+          field: 'channel_id'
         },
-        onDelete: 'CASCADE',
-        field: 'to_channel_id'
-      }
-    })
+        groupId: {
+          type: Sequelize.INTEGER,
+          primaryKey: true,
+          references:  {
+            model: 'groups',
+            key: 'id'
+          },
+          onDelete: 'CASCADE',
+          field: 'group_id'
+        }
+      }),
+      queryInterface.createTable('roles_groups', {
+        roleId: {
+          type: Sequelize.BIGINT,
+          primaryKey: true,
+          references: {
+            model: 'roles',
+            key: 'id'
+          },
+          onDelete: 'CASCADE',
+          field: 'role_id'
+        },
+        groupId: {
+          type: Sequelize.INTEGER,
+          primaryKey: true,
+          references: {
+            model: 'groups',
+            key: 'id'
+          },
+          onDelete: 'CASCADE',
+          field: 'group_id'
+        }
+      })
+    ])
 
-    await queryInterface.createTable('channels_groups', {
-      channelId: {
-        type: Sequelize.BIGINT,
-        primaryKey: true,
-        references: {
-          model: 'channels',
-          key: 'id'
-        },
-        onDelete: 'CASCADE',
-        field: 'channel_id'
-      },
-      groupId: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        references:  {
-          model: 'groups',
-          key: 'id'
-        },
-        onDelete: 'CASCADE',
-        field: 'group_id'
-      }
-    })
-
-    await queryInterface.createTable('roles_groups', {
-      roleId: {
-        type: Sequelize.BIGINT,
-        primaryKey: true,
-        references: {
-          model: 'roles',
-          key: 'id'
-        },
-        onDelete: 'CASCADE',
-        field: 'role_id'
-      },
-      groupId: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        references: {
-          model: 'groups',
-          key: 'id'
-        },
-        onDelete: 'CASCADE',
-        field: 'group_id'
-      }
-    })
-
-    await queryInterface.createTable('permission_overwrites', {
+    await queryInterface.createTable('permissions', {
       id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
@@ -635,38 +640,41 @@ module.exports = {
       }
     }, {
       uniqueKeys: {
-        permission_overwrites_command_id_group_id_key: {
+        permissions_command_id_group_id_key: {
           fields: ['command_id', 'group_id']
         },
-        permission_overwrites_command_id_role_id_key: {
+        permissions_command_id_role_id_key: {
           fields: ['command_id', 'role_id']
         }
       }
     })
-
-    await addExclusiveArcConstraint(queryInterface, 'permission_overwrites', ['role_id', 'group_id'])
+    await addExclusiveArcConstraint(queryInterface, 'permissions', ['role_id', 'group_id'])
   },
 
   down: async (queryInterface) => {
-    await queryInterface.dropTable('permission_overwrites')
+    await queryInterface.dropTable('permissions')
 
-    await queryInterface.dropTable('roles_groups')
-    await queryInterface.dropTable('channels_groups')
+    await Promise.all([
+      queryInterface.dropTable('roles_groups'),
+      queryInterface.dropTable('channels_groups'),
+      queryInterface.dropTable('channels_channels')
+    ])
 
-    await queryInterface.dropTable('channels_channels')
-
-    await queryInterface.dropTable('role_messages')
-    await queryInterface.dropTable('role_bindings')
-
-    await queryInterface.dropTable('members_roles')
+    await Promise.all([
+      queryInterface.dropTable('role_messages'),
+      queryInterface.dropTable('role_bindings'),
+      queryInterface.dropTable('members_roles')
+    ])
 
     await queryInterface.dropTable('tickets_moderators')
     await queryInterface.dropTable('tickets')
+
     await queryInterface.dropTable('ticket_types')
 
     await queryInterface.dropTable('tag_names')
     await queryInterface.dropTable('tags')
 
+    await queryInterface.dropTable('guilds_commands')
     await queryInterface.dropTable('commands')
 
     await Promise.all([
@@ -680,13 +688,16 @@ module.exports = {
     ])
 
     await queryInterface.dropTable('guilds')
-    await queryInterface.dropTable('groups')
-    await queryInterface.dropTable('panels')
-    await queryInterface.dropTable('emojis')
-    await queryInterface.dropTable('members')
-    await queryInterface.dropTable('messages')
-    await queryInterface.dropTable('channels')
-    await queryInterface.dropTable('roles')
+
+    await Promise.all([
+      queryInterface.dropTable('groups'),
+      queryInterface.dropTable('panels'),
+      queryInterface.dropTable('emojis'),
+      queryInterface.dropTable('members'),
+      queryInterface.dropTable('messages'),
+      queryInterface.dropTable('channels'),
+      queryInterface.dropTable('roles')
+      ])
   }
 }
 
