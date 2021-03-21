@@ -76,6 +76,7 @@ class NSadminClient extends CommandoClient {
     this.mainGuild = this.guilds.cache.get(mainGuildId)
 
     this.bindEvent('channelDelete')
+    this.bindEvent('commandCancel')
     this.bindEvent('commandError')
     this.bindEvent('commandPrefixChange')
     this.bindEvent('commandRun')
