@@ -17,12 +17,6 @@ module.exports = (sequelize, DataTypes) => {
       },
       onDelete: 'CASCADE'
     })
-    Role.belongsToMany(models.Permission, {
-      through: 'roles_permissions',
-      sourceKey: 'id',
-      targetKey: 'name',
-      as: 'permissions'
-    })
     Role.belongsToMany(models.Group, {
       through: 'roles_groups',
       sourceKey: 'id',
@@ -45,13 +39,17 @@ module.exports = (sequelize, DataTypes) => {
       sourceKey: 'id',
       targetKey: 'id'
     })
+    Role.hasMany(models.PermissionOverwrite, {
+      foreignKey: 'roleId',
+      as: 'permissionOverwrites'
+    })
   }
 
   Role.loadScopes = models => {
     Role.addScope('defaultScope', {
       include: [{
-        model: models.Permission,
-        as: 'permissions'
+        model: models.PermissionOverwrite,
+        as: 'permissionOverwrites'
       }]
     })
   }

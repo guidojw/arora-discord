@@ -3,15 +3,6 @@ const { stripIndents } = require('common-tags')
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    // Sequelize's seederStorage doesn't work, so we do it ourselves:
-    await queryInterface.createTable('sequelize_data', {
-      name: {
-        type: Sequelize.STRING,
-        primaryKey: true
-      }
-    })
-
-
     await queryInterface.createTable('roles', {
       id: {
         type: Sequelize.BIGINT,
@@ -593,59 +584,6 @@ module.exports = {
       }
     })
 
-    await queryInterface.createTable('permissions', {
-      name: {
-        type: Sequelize.STRING,
-        primaryKey: true
-      }
-    })
-
-    await queryInterface.createTable('groups_permissions', {
-      groupId: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        references: {
-          model: 'groups',
-          key: 'id'
-        },
-        onDelete: 'CASCADE',
-        field: 'group_id'
-      },
-      permissionName: {
-        type: Sequelize.STRING,
-        primaryKey: true,
-        references: {
-          model: 'permissions',
-          key: 'name'
-        },
-        onDelete: 'CASCADE',
-        field: 'permission_name'
-      }
-    })
-
-    await queryInterface.createTable('roles_permissions', {
-      roleId: {
-        type: Sequelize.BIGINT,
-        primaryKey: true,
-        references: {
-          model: 'roles',
-          key: 'id'
-        },
-        onDelete: 'CASCADE',
-        field: 'role_id'
-      },
-      permissionName: {
-        type: Sequelize.STRING,
-        primaryKey: true,
-        references: {
-          model: 'permissions',
-          key: 'name'
-        },
-        onDelete: 'CASCADE',
-        field: 'permission_name'
-      }
-    })
-
     await queryInterface.createTable('permission_overwrites', {
       id: {
         type: Sequelize.INTEGER,
@@ -654,18 +592,17 @@ module.exports = {
       },
       allow: {
         type: Sequelize.BOOLEAN,
-        allowNull: false,
-        defaultValue: false
+        allowNull: false
       },
-      permissionName: {
-        type: Sequelize.STRING,
+      commandId: {
+        type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'permissions',
-          key: 'name'
+          model: 'commands',
+          key: 'id'
         },
         onDelete: 'CASCADE',
-        field: 'permission_name'
+        field: 'command_id'
       },
       roleId: {
         type: Sequelize.BIGINT,
@@ -688,10 +625,10 @@ module.exports = {
     }, {
       indexes: [{
         unique: true,
-        fields: ['permission_name', 'role_id']
+        fields: ['command_id', 'role_id']
       }, {
         unique: true,
-        fields: ['permission_name', 'group_id']
+        fields: ['command_id', 'group_id']
       }]
     })
 
@@ -700,10 +637,6 @@ module.exports = {
 
   down: async (queryInterface) => {
     await queryInterface.dropTable('permission_overwrites')
-
-    await queryInterface.dropTable('roles_permissions')
-    await queryInterface.dropTable('groups_permissions')
-    await queryInterface.dropTable('permissions')
 
     await queryInterface.dropTable('roles_groups')
     await queryInterface.dropTable('channels_groups')
@@ -742,8 +675,6 @@ module.exports = {
     await queryInterface.dropTable('messages')
     await queryInterface.dropTable('channels')
     await queryInterface.dropTable('roles')
-
-    await queryInterface.dropTable('sequelize_data')
   }
 }
 

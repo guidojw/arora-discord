@@ -30,6 +30,12 @@ module.exports = (sequelize, DataTypes) => {
       },
       onDelete: 'CASCADE'
     })
+    Command.hasMany(models.PermissionOverwrite, {
+      foreignKey: {
+        name: 'commandId',
+        allowNull: false
+      }
+    })
   }
 
   return Command

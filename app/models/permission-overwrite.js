@@ -3,16 +3,15 @@ module.exports = (sequelize, DataTypes) => {
   const PermissionOverwrite = sequelize.define('PermissionOverwrite', {
     allow: {
       type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: false
+      allowNull: false
     }
   }, {
     indexes: [{
       unique: true,
-      fields: ['permission_name', 'role_id']
+      fields: ['command_id', 'role_id']
     }, {
       unique: true,
-      fields: ['permission_name', 'group_id']
+      fields: ['command_id', 'group_id']
     }],
     validate: {
       roleXorGroup () {
@@ -25,19 +24,19 @@ module.exports = (sequelize, DataTypes) => {
   })
 
   PermissionOverwrite.associate = models => {
-    PermissionOverwrite.belongsTo(models.Permission, {
-      foreignKey: {
-        name: 'permissionName',
-        allowNull: false
-      },
-      onDelete: 'CASCADE'
-    })
     PermissionOverwrite.belongsTo(models.Role, {
       foreignKey: 'roleId',
       onDelete: 'CASCADE'
     })
     PermissionOverwrite.belongsTo(models.Group, {
       foreignKey: 'groupId',
+      onDelete: 'CASCADE'
+    })
+    PermissionOverwrite.belongsTo(models.Command, {
+      foreignKey: {
+        name: 'commandId',
+        allowNull: false
+      },
       onDelete: 'CASCADE'
     })
   }

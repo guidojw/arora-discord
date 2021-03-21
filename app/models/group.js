@@ -29,12 +29,6 @@ module.exports = (sequelize, DataTypes) => {
       },
       onDelete: 'CASCADE'
     })
-    Group.belongsToMany(models.Permission, {
-      through: 'groups_permissions',
-      sourceKey: 'id',
-      targetKey: 'name',
-      as: 'permissions'
-    })
     Group.belongsToMany(models.Channel, {
       through: 'channels_groups',
       sourceKey: 'id',
@@ -56,9 +50,6 @@ module.exports = (sequelize, DataTypes) => {
   Group.loadScopes = models => {
     Group.addScope('defaultScope', {
       include: [{
-        model: models.Permission,
-        as: 'permissions'
-      }, {
         model: models.Channel,
         as: 'channels',
         attributes: ['id']
