@@ -15,12 +15,6 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: true
     }
-  }, {
-    indexes: [{
-      unique: true,
-      fields: ['name', 'type', 'guild_id']
-    }],
-    tableName: 'commands'
   })
 
   Command.associate = models => {

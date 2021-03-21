@@ -65,10 +65,11 @@ module.exports = {
         field: 'guild_id'
       }
     }, {
-      indexes: [{
-        unique: true,
-        fields: ['user_id', 'guild_id']
-      }]
+      uniqueKeys: {
+        members_guild_id_user_id_key: {
+          fields: ['guild_id', 'user_id']
+        }
+      }
     })
 
     await queryInterface.createTable('emojis', {
@@ -254,10 +255,11 @@ module.exports = {
         field: 'guild_id'
       }
     }, {
-      indexes: [{
-        unique: true,
-        fields: ['name', 'type', 'guild_id']
-      }]
+      uniqueKeys: {
+        commands_guild_id_name_type_key: {
+          fields: ['guild_id', 'name', 'type']
+        }
+      }
     })
     await queryInterface.createTable('tags', {
       id: {
@@ -306,13 +308,11 @@ module.exports = {
       },
       name: {
         type: Sequelize.STRING(16),
-        allowNull: false,
-        unique: 'ticket_types_name_guild_id_key'
+        allowNull: false
       },
       guildId: {
         type: Sequelize.BIGINT,
         allowNull: false,
-        unique: 'ticket_types_name_guild_id_key',
         references: {
           model: 'guilds',
           key: 'id'
@@ -338,10 +338,11 @@ module.exports = {
         field: 'message_id'
       }
     }, {
-      indexes: [{
-        unique: true,
-        fields: ['name', 'guild_id']
-      }]
+      uniqueKeys: {
+        ticket_types_guild_id_name_key: {
+          fields: ['guild_id', 'name']
+        }
+      }
     })
 
     await queryInterface.createTable('tickets', {
@@ -633,13 +634,14 @@ module.exports = {
         field: 'group_id'
       }
     }, {
-      indexes: [{
-        unique: true,
-        fields: ['command_id', 'role_id']
-      }, {
-        unique: true,
-        fields: ['command_id', 'group_id']
-      }]
+      uniqueKeys: {
+        permission_overwrites_command_id_group_id_key: {
+          fields: ['command_id', 'group_id']
+        },
+        permission_overwrites_command_id_role_id_key: {
+          fields: ['command_id', 'role_id']
+        }
+      }
     })
 
     await addExclusiveArcConstraint(queryInterface, 'permission_overwrites', ['role_id', 'group_id'])

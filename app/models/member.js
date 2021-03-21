@@ -6,12 +6,6 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       field: 'user_id'
     }
-  }, {
-    indexes: [{
-      unique: true,
-      fields: ['user_id', 'guild_id']
-    }],
-    tableName: 'members'
   })
 
   Member.associate = models => {

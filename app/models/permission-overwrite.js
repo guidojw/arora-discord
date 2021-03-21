@@ -6,13 +6,6 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     }
   }, {
-    indexes: [{
-      unique: true,
-      fields: ['command_id', 'role_id']
-    }, {
-      unique: true,
-      fields: ['command_id', 'group_id']
-    }],
     validate: {
       roleXorGroup () {
         if ((this.roleId === null) === (this.groupId === null)) {

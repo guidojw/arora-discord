@@ -10,10 +10,6 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: null
     }
   }, {
-    indexes: [{
-      unique: true,
-      fields: ['name', 'guild_id']
-    }],
     validate: {
       emojiNandEmojiId () {
         if (this.emoji !== null && this.emojiId !== null) {
