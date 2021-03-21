@@ -6,7 +6,7 @@ const { MessageEmbed } = require('discord.js')
 class ChannelLinksCommand extends BaseCommand {
   constructor (client) {
     super(client, {
-      group: 'admin',
+      group: 'settings',
       name: 'channellinks',
       description: 'Fetches given voice channel\'s linked text channels.',
       clientPermissions: ['SEND_MESSAGES'],
