@@ -29,7 +29,11 @@ class RemoveFromGroupCommand extends BaseCommand {
 
     await group[pluralize(group.type)].remove(channelOrRole)
 
-    return message.reply(`Successfully removed ${group.type} **${channelOrRole.id}** from group **${group.id}**.`)
+    return message.reply(`Successfully removed ${group.type} ${channelOrRole} from group **${group.name}**.`, {
+      allowedMentions: {
+        users: [message.author.id]
+      }
+    })
   }
 }
 

@@ -29,7 +29,11 @@ class AddToGroupCommand extends BaseCommand {
 
     await group[pluralize(group.type)].add(channelOrRole)
 
-    return message.reply(`Successfully added ${group.type} **${channelOrRole.id}** to group **${group.id}**.`)
+    return message.reply(`Successfully added ${group.type} ${channelOrRole} to group **${group.name}**.`, {
+      allowedMentions: {
+        users: [message.author.id]
+      }
+    })
   }
 }
 
