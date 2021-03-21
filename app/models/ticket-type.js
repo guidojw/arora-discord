@@ -3,14 +3,17 @@ module.exports = (sequelize, DataTypes) => {
   const TicketType = sequelize.define('TicketType', {
     name: {
       type: DataTypes.STRING(16),
-      allowNull: false,
-      unique: 'ticket_types_name_guild_id_key'
+      allowNull: false
     },
     emoji: {
       type: DataTypes.STRING(7),
       defaultValue: null
     }
   }, {
+    indexes: [{
+      unique: true,
+      fields: ['name', 'guild_id']
+    }],
     validate: {
       emojiNandEmojiId () {
         if (this.emoji !== null && this.emojiId !== null) {
@@ -46,8 +49,7 @@ module.exports = (sequelize, DataTypes) => {
     TicketType.belongsTo(models.Guild, {
       foreignKey: {
         name: 'guildId',
-        allowNull: false,
-        unique: 'ticket_types_name_guild_id_key'
+        allowNull: false
       },
       onDelete: 'CASCADE'
     })

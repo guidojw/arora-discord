@@ -7,6 +7,10 @@ module.exports = (sequelize, DataTypes) => {
       field: 'user_id'
     }
   }, {
+    indexes: [{
+      unique: true,
+      fields: ['user_id', 'guild_id']
+    }],
     tableName: 'members'
   })
 

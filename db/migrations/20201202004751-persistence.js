@@ -57,15 +57,18 @@ module.exports = {
       userId: {
         type: Sequelize.BIGINT,
         allowNull: false,
-        field: 'user_id',
-        unique: 'members_user_id_guild_id_key'
+        field: 'user_id'
       },
       guildId: {
         type: Sequelize.BIGINT,
         allowNull: false,
-        field: 'guild_id',
-        unique: 'members_user_id_guild_id_key'
-      },
+        field: 'guild_id'
+      }
+    }, {
+      indexes: [{
+        unique: true,
+        fields: ['user_id', 'guild_id']
+      }]
     })
 
     await queryInterface.createTable('emojis', {
@@ -228,13 +231,11 @@ module.exports = {
       },
       name: {
         type: Sequelize.STRING,
-        allowNull: false,
-        unique: 'commands_name_type_guild_id_key'
+        allowNull: false
       },
       type: {
         type: Sequelize.ENUM,
         allowNull: false,
-        unique: 'commands_name_type_guild_id_key',
         values: ['command', 'group']
       },
       enabled: {
@@ -245,7 +246,6 @@ module.exports = {
       guildId: {
         type: Sequelize.BIGINT,
         allowNull: false,
-        unique: 'commands_name_type_guild_id_key',
         references: {
           model: 'guilds',
           key: 'id'
@@ -253,6 +253,11 @@ module.exports = {
         onDelete: 'CASCADE',
         field: 'guild_id'
       }
+    }, {
+      indexes: [{
+        unique: true,
+        fields: ['name', 'type', 'guild_id']
+      }]
     })
     await queryInterface.createTable('tags', {
       id: {
@@ -332,6 +337,11 @@ module.exports = {
         },
         field: 'message_id'
       }
+    }, {
+      indexes: [{
+        unique: true,
+        fields: ['name', 'guild_id']
+      }]
     })
 
     await queryInterface.createTable('tickets', {

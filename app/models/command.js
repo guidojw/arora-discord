@@ -3,13 +3,11 @@ module.exports = (sequelize, DataTypes) => {
   const Command = sequelize.define('Command', {
     name: {
       type: DataTypes.STRING,
-      allowNull: false,
-      unique: 'commands_name_type_guild_id_key'
+      allowNull: false
     },
     type: {
       type: DataTypes.ENUM,
       allowNull: false,
-      unique: 'commands_name_type_guild_id_key',
       values: ['command', 'group']
     },
     enabled: {
@@ -18,12 +16,15 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: true
     }
   }, {
+    indexes: [{
+      unique: true,
+      fields: ['name', 'type', 'guild_id']
+    }],
     tableName: 'commands'
   })
 
   Command.associate = models => {
     Command.belongsTo(models.Guild, {
-      unique: 'commands_name_type_guild_id_key',
       foreignKey: {
         name: 'guildId',
         allowNull: false
