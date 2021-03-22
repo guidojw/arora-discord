@@ -13,7 +13,7 @@ class TagTagNameManager extends BaseManager {
   }
 
   add (data, cache = true) {
-    return super.add(data, cache, { id: data.name })
+    return super.add(data, cache, { id: data.name, extras: [this.tag] })
   }
 
   async create (name) {

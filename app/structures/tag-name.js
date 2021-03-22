@@ -1,6 +1,10 @@
 'use strict'
-class TagName {
-  constructor (tag, data) {
+const BaseStructure = require('./base')
+
+class TagName extends BaseStructure {
+  constructor (client, data, tag) {
+    super(client)
+
     this.tag = tag
 
     this._setup(data)
