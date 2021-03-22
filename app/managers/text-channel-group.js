@@ -6,7 +6,7 @@ class TextChannelGroupManager {
   }
 
   get cache () {
-    return this.guild.groups.filter(group => group.type === 'channel' && group.channels.cache.has(this.channel.id))
+    return this.guild.groups.cache.filter(group => group.type === 'channel' && group.channels.cache.has(this.channel.id))
   }
 }
 
