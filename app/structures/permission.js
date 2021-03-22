@@ -17,11 +17,11 @@ class Permission extends BaseStructure {
   }
 
   update (data) {
-    return this.guild.panels.update(this, data)
+    return this.permissible.nsadminPermissions.update(this, data)
   }
 
   delete () {
-    return this.guild.panels.delete(this)
+    return this.permissible.nsadminPermissions.delete(this)
   }
 }
 
