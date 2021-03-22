@@ -1,8 +1,8 @@
 'use strict'
 const BaseStructure = require('./base')
+const Postable = require('./interfaces/postable')
 
-const { Constants, MessageEmbed } = require('discord.js')
-const { PartialTypes } = Constants
+const { MessageEmbed } = require('discord.js')
 
 class Panel extends BaseStructure {
   constructor (client, data, guild) {
@@ -25,19 +25,6 @@ class Panel extends BaseStructure {
     return new MessageEmbed(JSON.parse(this.content))
   }
 
-  get channel () {
-    return this.guild.channels.cache.get(this.channelId) || null
-  }
-
-  get message () {
-    return this.messageId !== null
-      ? this.channel?.messages.cache.get(this.messageId) ||
-        (this.client.options.partials.includes(PartialTypes.MESSAGE)
-          ? this.channel?.messages.add({ id: this.messageId })
-          : null)
-      : null
-  }
-
   update (data) {
     return this.guild.panels.update(this, data)
   }
@@ -50,5 +37,7 @@ class Panel extends BaseStructure {
     return this.guild.panels.post(this, channel)
   }
 }
+
+Postable.applyToClass(Panel)
 
 module.exports = Panel

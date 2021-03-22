@@ -1,8 +1,6 @@
 'use strict'
 const BaseStructure = require('./base')
-
-const { Constants } = require('discord.js')
-const { PartialTypes } = Constants
+const Postable = require('./interfaces/postable')
 
 class TicketType extends BaseStructure {
   constructor (client, data, guild) {
@@ -22,25 +20,12 @@ class TicketType extends BaseStructure {
     this.channelId = data.message?.channelId || null
   }
 
-  get channel () {
-    return this.guild.channels.cache.get(this.channelId) || null
-  }
-
   get emoji () {
     return this.guild.emojis.cache.get(this._emojiId) || this._emoji
   }
 
   get emojiId () {
     return this._emoji || this._emojiId
-  }
-
-  get message () {
-    return this.messageId !== null
-      ? this.channel?.messages.cache.get(this.messageId) ||
-      (this.client.options.partials.includes(PartialTypes.MESSAGE)
-        ? this.channel?.messages.add({ id: this.messageId })
-        : null)
-      : null
   }
 
   update (data) {
@@ -55,5 +40,7 @@ class TicketType extends BaseStructure {
     return this.guild.ticketTypes.bind(this, panel, emoji)
   }
 }
+
+Postable.applyToClass(TicketType)
 
 module.exports = TicketType
