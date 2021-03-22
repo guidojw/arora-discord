@@ -18,8 +18,7 @@ class GuildPanelManager extends BaseManager {
   }
 
   async create (name, content) {
-    const lowerCaseName = name.toLowerCase()
-    if (this.cache.some(panel => panel.name.toLowerCase() === lowerCaseName)) {
+    if (this.resolve(name)) {
       throw new Error('A panel with that name already exists.')
     }
     const embed = new MessageEmbed(content)
@@ -62,8 +61,7 @@ class GuildPanelManager extends BaseManager {
 
     const changes = {}
     if (typeof data.name !== 'undefined') {
-      const lowerCaseName = data.name.toLowerCase()
-      if (this.cache.some(panel => panel.name.toLowerCase() === lowerCaseName)) {
+      if (this.resolve(data.name)) {
         throw new Error('A panel with that name already exists.')
       }
       changes.name = data.name

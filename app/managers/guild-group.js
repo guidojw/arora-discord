@@ -63,8 +63,8 @@ class GuildGroupManager extends BaseManager {
     }
 
     const changes = {}
-    if (data.name) {
-      if (this.resolve(data.name) !== null) {
+    if (typeof data.name !== 'undefined') {
+      if (this.resolve(data.name)) {
         throw new Error('A group with that name already exists.')
       }
       changes.name = data.name
