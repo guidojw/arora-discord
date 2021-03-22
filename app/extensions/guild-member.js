@@ -4,6 +4,28 @@ const { Member, Role } = require('../models')
 
 const NSadminGuildMember = Structures.extend('GuildMember', GuildMember => {
   class NSadminGuildMember extends GuildMember {
+    canRunCommand (command) {
+      let result = false
+      const groupsChecked = []
+      for (const role of this.roles.cache.values()) {
+        for (const group of role.groups.cache.values()) {
+          if (groupsChecked.includes(group.id)) {
+            continue
+          }
+          result = group.permissionFor(command) ?? result
+          if (result === false) {
+            return false
+          }
+          groupsChecked.push(group.id)
+        }
+        result = role.permissionFor(command) ?? result
+        if (result === false) {
+          return false
+        }
+      }
+      return result
+    }
+
     async fetchPersistentRoles () {
       const data = await getData(this)
 
