@@ -4,11 +4,11 @@ const BaseCommand = require('../base')
 const { MessageEmbed } = require('discord.js')
 const { discordService } = require('../../services')
 
-class PanelsCommand extends BaseCommand {
+class GroupsCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'settings',
-      name: 'nsadmingroups',
+      name: 'groups',
       description: 'Lists all role and channel groups.',
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
@@ -66,4 +66,4 @@ function getGroupRow ([, group]) {
   return `${group.id}. **${group.name}**`
 }
 
-module.exports = PanelsCommand
+module.exports = GroupsCommand

@@ -7,11 +7,11 @@ class AddToGroupCommand extends BaseCommand {
     super(client, {
       group: 'settings',
       name: 'addtogroup',
-      description: 'Adds a channel|role to a group.',
+      description: 'Adds a channel or role to a group.',
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
         key: 'group',
-        prompt: 'To what group do you want to add a channel|role?',
+        prompt: 'To what group do you want to add a channel or role?',
         type: 'integer|string'
       }, {
         key: 'channelOrRole',

@@ -7,11 +7,11 @@ class RemoveFromGroupCommand extends BaseCommand {
     super(client, {
       group: 'settings',
       name: 'removefromgroup',
-      description: 'Removes a channel|role from a group.',
+      description: 'Removes a channel or role from a group.',
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
         key: 'group',
-        prompt: 'From what group do you want to remove a channel|role?',
+        prompt: 'From what group do you want to remove a channel or role?',
         type: 'integer|string'
       }, {
         key: 'channelOrRole',

@@ -1,7 +1,7 @@
 'use strict'
 const { stripIndents } = require('common-tags')
 
-const commandRunHandler = async (client, command, promise, message, _args, _fromPattern, collResult) => {
+const commandRunHandler = async (client, command, promise, message, _args, _fromPattern, result) => {
   try {
     await promise
   } catch (err) {
@@ -9,8 +9,8 @@ const commandRunHandler = async (client, command, promise, message, _args, _from
     return
   }
 
-  collResult?.prompts.forEach(client.deleteMessage.bind(client))
-  collResult?.answers.forEach(client.deleteMessage.bind(client))
+  result?.prompts.forEach(client.deleteMessage.bind(client))
+  result?.answers.forEach(client.deleteMessage.bind(client))
 
   const guild = message.guild || client.mainGuild
   guild.log(

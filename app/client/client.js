@@ -45,22 +45,24 @@ class NSadminClient extends CommandoClient {
     this.currentActivity = 0
 
     this.registry
-      .registerGroup('admin', 'Admin')
-      .registerGroup('settings', 'Settings')
-      .registerGroup('main', 'Main')
-      .registerGroup('miscellaneous', 'Miscellaneous')
-      .registerGroup('bot', 'Bot')
-      .registerGroup('tickets', 'Tickets')
       .registerDefaultGroups()
       .registerDefaultTypes()
       .registerDefaultCommands({
-        commandState: true,
-        unknownCommand: false,
-        ping: true,
         help: true,
+        prefix: true,
         eval: true,
-        prefix: true
+        ping: true,
+        unknownCommand: false,
+        commandState: true
       })
+      .unregisterCommand(this.registry.resolveCommand('groups')) // returns void..
+    this.registry
+      .registerGroup('admin', 'Admin')
+      .registerGroup('bot', 'Bot')
+      .registerGroup('main', 'Main')
+      .registerGroup('miscellaneous', 'Miscellaneous')
+      .registerGroup('settings', 'Settings')
+      .registerGroup('tickets', 'Tickets')
       .registerTypesIn(path.join(__dirname, '../types'))
       .registerCommandsIn(path.join(__dirname, '../commands'))
 

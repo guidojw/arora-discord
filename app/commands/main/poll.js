@@ -3,7 +3,6 @@ const BaseCommand = require('../base')
 
 const { MessageEmbed } = require('discord.js')
 const { stringHelper } = require('../../helpers')
-const { discordService } = require('../../services')
 
 class PollCommand extends BaseCommand {
   constructor (client) {
@@ -39,7 +38,7 @@ class PollCommand extends BaseCommand {
     const newMessage = await message.channel.send(embed)
     if (options.length > 0) {
       for (const option of options) {
-        await newMessage.react(discordService.getEmojiFromNumber(option))
+        await newMessage.react(`${option}⃣`)
       }
     } else {
       await newMessage.react('✔')

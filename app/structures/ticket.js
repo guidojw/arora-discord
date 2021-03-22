@@ -70,7 +70,6 @@ class Ticket extends BaseStructure {
     const date = new Date()
     const readableDate = timeHelper.getDate(date)
     const readableTime = timeHelper.getTime(date)
-
     const ticketInfoEmbed = new MessageEmbed()
       .setColor(this.guild.primaryColor)
       .setTitle('Ticket Information')
@@ -134,7 +133,7 @@ class Ticket extends BaseStructure {
 
     const options = []
     for (let i = 5; i >= 1; i--) {
-      options.push(discordService.getEmojiFromNumber(i))
+      options.push(`${i}⃣`)
     }
 
     let rating = await discordService.prompt(this.author, this.author, message, options)

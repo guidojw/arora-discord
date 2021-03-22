@@ -5,15 +5,7 @@ class BaseCommand extends Commando.Command {
   constructor (client, info) {
     info.memberName = info.name
     info.argsPromptLimit = info.argsPromptLimit || (info.group === 'admin' || info.group === 'settings') ? 3 : 1
-    info.guildOnly = info.guildOnly !== undefined ? info.guildOnly : true
-
-    if (info.group === 'settings') {
-      if (typeof info.userPermissions === 'undefined') {
-        info.userPermissions = []
-      }
-      info.userPermissions.push('MANAGE_GUILD')
-    }
-
+    info.guildOnly = typeof info.guildOnly !== 'undefined' ? info.guildOnly : true
     super(client, info)
   }
 
@@ -24,7 +16,7 @@ class BaseCommand extends Commando.Command {
     }
 
     const result = super.hasPermission(message, ownerOverride)
-    if (!result || typeof result === 'string' || this.group.guarded || this.group.id === 'settings') {
+    if (!result || typeof result === 'string' || this.guarded || this.group.guarded) {
       return result
     }
 
