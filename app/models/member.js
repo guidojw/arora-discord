@@ -25,14 +25,10 @@ module.exports = (sequelize, DataTypes) => {
     })
     Member.belongsToMany(models.Ticket, {
       through: 'tickets_moderators',
-      sourceKey: 'id',
-      targetKey: 'id',
       as: 'moderatingTickets'
     })
     Member.belongsToMany(models.Role, {
       through: 'members_roles',
-      sourceKey: 'id',
-      targetKey: 'id',
       as: 'roles'
     })
 

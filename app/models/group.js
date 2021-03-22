@@ -31,14 +31,10 @@ module.exports = (sequelize, DataTypes) => {
     })
     Group.belongsToMany(models.Channel, {
       through: 'channels_groups',
-      sourceKey: 'id',
-      targetKey: 'id',
       as: 'channels'
     })
     Group.belongsToMany(models.Role, {
       through: 'roles_groups',
-      sourceKey: 'id',
-      targetKey: 'id',
       as: 'roles'
     })
     Group.hasMany(models.Permission, {

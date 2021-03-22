@@ -18,9 +18,7 @@ module.exports = (sequelize, DataTypes) => {
       onDelete: 'CASCADE'
     })
     Role.belongsToMany(models.Group, {
-      through: 'roles_groups',
-      sourceKey: 'id',
-      targetKey: 'id'
+      through: 'roles_groups'
     })
     Role.hasMany(models.RoleMessage, {
       foreignKey: {
@@ -35,9 +33,7 @@ module.exports = (sequelize, DataTypes) => {
       }
     })
     Role.belongsToMany(models.Member, {
-      through: 'members_roles',
-      sourceKey: 'id',
-      targetKey: 'id'
+      through: 'members_roles'
     })
     Role.hasMany(models.Permission, {
       foreignKey: 'roleId',

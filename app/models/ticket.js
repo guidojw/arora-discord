@@ -36,8 +36,6 @@ module.exports = sequelize => {
     })
     Ticket.belongsToMany(models.Member, {
       through: 'tickets_moderators',
-      sourceKey: 'id',
-      targetKey: 'id',
       as: 'moderators'
     })
     Ticket.belongsTo(models.Member, {

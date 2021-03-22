@@ -18,22 +18,16 @@ module.exports = (sequelize, DataTypes) => {
       onDelete: 'CASCADE'
     })
     Channel.belongsToMany(models.Group, {
-      through: 'channels_groups',
-      sourceKey: 'id',
-      targetKey: 'id'
+      through: 'channels_groups'
     })
     Channel.belongsToMany(models.Channel, {
       through: 'channels_channels',
-      sourceKey: 'id',
-      targetKey: 'id',
       foreignKey: 'fromChannelId',
       otherKey: 'toChannelId',
       as: 'fromLinks'
     })
     Channel.belongsToMany(models.Channel, {
       through: 'channels_channels',
-      sourceKey: 'id',
-      targetKey: 'id',
       foreignKey: 'toChannelId',
       otherKey: 'fromChannelId',
       as: 'toLinks'
