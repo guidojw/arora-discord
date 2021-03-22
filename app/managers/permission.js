@@ -87,10 +87,11 @@ class PermissionManager extends BaseManager {
     let commandId
     try {
       commandId = this.client.registry.resolveCommand(permission).nsadminId
-    } catch {} // eslint-disable-line no-empty
-    try {
-      commandId = this.client.registry.resolveGroup(permission).nsadminId
-    } catch {} // eslint-disable-line no-empty
+    } catch {
+      try {
+        commandId = this.client.registry.resolveGroup(permission).nsadminId
+      } catch {} // eslint-disable-line no-empty
+    }
     if (commandId) {
       return this.cache.find(otherPermission => otherPermission.commandId === commandId) || null
     }
@@ -105,10 +106,11 @@ class PermissionManager extends BaseManager {
     let commandId
     try {
       commandId = this.client.registry.resolveCommand(permission).nsadminId
-    } catch {} // eslint-disable-line no-empty
-    try {
-      commandId = this.client.registry.resolveGroup(permission).nsadminId
-    } catch {} // eslint-disable-line no-empty
+    } catch {
+      try {
+        commandId = this.client.registry.resolveGroup(permission).nsadminId
+      } catch {} // eslint-disable-line no-empty
+    }
     if (commandId) {
       return this.cache.find(otherPermission => otherPermission.commandId === commandId)?.id ?? null
     }
