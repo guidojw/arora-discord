@@ -3,6 +3,7 @@ module.exports = {
   ChannelGroup: require('./channel-group'),
   Group: require('./group'),
   Panel: require('./panel'),
+  Permission: require('./permission'),
   RoleBinding: require('./role-binding'),
   RoleGroup: require('./role-group'),
   RoleMessage: require('./role-message'),

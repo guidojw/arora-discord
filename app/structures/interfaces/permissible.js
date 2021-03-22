@@ -1,15 +1,13 @@
 'use strict'
+const PermissionManager = require('../../managers/permission')
+
 class Permissible {
   constructor () {
-    this.permissions = []
-  }
-
-  can (name) {
-    return this.permissions.contains(name)
+    this.nsadminPermissions = new PermissionManager(this)
   }
 
   static applyToClass (structure) {
-    const props = ['can']
+    const props = []
     for (const prop of props) {
       Object.defineProperty(
         structure.prototype,

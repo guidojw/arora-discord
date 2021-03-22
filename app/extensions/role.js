@@ -2,20 +2,20 @@
 const Permissible = require('../structures/interfaces/permissible')
 
 const { Structures } = require('discord.js')
-const { RoleGroupManager } = require('../managers')
+const { PermissionManager, RoleGroupManager } = require('../managers')
 
 const NSadminRole = Structures.extend('Role', Role => {
   class NSadminRole extends Role {
     constructor (...args) {
       super(...args)
 
-      this.permissions = []
+      this.nsadminPermissions = new PermissionManager(this)
     }
 
     _setup (data) {
       if (data.permissions) {
-        for (const { name } of data.permissions) {
-          this.permissions.push(name)
+        for (const rawPermission of data.permissions) {
+          this.nsadminPermissions.add(rawPermission)
         }
       }
     }

@@ -10,6 +10,7 @@ module.exports = {
   GuildTagManager: require('./guild-tag'),
   GuildTicketManager: require('./guild-ticket'),
   GuildTicketTypeManager: require('./guild-ticket-type'),
+  PermissionManager: require('./permission'),
   RoleGroupManager: require('./role-group'),
   TagTagNameManager: require('./tag-tag-name'),
   TextChannelGroupManager: require('./text-channel-group'),

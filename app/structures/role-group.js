@@ -2,12 +2,13 @@
 const Group = require('./group')
 const Permissible = require('./interfaces/permissible')
 const GroupRoleManager = require('../managers/group-role')
+const PermissionManager = require('../managers/permission')
 
 class RoleGroup extends Group {
   constructor (client, data, guild) {
     super(client, data, guild)
 
-    this.permissions = []
+    this.nsadminPermissions = new PermissionManager(this)
 
     this._roles = []
 
@@ -18,8 +19,8 @@ class RoleGroup extends Group {
     super._setup(data)
 
     if (data.permissions) {
-      for (const { name } of data.permissions) {
-        this.permissions.push(name)
+      for (const rawPermission of data.permissions) {
+        this.nsadminPermissions.add(rawPermission)
       }
     }
 
