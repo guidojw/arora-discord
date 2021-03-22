@@ -7,6 +7,14 @@ class NSadminProvider extends SettingProvider {
   async init (client) {
     this.client = client
 
+    const settings = await Command.findAll()
+    for (const command of client.registry.commands.values()) {
+      await this.setupCommand(command, settings)
+    }
+    for (const group of client.registry.groups.values()) {
+      await this.setupGroup(group, settings)
+    }
+
     for (const guildId of client.guilds.cache.keys()) {
       await this.setupGuild(guildId)
     }
@@ -15,13 +23,9 @@ class NSadminProvider extends SettingProvider {
 
   async setupGuild (guildId) {
     const guild = this.client.guilds.cache.get(guildId)
+    const [data] = await Guild.findOrCreate({ where: { id: guildId } })
 
-    const [data, created] = await Guild.findOrCreate({ where: { id: guildId } })
     if (guild) {
-      if (created) { // Creating doesn't automatically include the included models.
-        await data.reload()
-      }
-
       guild._setup(data)
     }
 
@@ -34,13 +38,11 @@ class NSadminProvider extends SettingProvider {
     }
 
     const settings = await data.getCommands()
-    if (settings) {
-      for (const command of this.client.registry.commands.values()) {
-        this.setupGuildCommand(guild, command, settings)
-      }
-      for (const group of this.client.registry.groups.values()) {
-        this.setupGuildGroup(guild, group, settings)
-      }
+    for (const command of this.client.registry.commands.values()) {
+      this.setupGuildCommand(guild, command, settings)
+    }
+    for (const group of this.client.registry.groups.values()) {
+      this.setupGuildGroup(guild, group, settings)
     }
 
     if (guild) {
@@ -48,17 +50,29 @@ class NSadminProvider extends SettingProvider {
     }
   }
 
+  async setupCommand (command, settings) {
+    const commandSettings = settings.find(cmd => cmd.type === 'command' && cmd.name === command.name) ||
+      await Command.create({ name: command.name, type: 'command' })
+    command.nsadminId = commandSettings.id
+  }
+
+  async setupGroup (group, settings) {
+    const groupSettings = settings.find(grp => grp.type === 'group' && grp.name === group.id) ||
+      await Command.create({ name: group.id, type: 'group' })
+    group.nsadminId = groupSettings.id
+  }
+
   setupGuildCommand (guild, command, settings) {
     if (!command.guarded) {
-      const commandSettings = settings.find(cmd => cmd.name === command.name)
+      const commandSettings = settings.find(cmd => cmd.type === 'command' && cmd.name === command.name)
       if (commandSettings) {
         if (guild) {
           if (!guild._commandsEnabled) {
             guild._commandsEnabled = {}
           }
-          guild._commandsEnabled[command.name] = commandSettings.enabled
+          guild._commandsEnabled[command.name] = commandSettings.GuildCommand.enabled
         } else {
-          command._globalEnabled = commandSettings.enabled
+          command._globalEnabled = commandSettings.GuildCommand.enabled
         }
       }
     }
@@ -66,40 +80,30 @@ class NSadminProvider extends SettingProvider {
 
   setupGuildGroup (guild, group, settings) {
     if (!group.guarded) {
-      const groupSettings = settings.find(cmd => cmd.name === group.name)
+      const groupSettings = settings.find(grp => grp.type === 'group' && grp.name === group.id)
       if (guild) {
         if (!guild._groupsEnabled) {
           guild._groupsEnabled = {}
         }
-        guild._groupsEnabled[group.id] = groupSettings?.enabled || false
+        guild._groupsEnabled[group.id] = groupSettings?.GuildCommand.enabled ?? false
       } else {
-        group._globalEnabled = groupSettings?.enabled || true
+        group._globalEnabled = groupSettings?.GuildCommand.enabled ?? false
       }
     }
   }
 
-  commandPrefixChange (guild, prefix) {
+  onCommandPrefixChange (guild, prefix) {
     if (!guild) {
-      return Guild.update({ commandPrefix: prefix }, { where: { id: '0' } })
+      Guild.update({ commandPrefix: prefix }, { where: { id: '0' } })
+      return
     }
-    return guild.update({ commandPrefix: prefix })
+    guild.update({ commandPrefix: prefix })
   }
 
-  async commandStatusChange (type, guild, command, enabled) {
+  async onCommandStatusChange (type, guild, commandOrGroup, enabled) {
     const guildId = this.constructor.getGuildID(guild)
-    const [cmd, created] = await Command.findOrCreate({
-      where: {
-        name: command.name,
-        guildId,
-        type
-      },
-      defaults: {
-        enabled
-      }
-    })
-    if (!created) {
-      await cmd.update({ enabled })
-    }
+    const data = await Guild.findOne({ where: { id: guildId !== 'global' ? guildId : 0 } })
+    data.addCommand(commandOrGroup.nsadminId, { through: { enabled } })
   }
 }
 

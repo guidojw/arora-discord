@@ -24,57 +24,14 @@ module.exports = (sequelize, DataTypes) => {
       field: 'roblox_group_id'
     }
   }, {
-    hooks: {
-      afterCreate: async (guild, { transaction }) => {
-        await guild.createRole({
-          id: guild.id,
-          guildId: guild.id
-        }, {
-          transaction
-        })
-
-        await sequelize.models.Group.bulkCreate([{
-          name: 'noTextChannels',
-          type: 'channel',
-          guarded: true,
-          guildId: guild.id
-        }, {
-          name: 'photoContestChannels',
-          type: 'channel',
-          guarded: true,
-          guildId: guild.id
-        }, {
-          name: 'serverBoosterReportChannels',
-          type: 'channel',
-          guarded: true,
-          guildId: guild.id
-        }, {
-          name: 'welcomeChannels',
-          type: 'channel',
-          guarded: true,
-          guildId: guild.id
-        }, {
-          name: 'admin',
-          type: 'role',
-          guarded: true,
-          guildId: guild.id
-        }, {
-          name: 'everyone',
-          type: 'role',
-          guarded: true,
-          guildId: guild.id
-        }], {
-          transaction
-        })
-      }
-    },
     tableName: 'guilds'
   })
 
   Guild.associate = models => {
     Guild.belongsToMany(models.Command, {
       through: models.GuildCommand,
-      as: 'commands'
+      foreignKey: 'guildId',
+      otherKey: 'commandId'
     })
     Guild.hasMany(models.Tag, {
       foreignKey: {

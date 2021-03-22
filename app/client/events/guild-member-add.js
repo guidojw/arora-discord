@@ -8,7 +8,7 @@ const guildMemberAddHandler = async (client, member) => {
 
   const guild = member.guild
   const group = guild.groups.resolve('welcomeChannels')
-  if (group.channels.cache.size > 0) {
+  if (group?.channels.cache.size > 0) {
     const embed = new MessageEmbed()
       .setTitle(`Hey ${member.user.tag},`)
       .setDescription(`You're the **${getOrdinalNum(guild.memberCount)}** member on **${guild.name}**!`)

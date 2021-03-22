@@ -14,7 +14,9 @@ module.exports = (sequelize, DataTypes) => {
 
   Command.associate = models => {
     Command.belongsToMany(models.Guild, {
-      through: models.GuildCommand
+      through: models.GuildCommand,
+      foreignKey: 'commandId',
+      otherKey: 'guildId'
     })
     Command.hasMany(models.Permission, {
       foreignKey: {

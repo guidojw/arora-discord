@@ -9,7 +9,7 @@ const messageHandler = (client, message) => {
   }
 
   if (message.content.startsWith(guild.commandPrefix)) {
-    const tagCommand = client.registry.commands.find(command => command.name === 'tag')
+    const tagCommand = client.registry.resolveCommand('tag')
     if (tagCommand.isEnabledIn(guild)) {
       const name = message.content.slice(guild.commandPrefix.length)
       const tag = guild.tags.resolve(name)
@@ -21,7 +21,7 @@ const messageHandler = (client, message) => {
   }
 
   const photoContestChannelsGroup = guild.groups.resolve('photoContestChannels')
-  if (photoContestChannelsGroup.channels.cache.some(channel => channel.id === message.channel.id)) {
+  if (photoContestChannelsGroup?.channels.cache.some(channel => channel.id === message.channel.id)) {
     if (message.attachments.size > 0 || message.embeds > 0) {
       message.react('👍')
     }
