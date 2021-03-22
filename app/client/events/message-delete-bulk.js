@@ -2,7 +2,7 @@
 const messageDeleteHandler = require('./message-delete')
 
 const messageDeleteBulkHandler = (client, messages) => {
-  messages.forEach(messageDeleteHandler.bind(messageDeleteBulkHandler, client))
+  messages.forEach(messageDeleteHandler.bind(messageDeleteHandler, client))
 }
 
 module.exports = messageDeleteBulkHandler
