@@ -21,6 +21,18 @@ class NSadminProvider extends SettingProvider {
     await this.setupGuild('0') // Global settings
   }
 
+  async setupCommand (command, settings) {
+    const commandSettings = settings.find(cmd => cmd.type === 'command' && cmd.name === command.name) ||
+      await Command.create({ name: command.name, type: 'command' })
+    command.nsadminId = commandSettings.id
+  }
+
+  async setupGroup (group, settings) {
+    const groupSettings = settings.find(grp => grp.type === 'group' && grp.name === group.id) ||
+      await Command.create({ name: group.id, type: 'group' })
+    group.nsadminId = groupSettings.id
+  }
+
   async setupGuild (guildId) {
     const guild = this.client.guilds.cache.get(guildId)
     const [data] = await Guild.findOrCreate({ where: { id: guildId } })
@@ -48,18 +60,6 @@ class NSadminProvider extends SettingProvider {
     if (guild) {
       await guild.init()
     }
-  }
-
-  async setupCommand (command, settings) {
-    const commandSettings = settings.find(cmd => cmd.type === 'command' && cmd.name === command.name) ||
-      await Command.create({ name: command.name, type: 'command' })
-    command.nsadminId = commandSettings.id
-  }
-
-  async setupGroup (group, settings) {
-    const groupSettings = settings.find(grp => grp.type === 'group' && grp.name === group.id) ||
-      await Command.create({ name: group.id, type: 'group' })
-    group.nsadminId = groupSettings.id
   }
 
   setupGuildCommand (guild, command, settings) {
