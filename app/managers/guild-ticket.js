@@ -32,8 +32,14 @@ class GuildTicketManager extends BaseManager {
     }
 
     const channelName = `${type.name}-${author.user.tag}`
-    const channel = await this.guild.channels.create(channelName, { parent: this.guild.ticketsCategory })
-    await channel.updateOverwrite(author, { VIEW_CHANNEL: true })
+    let channel
+    try {
+      channel = await this.guild.channels.create(channelName, { parent: this.guild.ticketsCategory })
+      await channel.updateOverwrite(author, { VIEW_CHANNEL: true })
+    } catch (err) {
+      await channel?.delete()
+      throw err
+    }
 
     const newData = await TicketModel.create({
       authorId: author.id,
