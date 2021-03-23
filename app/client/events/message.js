@@ -1,4 +1,6 @@
 'use strict'
+const { stripIndents } = require('common-tags')
+
 const messageHandler = (client, message) => {
   if (message.author.bot) {
     return
@@ -21,9 +23,27 @@ const messageHandler = (client, message) => {
   }
 
   const photoContestChannelsGroup = guild.groups.resolve('photoContestChannels')
-  if (photoContestChannelsGroup?.channels.cache.some(channel => channel.id === message.channel.id)) {
-    if (message.attachments.size > 0 || message.embeds > 0) {
+  if (photoContestChannelsGroup?.channels?.cache.has(message.channel.id)) {
+    if (message.attachments.size > 0 || message.embeds.length > 0) {
       message.react('👍')
+    }
+  }
+
+  const noTextChannelsGroup = guild.groups.resolve('noTextChannels')
+  if (noTextChannelsGroup?.channels?.cache.has(message.channel.id)) {
+    if (message.attachments.size === 0 && message.embeds.length === 0) {
+      const canTalkInNoTextChannelsGroup = guild.groups.resolve('canTalkInNoTextChannels')
+      if (!message.member.roles.cache.some(role => canTalkInNoTextChannelsGroup?.roles?.cache.has(role.id))) {
+        message.delete()
+        message.guild.log(
+          message.author,
+          stripIndents`
+          **Message sent by ${message.author} deleted in ${message.channel}**
+          ${message.content}
+          `,
+          { color: null }
+        )
+      }
     }
   }
 

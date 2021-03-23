@@ -7,18 +7,20 @@ const guildMemberAddHandler = async (client, member) => {
   }
 
   const guild = member.guild
-  const group = guild.groups.resolve('welcomeChannels')
-  if (group?.channels.cache.size > 0) {
+  const welcomeChannelsGroup = guild.groups.resolve('welcomeChannels')
+  if (welcomeChannelsGroup?.channels?.cache.size > 0) {
     const embed = new MessageEmbed()
       .setTitle(`Hey ${member.user.tag},`)
       .setDescription(`You're the **${getOrdinalNum(guild.memberCount)}** member on **${guild.name}**!`)
       .setThumbnail(member.user.displayAvatarURL())
       .setColor(guild.primaryColor)
-    group.channels.cache.forEach(channel => channel.send(embed))
+    welcomeChannelsGroup.channels.cache.forEach(channel => channel.send(embed))
   }
 
   const persistentRoles = await member.fetchPersistentRoles()
-  member.roles.add(persistentRoles)
+  if (persistentRoles.size > 0) {
+    member.roles.add(persistentRoles)
+  }
 }
 
 function getOrdinalNum (number) {

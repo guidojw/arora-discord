@@ -135,7 +135,7 @@ const NSadminGuild = Structures.extend('Guild', Guild => {
       return this.channels.cache.get(this.ticketsCategoryId) || null
     }
 
-    async log (author, content, options) {
+    async log (author, content, options = {}) {
       if (this.logsChannel) {
         if (author.partial) {
           await author.fetch()
@@ -143,13 +143,13 @@ const NSadminGuild = Structures.extend('Guild', Guild => {
 
         const embed = new MessageEmbed()
           .setAuthor(author.tag, author.displayAvatarURL())
-          .setDescription(content)
           .setColor(this.primaryColor)
+          .setDescription(content)
+        if (typeof options.color !== 'undefined') {
+          embed.setColor(options.color)
+        }
         if (options.footer) {
           embed.setFooter(options.footer)
-        }
-        if (options.color) {
-          embed.setColor(options.color)
         }
 
         return this.logsChannel.send(embed)
