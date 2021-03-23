@@ -65,6 +65,10 @@ class NSadminClient extends CommandoClient {
       .registerTypesIn(path.join(__dirname, '../types'))
       .registerCommandsIn(path.join(__dirname, '../commands'))
 
+    if (applicationConfig.apiEnabled) {
+      this.nsadminWs = new WebSocketManager(this)
+    }
+
     this.once('ready', this.ready.bind(this))
   }
 
@@ -94,10 +98,6 @@ class NSadminClient extends CommandoClient {
     this.bindEvent('messageReactionRemove')
     this.bindEvent('roleDelete')
     this.bindEvent('voiceStateUpdate')
-
-    if (applicationConfig.apiEnabled) {
-      this.nsadminWs = new WebSocketManager(this)
-    }
 
     this.setActivity()
     setInterval(this.setActivity.bind(this), ACTIVITY_CAROUSEL_INTERVAL)

@@ -17,7 +17,7 @@ exports.getTrainingEmbeds = async trainings => {
     trainings,
     exports.getTrainingRow,
     { users }
-    )
+  )
 }
 
 exports.getTrainingRow = (training, { users }) => {
@@ -42,7 +42,7 @@ exports.getSuspensionEmbeds = async (groupId, suspensions) => {
     suspensions,
     exports.getSuspensionRow,
     { users, roles }
-    )
+  )
 }
 
 exports.getSuspensionRow = (suspension, { users, roles }) => {

@@ -86,6 +86,7 @@ class GuildPanelManager extends BaseManager {
       where: { id: panel.id },
       returning: true
     })
+    await newData.reload()
 
     const _panel = this.cache.get(panel.id)
     _panel?._setup(newData)
@@ -120,6 +121,7 @@ class GuildPanelManager extends BaseManager {
       returning: true,
       individualHooks: true
     })
+    await newData.reload()
 
     const _panel = this.cache.get(panel.id)
     _panel?._setup(newData)

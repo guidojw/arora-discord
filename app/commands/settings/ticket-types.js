@@ -28,7 +28,7 @@ class RoleBindingsCommand extends BaseCommand {
       }
 
       const embed = new MessageEmbed()
-        .addField(`Ticket Type ${type.id}`, `\`${type.name}\``)
+        .addField(`Ticket Type ${type.id}`, `Name: \`${type.name}\``)
         .setColor(message.guild.primaryColor)
       return message.replyEmbed(embed)
     } else {

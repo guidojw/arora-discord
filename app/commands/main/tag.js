@@ -26,11 +26,13 @@ class TagCommand extends BaseCommand {
         return message.reply('Tag not found.')
       }
 
-      return message.reply(tag.content, { allowedMentions: { users: [message.author.id] } })
+      return message.reply(tag.content, tag.content instanceof MessageEmbed
+        ? undefined
+        : { allowedMentions: { users: [message.author.id] } })
     } else {
       let list = ''
       for (const tag of message.guild.tags.cache.values()) {
-        list += `${tag.id}. ${makeCommaSeparatedString(tag.names.cache.map(tagName => `**${tagName.name}**`))}\n`
+        list += `${tag.id}. ${makeCommaSeparatedString(Array.from(tag.names.cache.values()))}\n`
       }
 
       const embed = new MessageEmbed()
@@ -49,7 +51,7 @@ function makeCommaSeparatedString (arr) {
   }
   const firsts = arr.slice(0, arr.length - 1)
   const last = arr[arr.length - 1]
-  return firsts.join(', ') + ' & ' + last
+  return `\`${firsts.map(tagName => tagName.name).join('`, `')}\` & \`${last.name}\``
 }
 
 module.exports = TagCommand

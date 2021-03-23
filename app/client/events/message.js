@@ -1,5 +1,6 @@
 'use strict'
 const { stripIndents } = require('common-tags')
+const { MessageEmbed } = require('discord.js')
 
 const messageHandler = (client, message) => {
   if (message.author.bot) {
@@ -17,7 +18,9 @@ const messageHandler = (client, message) => {
       const tag = guild.tags.resolve(name)
 
       if (tag) {
-        message.reply(tag.content, { allowedMentions: { users: [message.author.id] } })
+        message.reply(tag.content, tag.content instanceof MessageEmbed
+          ? undefined
+          : { allowedMentions: { users: [message.author.id] } })
       }
     }
   }

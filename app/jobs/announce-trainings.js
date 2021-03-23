@@ -23,7 +23,7 @@ module.exports = async guild => {
 
   // Trainings Info Panel
   if (trainingsInfoPanel?.message) {
-    const embed = trainingsInfoPanel.content
+    const embed = trainingsInfoPanel.embed.setColor(guild.primaryColor)
     const now = new Date()
 
     const dstNow = timeHelper.isDst(now)

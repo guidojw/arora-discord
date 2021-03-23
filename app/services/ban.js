@@ -18,7 +18,7 @@ exports.getBanEmbeds = async (groupId, bans) => {
     bans,
     exports.getBanRow,
     { users, roles }
-    )
+  )
 }
 
 exports.getBanRow = (ban, { users, roles }) => {

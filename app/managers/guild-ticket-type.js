@@ -165,7 +165,7 @@ class GuildTicketTypeManager extends BaseManager {
       type = type.toLowerCase().replace(/\s/g, '')
       return this.cache.find(otherType => (
         otherType.name.toLowerCase().replace(/\s/g, '') === type
-    )) || null
+      )) || null
     }
     return super.resolve(type)
   }

@@ -105,7 +105,7 @@ const NSadminGuild = Structures.extend('Guild', Guild => {
 
     async init () {
       if (applicationConfig.apiEnabled) {
-        const announceTrainingsJob = cronConfig.premiumMembersReportJob
+        const announceTrainingsJob = cronConfig.announceTrainingsJob
         cron.schedule(
           announceTrainingsJob.expression,
           announceTrainingsJob.job.bind(announceTrainingsJob.job, this)
