@@ -25,7 +25,7 @@ class CreateTagCommand extends BaseCommand {
   async run (message, { name, content }) {
     const tag = await message.guild.tags.create(name, content)
 
-    return message.reply(`Successfully created tag **${tag.names.cache.first()?.name ?? 'Unknown'}**.`)
+    return message.reply(`Successfully created tag \`${tag.names.cache.first()?.name ?? 'Unknown'}\`.`)
   }
 }
 

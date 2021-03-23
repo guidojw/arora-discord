@@ -44,7 +44,7 @@ class GetSettingCommand extends BaseCommand {
       key = key.slice(0, -2)
     }
 
-    return message.reply(`${key} is set to **${result}**.`)
+    return message.reply(`The ${key} is ${key.includes('Channel') ? result : `\`${result}\``}.`)
   }
 }
 

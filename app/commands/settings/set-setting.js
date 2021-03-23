@@ -73,7 +73,7 @@ class SetSettingCommand extends BaseCommand {
       [key]: value !== null && key.endsWith('Id') && key !== 'robloxGroupId' ? value.id : value
     })
 
-    return message.reply(`Successfully changed ${key.endsWith('Id') ? key.slice(0, -2) : key} to **${value}**.`)
+    return message.reply(`Successfully changed ${key.endsWith('Id') ? key.slice(0, -2) : key} to ${key.includes('Channel') ? value : `\`${value}\``}.`)
   }
 }
 

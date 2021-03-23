@@ -26,7 +26,7 @@ class CreatePanelCommand extends BaseCommand {
   async run (message, { name, content }) {
     const panel = await message.guild.panels.create(name, content)
 
-    return message.reply(`Successfully created panel **${panel.name}**.`)
+    return message.reply(`Successfully created panel \`${panel.name}\`.`)
   }
 }
 

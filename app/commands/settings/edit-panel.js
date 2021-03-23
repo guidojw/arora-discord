@@ -25,7 +25,7 @@ class EditPanelCommand extends BaseCommand {
   async run (message, { panel, content }) {
     panel = await message.guild.panels.update(panel, { content })
 
-    return message.reply(`Successfully edited panel **${panel.name}**.`)
+    return message.reply(`Successfully edited panel \`${panel.name}\`.`)
   }
 }
 

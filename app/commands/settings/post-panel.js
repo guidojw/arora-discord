@@ -28,8 +28,8 @@ class PostPanelCommand extends BaseCommand {
     panel = await message.guild.panels.post(panel, channel)
 
     return message.reply(channel
-      ? `Successfully posted panel **${panel.name}** in ${channel}.`
-      : `Successfully removed panel **${panel.name}** from channel.`
+      ? `Successfully posted panel \`${panel.name}\` in ${channel}.`
+      : `Successfully removed panel \`${panel.name}\` from channel.`
     )
   }
 }

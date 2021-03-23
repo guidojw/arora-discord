@@ -10,7 +10,7 @@ class CreateTagAliasCommand extends BaseCommand {
       description: 'Creates a new alias for a tag.',
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
-        key: 'idOrName',
+        key: 'tag',
         prompt: 'To what tag would you like to add this alias?',
         type: 'integer|string'
       }, {
@@ -22,15 +22,15 @@ class CreateTagAliasCommand extends BaseCommand {
     })
   }
 
-  async run (message, { idOrName, alias }) {
-    const tag = message.guild.tags.resolve(idOrName)
+  async run (message, { tag, alias }) {
+    tag = message.guild.tags.resolve(tag)
     if (!tag) {
       return message.reply('Tag not found')
     }
 
     const tagName = await tag.names.create(alias)
 
-    return message.reply(`Successfully created alias **${tagName.name}** for tag **${tag.names.cache.first()?.name ?? 'Unknown'}**.`)
+    return message.reply(`Successfully created alias \`${tagName.name}\` for tag \`${tag.names.cache.first()?.name ?? 'Unknown'}\`.`)
   }
 }
 

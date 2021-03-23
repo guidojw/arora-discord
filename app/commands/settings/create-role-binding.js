@@ -31,7 +31,9 @@ class CreateRoleBindingCommand extends BaseCommand {
   async run (message, { role, min, max }) {
     const roleBinding = await message.guild.roleBindings.create({ role, min, max })
 
-    return message.reply(`Successfully bound group **${roleBinding.robloxGroupId}** rank ${getRangeString(roleBinding.min, roleBinding.max)} to role ${roleBinding.role}.`)
+    return message.reply(`Successfully bound group \`${roleBinding.robloxGroupId}\` rank \`${getRangeString(roleBinding.min, roleBinding.max)}\` to role ${roleBinding.role}.`, {
+      allowedMentions: { users: [message.author.id] }
+    })
   }
 }
 
@@ -53,7 +55,7 @@ function parseMax (val, msg) {
 }
 
 function getRangeString (min, max) {
-  return `${max ? '[' : ''}**${min}**${max ? `, **${max}**]` : ''}`
+  return `${max ? '[' : ''}${min}${max ? `, ${max}]` : ''}`
 }
 
 module.exports = CreateRoleBindingCommand

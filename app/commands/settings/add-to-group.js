@@ -15,6 +15,7 @@ class AddToGroupCommand extends BaseCommand {
         type: 'integer|string'
       }, {
         key: 'channelOrRole',
+        label: 'channel/role',
         prompt: 'What channel or role do you want to add to this group?',
         type: 'text-channel|role'
       }]
@@ -29,7 +30,7 @@ class AddToGroupCommand extends BaseCommand {
 
     await group[pluralize(group.type)].add(channelOrRole)
 
-    return message.reply(`Successfully added ${group.type} ${channelOrRole} to group **${group.name}**.`, {
+    return message.reply(`Successfully added ${group.type} ${channelOrRole} to group \`${group.name}\`.`, {
       allowedMentions: { users: [message.author.id] }
     })
   }

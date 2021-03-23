@@ -33,7 +33,7 @@ class LinkTicketTypeCommand extends BaseCommand {
   async run (message, { type, emoji, message: bindMessage, channel }) {
     type = await message.guild.ticketTypes.link(type, emoji, bindMessage, channel)
 
-    return message.reply(`Successfully linked emoji ${type.emoji} on message **${type.messageId}** to ticket type **${type.name}**.`)
+    return message.reply(`Successfully linked emoji ${type.emoji} on message \`${type.messageId}\` to ticket type \`${type.name}\`.`)
   }
 }
 

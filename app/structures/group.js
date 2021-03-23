@@ -18,6 +18,10 @@ class Group extends BaseStructure {
     this.guarded = data.guarded
   }
 
+  toString () {
+    return this.name
+  }
+
   update (data) {
     return this.guild.groups.update(this, data)
   }

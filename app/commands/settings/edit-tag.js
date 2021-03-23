@@ -24,7 +24,7 @@ class EditTagCommand extends BaseCommand {
   async run (message, { tag, content }) {
     tag = await message.guild.tags.update(tag, { content })
 
-    return message.reply(`Successfully edited tag **${tag.names.cache.first()?.name ?? 'Unknown'}**.`)
+    return message.reply(`Successfully edited tag \`${tag.names.cache.first()?.name ?? 'Unknown'}\`.`)
   }
 }
 

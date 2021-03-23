@@ -20,7 +20,7 @@ class UnlinkTicketTypeCommand extends BaseCommand {
   async run (message, { type }) {
     type = await message.guild.ticketTypes.unlink(type)
 
-    return message.reply(`Successfully unlinked message reaction from ticket type **${type.name}**.`)
+    return message.reply(`Successfully unlinked message reaction from ticket type \`${type.name}\`.`)
   }
 }
 

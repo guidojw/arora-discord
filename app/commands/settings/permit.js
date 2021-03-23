@@ -54,22 +54,23 @@ class PermitCommand extends BaseCommand {
     }
     const commandType = commandOrGroup.group ? 'command' : 'group'
     const permissibleType = roleOrGroup instanceof NSadminRole ? 'role' : 'group'
+    const subject = `${permissibleType} ${permissibleType === 'role' ? roleOrGroup  : `\`${roleOrGroup}\``}`
 
     if (typeof allow === 'undefined') {
       await roleOrGroup.nsadminPermissions.delete(commandOrGroup)
-      return message.reply(`Successfully deleted \`${commandOrGroup.name}\` ${commandType} permission from ${permissibleType} **${roleOrGroup}**.`, {
+      return message.reply(`Successfully deleted \`${commandOrGroup.name}\` ${commandType} permission from ${subject}.`, {
         allowedMentions: { users: [message.author.id] }
       })
     } else {
       const permission = roleOrGroup.nsadminPermissions.resolve(commandOrGroup)
       if (permission) {
         await permission.update({ allow })
-        return message.reply(`Successfully changed \`${commandOrGroup.name}\` ${commandType} permission for ${permissibleType} **${roleOrGroup}** to allow: **${allow}**.`, {
+        return message.reply(`Successfully changed \`${commandOrGroup.name}\` ${commandType} permission for ${subject} to allow: \`${allow}\`.`, {
           allowedMentions: { users: [message.author.id] }
         })
       } else {
         await roleOrGroup.nsadminPermissions.create(commandOrGroup, allow)
-        return message.reply(`Successfully created \`${commandOrGroup.name}\` ${commandType} permission for ${permissibleType} **${roleOrGroup}** with allow: **${allow}**.`, {
+        return message.reply(`Successfully created \`${commandOrGroup.name}\` ${commandType} permission for ${subject} with allow: \`${allow}\`.`, {
           allowedMentions: { users: [message.author.id] }
         })
       }

@@ -33,7 +33,9 @@ class CreateRoleMessageCommand extends BaseCommand {
   async run (message, { role, message: newMessage, channel, emoji }) {
     const roleMessage = await message.guild.roleMessages.create({ role, message: newMessage, channel, emoji })
 
-    return message.reply(`Successfully bound role ${roleMessage.role} to emoji ${roleMessage.emoji} on message **${roleMessage.messageId}**.`)
+    return message.reply(`Successfully bound role ${roleMessage.role} to emoji ${roleMessage.emoji} on message \`${roleMessage.messageId}\`.`, {
+      allowedMentions: { users: [message.author.id] }
+    })
   }
 }
 

@@ -25,7 +25,7 @@ class DeleteTagAliasCommand extends Base {
 
     await tag.names.delete(alias)
 
-    return message.reply(`Successfully deleted alias from tag **${tag.names.cache.first()?.name ?? 'Unknown'}**.`)
+    return message.reply(`Successfully deleted alias from tag \`${tag.names.cache.first()?.name ?? 'Unknown'}\`.`)
   }
 }
 
