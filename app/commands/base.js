@@ -10,7 +10,6 @@ class BaseCommand extends Commando.Command {
   }
 
   hasPermission (message, ownerOverride = true) {
-    ownerOverride = false // TODO: remove
     if (ownerOverride && this.client.isOwner(message.author)) {
       return true
     }
