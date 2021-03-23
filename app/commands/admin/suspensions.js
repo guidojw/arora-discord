@@ -10,11 +10,10 @@ const { groupService, userService } = require('../../services')
 class SuspensionsCommand extends BaseCommand {
   constructor (client) {
     super(client, {
-      group: 'main',
+      group: 'admin',
       name: 'suspensions',
-      aliases: ['suspensionlist', 'suspensioninfo', 'suspension'],
+      aliases: ['suspensionlist', 'suspensioninfo'],
       description: 'Lists info of current suspensions/given user\'s suspension.',
-      details: 'Only admins can see the suspensions of others.',
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
         key: 'username',
@@ -29,15 +28,6 @@ class SuspensionsCommand extends BaseCommand {
     if (message.guild.robloxGroupId === null) {
       return message.reply('This server is not bound to a Roblox group yet.')
     }
-    const adminGroup = message.guild.groups.resolve('admin')
-    if (!message.member.roles.cache.some(role => adminGroup.roles.cache.includes(role.id))) {
-      if (!username) {
-        username = message.member.displayName
-      } else {
-        return message.reply('You do not have permission to use the `suspensions` command.')
-      }
-    }
-
     if (username) {
       username = typeof username === 'string' ? username : username.displayName
       const userId = await userService.getIdFromUsername(username)
@@ -61,8 +51,7 @@ class SuspensionsCommand extends BaseCommand {
         .setTitle(`${message.argString ? `${username}'s` : 'Your'} suspension`)
         .addField('Start date', timeHelper.getDate(date), true)
         .addField('Start time', timeHelper.getTime(date), true)
-        .addField('Duration', `${days}${extensionString} ${pluralize('day', days + extensionDays)}`,
-          true)
+        .addField('Duration', `${days}${extensionString} ${pluralize('day', days + extensionDays)}`, true)
         .addField('Rank back', suspension.rankBack ? 'yes' : 'no', true)
         .addField('Reason', suspension.reason)
         .setColor(message.guild.primaryColor)
