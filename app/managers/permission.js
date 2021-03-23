@@ -3,6 +3,7 @@ const BaseManager = require('./base')
 const Permission = require('../structures/permission')
 
 const { Role } = require('discord.js')
+const { Command } = require('discord.js-commando')
 const { Permission: PermissionModel } = require('../models')
 
 class PermissionManager extends BaseManager {
@@ -18,25 +19,33 @@ class PermissionManager extends BaseManager {
   }
 
   async create (commandOrGroup, allow) {
-    let commandId
     try {
-      commandId = this.client.registry.resolveCommand(commandOrGroup).nsadminId
+      commandOrGroup = this.client.registry.resolveCommand(commandOrGroup)
     } catch {
       try {
-        commandId = this.client.registry.resolveGroup(commandOrGroup).nsadminId
+        commandOrGroup = this.client.registry.resolveGroup(commandOrGroup)
       } catch {
-        throw new Error('Invalid command or group.')
+        throw new Error('Invalid command or command group.')
       }
     }
-    if (this.resolve(commandOrGroup)) {
-      throw new Error('A permission for that command or group already exists.')
+    if (commandOrGroup.guarded || (commandOrGroup instanceof Command && commandOrGroup.group.guarded)) {
+      throw new Error('Cannot create permissions for guarded commands or command groups.')
     }
+    if (commandOrGroup.id === 'util' || commandOrGroup.groupID === 'util') {
+      throw new Error('Cannot create permissions for `Utility` command group or commands in it.')
+    }
+    if (this.resolve(commandOrGroup)) {
+      throw new Error('A permission for that command or command group already exists.')
+    }
+    const commandId = commandOrGroup.nsadminId
 
     const permission = await PermissionModel.create({
       roleId: this.permissible instanceof Role ? this.permissible.id : null,
       groupId: !(this.permissible instanceof Role) ? this.permissible.id : null,
       commandId,
       allow
+    }, {
+      guildId: this.guild.id
     })
 
     return this.add(permission)

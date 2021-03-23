@@ -6,6 +6,18 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     }
   }, {
+    hooks: {
+      beforeCreate: (permission, { guildId }) => {
+        if (permission.roleId) {
+          return sequelize.models.Role.findOrCreate({
+            where: {
+              id: permission.roleId,
+              guildId
+            }
+          })
+        }
+      }
+    },
     tableName: 'permissions'
   })
 
