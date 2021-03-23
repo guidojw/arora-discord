@@ -62,7 +62,6 @@ class NSadminClient extends CommandoClient {
       .registerGroup('main', 'Main')
       .registerGroup('miscellaneous', 'Miscellaneous')
       .registerGroup('settings', 'Settings')
-      .registerGroup('tickets', 'Tickets')
       .registerTypesIn(path.join(__dirname, '../types'))
       .registerCommandsIn(path.join(__dirname, '../commands'))
 

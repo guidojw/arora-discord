@@ -45,7 +45,7 @@ class GuildTicketManager extends BaseManager {
     const ticket = this.add(newData)
 
     this.guild.log(
-      this.author,
+      author.user,
       `${ticket.author} **opened ticket** \`${ticket.id}\` **in** ${ticket.channel}`,
       { footer: `Ticket ID: ${ticket.id}` }
     )

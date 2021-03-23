@@ -6,7 +6,7 @@ const { MessageEmbed } = require('discord.js')
 class ToggleSupportCommand extends BaseCommand {
   constructor (client) {
     super(client, {
-      group: 'tickets',
+      group: 'settings',
       name: 'togglesupport',
       aliases: ['toggle'],
       description: 'Enables/disables the support system.',

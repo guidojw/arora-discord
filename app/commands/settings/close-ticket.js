@@ -7,11 +7,13 @@ const { discordService } = require('../../services')
 class CloseTicketCommand extends BaseCommand {
   constructor (client) {
     super(client, {
-      group: 'tickets',
+      group: 'settings',
       name: 'closeticket',
       aliases: ['close'],
       description: 'Closes this ticket.',
-      clientPermissions: ['ADD_REACTIONS', 'SEND_MESSAGES', 'MANAGE_CHANNELS']
+      clientPermissions: ['ADD_REACTIONS', 'SEND_MESSAGES', 'MANAGE_CHANNELS'],
+      guarded: true,
+      hidden: true
     })
   }
 

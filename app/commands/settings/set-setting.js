@@ -50,13 +50,16 @@ class SetSettingCommand extends BaseCommand {
           error = 'Invalid ID.'
         }
       } else {
-        if (setting === 'ticketsCategoryId' && !(value instanceof CategoryChannel)) {
-          error = 'Invalid category channel.'
-        } else if (!(value instanceof TextChannel)) {
-          error = 'Invalid channel.'
+        if (setting === 'ticketsCategoryId') {
+          if (!(value instanceof CategoryChannel)) {
+            error = 'Invalid category channel.'
+          }
         } else {
-          await ChannelModel.findOrCreate({ where: { id: value.id, guildId: message.guild.id } })
+          if (!(value instanceof TextChannel)) {
+            error = 'Invalid channel.'
+          }
         }
+        await ChannelModel.findOrCreate({ where: { id: value.id, guildId: message.guild.id } })
       }
 
       if (error) {
