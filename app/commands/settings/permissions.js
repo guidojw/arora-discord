@@ -33,42 +33,31 @@ class PermissionsCommand extends BaseCommand {
       return message.reply('Invalid group.')
     }
 
-    const sortedGroups = this.client.registry.groups
-      .sort((groupA, groupB) => groupB.commands.size - groupA.commands.size)
     const embed = new MessageEmbed()
       .setColor(message.guild.primaryColor)
     if (memberOrRoleOrGroup instanceof GuildMember) {
       embed
         .setTitle(`${memberOrRoleOrGroup.user.tag}'s Permissions`)
         .setThumbnail(memberOrRoleOrGroup.user.displayAvatarURL())
-
-      for (const group of sortedGroups.values()) {
-        if (group.guarded || group.id === 'util') {
-          continue
-        }
-        embed.addField(
-          `${group.name}: ${memberOrRoleOrGroup.canRunCommand(group)}`,
-          getCommandsPermissions(group.commands, memberOrRoleOrGroup.canRunCommand.bind(memberOrRoleOrGroup)),
-          true
-        )
-      }
-
     } else {
       embed
         .setTitle(`${memberOrRoleOrGroup.name}'s Permissions`)
         .addField('Note', 'If a command group has a permission with allow: true (e.g. "**Settings: true' +
           '**", all commands in it without a permission (e.g. "createtag: `null`") will implicitly also have a ' +
           'permission with allow: true.')
+    }
 
-      for (const group of sortedGroups.values()) {
-        if (group.guarded || group.id === 'util') {
-          continue
-        }
-        embed.addField(
-          `${group.name}: ${memberOrRoleOrGroup.permissionFor(group)}`,
-          getCommandsPermissions(group.commands, command => memberOrRoleOrGroup.permissionFor(command, true)),
-          true
-        )
+    const fn = memberOrRoleOrGroup instanceof GuildMember
+      ? memberOrRoleOrGroup.canRunCommand.bind(memberOrRoleOrGroup)
+      : command => memberOrRoleOrGroup.permissionFor(command, true)
+    const groups = this.client.registry.groups
+      .filter(group => !group.guarded && group.id !== 'util' && group.isEnabledIn(message.guild))
+      .sort((groupA, groupB) => groupB.commands.size - groupA.commands.size)
+    for (const group of groups.values()) {
+      const commands = group.commands.filter(command => !command.guarded && command.isEnabledIn(message.guild))
+      const commandsPermissions = getCommandsPermissions(commands, fn)
+      if (commandsPermissions !== '') {
+        embed.addField(`${group.name}: ${fn(group)}`, commandsPermissions, true)
       }
     }
 
@@ -79,9 +68,6 @@ class PermissionsCommand extends BaseCommand {
 function getCommandsPermissions (commands, fn) {
   let field = ''
   for (const command of commands.values()) {
-    if (command.guarded) {
-      continue
-    }
     field += `${command.name}: \`${fn(command)}\`\n`
   }
   return field
