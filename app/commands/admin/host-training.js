@@ -95,7 +95,7 @@ function validateNotes (val, msg) {
 }
 
 function parseNotes (val, msg) {
-  return val.toLowerCase() === 'none' ? undefined : this.type.parse(val, msg, this)
+  return val === 'none' ? undefined : this.type.parse(val, msg, this)
 }
 
 module.exports = HostTrainingCommand

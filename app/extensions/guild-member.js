@@ -23,7 +23,7 @@ const NSadminGuildMember = Structures.extend('GuildMember', GuildMember => {
           return false
         }
       }
-      return result
+      return result === true
     }
 
     async fetchPersistentRoles () {

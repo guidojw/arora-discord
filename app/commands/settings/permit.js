@@ -1,7 +1,7 @@
 'use strict'
 const BaseCommand = require('../base')
 
-const { NSadminRole } = require('../../extensions')
+const { NSadminRole: Role } = require('../../extensions')
 const { GroupTypes } = require('../../util/constants')
 
 class PermitCommand extends BaseCommand {
@@ -45,16 +45,16 @@ class PermitCommand extends BaseCommand {
   }
 
   async run (message, { roleOrGroup, commandOrGroup, allow }) {
-    roleOrGroup = roleOrGroup instanceof NSadminRole ? roleOrGroup : message.guild.groups.resolve(roleOrGroup)
+    roleOrGroup = roleOrGroup instanceof Role ? roleOrGroup : message.guild.groups.resolve(roleOrGroup)
     if (!roleOrGroup) {
       return message.reply('Group not found.')
     }
-    if (!(roleOrGroup instanceof NSadminRole || roleOrGroup.type === GroupTypes.ROLE)) {
+    if (!(roleOrGroup instanceof Role || roleOrGroup.type === GroupTypes.ROLE)) {
       return message.reply('Invalid group.')
     }
     const commandType = commandOrGroup.group ? 'command' : 'group'
-    const permissibleType = roleOrGroup instanceof NSadminRole ? 'role' : 'group'
-    const subject = `${permissibleType} ${permissibleType === 'role' ? roleOrGroup  : `\`${roleOrGroup}\``}`
+    const permissibleType = roleOrGroup instanceof Role ? 'role' : 'group'
+    const subject = `${permissibleType} ${permissibleType === 'role' ? roleOrGroup : `\`${roleOrGroup}\``}`
 
     if (typeof allow === 'undefined') {
       await roleOrGroup.nsadminPermissions.delete(commandOrGroup)

@@ -34,15 +34,9 @@ class GroupsCommand extends BaseCommand {
         .addField('Guarded', group.guarded ? 'yes' : 'no', true)
         .setColor(message.guild.primaryColor)
       if (group.type === 'channel') {
-        embed.addField('Channels', group.channels.cache
-          .map(channel => `<#${channel.id}>`)
-          .join(' ') || 'none'
-        )
+        embed.addField('Channels', Array.from(group.channels.cache.values()).join(' ') || 'none')
       } else {
-        embed.addField('Roles', group.roles.cache
-          .map(role => `<@${role.id}>`)
-          .join(' ') || 'none'
-        )
+        embed.addField('Roles', Array.from(group.roles.cache.values()).join(' ') || 'none')
       }
       return message.replyEmbed(embed)
     } else {
