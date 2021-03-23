@@ -25,6 +25,10 @@ class Panel extends BaseStructure {
     return new MessageEmbed(JSON.parse(this.content))
   }
 
+  toString () {
+    return this.name
+  }
+
   update (data) {
     return this.guild.panels.update(this, data)
   }

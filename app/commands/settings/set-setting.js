@@ -18,8 +18,7 @@ class SetSettingCommand extends BaseCommand {
         prompt: 'What setting would you like to change?',
         type: 'string',
         oneOf: Object.keys(Guild.rawAttributes)
-          .filter(attribute => attribute !== 'id' && attribute !== 'supportEnabled' && attribute !== 'commandPrefix' &&
-            attribute !== 'trainingsInfoPanelId' && attribute !== 'trainingsPanelId')
+          .filter(attribute => !['id', 'supportEnabled', 'commandPrefix'].includes(attribute))
           .map(attribute => attribute.endsWith('Id') ? attribute.slice(0, -2) : attribute)
           .map(attribute => attribute.toLowerCase()),
         parse: parseSetting
@@ -50,6 +49,11 @@ class SetSettingCommand extends BaseCommand {
         if (typeof value !== 'number') {
           error = 'Invalid ID.'
         }
+      } else if (setting.includes('Panel')) {
+        value = message.guild.panels.resolve(value)
+        if (!value) {
+          error = 'Invalid panel.'
+        }
       } else {
         if (setting === 'ticketsCategoryId' && !(value instanceof CategoryChannel)) {
           error = 'Invalid category channel.'
@@ -74,9 +78,9 @@ class SetSettingCommand extends BaseCommand {
 function parseSetting (val, msg) {
   const lowerCaseVal = val.toLowerCase()
   return Object.keys(Guild.rawAttributes)
-    .find(attribute => {
-      return (attribute.endsWith('Id') ? attribute.slice(0, -2) : attribute).toLowerCase() === lowerCaseVal
-    }) || this.type.parse(val, msg, this)
+    .find(attribute => (
+      (attribute.endsWith('Id') ? attribute.slice(0, -2) : attribute).toLowerCase() === lowerCaseVal
+    )) || this.type.parse(val, msg, this)
 }
 
 function parseValue (val, msg) {

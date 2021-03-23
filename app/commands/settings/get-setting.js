@@ -17,8 +17,7 @@ class GetSettingCommand extends BaseCommand {
         prompt: 'What setting would you like to get?',
         type: 'string',
         oneOf: Object.keys(Guild.rawAttributes)
-          .filter(attribute => attribute !== 'id' && attribute !== 'supportEnabled' && attribute !== 'commandPrefix' &&
-            attribute !== 'trainingsInfoPanelId' && attribute !== 'trainingsPanelId')
+          .filter(attribute => !['id', 'supportEnabled', 'commandPrefix'].includes(attribute))
           .map(attribute => attribute.endsWith('Id') ? attribute.slice(0, -2) : attribute)
           .map(attribute => attribute.toLowerCase()),
         parse: parseSetting
@@ -31,7 +30,7 @@ class GetSettingCommand extends BaseCommand {
     if (setting === 'primaryColor') {
       const color = message.guild.primaryColor?.toString(16) || ''
       result = `0x${color}${'0'.repeat(6 - color.length)}`
-    } else if (setting.includes('Channel')) {
+    } else if (setting.includes('Channel') || setting.includes('Panel')) {
       setting = setting.slice(0, -2)
       result = message.guild[setting]
     } else {
@@ -46,9 +45,9 @@ class GetSettingCommand extends BaseCommand {
 function parseSetting (val, msg) {
   const lowerCaseVal = val.toLowerCase()
   return Object.keys(Guild.rawAttributes)
-    .find(attribute => {
-      return (attribute.endsWith('Id') ? attribute.slice(0, -2) : attribute).toLowerCase() === lowerCaseVal
-    }) || this.type.parse(val, msg, this)
+    .find(attribute => (
+      (attribute.endsWith('Id') ? attribute.slice(0, -2) : attribute).toLowerCase() === lowerCaseVal
+    )) || this.type.parse(val, msg, this)
 }
 
 module.exports = GetSettingCommand
