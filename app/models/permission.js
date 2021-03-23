@@ -6,23 +6,22 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     }
   }, {
-    validate: {
-      roleXorGroup () {
-        if ((this.roleId === null) === (this.groupId === null)) {
-          throw new Error('Only one of roleId and groupId can be set.')
-        }
-      }
-    },
     tableName: 'permissions'
   })
 
   Permission.associate = models => {
     Permission.belongsTo(models.Role, {
-      foreignKey: 'roleId',
+      foreignKey: {
+        name: 'roleId',
+        validate: { roleXorGroup }
+      },
       onDelete: 'CASCADE'
     })
     Permission.belongsTo(models.Group, {
-      foreignKey: 'groupId',
+      foreignKey: {
+        name: 'groupId',
+        validate: { roleXorGroup }
+      },
       onDelete: 'CASCADE'
     })
     Permission.belongsTo(models.Command, {
@@ -35,4 +34,10 @@ module.exports = (sequelize, DataTypes) => {
   }
 
   return Permission
+}
+
+function roleXorGroup () {
+  if ((this.roleId === null) === (this.groupId === null)) {
+    throw new Error('Only one of roleId and groupId can be set.')
+  }
 }

@@ -7,24 +7,18 @@ module.exports = (sequelize, DataTypes) => {
     },
     emoji: {
       type: DataTypes.STRING(7),
-      defaultValue: null
+      defaultValue: null,
+      validate: { emojiNandEmojiId }
     }
   }, {
-    validate: {
-      emojiNandEmojiId () {
-        if (this.emoji !== null && this.emojiId !== null) {
-          throw new Error('Only one of emoji and emojiId or none can be set.')
-        }
-      }
-    },
     hooks: {
       beforeUpdate: async (ticketType, { channelId }) => {
         if (ticketType.changed('messageId') && ticketType.messageId) {
           await sequelize.models.Message.findOrCreate({
             where: {
               id: ticketType.messageId,
-              channelId: channelId,
-              guildId: ticketType.guildId
+              guildId: ticketType.guildId,
+              channelId
             }
           })
         }
@@ -52,7 +46,8 @@ module.exports = (sequelize, DataTypes) => {
     TicketType.belongsTo(models.Emoji, {
       foreignKey: {
         name: 'emojiId',
-        defaultValue: null
+        defaultValue: null,
+        validate: { emojiNandEmojiId }
       }
     })
     TicketType.belongsTo(models.Message, {
@@ -77,4 +72,10 @@ module.exports = (sequelize, DataTypes) => {
   }
 
   return TicketType
+}
+
+function emojiNandEmojiId () {
+  if (this.emoji !== null && this.emojiId !== null) {
+    throw new Error('Only one of emoji and emojiId or none can be set.')
+  }
 }

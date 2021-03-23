@@ -1,15 +1,11 @@
 'use strict'
 module.exports = (sequelize, DataTypes) => {
   const RoleMessage = sequelize.define('RoleMessage', {
-    emoji: DataTypes.STRING(7)
+    emoji: {
+      type: DataTypes.STRING(7),
+      validate: { emojiXorEmojiId }
+    }
   }, {
-    validate: {
-      emojiXorEmojiId () {
-        if ((this.emoji === null) === (this.emojiId === null)) {
-          throw new Error('Only one of emoji and emojiId can be set.')
-        }
-      }
-    },
     hooks: {
       beforeCreate: (roleMessage, { channelId }) => {
         return Promise.all([
@@ -22,8 +18,8 @@ module.exports = (sequelize, DataTypes) => {
           sequelize.models.Message.findOrCreate({
             where: {
               id: roleMessage.messageId,
-              channelId: channelId,
-              guildId: roleMessage.guildId
+              guildId: roleMessage.guildId,
+              channelId
             }
           }),
           roleMessage.emojiId && sequelize.models.Emoji.findOrCreate({
@@ -47,7 +43,10 @@ module.exports = (sequelize, DataTypes) => {
       onDelete: 'CASCADE'
     })
     RoleMessage.belongsTo(models.Emoji, {
-      foreignKey: 'emojiId',
+      foreignKey: {
+        name: 'emojiId',
+        validate: { emojiXorEmojiId }
+      },
       onDelete: 'CASCADE'
     })
     RoleMessage.belongsTo(models.Role, {
@@ -77,4 +76,10 @@ module.exports = (sequelize, DataTypes) => {
   }
 
   return RoleMessage
+}
+
+function emojiXorEmojiId () {
+  if ((this.emoji === null) === (this.emojiId === null)) {
+    throw new Error('Only one of emoji and emojiId can be set.')
+  }
 }
