@@ -25,9 +25,7 @@ class PersistRoleCommand extends BaseCommand {
     await member.persistRole(role)
 
     return message.reply(`Successfully persisted role **${role}** on member **${member}**.`, {
-      allowedMentions: {
-        users: [message.author.id]
-      }
+      allowedMentions: { users: [message.author.id] }
     })
   }
 }

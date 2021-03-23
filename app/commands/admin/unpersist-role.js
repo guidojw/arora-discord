@@ -25,9 +25,7 @@ class UnpersistRoleCommand extends BaseCommand {
     await member.unpersistRole(role)
 
     return message.reply(`Successfully removed persistent role **${role}** from member **${member}**.`, {
-      allowedMentions: {
-        users: [message.author.id]
-      }
+      allowedMentions: { users: [message.author.id] }
     })
   }
 }
