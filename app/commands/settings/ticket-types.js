@@ -28,7 +28,7 @@ class RoleBindingsCommand extends BaseCommand {
       }
 
       const embed = new MessageEmbed()
-        .addField(`Ticket Type ${type.id}`, `**${type.name}**`)
+        .addField(`Ticket Type ${type.id}`, `\`${type.name}\``)
         .setColor(message.guild.primaryColor)
       return message.replyEmbed(embed)
     } else {
@@ -49,7 +49,7 @@ class RoleBindingsCommand extends BaseCommand {
 }
 
 function getTicketTypeRow ([, type]) {
-  return `${type.id}. **${type.name}**`
+  return `${type.id}. \`${type.name}\``
 }
 
 module.exports = RoleBindingsCommand

@@ -30,7 +30,7 @@ class RoleMessagesCommand extends BaseCommand {
       }
 
       const embed = new MessageEmbed()
-        .addField(`Role Message ${roleMessage.id}`, `Message ID: **${roleMessage.messageId}**, ${roleMessage.emoji} => **${roleMessage.role}**`)
+        .addField(`Role Message ${roleMessage.id}`, `Message ID: \`${roleMessage.messageId}\`, ${roleMessage.emoji} => ${roleMessage.role}`)
         .setColor(message.guild.primaryColor)
       return message.replyEmbed(embed)
     } else {
@@ -53,7 +53,7 @@ class RoleMessagesCommand extends BaseCommand {
 function getGroupedRoleMessageRow ([id, roleMessages]) {
   let result = `**${id}**\n`
   for (const roleMessage of roleMessages) {
-    result += `${roleMessage.id}. ${roleMessage.emoji} => **${roleMessage.role}**\n`
+    result += `${roleMessage.id}. ${roleMessage.emoji} => ${roleMessage.role}\n`
   }
   return result
 }

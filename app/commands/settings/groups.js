@@ -57,7 +57,7 @@ class GroupsCommand extends BaseCommand {
 }
 
 function getGroupRow ([, group]) {
-  return `${group.id}. **${group.name}**`
+  return `${group.id}. \`${group.name}\``
 }
 
 module.exports = GroupsCommand

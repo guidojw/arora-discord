@@ -46,7 +46,7 @@ class PanelsCommand extends BaseCommand {
 }
 
 function getPanelRow ([, panel]) {
-  return `${panel.id}. **${panel.name}**`
+  return `${panel.id}. \`${panel.name}\``
 }
 
 module.exports = PanelsCommand

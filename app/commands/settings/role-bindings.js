@@ -30,7 +30,7 @@ class RoleBindingsCommand extends BaseCommand {
       }
 
       const embed = new MessageEmbed()
-        .addField(`Role Binding ${roleBinding.id}`, `${getRangeString(roleBinding.min, roleBinding.max)} => **${roleBinding.role}**`)
+        .addField(`Role Binding ${roleBinding.id}`, `\`${roleBinding.robloxGroupId}\` \`${getRangeString(roleBinding.min, roleBinding.max)}\` => ${roleBinding.role}`)
         .setColor(message.guild.primaryColor)
       return message.replyEmbed(embed)
     } else {
@@ -53,15 +53,15 @@ class RoleBindingsCommand extends BaseCommand {
 function getGroupedRoleBindingRow ([, roleBindings]) {
   let result = ''
   const role = roleBindings[0].role
-  result += `**${role}**\n`
+  result += `${role}\n`
   for (const roleBinding of roleBindings) {
-    result += `${roleBinding.id}. ${getRangeString(roleBinding.min, roleBinding.max)}\n`
+    result += `${roleBinding.id}. \`${roleBinding.robloxGroupId}\` \`${getRangeString(roleBinding.min, roleBinding.max)}\`\n`
   }
   return result
 }
 
 function getRangeString (min, max) {
-  return `${max ? '[' : ''}**${min}**${max ? `, **${max}**]` : ''}`
+  return `${max ? '[' : ''}${min}${max ? `, ${max}]` : ''}`
 }
 
 module.exports = RoleBindingsCommand
