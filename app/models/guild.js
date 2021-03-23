@@ -82,12 +82,6 @@ module.exports = (sequelize, DataTypes) => {
       },
       as: 'panels'
     })
-    Guild.belongsTo(models.Panel, {
-      foreignKey: 'trainingsInfoPanelId'
-    })
-    Guild.belongsTo(models.Panel, {
-      foreignKey: 'trainingsPanelId'
-    })
     Guild.hasMany(models.Channel, {
       foreignKey: {
         name: 'guildId',

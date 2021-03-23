@@ -49,11 +49,6 @@ class SetSettingCommand extends BaseCommand {
         if (typeof value !== 'number') {
           error = 'Invalid ID.'
         }
-      } else if (setting.includes('Panel')) {
-        value = message.guild.panels.resolve(value)
-        if (!value) {
-          error = 'Invalid panel.'
-        }
       } else {
         if (setting === 'ticketsCategoryId' && !(value instanceof CategoryChannel)) {
           error = 'Invalid category channel.'

@@ -191,22 +191,6 @@ module.exports = {
           key: 'id'
         },
         field: 'tickets_category_id'
-      },
-      trainingsInfoPanelId: {
-        type: Sequelize.BIGINT,
-        references: {
-          model: 'panels',
-          key: 'id'
-        },
-        field: 'trainings_info_panel_id'
-      },
-      trainingsPanelId: {
-        type: Sequelize.BIGINT,
-        references: {
-          model: 'panels',
-          key: 'id'
-        },
-        field: 'trainings_panel_id'
       }
     })
 

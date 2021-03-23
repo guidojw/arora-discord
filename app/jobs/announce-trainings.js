@@ -13,7 +13,7 @@ module.exports = async guild => {
   }
   const trainingsInfoPanel = guild.panels.resolve('trainingsInfoPanel')
   const trainingsPanel = guild.panels.resolve('trainingsPanel')
-  if (!trainingsInfoPanel.message && !trainingsPanel.message) {
+  if (!trainingsInfoPanel?.message && !trainingsPanel?.message) {
     return
   }
 
@@ -22,7 +22,7 @@ module.exports = async guild => {
   const authors = await userService.getUsers(authorIds)
 
   // Trainings Info Panel
-  if (trainingsInfoPanel.message) {
+  if (trainingsInfoPanel?.message) {
     const embed = trainingsInfoPanel.content
     const now = new Date()
 
@@ -41,7 +41,7 @@ module.exports = async guild => {
   }
 
   // Trainings Panel
-  if (trainingsPanel.message) {
+  if (trainingsPanel?.message) {
     const embed = await getTrainingsEmbed(guild.robloxGroupId, trainings, authors)
 
     embed.setColor(guild.primaryColor)

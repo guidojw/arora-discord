@@ -39,12 +39,6 @@ module.exports = (sequelize, DataTypes) => {
       unique: true,
       as: 'message'
     })
-    Panel.hasOne(models.Guild, {
-      foreignKey: 'trainingsInfoPanelId'
-    })
-    Panel.hasOne(models.Guild, {
-      foreignKey: 'trainingsPanelId'
-    })
   }
 
   Panel.loadScopes = models => {
