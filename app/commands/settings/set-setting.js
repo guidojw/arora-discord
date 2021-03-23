@@ -1,7 +1,8 @@
 'use strict'
 const BaseCommand = require('../base')
 
-const { Channel, CategoryChannel } = require('discord.js')
+const { CategoryChannel, GuildChannel } = require('discord.js')
+const { NSadminTextChannel: TextChannel } = require('../../extensions')
 const { Channel: ChannelModel, Guild } = require('../../models')
 
 class SetSettingCommand extends BaseCommand {
@@ -13,35 +14,30 @@ class SetSettingCommand extends BaseCommand {
       description: 'Sets a guild\'s setting.',
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
-        key: 'key',
+        key: 'setting',
         prompt: 'What setting would you like to change?',
         type: 'string',
         oneOf: Object.keys(Guild.rawAttributes)
           .filter(attribute => attribute !== 'id' && attribute !== 'supportEnabled' && attribute !== 'commandPrefix' &&
             attribute !== 'trainingsInfoPanelId' && attribute !== 'trainingsPanelId')
           .map(attribute => attribute.endsWith('Id') ? attribute.slice(0, -2) : attribute)
-          .map(attribute => attribute.toLowerCase())
+          .map(attribute => attribute.toLowerCase()),
+        parse: parseSetting
       }, {
         key: 'value',
-        prompt: 'What would you like to change this setting to?',
-        type: 'category-channel|channel|message|integer|string'
+        prompt: 'What would you like to change this setting to? Reply with "none" if you want to reset the setting.',
+        type: 'category-channel|channel|message|integer|string',
+        parse: parseValue
       }]
     })
   }
 
-  async run (message, { key, value }) {
-    key = key.toLowerCase()
-    key = Object.keys(Guild.rawAttributes)
-      .find(attribute => {
-        attribute = attribute.toLowerCase()
-        return attribute.endsWith('id') ? attribute.slice(0, -2) === key : attribute === key
-      })
-
-    if (typeof value === 'string' && value === 'null') {
+  async run (message, { setting, value }) {
+    if (typeof value === 'undefined') {
       value = null
     } else {
       let error
-      if (key === 'primaryColor') {
+      if (setting === 'primaryColor') {
         if (typeof value !== 'number') {
           value = parseInt(value, 16)
           if (isNaN(value)) {
@@ -50,14 +46,14 @@ class SetSettingCommand extends BaseCommand {
         } else if (value < 0 || value > parseInt('0xffffff', 16)) {
           error = 'Color out of bounds.'
         }
-      } else if (key === 'robloxGroupId') {
+      } else if (setting === 'robloxGroupId') {
         if (typeof value !== 'number') {
           error = 'Invalid ID.'
         }
       } else {
-        if (key === 'ticketsCategoryId' && !(value instanceof CategoryChannel)) {
+        if (setting === 'ticketsCategoryId' && !(value instanceof CategoryChannel)) {
           error = 'Invalid category channel.'
-        } else if (!(value instanceof Channel)) {
+        } else if (!(value instanceof TextChannel)) {
           error = 'Invalid channel.'
         } else {
           await ChannelModel.findOrCreate({ where: { id: value.id, guildId: message.guild.id } })
@@ -69,12 +65,22 @@ class SetSettingCommand extends BaseCommand {
       }
     }
 
-    await message.guild.update({
-      [key]: value !== null && key.endsWith('Id') && key !== 'robloxGroupId' ? value.id : value
-    })
+    await message.guild.update({ [setting]: value?.id ?? value })
 
-    return message.reply(`Successfully changed ${key.endsWith('Id') ? key.slice(0, -2) : key} to ${key.includes('Channel') ? value : `\`${value}\``}.`)
+    return message.reply(`Successfully changed ${setting.endsWith('Id') ? setting.slice(0, -2) : setting} to ${value instanceof GuildChannel ? value : `\`${value}\``}.`)
   }
+}
+
+function parseSetting (val, msg) {
+  const lowerCaseVal = val.toLowerCase()
+  return Object.keys(Guild.rawAttributes)
+    .find(attribute => {
+      return (attribute.endsWith('Id') ? attribute.slice(0, -2) : attribute).toLowerCase() === lowerCaseVal
+    }) || this.type.parse(val, msg, this)
+}
+
+function parseValue (val, msg) {
+  return val === 'none' ? undefined : this.type.parse(val, msg, this)
 }
 
 module.exports = SetSettingCommand
