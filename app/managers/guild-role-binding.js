@@ -26,10 +26,11 @@ class GuildRoleBindingManager extends BaseManager {
     if (typeof max !== 'undefined' && max < min) {
       [min, max] = [max, min]
     }
-    if (this.cache.some(roleBinding => {
-      return roleBinding.roleId === role.id && roleBinding.min === min && roleBinding.max === max
-    })) {
-      throw new Error('A role message with that role and range already exists.')
+    if (this.cache.some(roleBinding => (
+      roleBinding.roleId === role.id && roleBinding.robloxGroupId === this.guild.robloxGroupId &&
+      roleBinding.min === min && (typeof max === 'undefined' || roleBinding.max === max)
+    ))) {
+      throw new Error('A role binding for that role and range already exists.')
     }
 
     const newData = await RoleBindingModel.create({

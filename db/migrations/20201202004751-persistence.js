@@ -108,6 +108,12 @@ module.exports = {
           allowNull: false,
           field: 'guild_id'
         }
+      }, {
+        uniqueKeys: {
+          panels_guild_id_name_key: {
+            fields: ['guild_id', 'name']
+          }
+        }
       }),
       queryInterface.createTable('groups', {
         id: {
@@ -133,6 +139,12 @@ module.exports = {
           type: Sequelize.BIGINT,
           allowNull: false,
           field: 'guild_id'
+        }
+      }, {
+        uniqueKeys: {
+          groups_guild_id_name_key: {
+            fields: ['guild_id', 'name']
+          }
         }
       })
     ])
@@ -381,6 +393,12 @@ module.exports = {
         onDelete: 'CASCADE',
         field: 'guild_id'
       }
+    }, {
+      uniqueKeys: {
+        tickets_channel_id_guild_id_key: {
+          fields: ['channel_id', 'guild_id']
+        }
+      }
     })
     await queryInterface.createTable('tickets_moderators', {
       ticketId: {
@@ -463,6 +481,12 @@ module.exports = {
           onDelete: 'CASCADE',
           field: 'guild_id'
         }
+      }, {
+        uniqueKeys: {
+          role_bindings_guild_id_max_min_roblox_group_id_role_id_key: {
+            fields: ['guild_id', 'max', 'min', 'roblox_group_id', 'role_id']
+          }
+        }
       }),
       queryInterface.createTable('role_messages', {
         id: {
@@ -509,6 +533,12 @@ module.exports = {
           },
           onDelete: 'CASCADE',
           field: 'guild_id'
+        }
+      }, {
+        uniqueKeys: {
+          role_messages_emoji_emoji_id_guild_id_message_id_key: {
+            fields: ['emoji', 'emoji_id', 'guild_id', 'message_id']
+          }
         }
       })
     ])
@@ -624,11 +654,8 @@ module.exports = {
       }
     }, {
       uniqueKeys: {
-        permissions_command_id_group_id_key: {
-          fields: ['command_id', 'group_id']
-        },
-        permissions_command_id_role_id_key: {
-          fields: ['command_id', 'role_id']
+        permissions_command_id_group_id_role_id_key: {
+          fields: ['command_id', 'group_id', 'role_id']
         }
       }
     })
