@@ -44,11 +44,11 @@ class GuildRoleMessageManager extends BaseManager {
     if (!emoji) {
       throw new Error('Invalid emoji.')
     }
-    if (this.cache.some(roleMessage => {
-      return roleMessage.roleId === role.id && roleMessage.messageId === message.id && (emoji instanceof GuildEmoji
+    if (this.cache.some(roleMessage => (
+      roleMessage.roleId === role.id && roleMessage.messageId === message.id && (emoji instanceof GuildEmoji
         ? roleMessage.emoji instanceof GuildEmoji && emoji.id === roleMessage.emojiId
         : !(roleMessage.emoji instanceof GuildEmoji) && emoji === roleMessage.emojiId)
-    })) {
+    ))) {
       throw new Error('A role message with that role, message and emoji already exists.')
     }
 

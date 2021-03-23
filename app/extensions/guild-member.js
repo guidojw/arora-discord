@@ -29,9 +29,9 @@ const NSadminGuildMember = Structures.extend('GuildMember', GuildMember => {
     async fetchPersistentRoles () {
       const data = await getData(this)
 
-      return this.guild.roles.cache.filter(role => {
-        return data?.roles.some(persistentRole => persistentRole.id === role.id) || false
-      })
+      return this.guild.roles.cache.filter(role => (
+        data?.roles.some(persistentRole => persistentRole.id === role.id) || false
+      ))
     }
 
     async persistRole (role) {

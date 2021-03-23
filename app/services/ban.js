@@ -13,7 +13,12 @@ exports.getBanEmbeds = async (groupId, bans) => {
   const users = await userService.getUsers(userIds)
   const roles = await groupService.getRoles(groupId)
 
-  return discordService.getListEmbeds('Banlist', bans, exports.getBanRow, { users, roles })
+  return discordService.getListEmbeds(
+    'Banlist',
+    bans,
+    exports.getBanRow,
+    { users, roles }
+    )
 }
 
 exports.getBanRow = (ban, { users, roles }) => {

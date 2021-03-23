@@ -12,7 +12,12 @@ exports.getTrainingEmbeds = async trainings => {
   ])]
   const users = await userService.getUsers(userIds)
 
-  return discordService.getListEmbeds('Upcoming Trainings', trainings, exports.getTrainingRow, { users })
+  return discordService.getListEmbeds(
+    'Upcoming Trainings',
+    trainings,
+    exports.getTrainingRow,
+    { users }
+    )
 }
 
 exports.getTrainingRow = (training, { users }) => {
@@ -32,10 +37,12 @@ exports.getSuspensionEmbeds = async (groupId, suspensions) => {
   const users = await userService.getUsers(userIds)
   const roles = await this.getRoles(groupId)
 
-  return discordService.getListEmbeds('Current Suspensions', suspensions, exports.getSuspensionRow, {
-    users,
-    roles
-  })
+  return discordService.getListEmbeds(
+    'Current Suspensions',
+    suspensions,
+    exports.getSuspensionRow,
+    { users, roles }
+    )
 }
 
 exports.getSuspensionRow = (suspension, { users, roles }) => {

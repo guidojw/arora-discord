@@ -22,8 +22,7 @@ exports.getUsers = async userIds => {
     const chunks = dataHelper.split(userIds, 100)
 
     for (const chunk of chunks) {
-      result = result.concat((await applicationAdapter('post', '/v1/users', { userIds: chunk }))
-        .data)
+      result = result.concat((await applicationAdapter('post', '/v1/users', { userIds: chunk })).data)
     }
 
     return result
