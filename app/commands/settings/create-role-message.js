@@ -1,6 +1,8 @@
 'use strict'
 const BaseCommand = require('../base')
 
+const { validators, isSnowflake } = require('../../util').argumentUtil
+
 class CreateRoleMessageCommand extends BaseCommand {
   constructor (client) {
     super(client, {
@@ -17,7 +19,7 @@ class CreateRoleMessageCommand extends BaseCommand {
         key: 'message',
         prompt: 'What message would you like to make a role message?',
         type: 'string',
-        validate: validateMessage
+        validate: validators([isSnowflake])
       }, {
         key: 'channel',
         prompt: 'In what channel is this message?',
@@ -37,14 +39,6 @@ class CreateRoleMessageCommand extends BaseCommand {
       allowedMentions: { users: [message.author.id] }
     })
   }
-}
-
-function validateMessage (val, msg) {
-  const valid = this.type.validate(val, msg, this)
-  if (!valid || typeof valid === 'string') {
-    return valid
-  }
-  return /^[0-9]+$/.test(val) || 'Message must be a snowflake ID.'
 }
 
 module.exports = CreateRoleMessageCommand

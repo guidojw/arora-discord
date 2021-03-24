@@ -1,6 +1,8 @@
 'use strict'
 const BaseCommand = require('../base')
 
+const { validators, noNumber } = require('../../util').argumentUtil
+
 class CreateTagAliasCommand extends BaseCommand {
   constructor (client) {
     super(client, {
@@ -17,7 +19,7 @@ class CreateTagAliasCommand extends BaseCommand {
         key: 'alias',
         prompt: 'What would you like the new alias of this tag to be?',
         type: 'string',
-        validate: validateAlias
+        validate: validators([noNumber])
       }]
     })
   }
@@ -27,16 +29,6 @@ class CreateTagAliasCommand extends BaseCommand {
 
     return message.reply(`Successfully created alias \`${tagName.name}\` for tag \`${tag.names.cache.first()?.name ?? 'Unknown'}\`.`)
   }
-}
-
-function validateAlias (val, msg) {
-  const valid = this.type.validate(val, msg, this)
-  if (!valid || typeof valid === 'string') {
-    return valid
-  }
-  return !isNaN(parseInt(val))
-    ? 'Alias cannot be a number.'
-    : true
 }
 
 module.exports = CreateTagAliasCommand

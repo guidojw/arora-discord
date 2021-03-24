@@ -1,6 +1,8 @@
 'use strict'
 const BaseCommand = require('../base')
 
+const { validateNoneOrType, parseNoneOrType } = require('../../util').argumentUtil
+
 class CreateRoleBindingCommand extends BaseCommand {
   constructor (client) {
     super(client, {
@@ -17,13 +19,16 @@ class CreateRoleBindingCommand extends BaseCommand {
         key: 'min',
         prompt: 'What do you want the lower limit of this binding to be?',
         type: 'integer',
-        validate: validateMin
+        min: 0,
+        max: 255
       }, {
         key: 'max',
         prompt: 'What do you want the upper limit of this binding to be? Reply with "none" if you don\'t want one.',
         type: 'integer',
-        validate: validateMax,
-        parse: parseMax
+        min: 0,
+        max: 255,
+        validate: validateNoneOrType,
+        parse: parseNoneOrType
       }]
     })
   }
@@ -35,23 +40,6 @@ class CreateRoleBindingCommand extends BaseCommand {
       allowedMentions: { users: [message.author.id] }
     })
   }
-}
-
-function validateMin (val, msg) {
-  const valid = this.type.validate(val, msg, this)
-  if (!valid || typeof valid === 'string') {
-    return valid
-  }
-  val = parseInt(val)
-  return (val >= 0 && val <= 255) || 'Invalid rank.'
-}
-
-function validateMax (val, msg) {
-  return val === 'none' || validateMin.call(this, val, msg)
-}
-
-function parseMax (val, msg) {
-  return val === 'none' ? undefined : this.type.parse(val, msg, this)
 }
 
 function getRangeString (min, max) {

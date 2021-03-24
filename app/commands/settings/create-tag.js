@@ -1,8 +1,7 @@
 'use strict'
 const BaseCommand = require('../base')
 
-const { argumentUtil } = require('../../util')
-const { validators, isObject, noNumber, typeOf } = argumentUtil
+const { validators, isObject, noNumber, typeOf } = require('../../util').argumentUtil
 
 class CreateTagCommand extends BaseCommand {
   constructor (client) {
@@ -23,7 +22,7 @@ class CreateTagCommand extends BaseCommand {
         key: 'content',
         prompt: 'What do you want the content of the tag to be?',
         type: 'json-object|string',
-        validate: validators([[isObject, typeOf('string', 'a string')]])
+        validate: validators([[isObject, typeOf('string')]])
       }]
     })
   }

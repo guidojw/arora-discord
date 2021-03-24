@@ -5,8 +5,7 @@ const { MessageEmbed } = require('discord.js')
 const { applicationAdapter } = require('../../adapters')
 const { timeHelper } = require('../../helpers')
 const { groupService, userService } = require('../../services')
-const { argumentUtil } = require('../../util')
-const { validators, noChannels, noTags, noUrls } = argumentUtil
+const { validators, noChannels, noTags, noUrls, parseNoneOrType } = require('../../util').argumentUtil
 
 class HostTrainingCommand extends BaseCommand {
   constructor (client) {
@@ -39,7 +38,7 @@ class HostTrainingCommand extends BaseCommand {
         type: 'string',
         prompt: 'What notes would you like to add? Reply with "none" if you don\'t want to add any.',
         validate: validators([noChannels, noTags, noUrls]),
-        parse: parseNotes
+        parse: parseNoneOrType
       }]
     })
   }
@@ -81,10 +80,6 @@ class HostTrainingCommand extends BaseCommand {
       .setColor(message.guild.primaryColor)
     return message.replyEmbed(embed)
   }
-}
-
-function parseNotes (val, msg) {
-  return val === 'none' ? undefined : this.type.parse(val, msg, this)
 }
 
 module.exports = HostTrainingCommand

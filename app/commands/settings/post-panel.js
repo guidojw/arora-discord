@@ -1,6 +1,8 @@
 'use strict'
 const BaseCommand = require('../base')
 
+const { validateNoneOrType, parseNoneOrType } = require('../../util').argumentUtil
+
 class PostPanelCommand extends BaseCommand {
   constructor (client) {
     super(client, {
@@ -18,8 +20,8 @@ class PostPanelCommand extends BaseCommand {
         prompt: 'In what channel do you want to post this panel? Reply with "none" if you want to remove the panel ' +
           'from the channel it\'s posted in.',
         type: 'text-channel',
-        validate: validateChannel,
-        parse: parseChannel
+        validate: validateNoneOrType,
+        parse: parseNoneOrType
       }]
     })
   }
@@ -32,14 +34,6 @@ class PostPanelCommand extends BaseCommand {
       : `Successfully removed panel \`${panel.name}\` from channel.`
     )
   }
-}
-
-function validateChannel (val, msg) {
-  return val === 'none' || this.type.validate(val, msg, this)
-}
-
-function parseChannel (val, msg) {
-  return val === 'none' ? undefined : this.type.parse(val, msg, this)
 }
 
 module.exports = PostPanelCommand

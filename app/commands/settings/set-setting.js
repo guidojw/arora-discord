@@ -4,6 +4,7 @@ const BaseCommand = require('../base')
 const { CategoryChannel, GuildChannel } = require('discord.js')
 const { NSadminTextChannel: TextChannel } = require('../../extensions')
 const { Channel: ChannelModel, Guild } = require('../../models')
+const { parseNoneOrType } = require('../../util').argumentUtil
 
 class SetSettingCommand extends BaseCommand {
   constructor (client) {
@@ -26,7 +27,7 @@ class SetSettingCommand extends BaseCommand {
         key: 'value',
         prompt: 'What would you like to change this setting to? Reply with "none" if you want to reset the setting.',
         type: 'category-channel|text-channel|message|integer|string',
-        parse: parseValue
+        parse: parseNoneOrType
       }]
     })
   }
@@ -79,10 +80,6 @@ function parseSetting (val, msg) {
     .find(attribute => (
       (attribute.endsWith('Id') ? attribute.slice(0, -2) : attribute).toLowerCase() === lowerCaseVal
     )) || this.type.parse(val, msg, this)
-}
-
-function parseValue (val, msg) {
-  return val === 'none' ? undefined : this.type.parse(val, msg, this)
 }
 
 module.exports = SetSettingCommand

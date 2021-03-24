@@ -2,8 +2,9 @@
 const BaseCommand = require('../base')
 
 const { applicationAdapter } = require('../../adapters')
-const { stringHelper, timeHelper } = require('../../helpers')
+const { timeHelper } = require('../../helpers')
 const { groupService, userService } = require('../../services')
+const { noChannels, noTags, noUrls } = require('../../util').argumentUtil
 
 class ChangeTrainingCommand extends BaseCommand {
   constructor (client) {
@@ -23,7 +24,8 @@ class ChangeTrainingCommand extends BaseCommand {
         key: 'key',
         type: 'string',
         prompt: 'What key would you like to change?',
-        oneOf: ['author', 'type', 'date', 'time', 'notes']
+        oneOf: ['author', 'type', 'date', 'time', 'notes'],
+        parse: val => val.toLowerCase()
       }, {
         key: 'data',
         type: 'string',
@@ -36,20 +38,14 @@ class ChangeTrainingCommand extends BaseCommand {
     if (message.guild.robloxGroupId === null) {
       return message.reply('This server is not bound to a Roblox group yet.')
     }
-    key = key.toLowerCase()
     const changes = {}
     if (key === 'author') {
       changes.authorId = await userService.getIdFromUsername(data)
     } else if (key === 'notes') {
-      const error = stringHelper.getChannels(data)
-        ? 'Notes contain channels.'
-        : stringHelper.getTags(data)
-          ? 'Notes contain tags.'
-          : stringHelper.getUrls(data)
-            ? 'Notes contain URLs.'
-            : undefined
-      if (error) {
-        return message.reply(error)
+      const results = [noChannels(data, key), noTags(data, key), noUrls(data, key)]
+      if (!results.every(result => result && typeof result !== 'string')) {
+        const errors = results.filter(result => typeof result === 'string')
+        return message.reply(errors.join('\n'))
       }
 
       changes.notes = data

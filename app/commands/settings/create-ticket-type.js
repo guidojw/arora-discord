@@ -13,7 +13,7 @@ class CreateTicketTypeCommand extends BaseCommand {
         key: 'name',
         prompt: 'What do you want the name of the ticket type to be?',
         type: 'string',
-        validate: validateName
+        max: 16
       }]
     })
   }
@@ -23,16 +23,6 @@ class CreateTicketTypeCommand extends BaseCommand {
 
     return message.reply(`Successfully created ticket type \`${type.name}\`.`)
   }
-}
-
-function validateName (val, msg) {
-  const valid = this.type.validate(val, msg, this)
-  if (!valid || typeof valid === 'string') {
-    return valid
-  }
-  return val.length > 16
-    ? 'Name is too long.'
-    : true
 }
 
 module.exports = CreateTicketTypeCommand

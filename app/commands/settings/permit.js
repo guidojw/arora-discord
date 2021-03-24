@@ -2,6 +2,7 @@
 const BaseCommand = require('../base')
 
 const { NSadminRole: Role } = require('../../extensions')
+const { validateNoneOrType, parseNoneOrType } = require('../../util').argumentUtil
 
 class PermitCommand extends BaseCommand {
   constructor (client) {
@@ -37,8 +38,8 @@ class PermitCommand extends BaseCommand {
         prompt: 'What do you want the allow value of this permission to be? Reply with "none" if you want to delete' +
           ' the permission.',
         type: 'boolean',
-        validate: validateAllow,
-        parse: parseAllow
+        validate: validateNoneOrType,
+        parse: parseNoneOrType
       }]
     })
   }
@@ -68,14 +69,6 @@ class PermitCommand extends BaseCommand {
       }
     }
   }
-}
-
-function validateAllow (val, msg) {
-  return val === 'none' || this.type.validate(val, msg, this)
-}
-
-function parseAllow (val, msg) {
-  return val === 'none' ? undefined : this.type.parse(val, msg, this)
 }
 
 module.exports = PermitCommand

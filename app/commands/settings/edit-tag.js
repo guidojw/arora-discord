@@ -19,7 +19,7 @@ class EditTagCommand extends BaseCommand {
         key: 'content',
         prompt: 'What do you want the new content of this tag to be?',
         type: 'json-object|string',
-        validate: validators([[isObject, typeOf('string', 'a string')]])
+        validate: validators([[isObject, typeOf('string')]])
       }]
     })
   }

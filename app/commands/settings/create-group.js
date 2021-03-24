@@ -1,8 +1,8 @@
 'use strict'
 const BaseCommand = require('../base')
 
-const { Constants } = require('../../util')
-const { GroupTypes } = Constants
+const { validators, noNumber, noSpaces } = require('../../util').argumentUtil
+const { GroupTypes } = require('../../util').Constants
 
 class CreateGroupCommand extends BaseCommand {
   constructor (client) {
@@ -15,7 +15,7 @@ class CreateGroupCommand extends BaseCommand {
         key: 'name',
         prompt: 'What do you want the name of the group to be?',
         type: 'string',
-        validate: validateName
+        validate: validators([noNumber, noSpaces])
       }, {
         key: 'type',
         prompt: 'What do you want the type of the group to be?',
@@ -30,18 +30,6 @@ class CreateGroupCommand extends BaseCommand {
 
     return message.reply(`Successfully created group \`${group.name}\`.`)
   }
-}
-
-function validateName (val, msg) {
-  const valid = this.type.validate(val, msg, this)
-  if (!valid || typeof valid === 'string') {
-    return valid
-  }
-  return !isNaN(parseInt(val))
-    ? 'Name cannot be a number.'
-    : val.includes(' ')
-      ? 'Name cannot include spaces.'
-      : true
 }
 
 module.exports = CreateGroupCommand

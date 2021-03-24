@@ -51,5 +51,4 @@ class SuggestCommand extends BaseCommand {
   }
 }
 
-
 module.exports = SuggestCommand

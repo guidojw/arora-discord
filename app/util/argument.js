@@ -17,6 +17,7 @@ function validators (steps = []) {
         if (results.some(result => result.value && typeof result.value !== 'string')) {
           continue
         }
+
         const errors = results.filter(result => typeof result.value === 'string').map(result => result.value)
         if (errors.length > 0) {
           return errors.join('\n')
@@ -35,10 +36,11 @@ function validators (steps = []) {
 
 function makeValidator (test, message) {
   return function (val, msg, arg) {
-    return !test.call(this, val, msg, arg) || `\`${arg.label}\` ${message}.`
+    return !test.call(this, val, msg, arg) || `\`${arg.label ?? msg}\` ${message}.`
   }
 }
 
+const isSnowflake = makeValidator(/^[0-9]+$/.test, 'must be a Snowflake ID')
 const noChannels = makeValidator(MessageMentions.CHANNELS_PATTERN.test, 'cannot contain channels')
 const noNumber = makeValidator(val => !isNaN(parseInt(val)), 'cannot be a number')
 const noSpaces = makeValidator(val => val.includes(' '), 'cannot contain spaces')
@@ -61,22 +63,33 @@ const noTags = makeValidator(
   'cannot contain tags'
 )
 
-function typeOf (type, message) {
+function typeOf (type) {
   return makeValidator(
     async function (val, msg, arg) {
-      return typeof await this.parse(val, msg, arg) === type
+      return typeof await this.parse(val, msg, arg) === type // eslint-disable-line valid-typeof
     },
-    `must be ${message}`
+    `must be a ${type}`
   )
+}
+
+function validateNoneOrType (val, msg, arg) {
+  return val === 'none' || this.type.validate(val, msg, arg)
+}
+
+function parseNoneOrType (val, msg, arg) {
+  return val === 'none' ? undefined : this.type.parse(val, msg, arg)
 }
 
 module.exports = {
   validators,
   isObject,
+  isSnowflake,
   noChannels,
   noNumber,
   noSpaces,
   noTags,
   noUrls,
-  typeOf
+  typeOf,
+  validateNoneOrType,
+  parseNoneOrType
 }
