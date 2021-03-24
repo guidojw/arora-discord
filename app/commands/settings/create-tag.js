@@ -7,6 +7,9 @@ class CreateTagCommand extends BaseCommand {
       group: 'settings',
       name: 'createtag',
       description: 'Creates a new tag.',
+      details: 'For the content argument, you can input either any message or a JSON format embed object. You can use' +
+        ' the Embed Visualizer at <https://leovoel.github.io/embed-visualizer/> to create an embed. When finished, ' +
+        'copy object (denoted with {}) on the left output screen after "embed: ".',
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
         key: 'name',

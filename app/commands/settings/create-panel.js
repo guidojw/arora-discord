@@ -8,6 +8,9 @@ class CreatePanelCommand extends BaseCommand {
       name: 'createpanel',
       aliases: ['createpnl'],
       description: 'Creates a new panel.',
+      details: 'For the content argument, you should input a JSON format embed object. You can use the Embed ' +
+        'Visualizer at <https://leovoel.github.io/embed-visualizer/> to create one. When finished, copy the object ' +
+        '(denoted with {}) on the left output screen after "embed: ".',
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
         key: 'name',
