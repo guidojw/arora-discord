@@ -4,9 +4,9 @@ const pluralize = require('pluralize')
 const { MessageEmbed } = require('discord.js')
 const { timeHelper } = require('../helpers')
 
-module.exports = async guild => {
-  const group = guild.groups.resolve('serverBoosterReportChannels')
-  if (!group || group.channels.cache.size === 0) {
+async function premiumMembersReportJob (guild) {
+  const serverBoosterReportChannelsGroup = guild.groups.resolve('serverBoosterReportChannels')
+  if ((serverBoosterReportChannelsGroup?.channels?.cache.size ?? 0) === 0) {
     return
   }
 
@@ -41,8 +41,10 @@ module.exports = async guild => {
       embed.addField(`${member.user.tag} ${emoji || ''}`, `Has been boosting this server for **${pluralize('month', months, true)}**!`)
     }
 
-    for (const channel of group.channels.cache.values()) {
+    for (const channel of serverBoosterReportChannelsGroup.channels.cache.values()) {
       channel.send(embed)
     }
   }
 }
+
+module.exports = premiumMembersReportJob

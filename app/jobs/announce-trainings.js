@@ -7,7 +7,7 @@ const { applicationAdapter } = require('../adapters')
 const { timeHelper } = require('../helpers')
 const { groupService, userService } = require('../services')
 
-module.exports = async guild => {
+async function announceTrainingsJob (guild) {
   if (guild.robloxGroupId === null) {
     return
   }
@@ -128,3 +128,5 @@ function getNextTrainingMessage (training, authors) {
   }
   return result
 }
+
+module.exports = announceTrainingsJob
