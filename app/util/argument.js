@@ -2,9 +2,10 @@
 const { MessageMentions } = require('discord.js')
 const { getDateInfo } = require('./time')
 
-const urlRegex = /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/gi
 const dateRegex = /(([0-2]?[0-9]|3[0-1])[-](0?[1-9]|1[0-2])[-][0-9]{4})/
+const snowflakeRegex = /^[0-9]+$/
 const timeRegex = /^(2[0-3]|[0-1]?[\d]):[0-5][\d]$/
+const urlRegex = /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/gi
 
 function validators (steps = []) {
   if (steps.length === 0) {
@@ -42,11 +43,11 @@ function makeValidator (test, message) {
   }
 }
 
-const isSnowflake = makeValidator(/^[0-9]+$/.test, 'must be a Snowflake ID')
+const isSnowflake = makeValidator(val => !snowflakeRegex.test(val), 'must be a Snowflake ID')
 const noChannels = makeValidator(MessageMentions.CHANNELS_PATTERN.test, 'cannot contain channels')
 const noNumber = makeValidator(val => !isNaN(parseInt(val)), 'cannot be a number')
 const noSpaces = makeValidator(val => val.includes(' '), 'cannot contain spaces')
-const noUrls = makeValidator(urlRegex.test, 'cannot contain URLs')
+const noUrls = makeValidator(urlRegex.test.bind(urlRegex), 'cannot contain URLs')
 
 const isObject = makeValidator(
   val => {

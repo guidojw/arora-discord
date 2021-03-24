@@ -30,7 +30,7 @@ class GetSettingCommand extends BaseCommand {
     if (setting === 'primaryColor') {
       const color = message.guild.primaryColor?.toString(16) || ''
       result = `0x${color}${'0'.repeat(6 - color.length)}`
-    } else if (setting.includes('Channel')) {
+    } else if (setting.includes('Channel') || setting.includes('Category')) {
       setting = setting.slice(0, -2)
       result = message.guild[setting]
     } else {
