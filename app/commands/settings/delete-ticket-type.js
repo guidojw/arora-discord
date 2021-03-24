@@ -12,7 +12,7 @@ class DeleteTicketTypeCommand extends BaseCommand {
       args: [{
         key: 'type',
         prompt: 'What ticket type would you like to delete?',
-        type: 'integer|string'
+        type: 'ticket-type'
       }]
     })
   }

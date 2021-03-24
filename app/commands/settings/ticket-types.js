@@ -14,7 +14,7 @@ class RoleBindingsCommand extends BaseCommand {
       args: [{
         key: 'type',
         prompt: 'What ticket type would you like to know the information of?',
-        type: 'integer|string',
+        type: 'ticket-type',
         default: ''
       }]
     })
@@ -22,11 +22,6 @@ class RoleBindingsCommand extends BaseCommand {
 
   async run (message, { type }) {
     if (type) {
-      type = message.guild.ticketTypes.resolve(type)
-      if (!type) {
-        return message.reply('Ticket type not found.')
-      }
-
       const embed = new MessageEmbed()
         .addField(`Ticket Type ${type.id}`, `Name: \`${type.name}\``)
         .setColor(message.guild.primaryColor)

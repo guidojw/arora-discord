@@ -12,7 +12,7 @@ class LinkTicketTypeCommand extends BaseCommand {
       args: [{
         key: 'type',
         prompt: 'What ticket type would you like to link?',
-        type: 'integer|string'
+        type: 'ticket-type'
       }, {
         key: 'emoji',
         prompt: 'What emoji would you like to link to this ticket type?',

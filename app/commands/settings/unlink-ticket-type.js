@@ -12,7 +12,7 @@ class UnlinkTicketTypeCommand extends BaseCommand {
       args: [{
         key: 'type',
         prompt: 'What ticket type would you like to unlink?',
-        type: 'integer|string'
+        type: 'ticket-type'
       }]
     })
   }
