@@ -3,9 +3,9 @@ const BaseCommand = require('../base')
 
 const { MessageEmbed } = require('discord.js')
 const { applicationAdapter } = require('../../adapters')
-const { timeHelper } = require('../../helpers')
 const { groupService, userService } = require('../../services')
 const { validators, noChannels, noTags, noUrls, parseNoneOrType } = require('../../util').argumentUtil
+const { getDateInfo, getTimeInfo, validDate, validTime } = require('../../util').timeUtil
 
 class HostTrainingCommand extends BaseCommand {
   constructor (client) {
@@ -27,12 +27,12 @@ class HostTrainingCommand extends BaseCommand {
         key: 'date',
         type: 'string',
         prompt: 'At what date would you like to host this training?',
-        validate: timeHelper.validDate
+        validate: validDate
       }, {
         key: 'time',
         type: 'string',
         prompt: 'At what time would you like to host this training?',
-        validate: timeHelper.validTime
+        validate: validTime
       }, {
         key: 'notes',
         type: 'string',
@@ -47,8 +47,8 @@ class HostTrainingCommand extends BaseCommand {
     if (message.guild.robloxGroupId === null) {
       return message.reply('This server is not bound to a Roblox group yet.')
     }
-    const dateInfo = timeHelper.getDateInfo(date)
-    const timeInfo = timeHelper.getTimeInfo(time)
+    const dateInfo = getDateInfo(date)
+    const timeInfo = getTimeInfo(time)
     const dateUnix = Math.floor(new Date(
       dateInfo.year,
       dateInfo.month,

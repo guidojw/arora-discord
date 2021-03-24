@@ -1,6 +1,6 @@
 'use strict'
 const { applicationAdapter } = require('../adapters')
-const { dataHelper } = require('../helpers')
+const { split } = require('../util').util
 
 exports.getIdFromUsername = async username => {
   const userId = (await applicationAdapter('get', `/v1/users/${username}/user-id`)).data
@@ -19,7 +19,7 @@ exports.getUsers = async userIds => {
     return (await applicationAdapter('post', '/v1/users', { userIds })).data
   } else {
     let result = []
-    const chunks = dataHelper.split(userIds, 100)
+    const chunks = split(userIds, 100)
 
     for (const chunk of chunks) {
       result = result.concat((await applicationAdapter('post', '/v1/users', { userIds: chunk })).data)

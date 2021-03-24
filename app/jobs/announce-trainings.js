@@ -4,8 +4,8 @@ const pluralize = require('pluralize')
 
 const { MessageEmbed } = require('discord.js')
 const { applicationAdapter } = require('../adapters')
-const { timeHelper } = require('../helpers')
 const { groupService, userService } = require('../services')
+const { getDate, getTime, isDst } = require('../util').timeUtil
 
 async function announceTrainingsJob (guild) {
   if (guild.robloxGroupId === null) {
@@ -26,7 +26,7 @@ async function announceTrainingsJob (guild) {
     const embed = trainingsInfoPanel.embed.setColor(guild.primaryColor)
     const now = new Date()
 
-    const dstNow = timeHelper.isDst(now)
+    const dstNow = isDst(now)
     embed.setDescription(embed.description.replace(/{timezone}/g, dstNow ? 'CEST' : 'CET'))
 
     const nextTraining = trainings.find(training => new Date(training.date) > now)
@@ -85,9 +85,9 @@ function getTrainingMessage (training, authors) {
   const now = new Date()
   const today = now.getDate()
   const date = new Date(training.date)
-  const timeString = timeHelper.getTime(date)
+  const timeString = getTime(date)
   const trainingDay = date.getDate()
-  const dateString = trainingDay === today ? 'Today' : trainingDay === today + 1 ? 'Tomorrow' : timeHelper.getDate(date)
+  const dateString = trainingDay === today ? 'Today' : trainingDay === today + 1 ? 'Tomorrow' : getDate(date)
   const author = authors.find(author => author.id === training.authorId)
   const hourDifference = date.getHours() - now.getHours()
 
@@ -116,9 +116,9 @@ function getNextTrainingMessage (training, authors) {
   const now = new Date()
   const today = now.getDate()
   const date = new Date(training.date)
-  const timeString = timeHelper.getTime(date)
+  const timeString = getTime(date)
   const trainingDay = date.getDate()
-  const dateString = trainingDay === today ? 'today' : trainingDay === today + 1 ? 'tomorrow' : timeHelper.getDate(date)
+  const dateString = trainingDay === today ? 'today' : trainingDay === today + 1 ? 'tomorrow' : getDate(date)
   const author = authors.find(author => author.id === training.authorId)
 
   let result = `${training.type.abbreviation} **${dateString}** at **${timeString}** hosted by ${author.name}`

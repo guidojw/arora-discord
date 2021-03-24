@@ -3,8 +3,8 @@ const BaseCommand = require('../base')
 
 const { MessageEmbed } = require('discord.js')
 const { applicationAdapter } = require('../../adapters')
-const { timeHelper } = require('../../helpers')
 const { banService, userService } = require('../../services')
+const { getDate, getTime } = require('../../util').timeUtil
 
 class BansCommand extends BaseCommand {
   constructor (client) {
@@ -37,8 +37,8 @@ class BansCommand extends BaseCommand {
         .setColor(message.guild.primaryColor)
       if (ban.date) {
         const date = new Date(ban.date)
-        embed.addField('Start date', timeHelper.getDate(date), true)
-        embed.addField('Start time', timeHelper.getTime(date), true)
+        embed.addField('Start date', getDate(date), true)
+        embed.addField('Start time', getTime(date), true)
       }
       if (ban.reason) {
         embed.addField('Reason', ban.reason)

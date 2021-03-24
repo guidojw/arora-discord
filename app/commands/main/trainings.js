@@ -3,8 +3,8 @@ const BaseCommand = require('../base')
 
 const { MessageEmbed } = require('discord.js')
 const { applicationAdapter } = require('../../adapters')
-const { timeHelper } = require('../../helpers')
 const { groupService, userService } = require('../../services')
+const { getDate, getTime, isDst } = require('../../util').timeUtil
 
 class TrainingsCommand extends BaseCommand {
   constructor (client) {
@@ -37,8 +37,8 @@ class TrainingsCommand extends BaseCommand {
       const embed = new MessageEmbed()
         .setTitle(`Training ${training.id}`)
         .addField('Type', training.type.abbreviation, true)
-        .addField('Date', timeHelper.getDate(date), true)
-        .addField('Time', `${timeHelper.getTime(date)} ${timeHelper.isDst(date) ? 'CEST' : 'CET'}`, true)
+        .addField('Date', getDate(date), true)
+        .addField('Time', `${getTime(date)} ${isDst(date) ? 'CEST' : 'CET'}`, true)
         .addField('Host', username, true)
         .setColor(message.guild.primaryColor)
       return message.replyEmbed(embed)

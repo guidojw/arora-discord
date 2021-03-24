@@ -4,7 +4,7 @@ const discordService = require('./discord')
 const userService = require('../services/user')
 
 const { applicationAdapter } = require('../adapters')
-const { timeHelper } = require('../helpers')
+const { getDate, getTime, isDst } = require('../util').timeUtil
 const { getAbbreviation } = require('../util').util
 
 exports.getTrainingEmbeds = async trainings => {
@@ -24,10 +24,10 @@ exports.getTrainingEmbeds = async trainings => {
 exports.getTrainingRow = (training, { users }) => {
   const username = users.find(user => user.id === training.authorId).name
   const date = new Date(training.date)
-  const readableDate = timeHelper.getDate(date)
-  const readableTime = timeHelper.getTime(date)
+  const readableDate = getDate(date)
+  const readableTime = getTime(date)
 
-  return `${training.id}. **${training.type.abbreviation}** training on **${readableDate}** at **${readableTime} ${timeHelper.isDst(date) ? 'CEST' : 'CET'}**, hosted by **${username}**.`
+  return `${training.id}. **${training.type.abbreviation}** training on **${readableDate}** at **${readableTime} ${isDst(date) ? 'CEST' : 'CET'}**, hosted by **${username}**.`
 }
 
 exports.getSuspensionEmbeds = async (groupId, suspensions) => {
@@ -52,7 +52,7 @@ exports.getSuspensionRow = (suspension, { users, roles }) => {
   const role = roles.roles.find(role => role.rank === suspension.rank)
   const roleAbbreviation = role ? getAbbreviation(role.name) : 'Unknown'
   const rankBack = suspension.rankBack ? 'yes' : 'no'
-  const dateString = timeHelper.getDate(new Date(suspension.date))
+  const dateString = getDate(new Date(suspension.date))
   const days = suspension.duration / 86400000
   let extensionDays = 0
   if (suspension.extensions) {

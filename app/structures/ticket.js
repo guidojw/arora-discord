@@ -7,8 +7,8 @@ const { stripIndents } = require('common-tags')
 const { Constants, MessageEmbed } = require('discord.js')
 const { PartialTypes } = Constants
 const { roVerAdapter } = require('../adapters')
-const { timeHelper } = require('../helpers')
 const { discordService } = require('../services')
+const { getDate, getTime } = require('../util').timeUtil
 
 class Ticket extends BaseStructure {
   constructor (client, data, guild) {
@@ -68,8 +68,8 @@ class Ticket extends BaseStructure {
     }
 
     const date = new Date()
-    const readableDate = timeHelper.getDate(date)
-    const readableTime = timeHelper.getTime(date)
+    const readableDate = getDate(date)
+    const readableTime = getTime(date)
     const ticketInfoEmbed = new MessageEmbed()
       .setColor(this.guild.primaryColor)
       .setTitle('Ticket Information')

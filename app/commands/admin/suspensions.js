@@ -4,8 +4,8 @@ const BaseCommand = require('../base')
 
 const { MessageEmbed } = require('discord.js')
 const { applicationAdapter } = require('../../adapters')
-const { timeHelper } = require('../../helpers')
 const { groupService, userService } = require('../../services')
+const { getDate, getTime } = require('../../util').timeUtil
 
 class SuspensionsCommand extends BaseCommand {
   constructor (client) {
@@ -31,7 +31,7 @@ class SuspensionsCommand extends BaseCommand {
     if (username) {
       username = typeof username === 'string' ? username : username.displayName
       const userId = await userService.getIdFromUsername(username)
-      const suspension = (await applicationAdapter('get', `/v1/groups/${message.gulid.groupId}/suspensions/${userId}`))
+      const suspension = (await applicationAdapter('get', `/v1/groups/${message.guild.groupId}/suspensions/${userId}`))
         .data
       const days = suspension.duration / 86400000
       const date = new Date(suspension.date)
@@ -49,8 +49,8 @@ class SuspensionsCommand extends BaseCommand {
 
       const embed = new MessageEmbed()
         .setTitle(`${message.argString ? `${username}'s` : 'Your'} suspension`)
-        .addField('Start date', timeHelper.getDate(date), true)
-        .addField('Start time', timeHelper.getTime(date), true)
+        .addField('Start date', getDate(date), true)
+        .addField('Start time', getTime(date), true)
         .addField('Duration', `${days}${extensionString} ${pluralize('day', days + extensionDays)}`, true)
         .addField('Rank back', suspension.rankBack ? 'yes' : 'no', true)
         .addField('Reason', suspension.reason)

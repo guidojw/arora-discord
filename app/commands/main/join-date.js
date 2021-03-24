@@ -2,8 +2,8 @@
 const BaseCommand = require('../base')
 
 const { MessageEmbed } = require('discord.js')
-const { timeHelper } = require('../../helpers')
 const { userService } = require('../../services')
+const { getDate } = require('../../util').timeUtil
 
 class JoinDateCommand extends BaseCommand {
   constructor (client) {
@@ -28,7 +28,7 @@ class JoinDateCommand extends BaseCommand {
     const user = await userService.getUser(userId)
 
     const embed = new MessageEmbed()
-      .addField(`${message.argString ? `${username}'s` : 'Your'} join date`, `${timeHelper.getDate(new Date(user.created))}`)
+      .addField(`${message.argString ? `${username}'s` : 'Your'} join date`, `${getDate(new Date(user.created))}`)
       .setColor(message.guild.primaryColor)
     return message.replyEmbed(embed)
   }

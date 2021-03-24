@@ -7,6 +7,18 @@ function getAbbreviation (val) {
     .join('')
 }
 
+function split (array, length) {
+  return array.reduce((result, item, index) => {
+    const chunk = Math.floor(index / length)
+    if (!result[chunk]) {
+      result[chunk] = []
+    }
+    result[chunk].push(item)
+    return result
+  }, [])
+}
+
 module.exports = {
-  getAbbreviation
+  getAbbreviation,
+  split
 }

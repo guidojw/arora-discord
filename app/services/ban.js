@@ -3,7 +3,7 @@ const discordService = require('./discord')
 const groupService = require('./group')
 const userService = require('./user')
 
-const { timeHelper } = require('../helpers')
+const { getDate } = require('../util').timeUtil
 const { getAbbreviation } = require('../util').util
 
 exports.getBanEmbeds = async (groupId, bans) => {
@@ -27,7 +27,7 @@ exports.getBanRow = (ban, { users, roles }) => {
   const author = users.find(user => user.id === ban.authorId)
   const role = roles.roles.find(role => role.rank === ban.rank)
   const roleAbbreviation = role ? getAbbreviation(role.name) : 'Unknown'
-  const dateString = timeHelper.getDate(new Date(ban.date))
+  const dateString = getDate(new Date(ban.date))
 
   return `**${username}**${role ? ' (' + roleAbbreviation + ')' : ''}${author ? ' by **' + author.name + '**' : ''}${dateString ? ' at **' + dateString + '**' : ''}${ban.reason ? ' with reason:\n*' + ban.reason + '*' : ''}`
 }

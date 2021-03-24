@@ -2,9 +2,9 @@
 const BaseCommand = require('../base')
 
 const { applicationAdapter } = require('../../adapters')
-const { timeHelper } = require('../../helpers')
 const { groupService, userService } = require('../../services')
 const { noChannels, noTags, noUrls } = require('../../util').argumentUtil
+const { getDate, getDateInfo, getTime, getTimeInfo, validDate, validTime } = require('../../util').timeUtil
 
 class ChangeTrainingCommand extends BaseCommand {
   constructor (client) {
@@ -66,17 +66,17 @@ class ChangeTrainingCommand extends BaseCommand {
       let dateInfo
       let timeInfo
       if (key === 'date') {
-        if (!timeHelper.validDate(data)) {
+        if (!validDate(data)) {
           return message.reply('Please enter a valid date.')
         }
-        timeInfo = timeHelper.getTimeInfo(timeHelper.getTime(date))
-        dateInfo = timeHelper.getDateInfo(data)
+        dateInfo = getDateInfo(data)
+        timeInfo = getTimeInfo(getTime(date))
       } else {
-        if (!timeHelper.validTime(data)) {
+        if (!validTime(data)) {
           return message.reply('Please enter a valid time.')
         }
-        dateInfo = timeHelper.getDateInfo(timeHelper.getDate(date))
-        timeInfo = timeHelper.getTimeInfo(data)
+        dateInfo = getDateInfo(getDate(date))
+        timeInfo = getTimeInfo(data)
       }
 
       changes.date = Math.floor(new Date(dateInfo.year, dateInfo.month, dateInfo.day, timeInfo.hours, timeInfo.minutes)

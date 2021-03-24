@@ -2,7 +2,7 @@
 const BaseCommand = require('../base')
 
 const { MessageEmbed } = require('discord.js')
-const { timeHelper } = require('../../helpers')
+const { getDurationString } = require('../../util').timeUtil
 
 class UptimeCommand extends BaseCommand {
   constructor (client) {
@@ -16,7 +16,7 @@ class UptimeCommand extends BaseCommand {
 
   run (message) {
     const embed = new MessageEmbed()
-      .addField('I have been online for', timeHelper.getDurationString(this.client.uptime))
+      .addField('I have been online for', getDurationString(this.client.uptime))
       .setColor(message.guild.primaryColor)
     return message.replyEmbed(embed)
   }

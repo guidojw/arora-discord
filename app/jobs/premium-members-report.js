@@ -2,7 +2,7 @@
 const pluralize = require('pluralize')
 
 const { MessageEmbed } = require('discord.js')
-const { timeHelper } = require('../helpers')
+const { diffDays } = require('../util').timeUtil
 
 async function premiumMembersReportJob (guild) {
   const serverBoosterReportChannelsGroup = guild.groups.resolve('serverBoosterReportChannels')
@@ -21,7 +21,7 @@ async function premiumMembersReportJob (guild) {
   const monthlyPremiumMembers = []
   const now = new Date()
   for (const member of premiumMembers) {
-    const days = timeHelper.diffDays(member.premiumSince, now)
+    const days = diffDays(member.premiumSince, now)
     if (days !== 0 && days % 30 === 0) {
       monthlyPremiumMembers.push({
         member,
