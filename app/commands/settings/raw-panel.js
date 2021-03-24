@@ -12,17 +12,12 @@ class RawPanelCommand extends BaseCommand {
       args: [{
         key: 'panel',
         prompt: 'What panel would you like to know the raw content of?',
-        type: 'integer|string'
+        type: 'panel'
       }]
     })
   }
 
   run (message, { panel }) {
-    panel = message.guild.panels.resolve(panel)
-    if (!panel) {
-      return message.reply('Panel not found.')
-    }
-
     return message.reply(panel.content, { allowedMentions: { users: [message.author.id] } })
   }
 }

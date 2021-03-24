@@ -12,7 +12,7 @@ class EditPanelCommand extends BaseCommand {
       args: [{
         key: 'panel',
         prompt: 'What panel would you like to edit?',
-        type: 'integer|string'
+        type: 'panel'
       }, {
         key: 'content',
         prompt: 'What would you like to change the panel\'s content to?',

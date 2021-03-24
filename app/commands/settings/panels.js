@@ -14,7 +14,7 @@ class PanelsCommand extends BaseCommand {
       args: [{
         key: 'panel',
         prompt: 'What panel would you like to know the information of?',
-        type: 'integer|string',
+        type: 'panel',
         default: ''
       }]
     })
@@ -22,11 +22,6 @@ class PanelsCommand extends BaseCommand {
 
   async run (message, { panel }) {
     if (panel) {
-      panel = message.guild.panels.resolve(panel)
-      if (!panel) {
-        return message.reply('Panel not found.')
-      }
-
       return message.replyEmbed(panel.embed)
     } else {
       if (message.guild.panels.cache.size === 0) {

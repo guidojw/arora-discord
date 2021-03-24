@@ -12,7 +12,7 @@ class DeletePanelCommand extends BaseCommand {
       args: [{
         key: 'panel',
         prompt: 'What panel would you like to delete?',
-        type: 'integer|string'
+        type: 'panel'
       }]
     })
   }

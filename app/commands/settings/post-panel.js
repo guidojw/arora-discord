@@ -12,7 +12,7 @@ class PostPanelCommand extends BaseCommand {
       args: [{
         key: 'panel',
         prompt: 'What panel would you like to post?',
-        type: 'integer|string'
+        type: 'panel'
       }, {
         key: 'channel',
         prompt: 'In what channel do you want to post this panel? Reply with "none" if you want to remove the panel ' +
