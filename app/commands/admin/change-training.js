@@ -3,8 +3,8 @@ const BaseCommand = require('../base')
 
 const { applicationAdapter } = require('../../adapters')
 const { groupService, userService } = require('../../services')
-const { noChannels, noTags, noUrls } = require('../../util').argumentUtil
-const { getDate, getDateInfo, getTime, getTimeInfo, validDate, validTime } = require('../../util').timeUtil
+const { noChannels, noTags, noUrls, validDate, validTime } = require('../../util').argumentUtil
+const { getDate, getDateInfo, getTime, getTimeInfo } = require('../../util').timeUtil
 
 class ChangeTrainingCommand extends BaseCommand {
   constructor (client) {

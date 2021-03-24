@@ -1,7 +1,10 @@
 'use strict'
 const { MessageMentions } = require('discord.js')
+const { getDateInfo } = require('./time')
 
 const urlRegex = /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/gi
+const dateRegex = /(([0-2]?[0-9]|3[0-1])[-](0?[1-9]|1[0-2])[-][0-9]{4})/
+const timeRegex = /^(2[0-3]|[0-1]?[\d]):[0-5][\d]$/
 
 function validators (steps = []) {
   if (steps.length === 0) {
@@ -71,6 +74,25 @@ function typeOf (type) {
   )
 }
 
+function validDate (dateString) {
+  if (dateRegex.test(dateString)) {
+    const { day, month, year } = getDateInfo(dateString)
+    const leapYear = year % 4 === 0
+    if (month === 0 || month === 2 || month === 4 || month === 6 || month === 7 || month === 9 || month === 11) {
+      return day <= 31
+    } else if (month === 3 || month === 5 || month === 8 || month === 10) {
+      return day <= 30
+    } else if (month === 1) {
+      return leapYear ? day <= 29 : day <= 28
+    }
+  }
+  return false
+}
+
+function validTime (timeString) {
+  return timeRegex.test(timeString)
+}
+
 function validateNoneOrType (val, msg, arg) {
   return val === 'none' || this.type.validate(val, msg, arg)
 }
@@ -80,7 +102,6 @@ function parseNoneOrType (val, msg, arg) {
 }
 
 module.exports = {
-  validators,
   isObject,
   isSnowflake,
   noChannels,
@@ -88,7 +109,10 @@ module.exports = {
   noSpaces,
   noTags,
   noUrls,
+  parseNoneOrType,
   typeOf,
   validateNoneOrType,
-  parseNoneOrType
+  validators,
+  validDate,
+  validTime
 }

@@ -4,8 +4,8 @@ const BaseCommand = require('../base')
 const { MessageEmbed } = require('discord.js')
 const { applicationAdapter } = require('../../adapters')
 const { groupService, userService } = require('../../services')
-const { validators, noChannels, noTags, noUrls, parseNoneOrType } = require('../../util').argumentUtil
-const { getDateInfo, getTimeInfo, validDate, validTime } = require('../../util').timeUtil
+const { validators, noChannels, noTags, noUrls, parseNoneOrType, validDate, validTime } = require('../../util').argumentUtil
+const { getDateInfo, getTimeInfo } = require('../../util').timeUtil
 
 class HostTrainingCommand extends BaseCommand {
   constructor (client) {
@@ -27,12 +27,12 @@ class HostTrainingCommand extends BaseCommand {
         key: 'date',
         type: 'string',
         prompt: 'At what date would you like to host this training?',
-        validate: validDate
+        validate: validators([validDate])
       }, {
         key: 'time',
         type: 'string',
         prompt: 'At what time would you like to host this training?',
-        validate: validTime
+        validate: validators([validTime])
       }, {
         key: 'notes',
         type: 'string',
