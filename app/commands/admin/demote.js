@@ -12,6 +12,7 @@ class DemoteCommand extends BaseCommand {
       description: 'Demotes given user in the group.',
       examples: ['demote Happywalker'],
       clientPermissions: ['SEND_MESSAGES'],
+      requiresRobloxGroup: true,
       args: [{
         key: 'username',
         prompt: 'Who would you like to demote?',
@@ -21,9 +22,6 @@ class DemoteCommand extends BaseCommand {
   }
 
   async run (message, { username }) {
-    if (message.guild.robloxGroupId === null) {
-      return message.reply('This server is not bound to a Roblox group yet.')
-    }
     username = typeof username === 'string' ? username : username.displayName
     const [userId, authorId] = await Promise.all([
       userService.getIdFromUsername(username),

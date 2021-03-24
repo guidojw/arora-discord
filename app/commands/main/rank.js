@@ -13,6 +13,7 @@ class RankCommand extends BaseCommand {
       description: 'Posts the group rank of given user/you.',
       examples: ['rank', 'rank Happywalker'],
       clientPermissions: ['SEND_MESSAGES'],
+      requiresRobloxGroup: true,
       args: [{
         key: 'username',
         type: 'member|string',
@@ -23,9 +24,6 @@ class RankCommand extends BaseCommand {
   }
 
   async run (message, { username }) {
-    if (message.guild.robloxGroupId === null) {
-      return message.reply('This server is not bound to a Roblox group yet.')
-    }
     username = typeof username === 'string' ? username : username.displayName
     const userId = await userService.getIdFromUsername(username)
     const rank = await userService.getRank(userId, message.guild.robloxGroupId)

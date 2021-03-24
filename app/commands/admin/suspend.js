@@ -15,6 +15,7 @@ class SuspendCommand extends BaseCommand {
       description: 'Suspends given user in the group.',
       examples: ['suspend Happywalker 3 "Spamming the group wall." false', 'suspend Happywalker 3 "Ignoring rules."'],
       clientPermissions: ['SEND_MESSAGES'],
+      requiresRobloxGroup: true,
       args: [{
         key: 'username',
         type: 'member|string',
@@ -39,9 +40,6 @@ class SuspendCommand extends BaseCommand {
   }
 
   async run (message, { username, days, reason, rankBack }) {
-    if (message.guild.robloxGroupId === null) {
-      return message.reply('This server is not bound to a Roblox group yet.')
-    }
     username = typeof username === 'string' ? username : username.displayName
     const [userId, authorId] = await Promise.all([
       userService.getIdFromUsername(username),

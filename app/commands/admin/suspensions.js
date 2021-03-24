@@ -15,6 +15,7 @@ class SuspensionsCommand extends BaseCommand {
       aliases: ['suspensionlist', 'suspensioninfo'],
       description: 'Lists info of current suspensions/given user\'s suspension.',
       clientPermissions: ['SEND_MESSAGES'],
+      requiresRobloxGroup: true,
       args: [{
         key: 'username',
         type: 'member|string',
@@ -25,9 +26,6 @@ class SuspensionsCommand extends BaseCommand {
   }
 
   async run (message, { username }) {
-    if (message.guild.robloxGroupId === null) {
-      return message.reply('This server is not bound to a Roblox group yet.')
-    }
     if (username) {
       username = typeof username === 'string' ? username : username.displayName
       const userId = await userService.getIdFromUsername(username)

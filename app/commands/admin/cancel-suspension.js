@@ -14,6 +14,7 @@ class CancelSuspensionCommand extends BaseCommand {
       description: 'Cancels given user\'s suspension.',
       examples: ['cancelsuspension Happywalker Good boy.'],
       clientPermissions: ['SEND_MESSAGES'],
+      requiresRobloxGroup: true,
       args: [{
         key: 'username',
         type: 'member|string',
@@ -28,9 +29,6 @@ class CancelSuspensionCommand extends BaseCommand {
   }
 
   async run (message, { username, reason }) {
-    if (message.guild.robloxGroupId === null) {
-      return message.reply('This server is not bound to a Roblox group yet.')
-    }
     username = typeof username === 'string' ? username : username.displayName
     const [userId, authorId] = await Promise.all([
       userService.getIdFromUsername(username),

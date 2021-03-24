@@ -7,6 +7,8 @@ class BaseCommand extends Commando.Command {
     info.argsPromptLimit = info.argsPromptLimit || (info.group === 'admin' || info.group === 'settings') ? 3 : 1
     info.guildOnly = typeof info.guildOnly !== 'undefined' ? info.guildOnly : true
     super(client, info)
+
+    this.requiresRobloxGroup = Boolean(info.requiresRobloxGroup)
   }
 
   hasPermission (message, ownerOverride = true) {

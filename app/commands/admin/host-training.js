@@ -18,6 +18,7 @@ class HostTrainingCommand extends BaseCommand {
       description: 'Schedules a new training.',
       examples: ['host CD 4-3-2020 1:00 Be on time!', 'Host CSR 4-3-2020 2:00'],
       clientPermissions: ['SEND_MESSAGES'],
+      requiresRobloxGroup: true,
       args: [{
         key: 'type',
         type: 'string',
@@ -44,9 +45,6 @@ class HostTrainingCommand extends BaseCommand {
   }
 
   async run (message, { type, date, time, notes }, guild) {
-    if (message.guild.robloxGroupId === null) {
-      return message.reply('This server is not bound to a Roblox group yet.')
-    }
     const dateInfo = getDateInfo(date)
     const timeInfo = getTimeInfo(time)
     const dateUnix = Math.floor(new Date(

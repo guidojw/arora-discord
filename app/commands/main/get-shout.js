@@ -10,16 +10,13 @@ class GetShoutCommand extends Base {
       group: 'main',
       name: 'getshout',
       description: 'Gets the current group shout.',
-      clientPermissions: ['SEND_MESSAGES']
+      clientPermissions: ['SEND_MESSAGES'],
+      requiresRobloxGroup: true
     })
   }
 
   async run (message) {
-    if (message.guild.robloxGroupId === null) {
-      return message.reply('This server is not bound to a Roblox group yet.')
-    }
-    const shout = (await applicationAdapter('get', `/v1/groups/${message.guild.robloxGroupId}/shout`))
-      .data
+    const shout = (await applicationAdapter('get', `/v1/groups/${message.guild.robloxGroupId}/shout`)).data
 
     if (shout.body) {
       const embed = new MessageEmbed()

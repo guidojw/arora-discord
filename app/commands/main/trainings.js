@@ -15,6 +15,7 @@ class TrainingsCommand extends BaseCommand {
       description: 'Lists info of all trainings/training with given ID.',
       clientPermissions: ['SEND_MESSAGES'],
       details: 'TrainingId must be the ID of a currently scheduled training.',
+      requiresRobloxGroup: true,
       args: [{
         key: 'trainingId',
         type: 'integer',
@@ -25,9 +26,6 @@ class TrainingsCommand extends BaseCommand {
   }
 
   async run (message, { trainingId }) {
-    if (message.guild.robloxGroupId === null) {
-      return message.reply('This server is not bound to a Roblox group yet.')
-    }
     if (trainingId) {
       const training = (await applicationAdapter('get', `/v1/groups/${message.guild.robloxGroupId}/trainings/${trainingId}`))
         .data

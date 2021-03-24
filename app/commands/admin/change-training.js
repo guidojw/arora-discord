@@ -16,6 +16,7 @@ class ChangeTrainingCommand extends BaseCommand {
       description: 'Changes given training\'s key to given data.',
       examples: ['changetraining 1 date 5-3-2020'],
       clientPermissions: ['SEND_MESSAGES'],
+      requiresRobloxGroup: true,
       args: [{
         key: 'trainingId',
         type: 'integer',
@@ -35,9 +36,6 @@ class ChangeTrainingCommand extends BaseCommand {
   }
 
   async run (message, { trainingId, key, data }) {
-    if (message.guild.robloxGroupId === null) {
-      return message.reply('This server is not bound to a Roblox group yet.')
-    }
     const changes = {}
     if (key === 'author') {
       changes.authorId = await userService.getIdFromUsername(data)

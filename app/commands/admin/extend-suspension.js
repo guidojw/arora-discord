@@ -16,6 +16,7 @@ class ExtendSuspensionCommand extends BaseCommand {
       description: 'Extends the suspension of given user.',
       examples: ['extend Happywalker 3 He still doesn\'t understand.'],
       clientPermissions: ['SEND_MESSAGES'],
+      requiresRobloxGroup: true,
       args: [{
         key: 'username',
         type: 'member|string',
@@ -36,9 +37,6 @@ class ExtendSuspensionCommand extends BaseCommand {
   }
 
   async run (message, { username, days, reason }) {
-    if (message.guild.robloxGroupId === null) {
-      return message.reply('This server is not bound to a Roblox group yet.')
-    }
     username = typeof username === 'string' ? username : username.displayName
     const [userId, authorId] = await Promise.all([
       userService.getIdFromUsername(username),

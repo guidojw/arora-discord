@@ -14,6 +14,7 @@ class BansCommand extends BaseCommand {
       aliases: ['banlist', 'baninfo'],
       description: 'Lists info of current bans/given user\'s ban.',
       clientPermissions: ['SEND_MESSAGES'],
+      requiresRobloxGroup: true,
       args: [{
         key: 'username',
         type: 'member|string',
@@ -24,9 +25,6 @@ class BansCommand extends BaseCommand {
   }
 
   async run (message, { username }) {
-    if (message.guild.robloxGroupId === null) {
-      return message.reply('This server is not bound to a Roblox group yet.')
-    }
     if (username) {
       username = typeof username === 'string' ? username : username.displayName
       const userId = await userService.getIdFromUsername(username)

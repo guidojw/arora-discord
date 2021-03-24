@@ -16,6 +16,7 @@ class ShoutCommand extends BaseCommand {
       description: 'Posts shout with given shout to the group.',
       examples: ['shout Happywalker is awesome', 'shout "Happywalker is awesome"', 'shout clear'],
       clientPermissions: ['SEND_MESSAGES'],
+      requiresRobloxGroup: true,
       args: [{
         key: 'body',
         type: 'string',
@@ -27,9 +28,6 @@ class ShoutCommand extends BaseCommand {
   }
 
   async run (message, { body }, guild) {
-    if (message.guild.robloxGroupId === null) {
-      return message.reply('This server is not bound to a Roblox group yet.')
-    }
     const authorId = await userService.getIdFromUsername(message.member.displayName)
 
     const shout = (await applicationAdapter('post', `/v1/groups/${message.guild.robloxGroupId}/shout`, {

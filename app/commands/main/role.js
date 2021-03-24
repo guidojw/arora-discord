@@ -13,6 +13,7 @@ class RoleCommand extends Base {
       description: 'Posts the group role of given user/you.',
       examples: ['role', 'role Happywalker'],
       clientPermissions: ['SEND_MESSAGES'],
+      requiresRobloxGroup: true,
       args: [{
         key: 'username',
         type: 'member|string',
@@ -23,9 +24,6 @@ class RoleCommand extends Base {
   }
 
   async run (message, { username }) {
-    if (message.guild.robloxGroupId === null) {
-      return message.reply('This server is not bound to a Roblox group yet.')
-    }
     username = typeof username === 'string' ? username : username.displayName
     const userId = await userService.getIdFromUsername(username)
     const role = await userService.getRole(userId, message.guild.robloxGroupId)

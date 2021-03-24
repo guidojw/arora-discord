@@ -15,6 +15,7 @@ class UnbanCommand extends BaseCommand {
       examples: ['unban Happywalker'],
       clientPermissions: ['SEND_MESSAGES'],
       ownerOnly: true,
+      requiresRobloxGroup: true,
       args: [{
         key: 'username',
         type: 'member|string',
@@ -29,9 +30,6 @@ class UnbanCommand extends BaseCommand {
   }
 
   async run (message, { username, reason }) {
-    if (message.guild.robloxGroupId === null) {
-      return message.reply('This server is not bound to a Roblox group yet.')
-    }
     username = typeof username === 'string' ? username : username.displayName
     const [userId, authorId] = await Promise.all([
       userService.getIdFromUsername(username),

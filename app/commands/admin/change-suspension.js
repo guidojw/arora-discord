@@ -15,6 +15,7 @@ class ChangeSuspensionCommand extends BaseCommand {
       description: 'Changes given user\'s suspension\'s key to given data.',
       examples: ['changesuspension Happywalker rankBack false'],
       clientPermissions: ['SEND_MESSAGES'],
+      requiresRobloxGroup: true,
       args: [{
         key: 'username',
         type: 'member|string',
@@ -34,9 +35,6 @@ class ChangeSuspensionCommand extends BaseCommand {
   }
 
   async run (message, { username, key, data }) {
-    if (message.guild.robloxGroupId === null) {
-      return message.reply('This server is not bound to a Roblox group yet.')
-    }
     username = typeof username === 'string' ? username : username.displayName
     const changes = {}
     if (key === 'author') {

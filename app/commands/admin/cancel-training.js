@@ -15,6 +15,7 @@ class CancelTrainingCommand extends BaseCommand {
       description: 'Cancels given training.',
       examples: ['canceltraining 1 Weird circumstances.'],
       clientPermissions: ['SEND_MESSAGES'],
+      requiresRobloxGroup: true,
       args: [{
         key: 'trainingId',
         type: 'integer',
@@ -29,9 +30,6 @@ class CancelTrainingCommand extends BaseCommand {
   }
 
   async run (message, { trainingId, reason }) {
-    if (message.guild.robloxGroupId === null) {
-      return message.reply('This server is not bound to a Roblox group yet.')
-    }
     const authorId = await userService.getIdFromUsername(message.member.displayName)
 
     await applicationAdapter('post', `/v1/groups/${message.guild.robloxGroupId}/trainings/${trainingId}/cancel`, {

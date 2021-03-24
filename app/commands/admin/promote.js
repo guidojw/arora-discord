@@ -12,6 +12,7 @@ class PromoteCommand extends BaseCommand {
       description: 'Promotes given user in the group.',
       examples: ['promote Happywalker'],
       clientPermissions: ['SEND_MESSAGES'],
+      requiresRobloxGroup: true,
       args: [{
         key: 'username',
         prompt: 'Who would you like to promote?',
@@ -21,9 +22,6 @@ class PromoteCommand extends BaseCommand {
   }
 
   async run (message, { username }) {
-    if (message.guild.robloxGroupId === null) {
-      return message.reply('This server is not bound to a Roblox group yet.')
-    }
     username = typeof username === 'string' ? username : username.displayName
     const [userId, authorId] = await Promise.all([
       userService.getIdFromUsername(username),

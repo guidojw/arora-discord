@@ -65,6 +65,15 @@ class NSadminClient extends CommandoClient {
       .registerTypesIn({ dirname: path.join(__dirname, '../types'), filter: /^(?!base.js).+$/ })
       .registerCommandsIn(path.join(__dirname, '../commands'))
 
+    this.dispatcher.addInhibitor(msg => {
+      if (msg.command.requiresRobloxGroup === true && msg.guild.robloxGroupId === null) {
+        return {
+          reason: 'robloxGroupRequired',
+          response: msg.reply('This command requires that the server has its \`robloxGroup\` setting set.')
+        }
+      }
+    })
+
     if (applicationConfig.apiEnabled) {
       this.nsadminWs = new WebSocketManager(this)
     }
