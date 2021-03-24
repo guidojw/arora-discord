@@ -1,5 +1,5 @@
 'use strict'
-const { GroupTypes } = require('../util/constants')
+const { GroupTypes } = require('../util').Constants
 
 module.exports = (sequelize, DataTypes) => {
   const Group = sequelize.define('Group', {

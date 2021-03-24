@@ -1,6 +1,5 @@
 'use strict'
-const { Constants } = require('discord.js')
-const { PartialTypes } = Constants
+const { PartialTypes } = require('discord.js').Constants
 
 class Postable {
   constructor (client, _data, guild) {

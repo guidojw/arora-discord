@@ -4,8 +4,8 @@ const eventHandlers = require('./events')
 const NSadminProvider = require('./setting-provider')
 const WebSocketManager = require('./websocket/websocket')
 
-const { Constants, DiscordAPIError, GuildEmoji } = require('discord.js')
-const { PartialTypes } = Constants
+const { DiscordAPIError, GuildEmoji } = require('discord.js')
+const { PartialTypes } = require('discord.js').Constants
 const { CommandoClient } = require('discord.js-commando')
 
 const applicationConfig = require('../../config/application')

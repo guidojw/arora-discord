@@ -1,7 +1,7 @@
 'use strict'
 const BaseStructure = require('./base')
 
-const { GroupTypes } = require('../util/constants')
+const { GroupTypes } = require('../util').Constants
 
 class Group extends BaseStructure {
   constructor (client, data, guild) {

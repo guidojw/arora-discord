@@ -4,8 +4,8 @@ const BaseStructure = require('./base')
 const TicketGuildMemberManager = require('../managers/ticket-guild-member')
 
 const { stripIndents } = require('common-tags')
-const { Constants, MessageEmbed } = require('discord.js')
-const { PartialTypes } = Constants
+const { MessageEmbed } = require('discord.js')
+const { PartialTypes } = require('discord.js').Constants
 const { roVerAdapter } = require('../adapters')
 const { discordService } = require('../services')
 const { getDate, getTime } = require('../util').timeUtil

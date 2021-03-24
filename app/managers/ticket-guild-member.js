@@ -1,6 +1,6 @@
 'use strict'
-const { Collection, Constants } = require('discord.js')
-const { PartialTypes } = Constants
+const { Collection } = require('discord.js')
+const { PartialTypes } = require('discord.js').Constants
 const { Member } = require('../models')
 
 class TicketGuildMemberManager {
