@@ -4,7 +4,14 @@ const BaseCommand = require('../base')
 const { MessageEmbed } = require('discord.js')
 const { applicationAdapter } = require('../../adapters')
 const { groupService, userService } = require('../../services')
-const { validators, noChannels, noTags, noUrls, parseNoneOrType, validDate, validTime } = require('../../util').argumentUtil
+const {
+  validators,
+  noChannels,
+  noTags, noUrls,
+  parseNoneOrType,
+  validDate,
+  validTime
+} = require('../../util').argumentUtil
 const { getDateInfo, getTimeInfo } = require('../../util').timeUtil
 
 class HostTrainingCommand extends BaseCommand {
