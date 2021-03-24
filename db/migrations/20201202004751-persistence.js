@@ -3,6 +3,37 @@ const { stripIndents } = require('common-tags')
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
+    await queryInterface.createTable('channels', {
+      id: {
+        type: Sequelize.BIGINT,
+        primaryKey: true
+      },
+      guildId: {
+        type: Sequelize.BIGINT,
+        allowNull: false,
+        field: 'guild_id'
+      }
+    })
+    await queryInterface.createTable('messages', {
+      id: {
+        type: Sequelize.BIGINT,
+        primaryKey: true
+      },
+      guildId: {
+        type: Sequelize.BIGINT,
+        allowNull: false,
+        field: 'guild_id'
+      },
+      channelId: {
+        type: Sequelize.BIGINT,
+        allowNull: false,
+        references: {
+          model: 'channels',
+          key: 'id'
+        },
+        field: 'channel_id'
+      }
+    })
     await Promise.all([
       queryInterface.createTable('roles', {
         id: {
@@ -13,37 +44,6 @@ module.exports = {
           type: Sequelize.BIGINT,
           allowNull: false,
           field: 'guild_id'
-        }
-      }),
-      queryInterface.createTable('channels', {
-        id: {
-          type: Sequelize.BIGINT,
-          primaryKey: true
-        },
-        guildId: {
-          type: Sequelize.BIGINT,
-          allowNull: false,
-          field: 'guild_id'
-        }
-      }),
-      queryInterface.createTable('messages', {
-        id: {
-          type: Sequelize.BIGINT,
-          primaryKey: true
-        },
-        guildId: {
-          type: Sequelize.BIGINT,
-          allowNull: false,
-          field: 'guild_id'
-        },
-        channelId: {
-          type: Sequelize.BIGINT,
-          allowNull: false,
-          references: {
-            model: 'channels',
-            key: 'id'
-          },
-          field: 'channel_id'
         }
       }),
       queryInterface.createTable('members', {
@@ -707,10 +707,10 @@ module.exports = {
       queryInterface.dropTable('panels'),
       queryInterface.dropTable('emojis'),
       queryInterface.dropTable('members'),
-      queryInterface.dropTable('messages'),
-      queryInterface.dropTable('channels'),
       queryInterface.dropTable('roles')
-      ])
+    ])
+    await queryInterface.dropTable('messages')
+    await queryInterface.dropTable('channels')
   }
 }
 
