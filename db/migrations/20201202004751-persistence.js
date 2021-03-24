@@ -62,12 +62,6 @@ module.exports = {
           allowNull: false,
           field: 'guild_id'
         }
-      }, {
-        uniqueKeys: {
-          members_guild_id_user_id_key: {
-            fields: ['guild_id', 'user_id']
-          }
-        }
       }),
       queryInterface.createTable('emojis', {
         id: {
@@ -108,12 +102,6 @@ module.exports = {
           allowNull: false,
           field: 'guild_id'
         }
-      }, {
-        uniqueKeys: {
-          panels_guild_id_name_key: {
-            fields: ['guild_id', 'name']
-          }
-        }
       }),
       queryInterface.createTable('groups', {
         id: {
@@ -140,13 +128,12 @@ module.exports = {
           allowNull: false,
           field: 'guild_id'
         }
-      }, {
-        uniqueKeys: {
-          groups_guild_id_name_key: {
-            fields: ['guild_id', 'name']
-          }
-        }
       })
+    ])
+    await Promise.all([
+      queryInterface.addIndex('members', ['guild_id', 'user_id'], { unique: true }),
+      queryInterface.addIndex('panels', ['guild_id', 'name'], { unique: true }),
+      queryInterface.addIndex('groups', ['guild_id', 'name'], { unique: true })
     ])
 
     await queryInterface.createTable('guilds', {
@@ -231,13 +218,9 @@ module.exports = {
         allowNull: false,
         values: ['command', 'group']
       }
-    }, {
-      uniqueKeys: {
-        commands_name_type_key: {
-          fields: ['name', 'type']
-        }
-      }
     })
+    await queryInterface.addIndex('commands', ['name', 'type'], { unique: true })
+
     await queryInterface.createTable('guilds_commands', {
       guildId: {
         type: Sequelize.BIGINT,
@@ -340,13 +323,9 @@ module.exports = {
         },
         field: 'message_id'
       }
-    }, {
-      uniqueKeys: {
-        ticket_types_guild_id_name_key: {
-          fields: ['guild_id', 'name']
-        }
-      }
     })
+    await queryInterface.addIndex('ticket_types', ['guild_id', 'name'], { unique: true })
+
     await addExclusiveArcOrNoneConstraint(queryInterface, 'ticket_types', ['emoji', 'emoji_id'])
 
     await queryInterface.createTable('tickets', {
@@ -393,13 +372,13 @@ module.exports = {
         onDelete: 'CASCADE',
         field: 'guild_id'
       }
-    }, {
-      uniqueKeys: {
-        tickets_channel_id_guild_id_key: {
-          fields: ['channel_id', 'guild_id']
-        }
-      }
     })
+    await queryInterface.addIndex(
+      'tickets',
+      ['channel_id', 'guild_id'],
+      { unique: true, where: { channel_id: { [Sequelize.Op.ne]: null } } }
+    )
+
     await queryInterface.createTable('tickets_moderators', {
       ticketId: {
         type: Sequelize.INTEGER,
@@ -481,12 +460,6 @@ module.exports = {
           onDelete: 'CASCADE',
           field: 'guild_id'
         }
-      }, {
-        uniqueKeys: {
-          role_bindings_guild_id_max_min_roblox_group_id_role_id_key: {
-            fields: ['guild_id', 'max', 'min', 'roblox_group_id', 'role_id']
-          }
-        }
       }),
       queryInterface.createTable('role_messages', {
         id: {
@@ -534,13 +507,34 @@ module.exports = {
           onDelete: 'CASCADE',
           field: 'guild_id'
         }
-      }, {
-        uniqueKeys: {
-          role_messages_emoji_emoji_id_guild_id_message_id_key: {
-            fields: ['emoji', 'emoji_id', 'guild_id', 'message_id']
-          }
-        }
       })
+    ])
+    await Promise.all([
+      queryInterface.addIndex(
+        'role_bindings',
+        ['guild_id', 'max', 'min', 'roblox_group_id', 'role_id'],
+        { unique: true }
+      ),
+      queryInterface.addIndex(
+        'role_bindings',
+        ['guild_id', 'min', 'roblox_group_id', 'role_id'],
+        { unique: true, where: { max: null } }
+      ),
+      queryInterface.addIndex(
+        'role_messages',
+        ['emoji', 'emoji_id', 'guild_id', 'message_id', 'role_id'],
+        { unique: true }
+      ),
+      queryInterface.addIndex(
+        'role_messages',
+        ['emoji', 'guild_id', 'message_id', 'role_id'],
+        { unique: true, where: { emoji_id: null } }
+      ),
+      queryInterface.addIndex(
+        'role_messages',
+        ['emoji_id', 'guild_id', 'message_id', 'role_id'],
+        { unique: true, where: { emoji: null } }
+      )
     ])
 
     await addExclusiveArcConstraint(queryInterface, 'role_messages', ['emoji', 'emoji_id'])
@@ -653,12 +647,20 @@ module.exports = {
         field: 'group_id'
       }
     }, {
-      uniqueKeys: {
-        permissions_command_id_group_id_role_id_key: {
-          fields: ['command_id', 'group_id', 'role_id']
-        }
-      }
+      indexes: [{
+        unique: true,
+        fields: ['command_id', 'group_id']
+      }, {
+        unique: true,
+        fields: ['command_id', 'role_id']
+      }]
     })
+    await Promise.all([
+      queryInterface.addIndex('permissions', ['command_id', 'group_id', 'role_id'], { unique: true }),
+      queryInterface.addIndex('permissions', ['command_id', 'group_id'], { unique: true, where: { role_id: null } }),
+      queryInterface.addIndex('permissions', ['command_id', 'role_id'], { unique: true, where: { group_id: null } })
+    ])
+
     await addExclusiveArcConstraint(queryInterface, 'permissions', ['role_id', 'group_id'])
   },
 
