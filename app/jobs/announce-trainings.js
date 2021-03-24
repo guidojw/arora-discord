@@ -27,7 +27,7 @@ module.exports = async guild => {
     const now = new Date()
 
     const dstNow = timeHelper.isDst(now)
-    embed.setDescription(embed.description.replace('{timezone}', dstNow ? 'CEST' : 'CET'))
+    embed.setDescription(embed.description.split('{timezone}').join(dstNow ? 'CEST' : 'CET'))
 
     const nextTraining = trainings.find(training => new Date(training.date) > now)
     embed.addField(

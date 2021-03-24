@@ -162,9 +162,9 @@ class GuildTicketTypeManager extends BaseManager {
 
   resolve (type) {
     if (typeof type === 'string') {
-      type = type.toLowerCase().replace(/\s/g, '')
+      type = type.toLowerCase().split(/\s/g).join('')
       return this.cache.find(otherType => (
-        otherType.name.toLowerCase().replace(/\s/g, '') === type
+        otherType.name.toLowerCase().split(/\s/g).join('') === type
       )) || null
     }
     return super.resolve(type)
@@ -172,9 +172,9 @@ class GuildTicketTypeManager extends BaseManager {
 
   resolveID (type) {
     if (typeof type === 'string') {
-      type = type.toLowerCase().replace(/\s/g, '')
+      type = type.toLowerCase().split(/\s/g).join('')
       return this.cache.find(otherType => (
-        otherType.name.toLowerCase().replace(/\s/g, '') === type
+        otherType.name.toLowerCase().split(/\s/g).join('') === type
       ))?.id ?? null
     }
     return super.resolveID(type)
