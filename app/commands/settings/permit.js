@@ -2,7 +2,6 @@
 const BaseCommand = require('../base')
 
 const { NSadminRole: Role } = require('../../extensions')
-const { GroupTypes } = require('../../util/constants')
 
 class PermitCommand extends BaseCommand {
   constructor (client) {
@@ -27,7 +26,7 @@ class PermitCommand extends BaseCommand {
         key: 'roleOrGroup',
         label: 'role/group',
         prompt: 'For what role or group do you want to create, edit or delete a permission?',
-        type: 'role|integer|string'
+        type: 'role-group|role'
       }, {
         key: 'commandOrGroup',
         label: 'command/group',
@@ -45,13 +44,6 @@ class PermitCommand extends BaseCommand {
   }
 
   async run (message, { roleOrGroup, commandOrGroup, allow }) {
-    roleOrGroup = roleOrGroup instanceof Role ? roleOrGroup : message.guild.groups.resolve(roleOrGroup)
-    if (!roleOrGroup) {
-      return message.reply('Group not found.')
-    }
-    if (!(roleOrGroup instanceof Role || roleOrGroup.type === GroupTypes.ROLE)) {
-      return message.reply('Invalid group.')
-    }
     const commandType = commandOrGroup.group ? 'command' : 'group'
     const permissibleType = roleOrGroup instanceof Role ? 'role' : 'group'
     const subject = `${permissibleType} ${permissibleType === 'role' ? roleOrGroup : `\`${roleOrGroup}\``}`

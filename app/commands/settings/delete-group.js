@@ -12,7 +12,7 @@ class DeleteGroupCommand extends BaseCommand {
       args: [{
         key: 'group',
         prompt: 'What group would you like to delete?',
-        type: 'integer|string'
+        type: 'nsadmin-group'
       }]
     })
   }

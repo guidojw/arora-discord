@@ -2,9 +2,7 @@
 const BaseCommand = require('../base')
 
 const { MessageEmbed } = require('discord.js')
-const { NSadminGuildMember: GuildMember, NSadminRole: Role } = require('../../extensions')
-const { Group } = require('../../structures')
-const { GroupTypes } = require('../../util/constants')
+const { NSadminGuildMember: GuildMember } = require('../../extensions')
 
 class PermissionsCommand extends BaseCommand {
   constructor (client) {
@@ -17,22 +15,12 @@ class PermissionsCommand extends BaseCommand {
         key: 'memberOrRoleOrGroup',
         label: 'member/role/group',
         prompt: 'Of what member, role or group would you like to know the command permissions?',
-        type: 'member|role|integer|string'
+        type: 'member|role-group|role'
       }]
     })
   }
 
   async run (message, { memberOrRoleOrGroup }) {
-    memberOrRoleOrGroup = (memberOrRoleOrGroup instanceof GuildMember || memberOrRoleOrGroup instanceof Role)
-      ? memberOrRoleOrGroup
-      : message.guild.groups.resolve(memberOrRoleOrGroup)
-    if (!memberOrRoleOrGroup) {
-      return message.reply('Group not found.')
-    }
-    if (memberOrRoleOrGroup instanceof Group && memberOrRoleOrGroup.type !== GroupTypes.ROLE) {
-      return message.reply('Invalid group.')
-    }
-
     const embed = new MessageEmbed()
       .setColor(message.guild.primaryColor)
     if (memberOrRoleOrGroup instanceof GuildMember) {
