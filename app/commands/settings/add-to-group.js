@@ -12,7 +12,7 @@ class AddToGroupCommand extends BaseCommand {
       args: [{
         key: 'group',
         prompt: 'To what group do you want to add a channel or role?',
-        type: 'integer|string'
+        type: 'nsadmin-group'
       }, {
         key: 'channelOrRole',
         label: 'channel/role',
@@ -23,11 +23,6 @@ class AddToGroupCommand extends BaseCommand {
   }
 
   async run (message, { group, channelOrRole }) {
-    group = message.guild.groups.resolve(group)
-    if (!group) {
-      return message.reply('Group not found.')
-    }
-
     await group[pluralize(group.type)].add(channelOrRole)
 
     return message.reply(`Successfully added ${group.type} ${channelOrRole} to group \`${group.name}\`.`, {

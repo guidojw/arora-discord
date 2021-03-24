@@ -11,7 +11,7 @@ class EditTagCommand extends BaseCommand {
       args: [{
         key: 'tag',
         prompt: 'What tag would you like to edit?',
-        type: 'integer|string'
+        type: 'tag'
       }, {
         key: 'content',
         prompt: 'What do you want the new content of this tag to be?',

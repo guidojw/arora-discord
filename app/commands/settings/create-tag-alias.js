@@ -12,7 +12,7 @@ class CreateTagAliasCommand extends BaseCommand {
       args: [{
         key: 'tag',
         prompt: 'To what tag would you like to add this alias?',
-        type: 'integer|string'
+        type: 'tag'
       }, {
         key: 'alias',
         prompt: 'What would you like the new alias of this tag to be?',
@@ -23,11 +23,6 @@ class CreateTagAliasCommand extends BaseCommand {
   }
 
   async run (message, { tag, alias }) {
-    tag = message.guild.tags.resolve(tag)
-    if (!tag) {
-      return message.reply('Tag not found')
-    }
-
     const tagName = await tag.names.create(alias)
 
     return message.reply(`Successfully created alias \`${tagName.name}\` for tag \`${tag.names.cache.first()?.name ?? 'Unknown'}\`.`)

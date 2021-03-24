@@ -3,29 +3,26 @@ const BaseCommand = require('../base')
 
 const { MessageEmbed } = require('discord.js')
 
-class TagCommand extends BaseCommand {
+class TagsCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'main',
-      name: 'tag',
+      name: 'tags',
+      aliases: ['tag'],
       description: 'Posts given tag.',
       examples: ['tag rr'],
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
         key: 'tag',
-        type: 'integer|string',
-        prompt: 'What tag would you like to check out?'
+        type: 'tag',
+        prompt: 'What tag would you like to check out?',
+        default: ''
       }]
     })
   }
 
   run (message, { tag }) {
-    if (tag !== 'all') {
-      tag = message.guild.tags.resolve(tag)
-      if (!tag) {
-        return message.reply('Tag not found.')
-      }
-
+    if (tag) {
       return message.reply(tag.content, tag.content instanceof MessageEmbed
         ? undefined
         : { allowedMentions: { users: [message.author.id] } })
@@ -54,4 +51,4 @@ function makeCommaSeparatedString (arr) {
   return `\`${firsts.map(tagName => tagName.name).join('`, `')}\` & \`${last.name}\``
 }
 
-module.exports = TagCommand
+module.exports = TagsCommand

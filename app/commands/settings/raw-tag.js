@@ -10,18 +10,13 @@ class RawTagCommand extends BaseCommand {
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
         key: 'tag',
-        type: 'integer|string',
+        type: 'tag',
         prompt: 'What tag would you like the raw content of?'
       }]
     })
   }
 
   run (message, { tag }) {
-    tag = message.guild.tags.resolve(tag)
-    if (!tag) {
-      return message.reply('Tag not found.')
-    }
-
     return message.reply(tag._content, { allowedMentions: { users: [message.author.id] } })
   }
 }

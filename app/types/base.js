@@ -35,14 +35,14 @@ class BaseArgumentType extends ArgumentType {
       return arg.oneOf?.includes(structure.id) ?? true
     }
     const search = val.toLowerCase()
-    let structures = msg.guild[this.managerName].cache.filter(filterInexact(search).bind(this))
+    let structures = msg.guild[this.managerName].cache.filter(this.filterInexact(search).bind(this))
     if (structures.size === 0) {
       return false
     }
     if (structures.size === 1) {
       return arg.oneOf?.includes(structures.first().id) ?? true
     }
-    const exactStructures = structures.filter(filterExact(search).bind(this))
+    const exactStructures = structures.filter(this.filterExact(search).bind(this))
     if (exactStructures.size === 1) {
       return arg.oneOf?.includes(exactStructures.first().id) ?? true
     }
@@ -63,30 +63,30 @@ class BaseArgumentType extends ArgumentType {
       return msg.guild[this.managerName].cache.get(id) || null
     }
     const search = val.toLowerCase()
-    const structures = msg.guild[this.managerName].cache.filter(filterInexact(search).bind(this))
+    const structures = msg.guild[this.managerName].cache.filter(this.filterInexact(search).bind(this))
     if (structures.size === 0) {
       return null
     }
     if (structures.size === 1) {
       return structures.first()
     }
-    const exactStructures = structures.filter(filterExact(search).bind(this))
+    const exactStructures = structures.filter(this.filterExact(search).bind(this))
     if (exactStructures.size === 1) {
       return exactStructures.first()
     }
     return null
   }
-}
 
-function filterExact (search) {
-  return function (structure) {
-    return structure instanceof this.holds && structure.name.toLowerCase() === search
+  filterExact (search) {
+    return function (structure) {
+      return structure instanceof this.holds && structure.name.toLowerCase() === search
+    }
   }
-}
 
-function filterInexact (search) {
-  return function (structure) {
-    return structure instanceof this.holds && structure.name.toLowerCase().includes(search)
+  filterInexact (search) {
+    return function (structure) {
+      return structure instanceof this.holds && structure.name.toLowerCase().includes(search)
+    }
   }
 }
 

@@ -12,7 +12,7 @@ class DeleteTagCommand extends BaseCommand {
       args: [{
         key: 'tag',
         prompt: 'What tag would you like to delete?',
-        type: 'integer|string'
+        type: 'tag'
       }]
     })
   }
