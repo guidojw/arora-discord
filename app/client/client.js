@@ -62,7 +62,7 @@ class NSadminClient extends CommandoClient {
       .registerGroup('main', 'Main')
       .registerGroup('miscellaneous', 'Miscellaneous')
       .registerGroup('settings', 'Settings')
-      .registerTypesIn(path.join(__dirname, '../types'))
+      .registerTypesIn({ dirname: path.join(__dirname, '../types'), filter: /^(?!base.js).+$/ })
       .registerCommandsIn(path.join(__dirname, '../commands'))
 
     if (applicationConfig.apiEnabled) {

@@ -14,7 +14,7 @@ class GroupsCommand extends BaseCommand {
       args: [{
         key: 'group',
         prompt: 'What group would you like to know the information of?',
-        type: 'integer|string',
+        type: 'nsadmin-group',
         default: ''
       }]
     })
@@ -22,11 +22,6 @@ class GroupsCommand extends BaseCommand {
 
   async run (message, { group }) {
     if (group) {
-      group = message.guild.groups.resolve(group)
-      if (!group) {
-        return message.reply('Group not found.')
-      }
-
       const embed = new MessageEmbed()
         .setTitle(`Group ${group.id}`)
         .addField('Name', group.name, true)
