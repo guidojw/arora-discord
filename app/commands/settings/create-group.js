@@ -1,7 +1,8 @@
 'use strict'
 const BaseCommand = require('../base')
 
-const { GroupTypes } = require('../../util/constants')
+const { Constants } = require('../../util')
+const { GroupTypes } = Constants
 
 class CreateGroupCommand extends BaseCommand {
   constructor (client) {

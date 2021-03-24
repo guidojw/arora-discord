@@ -2,8 +2,9 @@
 const BaseCommand = require('../base')
 
 const { applicationAdapter } = require('../../adapters')
-const { stringHelper } = require('../../helpers')
 const { userService } = require('../../services')
+const { argumentUtil } = require('../../util')
+const { validators, noChannels, noTags, noUrls } = argumentUtil
 
 class SuspendCommand extends BaseCommand {
   constructor (client) {
@@ -22,12 +23,13 @@ class SuspendCommand extends BaseCommand {
         key: 'days',
         type: 'integer',
         prompt: 'How long would you like this suspension to be?',
-        validate: validateDays
+        min: 1,
+        max: 7
       }, {
         key: 'reason',
         type: 'string',
         prompt: 'For what reason are you suspending this person?',
-        validate: validateReason
+        validate: validators([noChannels, noTags, noUrls])
       }, {
         key: 'rankBack',
         type: 'boolean',
@@ -56,32 +58,6 @@ class SuspendCommand extends BaseCommand {
 
     return message.reply(`Successfully suspended **${username}**.`)
   }
-}
-
-function validateDays (val, msg) {
-  const valid = this.type.validate(val, msg, this)
-  if (!valid || typeof valid === 'string') {
-    return valid
-  }
-  return val < 1
-    ? 'Insufficient amount of days.'
-    : val > 7
-      ? 'Too many days.'
-      : true
-}
-
-function validateReason (val, msg) {
-  const valid = this.type.validate(val, msg, this)
-  if (!valid || typeof valid === 'string') {
-    return valid
-  }
-  return stringHelper.getChannels(val)
-    ? 'Reason contains channels.'
-    : stringHelper.getTags(val)
-      ? 'Reason contains tags.'
-      : stringHelper.getUrls(val)
-        ? 'Reason contains URLs.'
-        : true
 }
 
 module.exports = SuspendCommand

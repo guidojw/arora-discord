@@ -25,7 +25,7 @@ class SetSettingCommand extends BaseCommand {
       }, {
         key: 'value',
         prompt: 'What would you like to change this setting to? Reply with "none" if you want to reset the setting.',
-        type: 'category-channel|channel|message|integer|string',
+        type: 'category-channel|text-channel|message|integer|string',
         parse: parseValue
       }]
     })

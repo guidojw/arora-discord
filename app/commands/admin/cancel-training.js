@@ -2,8 +2,9 @@
 const BaseCommand = require('../base')
 
 const { applicationAdapter } = require('../../adapters')
-const { stringHelper } = require('../../helpers')
 const { userService } = require('../../services')
+const { argumentUtil } = require('../../util')
+const { validators, noChannels, noTags, noUrls } = argumentUtil
 
 class CancelTrainingCommand extends BaseCommand {
   constructor (client) {
@@ -22,7 +23,7 @@ class CancelTrainingCommand extends BaseCommand {
         key: 'reason',
         type: 'string',
         prompt: 'With what reason would you like to cancel this training?',
-        validate: validateReason
+        validate: validators([noChannels, noTags, noUrls])
       }]
     })
   }
@@ -40,20 +41,6 @@ class CancelTrainingCommand extends BaseCommand {
 
     return message.reply(`Successfully cancelled training with ID **${trainingId}**.`)
   }
-}
-
-function validateReason (val, msg) {
-  const valid = this.type.validate(val, msg, this)
-  if (!valid || typeof valid === 'string') {
-    return valid
-  }
-  return stringHelper.getChannels(val)
-    ? 'Reason contains channels.'
-    : stringHelper.getTags(val)
-      ? 'Reason contains tags.'
-      : stringHelper.getUrls(val)
-        ? 'Reason contains URLs.'
-        : true
 }
 
 module.exports = CancelTrainingCommand

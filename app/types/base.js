@@ -19,7 +19,7 @@ class BaseArgumentType extends ArgumentType {
       ? pluralize(lodash.camelCase(holds.name))
       : managerName
 
-    this.label = this.id.split('-').join(' ')
+    this.label = this.id.replace(/-/g, ' ')
   }
 
   validate (val, msg, arg) {

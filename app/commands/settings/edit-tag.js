@@ -1,6 +1,9 @@
 'use strict'
 const BaseCommand = require('../base')
 
+const { argumentUtil } = require('../../util')
+const { validators, isObject, typeOf } = argumentUtil
+
 class EditTagCommand extends BaseCommand {
   constructor (client) {
     super(client, {
@@ -16,7 +19,7 @@ class EditTagCommand extends BaseCommand {
         key: 'content',
         prompt: 'What do you want the new content of this tag to be?',
         type: 'json-object|string',
-        validate: validateContent
+        validate: validators([[isObject, typeOf('string', 'a string')]])
       }]
     })
   }
@@ -26,15 +29,6 @@ class EditTagCommand extends BaseCommand {
 
     return message.reply(`Successfully edited tag \`${tag.names.cache.first()?.name ?? 'Unknown'}\`.`)
   }
-}
-
-async function validateContent (val, msg) {
-  const valid = await this.type.validate(val, msg, this)
-  if (!valid || typeof valid === 'string') {
-    return valid
-  }
-  const parsed = await this.type.parse(val, msg, this)
-  return typeof parsed === 'string' || Object.prototype.toString.call(parsed) === '[object Object]'
 }
 
 module.exports = EditTagCommand

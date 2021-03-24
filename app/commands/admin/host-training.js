@@ -3,8 +3,10 @@ const BaseCommand = require('../base')
 
 const { MessageEmbed } = require('discord.js')
 const { applicationAdapter } = require('../../adapters')
-const { stringHelper, timeHelper } = require('../../helpers')
+const { timeHelper } = require('../../helpers')
 const { groupService, userService } = require('../../services')
+const { argumentUtil } = require('../../util')
+const { validators, noChannels, noTags, noUrls } = argumentUtil
 
 class HostTrainingCommand extends BaseCommand {
   constructor (client) {
@@ -36,7 +38,7 @@ class HostTrainingCommand extends BaseCommand {
         key: 'notes',
         type: 'string',
         prompt: 'What notes would you like to add? Reply with "none" if you don\'t want to add any.',
-        validate: validateNotes,
+        validate: validators([noChannels, noTags, noUrls]),
         parse: parseNotes
       }]
     })
@@ -79,19 +81,6 @@ class HostTrainingCommand extends BaseCommand {
       .setColor(message.guild.primaryColor)
     return message.replyEmbed(embed)
   }
-}
-
-function validateNotes (val, msg) {
-  const valid = this.type.validate(val, msg, this)
-  return !valid || typeof valid === 'string'
-    ? valid
-    : stringHelper.getChannels(val)
-      ? 'Notes contain channels.'
-      : stringHelper.getTags(val)
-        ? 'Notes contain tags.'
-        : stringHelper.getUrls(val)
-          ? 'Notes contain URLs.'
-          : true
 }
 
 function parseNotes (val, msg) {

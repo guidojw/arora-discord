@@ -1,6 +1,9 @@
 'use strict'
 const BaseCommand = require('../base')
 
+const { argumentUtil } = require('../../util')
+const { validators, isObject } = argumentUtil
+
 class EditPanelCommand extends BaseCommand {
   constructor (client) {
     super(client, {
@@ -17,7 +20,7 @@ class EditPanelCommand extends BaseCommand {
         key: 'content',
         prompt: 'What would you like to change the panel\'s content to?',
         type: 'json-object',
-        validate: validateContent
+        validate: validators([isObject])
       }]
     })
   }
@@ -27,13 +30,6 @@ class EditPanelCommand extends BaseCommand {
 
     return message.reply(`Successfully edited panel \`${panel.name}\`.`)
   }
-}
-
-function validateContent (val, msg) {
-  const valid = this.type.validate(val, msg, this)
-  return !valid || typeof valid === 'string'
-    ? valid
-    : Object.prototype.toString.call(this.type.parse(val, msg, this)) === '[object Object]'
 }
 
 module.exports = EditPanelCommand

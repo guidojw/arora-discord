@@ -1,6 +1,9 @@
 'use strict'
 const BaseCommand = require('../base')
 
+const { argumentUtil } = require('../../util')
+const { validators, isObject, noNumber, typeOf } = argumentUtil
+
 class CreateTagCommand extends BaseCommand {
   constructor (client) {
     super(client, {
@@ -15,12 +18,12 @@ class CreateTagCommand extends BaseCommand {
         key: 'name',
         prompt: 'What do you want the name of the tag to be?',
         type: 'string',
-        validate: validateName
+        validate: validators([noNumber])
       }, {
         key: 'content',
         prompt: 'What do you want the content of the tag to be?',
         type: 'json-object|string',
-        validate: validateContent
+        validate: validators([[isObject, typeOf('string', 'a string')]])
       }]
     })
   }
@@ -30,25 +33,6 @@ class CreateTagCommand extends BaseCommand {
 
     return message.reply(`Successfully created tag \`${tag.names.cache.first()?.name ?? 'Unknown'}\`.`)
   }
-}
-
-function validateName (val, msg) {
-  const valid = this.type.validate(val, msg, this)
-  if (!valid || typeof valid === 'string') {
-    return valid
-  }
-  return !isNaN(parseInt(val))
-    ? 'Name cannot be a number.'
-    : true
-}
-
-async function validateContent (val, msg) {
-  const valid = await this.type.validate(val, msg, this)
-  if (!valid || typeof valid === 'string') {
-    return valid
-  }
-  const parsed = await this.type.parse(val, msg, this)
-  return typeof parsed === 'string' || Object.prototype.toString.call(parsed) === '[object Object]'
 }
 
 module.exports = CreateTagCommand

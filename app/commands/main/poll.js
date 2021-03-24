@@ -2,7 +2,8 @@
 const BaseCommand = require('../base')
 
 const { MessageEmbed } = require('discord.js')
-const { stringHelper } = require('../../helpers')
+const { argumentUtil } = require('../../util')
+const { validators, noTags } = argumentUtil
 
 class PollCommand extends BaseCommand {
   constructor (client) {
@@ -18,7 +19,7 @@ class PollCommand extends BaseCommand {
         key: 'poll',
         type: 'string',
         prompt: 'What would you like the question to be?',
-        validate: validatePoll
+        validate: validators([noTags])
       }]
     })
   }
@@ -45,16 +46,6 @@ class PollCommand extends BaseCommand {
       await newMessage.react('✖')
     }
   }
-}
-
-function validatePoll (val, msg) {
-  const valid = this.type.validate(val, msg, this)
-  if (!valid || typeof valid === 'string') {
-    return valid
-  }
-  return stringHelper.getTags(val)
-    ? 'Poll contains tags.'
-    : true
 }
 
 module.exports = PollCommand

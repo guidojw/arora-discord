@@ -27,7 +27,7 @@ async function announceTrainingsJob (guild) {
     const now = new Date()
 
     const dstNow = timeHelper.isDst(now)
-    embed.setDescription(embed.description.split('{timezone}').join(dstNow ? 'CEST' : 'CET'))
+    embed.setDescription(embed.description.replace(/{timezone}/g, dstNow ? 'CEST' : 'CET'))
 
     const nextTraining = trainings.find(training => new Date(training.date) > now)
     embed.addField(

@@ -2,8 +2,9 @@
 const BaseCommand = require('../base')
 
 const { applicationAdapter } = require('../../adapters')
-const { stringHelper } = require('../../helpers')
 const { userService } = require('../../services')
+const { argumentUtil } = require('../../util')
+const { validators, noChannels, noTags, noUrls } = argumentUtil
 
 class UnbanCommand extends BaseCommand {
   constructor (client) {
@@ -22,7 +23,7 @@ class UnbanCommand extends BaseCommand {
         key: 'reason',
         type: 'string',
         prompt: 'With what reason would you like to unban this person?',
-        validate: validateReason
+        validate: validators([noChannels, noTags, noUrls])
       }]
     })
   }
@@ -41,20 +42,6 @@ class UnbanCommand extends BaseCommand {
 
     return message.reply(`Successfully unbanned **${username}**.`)
   }
-}
-
-function validateReason (val, msg) {
-  const valid = this.type.validate(val, msg, this)
-  if (!valid || typeof valid === 'string') {
-    return valid
-  }
-  return stringHelper.getChannels(val)
-    ? 'Reason contains channels.'
-    : stringHelper.getTags(val)
-      ? 'Reason contains tags.'
-      : stringHelper.getUrls(val)
-        ? 'Reason contains URLs.'
-        : true
 }
 
 module.exports = UnbanCommand
