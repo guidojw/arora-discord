@@ -60,6 +60,7 @@ class GuildPanelManager extends BaseManager {
     }
 
     const changes = {}
+    const options = {}
     if (typeof data.name !== 'undefined') {
       if (this.resolve(data.name)) {
         throw new Error('A panel with that name already exists.')
@@ -81,10 +82,36 @@ class GuildPanelManager extends BaseManager {
         await panel.message.edit(embed)
       }
     }
+    if (typeof data.channel !== 'undefined' && typeof data.message !== 'undefined') {
+      const channel = this.guild.channels.resolve(data.channel)
+      if (!channel) {
+        throw new Error('Invalid channel.')
+      }
+      options.channelId = channel.id
+
+      let message = channel.messages.resolve(data.message) ?? data.message
+      try {
+        if (message.partial) {
+          message = await message.fetch()
+        } else if (typeof message === 'string') {
+          message = await channel.messages.fetch(message)
+        }
+      } catch {
+        throw new Error('Invalid message.')
+      }
+      if (message.author.id !== this.client.user.id) {
+        throw new Error(`Can only update message to messages posted by ${this.client.user}.`)
+      }
+      if (this.cache.some(otherPanel => otherPanel.messageId === message.id)) {
+        throw new Error('Another panel is already posted in that message.')
+      }
+      changes.messageId = message.id
+    }
 
     const [, [newData]] = await PanelModel.update(changes, {
       where: { id: panel.id },
-      returning: true
+      returning: true,
+      ...options
     })
     await newData.reload()
 
