@@ -32,7 +32,7 @@ class BoostInfoCommand extends BaseCommand {
     const emoji = this.client.mainGuild.emojis.cache.find(emoji => emoji.name.toLowerCase() === 'boost')
 
     if (member.user.partial) {
-      await member.user.partial.fetch()
+      await member.user.fetch()
     }
     const embed = new MessageEmbed()
       .setTitle(`${member.user.tag} ${emoji || ''}`)
