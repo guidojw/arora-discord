@@ -46,10 +46,10 @@ function makeValidator (test, message) {
   }
 }
 
-const noChannels = makeValidator(MessageMentions.CHANNELS_PATTERN.test, 'cannot contain channels')
+const noChannels = makeValidator(val => MessageMentions.CHANNELS_PATTERN.test(val), 'cannot contain channels')
 const noNumber = makeValidator(val => !isNaN(parseInt(val)), 'cannot be a number')
 const noSpaces = makeValidator(val => val.includes(' '), 'cannot contain spaces')
-const noUrls = makeValidator(urlRegex.test.bind(urlRegex), 'cannot contain URLs')
+const noUrls = makeValidator(val => urlRegex.test(val), 'cannot contain URLs')
 const isObject = makeValidator(
   val => {
     try {
@@ -61,8 +61,10 @@ const isObject = makeValidator(
   'must be an object'
 )
 const noTags = makeValidator(
-  val => MessageMentions.EVERYONE_PATTERN.test(val) || MessageMentions.USERS_PATTERN.test(val) || MessageMentions
-    .ROLES_PATTERN.test(val),
+  val => (
+    MessageMentions.EVERYONE_PATTERN.test(val) || MessageMentions.USERS_PATTERN.test(val) || MessageMentions
+      .ROLES_PATTERN.test(val)
+  ),
   'cannot contain tags'
 )
 
