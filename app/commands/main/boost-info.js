@@ -27,7 +27,7 @@ class BoostInfoCommand extends BaseCommand {
     }
     const now = new Date()
     const diff = diffDays(member.premiumSince, now)
-    const months = Math.floor(diffDays / 30)
+    const months = Math.floor(diff / 30)
     const days = diff % 30
     const emoji = this.client.mainGuild.emojis.cache.find(emoji => emoji.name.toLowerCase() === 'boost')
 
