@@ -26,10 +26,10 @@
     "pluralize": "^8.0.0",
     "sequelize": "^6.3.5",
     "sequelize-cli": "^6.2.0",
-    "ws": "^7.4.3"
+    "ws": "^7.4.4"
   },
   "devDependencies": {
-    "eslint": "^7.21.0",
+    "eslint": "^7.22.0",
     "nodemon": "^2.0.7",
     "standard": "^16.0.3"
   },
