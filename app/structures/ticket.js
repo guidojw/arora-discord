@@ -9,6 +9,7 @@ const { PartialTypes } = require('discord.js').Constants
 const { roVerAdapter } = require('../adapters')
 const { discordService } = require('../services')
 const { getDate, getTime } = require('../util').timeUtil
+const { makeCommaSeparatedString } = require('../util').util
 
 class Ticket extends BaseStructure {
   constructor (client, data, guild) {
@@ -182,15 +183,6 @@ class Ticket extends BaseStructure {
       }
     }
   }
-}
-
-function makeCommaSeparatedString (arr) {
-  if (arr.length === 1) {
-    return arr[0]
-  }
-  const firsts = arr.slice(0, arr.length - 1)
-  const last = arr[arr.length - 1]
-  return firsts.join(', ') + ' & ' + last
 }
 
 module.exports = Ticket

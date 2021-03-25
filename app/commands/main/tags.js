@@ -2,6 +2,7 @@
 const BaseCommand = require('../base')
 
 const { MessageEmbed } = require('discord.js')
+const { makeCommaSeparatedString } = require('../../util').util
 
 class TagsCommand extends BaseCommand {
   constructor (client) {
@@ -29,7 +30,7 @@ class TagsCommand extends BaseCommand {
     } else {
       let list = ''
       for (const tag of message.guild.tags.cache.values()) {
-        list += `${tag.id}. ${makeCommaSeparatedString(Array.from(tag.names.cache.values()))}\n`
+        list += `${tag.id}. ${makeCommaSeparatedString(tag.names.cache.map(tagName => `\`${tagName.name}\``))}\n`
       }
 
       const embed = new MessageEmbed()
@@ -41,14 +42,4 @@ class TagsCommand extends BaseCommand {
     }
   }
 }
-
-function makeCommaSeparatedString (arr) {
-  if (arr.length === 1) {
-    return arr[0]
-  }
-  const firsts = arr.slice(0, arr.length - 1)
-  const last = arr[arr.length - 1]
-  return `\`${firsts.map(tagName => tagName.name).join('`, `')}\` & \`${last.name}\``
-}
-
 module.exports = TagsCommand
