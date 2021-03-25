@@ -4,9 +4,10 @@ const { MessageEmbed } = require('discord.js')
 const REACTION_COLLECTOR_TIME = 60000
 
 exports.getMemberByName = async (guild, name) => {
+  name = name.toLowerCase()
   const members = await guild.members.fetch()
   for (const member of members.values()) {
-    if (member.displayName.toLowerCase() === name.toLowerCase()) {
+    if (member.displayName.toLowerCase() === name) {
       return member
     }
   }
@@ -18,7 +19,7 @@ exports.prompt = async (channel, author, message, options) => {
   const promise = new Promise(resolve => {
     collector.on('end', collected => {
       const reaction = collected.first()
-      resolve(reaction ? reaction.emoji.name : null)
+      resolve(reaction?.emoji.name ?? null)
     })
   })
   collector.on('collect', collector.stop)

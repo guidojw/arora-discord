@@ -3,8 +3,8 @@ const lodash = require('lodash')
 const pluralize = require('pluralize')
 
 const { escapeMarkdown } = require('discord.js')
-const { ArgumentType, util } = require('discord.js-commando')
-const { disambiguation } = util
+const { ArgumentType } = require('discord.js-commando')
+const { disambiguation } = require('discord.js-commando').util
 
 class BaseArgumentType extends ArgumentType {
   constructor (client, holds, managerName) {

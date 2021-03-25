@@ -9,6 +9,7 @@ const voiceStateUpdateHandler = async (_client, oldState, newState) => {
         } catch {} // eslint-disable-line no-empty
       })
     }
+
     if (newState.channel) {
       const toLinks = await newState.channel.fetchToLinks()
       toLinks.forEach(channel => {

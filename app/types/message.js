@@ -29,6 +29,7 @@ class MessageArgumentType extends ArgumentType {
         return false
       }
     }
+    return false
   }
 
   parse (val, msg) {

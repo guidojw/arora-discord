@@ -1,8 +1,7 @@
 'use strict'
 const BaseCommand = require('../base')
 
-const { argumentUtil } = require('../../util')
-const { validators, isObject, typeOf } = argumentUtil
+const { validators, isObject, typeOf } = require('../../util').argumentUtil
 
 class EditTagCommand extends BaseCommand {
   constructor (client) {

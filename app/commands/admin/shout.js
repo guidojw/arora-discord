@@ -4,8 +4,7 @@ const BaseCommand = require('../base')
 const { MessageEmbed } = require('discord.js')
 const { applicationAdapter } = require('../../adapters')
 const { userService } = require('../../services')
-const { argumentUtil } = require('../../util')
-const { validators, noChannels, noTags, noUrls } = argumentUtil
+const { validators, noChannels, noTags, noUrls } = require('../../util').argumentUtil
 
 class ShoutCommand extends BaseCommand {
   constructor (client) {

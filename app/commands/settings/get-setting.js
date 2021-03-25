@@ -28,7 +28,7 @@ class GetSettingCommand extends BaseCommand {
   async run (message, { setting }) {
     let result
     if (setting === 'primaryColor') {
-      const color = message.guild.primaryColor?.toString(16) || ''
+      const color = message.guild.primaryColor?.toString(16) ?? ''
       result = `0x${color}${'0'.repeat(6 - color.length)}`
     } else if (setting.includes('Channel') || setting.includes('Category')) {
       setting = setting.slice(0, -2)

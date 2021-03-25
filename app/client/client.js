@@ -155,14 +155,13 @@ class NSadminClient extends CommandoClient {
 
   send (user, content) {
     return failSilently(user.send.bind(user, content), [50007])
-    // Most likely because the author has DMs closed,
-    // do nothing.
+    // 50007: Cannot send messages to this user, user probably has DMs closed.
   }
 
   deleteMessage (message) {
-    return failSilently(message.delete.bind(message), [10008, 50003])
-    // Discord API Unknown message error, the message
-    // was probably already deleted.
+    return failSilently(message.delete.bind(message), [10008, ...(message.channel.type === 'dm' ? [50003] : [])])
+    // 10008: Unknown message, the message was probably already deleted.
+    // 50003: Cannot execute action on a DM channel, the bot cannot delete user messages in DMs.
   }
 
   async login (token = this.token) {

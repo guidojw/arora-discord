@@ -60,7 +60,9 @@ class SetSettingCommand extends BaseCommand {
             error = 'Invalid channel.'
           }
         }
-        await ChannelModel.findOrCreate({ where: { id: value.id, guildId: message.guild.id } })
+        if (!error) {
+          await ChannelModel.findOrCreate({ where: { id: value.id, guildId: message.guild.id } })
+        }
       }
 
       if (error) {
@@ -68,7 +70,7 @@ class SetSettingCommand extends BaseCommand {
       }
     }
 
-    await message.guild.update({ [setting]: value?.id ?? value })
+    await message.guild.update({ [setting]: value instanceof GuildChannel ? value.id : value })
 
     return message.reply(`Successfully changed ${setting.endsWith('Id') ? setting.slice(0, -2) : setting} to ${value instanceof GuildChannel ? value : `\`${value}\``}.`)
   }

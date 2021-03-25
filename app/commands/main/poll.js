@@ -2,8 +2,7 @@
 const BaseCommand = require('../base')
 
 const { MessageEmbed } = require('discord.js')
-const { argumentUtil } = require('../../util')
-const { validators, noTags } = argumentUtil
+const { validators, noTags } = require('../../util').argumentUtil
 
 class PollCommand extends BaseCommand {
   constructor (client) {

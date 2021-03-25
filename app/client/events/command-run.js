@@ -4,7 +4,7 @@ const { stripIndents } = require('common-tags')
 const commandRunHandler = async (client, command, promise, message, _args, _fromPattern, result) => {
   try {
     await promise
-  } catch (err) {
+  } catch {
     // Command execution errors are handled by the commandError event handler.
     return
   }
@@ -16,7 +16,7 @@ const commandRunHandler = async (client, command, promise, message, _args, _from
   guild.log(
     message.author,
     stripIndents`
-    ${message.author} **used** \`${command.name}\` **command in** ${message.channel} [Jump to Message](${message.url})
+    ${message.author} **used** \`${command.name}\` **command in** ${message.channel} ${message.channel.type !== 'dm' ? `[Jump to Message](${message.url})` : ''}
     ${message.content}
     `
   )

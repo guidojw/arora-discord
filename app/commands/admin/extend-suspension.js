@@ -3,8 +3,7 @@ const BaseCommand = require('../base')
 
 const { applicationAdapter } = require('../../adapters')
 const { userService } = require('../../services')
-const { argumentUtil } = require('../../util')
-const { validators, noChannels, noTags, noUrls } = argumentUtil
+const { validators, noChannels, noTags, noUrls } = require('../../util').argumentUtil
 
 class ExtendSuspensionCommand extends BaseCommand {
   constructor (client) {

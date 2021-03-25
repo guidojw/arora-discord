@@ -11,7 +11,11 @@ function validators (steps = []) {
     return
   }
   return async function (val, msg) {
-    steps.unshift(this.type.validate)
+    const valid = await this.type.validate(val, msg, this)
+    if (!valid || typeof valid === 'string') {
+      return valid
+    }
+
     for (const step of steps) {
       if (step instanceof Array) {
         let results = step.map(validator => validator.call(this.type, val, msg, this))
@@ -46,7 +50,6 @@ const noChannels = makeValidator(MessageMentions.CHANNELS_PATTERN.test, 'cannot 
 const noNumber = makeValidator(val => !isNaN(parseInt(val)), 'cannot be a number')
 const noSpaces = makeValidator(val => val.includes(' '), 'cannot contain spaces')
 const noUrls = makeValidator(urlRegex.test.bind(urlRegex), 'cannot contain URLs')
-
 const isObject = makeValidator(
   val => {
     try {
@@ -57,7 +60,6 @@ const isObject = makeValidator(
   },
   'must be an object'
 )
-
 const noTags = makeValidator(
   val => MessageMentions.EVERYONE_PATTERN.test(val) || MessageMentions.USERS_PATTERN.test(val) || MessageMentions
     .ROLES_PATTERN.test(val),

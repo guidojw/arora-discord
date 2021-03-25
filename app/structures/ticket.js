@@ -133,7 +133,7 @@ class Ticket extends BaseStructure {
     const message = await this.client.send(this.author, embed)
 
     const options = []
-    for (let i = 5; i >= 1; i--) {
+    for (let i = 1; i <= 5; i++) {
       options.push(`${i}⃣`)
     }
 

@@ -1,8 +1,7 @@
 'use strict'
 const BaseCommand = require('../base')
 
-const { argumentUtil } = require('../../util')
-const { validators, isObject, noNumber, noSpaces } = argumentUtil
+const { validators, isObject, noNumber, noSpaces } = require('../../util').argumentUtil
 
 class CreatePanelCommand extends BaseCommand {
   constructor (client) {

@@ -2,6 +2,9 @@
 const WebSocket = require('ws')
 const packetHandlers = require('./handlers')
 
+const RECONNECT_TIMEOUT = 30 * 1000
+const PING_TIMEOUT = 30 * 1000 + 1000
+
 class WebSocketManager {
   constructor (client, host = process.env.HOST) {
     this.client = client
@@ -36,7 +39,7 @@ class WebSocketManager {
   onClose () {
     console.log('Disconnected!')
     clearTimeout(this.pingTimeout)
-    setTimeout(this.connect.bind(this), 30000)
+    setTimeout(this.connect.bind(this), RECONNECT_TIMEOUT)
   }
 
   onError (error) {
@@ -49,7 +52,7 @@ class WebSocketManager {
 
   heartbeat () {
     clearTimeout(this.pingTimeout)
-    this.pingTimeout = setTimeout(this.connection.terminate, 30000 + 1000)
+    this.pingTimeout = setTimeout(this.connection.terminate, PING_TIMEOUT)
   }
 
   handlePacket (packet) {
