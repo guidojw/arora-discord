@@ -105,6 +105,7 @@ class GuildPanelManager extends BaseManager {
       if (this.cache.some(otherPanel => otherPanel.messageId === message.id)) {
         throw new Error('Another panel is already posted in that message.')
       }
+      await message.edit(panel.embed)
       changes.messageId = message.id
     }
 
