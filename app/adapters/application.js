@@ -3,14 +3,14 @@ const axios = require('axios')
 
 const applicationConfig = require('../../config/application')
 
-function request (method, pathname, data) {
+function applicationAdapter (method, pathname, data) {
   if (applicationConfig.apiEnabled) {
     return axios({
-      method,
       url: process.env.HOST + pathname,
+      method,
       data,
       headers: {
-        Authorization: 'Bearer ' + process.env.TOKEN
+        Authorization: `Bearer ${process.env.TOKEN}`
       }
     })
   } else {
@@ -18,4 +18,4 @@ function request (method, pathname, data) {
   }
 }
 
-module.exports = request
+module.exports = applicationAdapter
