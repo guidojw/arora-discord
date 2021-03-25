@@ -1,8 +1,6 @@
 'use strict'
 const BaseCommand = require('../base')
 
-const { validators, isSnowflake } = require('../../util').argumentUtil
-
 class CreateRoleMessageCommand extends BaseCommand {
   constructor (client) {
     super(client, {
@@ -18,12 +16,7 @@ class CreateRoleMessageCommand extends BaseCommand {
       }, {
         key: 'message',
         prompt: 'What message would you like to make a role message?',
-        type: 'string',
-        validate: validators([isSnowflake])
-      }, {
-        key: 'channel',
-        prompt: 'In what channel is this message?',
-        type: 'text-channel'
+        type: 'message'
       }, {
         key: 'emoji',
         prompt: 'What emoji do you want to bind to this message?',
@@ -32,8 +25,8 @@ class CreateRoleMessageCommand extends BaseCommand {
     })
   }
 
-  async run (message, { role, message: newMessage, channel, emoji }) {
-    const roleMessage = await message.guild.roleMessages.create({ role, message: newMessage, channel, emoji })
+  async run (message, { role, message: newMessage, emoji }) {
+    const roleMessage = await message.guild.roleMessages.create({ role, message: newMessage, emoji })
 
     return message.reply(`Successfully bound role ${roleMessage.role} to emoji ${roleMessage.emoji} on message \`${roleMessage.messageId}\`.`, {
       allowedMentions: { users: [message.author.id] }

@@ -46,7 +46,7 @@ class NSadminClient extends CommandoClient {
 
     this.registry
       .registerDefaultGroups()
-      .registerDefaultTypes()
+      .registerDefaultTypes({ message: false })
       .registerDefaultCommands({
         help: true,
         prefix: true,
@@ -160,7 +160,7 @@ class NSadminClient extends CommandoClient {
   }
 
   deleteMessage (message) {
-    return failSilently(message.delete.bind(message), [10008])
+    return failSilently(message.delete.bind(message), [10008, 50003])
     // Discord API Unknown message error, the message
     // was probably already deleted.
   }

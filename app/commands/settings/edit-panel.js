@@ -1,8 +1,7 @@
 'use strict'
-const BaseCommand = require('../base')
+const { Message } = require('discord.js')
 
-const { argumentUtil } = require('../../util')
-const { validators, isObject } = argumentUtil
+const BaseCommand = require('../base')
 
 class EditPanelCommand extends BaseCommand {
   constructor (client) {
@@ -10,23 +9,43 @@ class EditPanelCommand extends BaseCommand {
       group: 'settings',
       name: 'editpanel',
       aliases: ['editpnl'],
-      description: 'Edits a panel\'s content.',
+      description: 'Edits a panel.',
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
         key: 'panel',
         prompt: 'What panel would you like to edit?',
         type: 'panel'
       }, {
-        key: 'content',
-        prompt: 'What would you like to change the panel\'s content to?',
-        type: 'json-object',
-        validate: validators([isObject])
+        key: 'key',
+        type: 'string',
+        prompt: 'What key would you like to change?',
+        oneOf: ['content', 'message'],
+        parse: val => val.toLowerCase()
+      }, {
+        key: 'data',
+        prompt: 'What would you like to change this key\'s data to?',
+        type: 'json-object|message'
       }]
     })
   }
 
-  async run (message, { panel, content }) {
-    panel = await message.guild.panels.update(panel, { content })
+  async run (message, { panel, key, data }) {
+    const changes = {}
+    if (key === 'content') {
+      if (data instanceof Message) {
+        return message.reply('`data` must be an object.')
+      }
+
+      changes.content = data
+    } else if (key === 'message') {
+      if (!(data instanceof Message)) {
+        return message.reply('`data` must be a message URL.')
+      }
+
+      changes.message = data
+    }
+
+    panel = await message.guild.panels.update(panel, changes)
 
     return message.reply(`Successfully edited panel \`${panel.name}\`.`)
   }

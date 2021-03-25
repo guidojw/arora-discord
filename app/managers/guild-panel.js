@@ -82,19 +82,11 @@ class GuildPanelManager extends BaseManager {
         await panel.message.edit(embed)
       }
     }
-    if (typeof data.channel !== 'undefined' && typeof data.message !== 'undefined') {
-      const channel = this.guild.channels.resolve(data.channel)
-      if (!channel) {
-        throw new Error('Invalid channel.')
-      }
-      options.channelId = channel.id
-
-      let message = channel.messages.resolve(data.message) ?? data.message
+    if (typeof data.message !== 'undefined') {
+      const message = data.message
       try {
         if (message.partial) {
-          message = await message.fetch()
-        } else if (typeof message === 'string') {
-          message = await channel.messages.fetch(message)
+          await message.fetch()
         }
       } catch {
         throw new Error('Invalid message.')
@@ -105,14 +97,16 @@ class GuildPanelManager extends BaseManager {
       if (this.cache.some(otherPanel => otherPanel.messageId === message.id)) {
         throw new Error('Another panel is already posted in that message.')
       }
-      await message.edit(panel.embed)
+      await message.edit('', panel.embed)
       changes.messageId = message.id
+      options.channelId = message.channel.id
     }
 
     const [, [newData]] = await PanelModel.update(changes, {
       where: { id: panel.id },
+      ...options,
       returning: true,
-      ...options
+      individualHooks: true
     })
     await newData.reload()
 

@@ -74,7 +74,7 @@ class GuildTicketTypeManager extends BaseManager {
     return _type ?? this.add(newData, false)
   }
 
-  async link (type, emoji, message, channel) {
+  async link (type, emoji, message) {
     type = this.resolve(type)
     if (!type) {
       throw new Error('Invalid ticket type.')
@@ -82,16 +82,9 @@ class GuildTicketTypeManager extends BaseManager {
     if (!this.cache.has(type.id)) {
       throw new Error('Ticket type not found.')
     }
-    channel = this.guild.channels.resolve(channel)
-    if (!channel) {
-      throw new Error('Invalid channel.')
-    }
-    message = channel.messages.resolve(message) ?? message
     try {
       if (message.partial) {
-        message = await message.fetch()
-      } else if (typeof message === 'string') {
-        message = await channel.messages.fetch(message)
+        await message.fetch()
       }
     } catch {
       throw new Error('Invalid message.')
@@ -119,7 +112,7 @@ class GuildTicketTypeManager extends BaseManager {
       emoji: !(emoji instanceof GuildEmoji) ? emoji : null
     }, {
       where: { id: type.id },
-      channelId: channel.id,
+      channelId: message.channel.id,
       returning: true,
       individualHooks: true
     })

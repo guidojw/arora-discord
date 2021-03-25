@@ -16,21 +16,14 @@ class GuildRoleMessageManager extends BaseManager {
     return super.add(data, cache, { extras: [this.guild] })
   }
 
-  async create ({ role, channel, message, emoji }) {
+  async create ({ role, message, emoji }) {
     role = this.guild.roles.resolve(role)
     if (!role) {
       throw new Error('Invalid role.')
     }
-    channel = this.guild.channels.resolve(channel)
-    if (!channel) {
-      throw new Error('Invalid channel.')
-    }
-    message = channel.messages.resolve(message) ?? message
     try {
       if (message.partial) {
-        message = await message.fetch()
-      } else if (typeof message === 'string') {
-        message = await channel.messages.fetch(message)
+        await message.fetch()
       }
     } catch {
       throw new Error('Invalid message.')
@@ -60,7 +53,7 @@ class GuildRoleMessageManager extends BaseManager {
       emoji: !(emoji instanceof GuildEmoji) ? emoji : null,
       guildId: this.guild.id
     }, {
-      channelId: channel.id
+      channelId: message.channel.id
     })
     await newData.reload()
 

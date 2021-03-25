@@ -2,12 +2,12 @@
 const { PartialTypes } = require('discord.js').Constants
 
 class Postable {
-  constructor (client, _data, guild) {
+  constructor (client, data, guild) {
     this.client = client
     this.guild = guild
 
-    this.channelId = null
-    this.messageId = null
+    this.messageId = data.message.id
+    this.channelId = data.message.channelId
   }
 
   get channel () {

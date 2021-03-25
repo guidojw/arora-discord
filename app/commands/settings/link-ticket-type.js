@@ -1,8 +1,6 @@
 'use strict'
 const BaseCommand = require('../base')
 
-const { validators, isSnowflake } = require('../../util').argumentUtil
-
 class LinkTicketTypeCommand extends BaseCommand {
   constructor (client) {
     super(client, {
@@ -22,18 +20,13 @@ class LinkTicketTypeCommand extends BaseCommand {
       }, {
         key: 'message',
         prompt: 'On what message would you like this emoji to be reacted?',
-        type: 'string',
-        validate: validators([isSnowflake])
-      }, {
-        key: 'channel',
-        prompt: 'In what channel is this message?',
-        type: 'text-channel'
+        type: 'message'
       }]
     })
   }
 
-  async run (message, { type, emoji, message: bindMessage, channel }) {
-    type = await message.guild.ticketTypes.link(type, emoji, bindMessage, channel)
+  async run (message, { type, emoji, message: bindMessage }) {
+    type = await message.guild.ticketTypes.link(type, emoji, bindMessage)
 
     return message.reply(`Successfully linked emoji ${type.emoji} on message \`${type.messageId}\` to ticket type \`${type.name}\`.`)
   }
