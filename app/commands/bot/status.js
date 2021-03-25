@@ -1,9 +1,9 @@
 'use strict'
-const Command = require('../../controllers/command')
+const BaseCommand = require('../base')
 
 const { MessageEmbed } = require('discord.js')
 
-module.exports = class StatusCommand extends Command {
+class StatusCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'bot',
@@ -13,14 +13,14 @@ module.exports = class StatusCommand extends Command {
     })
   }
 
-  execute (message, _args, guild) {
-    const settings = guild.getData('settings')
-
+  run (message) {
     const embed = new MessageEmbed()
-      .setColor(settings.supportEnabled ? 0x00ff00 : 0xff0000)
+      .setColor(message.guild.supportEnabled ? 0x00ff00 : 0xff0000)
       .setTitle('Status')
-      .setDescription(`Tickets System: **${settings.supportEnabled ? 'online' : 'offline'}**`)
+      .setDescription(`Tickets System: **${message.guild.supportEnabled ? 'online' : 'offline'}**`)
       .setTimestamp()
-    message.replyEmbed(embed)
+    return message.replyEmbed(embed)
   }
 }
+
+module.exports = StatusCommand

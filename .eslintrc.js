@@ -2,13 +2,13 @@ module.exports = {
   env: {
     commonjs: true,
     es6: true,
-    node: true,
+    node: true
   },
   extends: [
-    'standard',
+    'standard'
   ],
   parserOptions: {
-    ecmaVersion: 2020,
+    ecmaVersion: 2020
   },
   rules: {
     'max-len': [
@@ -16,7 +16,8 @@ module.exports = {
       120,
       {
         ignoreTemplateLiterals: true,
-      },
-    ],
-  },
+        ignoreRegExpLiterals: true
+      }
+    ]
+  }
 }

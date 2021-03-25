@@ -1,13 +1,11 @@
 'use strict'
-const Command = require('../../controllers/command')
-const applicationAdapter = require('../../adapters/application')
-const userService = require('../../services/user')
+const BaseCommand = require('../base')
 
-const { getChannels, getTags, getUrls } = require('../../helpers/string')
+const { applicationAdapter } = require('../../adapters')
+const { userService } = require('../../services')
+const { validators, noChannels, noTags, noUrls } = require('../../util').argumentUtil
 
-const applicationConfig = require('../../../config/application')
-
-module.exports = class ExtendSuspensionCommand extends Command {
+class ExtendSuspensionCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'admin',
@@ -17,6 +15,7 @@ module.exports = class ExtendSuspensionCommand extends Command {
       description: 'Extends the suspension of given user.',
       examples: ['extend Happywalker 3 He still doesn\'t understand.'],
       clientPermissions: ['SEND_MESSAGES'],
+      requiresRobloxGroup: true,
       args: [{
         key: 'username',
         type: 'member|string',
@@ -25,35 +24,32 @@ module.exports = class ExtendSuspensionCommand extends Command {
         key: 'days',
         type: 'integer',
         prompt: 'With how many days would you like to extend this person\'s suspension?',
-        validate: val => val < 1 ? 'Insufficient amount of days.' : val > 7 ? 'Too many days.' : true
+        min: 1,
+        max: 7
       }, {
         key: 'reason',
         type: 'string',
         prompt: 'With what reason are you extending this person\'s suspension?',
-        validate: val => getChannels(val)
-          ? 'Reason contains channels.'
-          : getTags(val)
-            ? 'Reason contains tags.'
-            : getUrls(val)
-              ? 'Reason contains URLs.'
-              : true
+        validate: validators([noChannels, noTags, noUrls])
       }]
     })
   }
 
-  async execute (message, { username, days, reason }) {
+  async run (message, { username, days, reason }) {
     username = typeof username === 'string' ? username : username.displayName
     const [userId, authorId] = await Promise.all([
       userService.getIdFromUsername(username),
       userService.getIdFromUsername(message.member.displayName)
     ])
 
-    await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId}/suspensions/${userId}/extend`, {
+    await applicationAdapter('post', `/v1/groups/${message.guild.robloxGroupId}/suspensions/${userId}/extend`, {
       duration: days * 86400000,
       authorId,
       reason
     })
 
-    message.reply(`Successfully extended **${username}**'s suspension.`)
+    return message.reply(`Successfully extended **${username}**'s suspension.`)
   }
 }
+
+module.exports = ExtendSuspensionCommand

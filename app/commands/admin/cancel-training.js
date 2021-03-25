@@ -1,13 +1,11 @@
 'use strict'
-const Command = require('../../controllers/command')
-const applicationAdapter = require('../../adapters/application')
-const userService = require('../../services/user')
+const BaseCommand = require('../base')
 
-const { getChannels, getTags, getUrls } = require('../../helpers/string')
+const { applicationAdapter } = require('../../adapters')
+const { userService } = require('../../services')
+const { validators, noChannels, noTags, noUrls } = require('../../util').argumentUtil
 
-const applicationConfig = require('../../../config/application')
-
-module.exports = class CancelTrainingCommand extends Command {
+class CancelTrainingCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'admin',
@@ -16,6 +14,7 @@ module.exports = class CancelTrainingCommand extends Command {
       description: 'Cancels given training.',
       examples: ['canceltraining 1 Weird circumstances.'],
       clientPermissions: ['SEND_MESSAGES'],
+      requiresRobloxGroup: true,
       args: [{
         key: 'trainingId',
         type: 'integer',
@@ -24,25 +23,21 @@ module.exports = class CancelTrainingCommand extends Command {
         key: 'reason',
         type: 'string',
         prompt: 'With what reason would you like to cancel this training?',
-        validate: val => getChannels(val)
-          ? 'Reason contains channels.'
-          : getTags(val)
-            ? 'Reason contains tags.'
-            : getUrls(val)
-              ? 'Reason contains URLs.'
-              : true
+        validate: validators([noChannels, noTags, noUrls])
       }]
     })
   }
 
-  async execute (message, { trainingId, reason }) {
+  async run (message, { trainingId, reason }) {
     const authorId = await userService.getIdFromUsername(message.member.displayName)
 
-    await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId}/trainings/${trainingId}/cancel`, {
+    await applicationAdapter('post', `/v1/groups/${message.guild.robloxGroupId}/trainings/${trainingId}/cancel`, {
       authorId,
       reason
     })
 
-    message.reply(`Successfully cancelled training with ID **${trainingId}**.`)
+    return message.reply(`Successfully cancelled training with ID **${trainingId}**.`)
   }
 }
+
+module.exports = CancelTrainingCommand

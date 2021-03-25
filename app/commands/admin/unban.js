@@ -1,11 +1,11 @@
 'use strict'
-const Command = require('../../controllers/command')
-const userService = require('../../services/user')
-const applicationAdapter = require('../../adapters/application')
+const BaseCommand = require('../base')
 
-const { getChannels, getTags, getUrls } = require('../../helpers/string')
+const { applicationAdapter } = require('../../adapters')
+const { userService } = require('../../services')
+const { validators, noChannels, noTags, noUrls } = require('../../util').argumentUtil
 
-module.exports = class UnbanCommand extends Command {
+class UnbanCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'admin',
@@ -14,6 +14,7 @@ module.exports = class UnbanCommand extends Command {
       examples: ['unban Happywalker'],
       clientPermissions: ['SEND_MESSAGES'],
       ownerOnly: true,
+      requiresRobloxGroup: true,
       args: [{
         key: 'username',
         type: 'member|string',
@@ -22,18 +23,12 @@ module.exports = class UnbanCommand extends Command {
         key: 'reason',
         type: 'string',
         prompt: 'With what reason would you like to unban this person?',
-        validate: val => getChannels(val)
-          ? 'Reason contains channels.'
-          : getTags(val)
-            ? 'Reason contains tags.'
-            : getUrls(val)
-              ? 'Reason contains URLs.'
-              : true
+        validate: validators([noChannels, noTags, noUrls])
       }]
     })
   }
 
-  async execute (message, { username, reason }) {
+  async run (message, { username, reason }) {
     username = typeof username === 'string' ? username : username.displayName
     const [userId, authorId] = await Promise.all([
       userService.getIdFromUsername(username),
@@ -42,6 +37,8 @@ module.exports = class UnbanCommand extends Command {
 
     await applicationAdapter('post', `/v1/bans/${userId}/cancel`, { authorId, reason })
 
-    message.reply(`Successfully unbanned **${username}**.`)
+    return message.reply(`Successfully unbanned **${username}**.`)
   }
 }
+
+module.exports = UnbanCommand

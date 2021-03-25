@@ -1,22 +1,21 @@
 'use strict'
-const Command = require('../../controllers/command')
-const userService = require('../../services/user')
-const applicationAdapter = require('../../adapters/application')
+const BaseCommand = require('../base')
 
-const { getChannels, getTags, getUrls } = require('../../helpers/string')
+const { applicationAdapter } = require('../../adapters')
+const { userService } = require('../../services')
+const { noChannels, noTags, noUrls } = require('../../util').argumentUtil
 
-const applicationConfig = require('../../../config/application')
-
-module.exports = class ChangeSuspensionCommand extends Command {
+class ChangeSuspensionCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'admin',
       name: 'changesuspension',
-      details: 'Key must be author, reason or rankBack. RankBack must be true or false. You can only change the' +
-        ' author of suspensions you created.',
+      details: 'Key must be "author", "reason" or "rankBack". You can only change the author of suspensions you ' +
+        'created.',
       description: 'Changes given user\'s suspension\'s key to given data.',
       examples: ['changesuspension Happywalker rankBack false'],
       clientPermissions: ['SEND_MESSAGES'],
+      requiresRobloxGroup: true,
       args: [{
         key: 'username',
         type: 'member|string',
@@ -25,7 +24,8 @@ module.exports = class ChangeSuspensionCommand extends Command {
         key: 'key',
         type: 'string',
         prompt: 'What key would you like to change?',
-        oneOf: ['author', 'reason', 'rankback']
+        oneOf: ['author', 'reason', 'rankback'],
+        parse: val => val.toLowerCase()
       }, {
         key: 'data',
         type: 'boolean|string',
@@ -34,28 +34,22 @@ module.exports = class ChangeSuspensionCommand extends Command {
     })
   }
 
-  async execute (message, { username, key, data }) {
+  async run (message, { username, key, data }) {
     username = typeof username === 'string' ? username : username.displayName
-    key = key.toLowerCase()
     const changes = {}
     if (key === 'author') {
       changes.authorId = await userService.getIdFromUsername(data)
     } else if (key === 'reason') {
-      const error = getChannels(data)
-        ? 'Reason contains channels.'
-        : getTags(data)
-          ? 'Reason contains tags.'
-          : getUrls(data)
-            ? 'Reason contains URLs.'
-            : undefined
-      if (error) {
-        return message.reply(error)
+      const results = [noChannels(data, key), noTags(data, key), noUrls(data, key)]
+      if (!results.every(result => result && typeof result !== 'string')) {
+        const errors = results.filter(result => typeof result === 'string')
+        return message.reply(errors.join('\n'))
       }
 
       changes.reason = data
     } else if (key === 'rankback') {
       if (data !== true && data !== false) {
-        return message.reply(`**${data}** is not a valid value for rankBack.`)
+        return message.reply('`rankBack` must be true or false.')
       }
 
       changes.rankBack = data
@@ -65,11 +59,13 @@ module.exports = class ChangeSuspensionCommand extends Command {
       userService.getIdFromUsername(message.member.displayName)
     ])
 
-    await applicationAdapter('put', `/v1/groups/${applicationConfig.groupId}/suspensions/${userId}`, {
+    await applicationAdapter('put', `/v1/groups/${message.guild.robloxGroupId}/suspensions/${userId}`, {
       changes,
       editorId
     })
 
-    message.reply(`Successfully changed **${username}**'s suspension.`)
+    return message.reply(`Successfully changed **${username}**'s suspension.`)
   }
 }
+
+module.exports = ChangeSuspensionCommand

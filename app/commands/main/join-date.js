@@ -1,11 +1,11 @@
 'use strict'
-const Command = require('../../controllers/command')
-const userService = require('../../services/user')
-const timeHelper = require('../../helpers/time')
+const BaseCommand = require('../base')
 
 const { MessageEmbed } = require('discord.js')
+const { userService } = require('../../services')
+const { getDate } = require('../../util').timeUtil
 
-module.exports = class JoinDateCommand extends Command {
+class JoinDateCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'main',
@@ -16,20 +16,22 @@ module.exports = class JoinDateCommand extends Command {
       args: [{
         key: 'username',
         prompt: 'Of which user would you like to know the join date?',
-        default: '',
-        type: 'member|string'
+        type: 'member|string',
+        default: message => message.member.displayName
       }]
     })
   }
 
-  async execute (message, { username }, guild) {
-    username = username ? typeof username === 'string' ? username : username.displayName : message.member.displayName
+  async run (message, { username }) {
+    username = typeof username === 'string' ? username : username.displayName
     const userId = await userService.getIdFromUsername(username)
     const user = await userService.getUser(userId)
 
     const embed = new MessageEmbed()
-      .addField(`${message.argString ? username : 'Your'} join date`, `${timeHelper.getDate(new Date(user.created))}`)
-      .setColor(guild.getData('primaryColor'))
-    message.replyEmbed(embed)
+      .addField(`${message.argString ? `${username}'s` : 'Your'} join date`, `${getDate(new Date(user.created))}`)
+      .setColor(message.guild.primaryColor)
+    return message.replyEmbed(embed)
   }
 }
+
+module.exports = JoinDateCommand

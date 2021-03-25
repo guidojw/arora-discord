@@ -7,7 +7,19 @@ services:
     env_file: .env
     environment:
       NODE_ENV: production
+      POSTGRES_HOST: db
     volumes:
       - /opt/app/node_modules
       - ./data:/opt/app/data
       - ./config/application.js:/opt/app/config/application.js
+    command: /bin/bash ./bin/wait-for-it.sh db:5432 -- node app.js
+
+  db:
+    image: postgres:11.2
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

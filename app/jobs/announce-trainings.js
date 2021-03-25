@@ -1,64 +1,59 @@
 'use strict'
 const lodash = require('lodash')
 const pluralize = require('pluralize')
-const applicationAdapter = require('../adapters/application')
-const userService = require('../services/user')
-const groupService = require('../services/group')
-const timeHelper = require('../helpers/time')
 
 const { MessageEmbed } = require('discord.js')
+const { applicationAdapter } = require('../adapters')
+const { groupService, userService } = require('../services')
+const { getDate, getTime, isDst } = require('../util').timeUtil
 
-const applicationConfig = require('../../config/application')
-
-module.exports = async guild => {
-  const channels = guild.getData('channels')
-  const messages = guild.getData('messages')
-  const channel = guild.guild.channels.cache.get(channels.trainingsChannel)
-
-  // Update the trainings list embed.
-  const message = await channel.messages.fetch(messages.trainingsMessage)
-  const trainings = (await applicationAdapter('get', `/v1/groups/${applicationConfig.groupId}/trainings?sort=date`))
-    .data
-  const authorIds = [...new Set(trainings.map(training => training.authorId))]
-  const authors = await userService.getUsers(authorIds)
-  const trainingsEmbed = await getTrainingsEmbed(trainings, authors)
-  trainingsEmbed.setColor(guild.getData('primaryColor'))
-  await message.edit(trainingsEmbed)
-
-  const now = new Date()
-
-  // Get the message and its embed.
-  const infoMessage = await channel.messages.fetch(messages.trainingInfoMessage)
-  const embed = infoMessage.embeds[0]
-
-  // Update timezone if the timezone in the embed is incorrect.
-  const dstNow = timeHelper.isDst(now)
-  const change = (dstNow && embed.description.indexOf('CET') !== -1) ||
-    (!dstNow && embed.description.indexOf('CEST') !== -1)
-  if (change) {
-    embed.description = embed.description.replace(
-      dstNow ? 'CET' : 'CEST',
-      dstNow ? 'CEST' : 'CET'
-    )
+async function announceTrainingsJob (guild) {
+  if (guild.robloxGroupId === null) {
+    return
+  }
+  const trainingsInfoPanel = guild.panels.resolve('trainingsInfoPanel')
+  const trainingsPanel = guild.panels.resolve('trainingsPanel')
+  if (!trainingsInfoPanel?.message && !trainingsPanel?.message) {
+    return
   }
 
-  // Change the next training field.
-  const nextTraining = trainings.find(training => new Date(training.date) > now)
-  embed.fields[1].value = nextTraining
-    ? getNextTrainingMessage(nextTraining, authors)
-    : ':x: There are currently no scheduled trainings.'
+  const trainings = (await applicationAdapter('get', `/v1/groups/${guild.robloxGroupId}/trainings?sort=date`)).data
+  const authorIds = [...new Set(trainings.map(training => training.authorId))]
+  const authors = await userService.getUsers(authorIds)
 
-  // Edit the actual message.
-  await infoMessage.edit(infoMessage.embeds)
+  // Trainings Info Panel
+  if (trainingsInfoPanel?.message) {
+    const embed = trainingsInfoPanel.embed.setColor(guild.primaryColor)
+    const now = new Date()
+
+    const dstNow = isDst(now)
+    embed.setDescription(embed.description.replace(/{timezone}/g, dstNow ? 'CEST' : 'CET'))
+
+    const nextTraining = trainings.find(training => new Date(training.date) > now)
+    embed.addField(
+      ':pushpin: Next training',
+      nextTraining
+        ? getNextTrainingMessage(nextTraining, authors)
+        : ':x: There are currently no scheduled trainings.'
+    )
+
+    await trainingsInfoPanel.message.edit(embed)
+  }
+
+  // Trainings Panel
+  if (trainingsPanel?.message) {
+    const embed = await getTrainingsEmbed(guild.robloxGroupId, trainings, authors)
+
+    embed.setColor(guild.primaryColor)
+
+    await trainingsPanel.message.edit(embed)
+  }
 }
 
-async function getTrainingsEmbed (trainings, authors) {
-  const trainingTypes = (await groupService.getTrainingTypes(applicationConfig.groupId))
+async function getTrainingsEmbed (groupId, trainings, authors) {
+  const trainingTypes = (await groupService.getTrainingTypes(groupId))
     .map(trainingType => trainingType.name)
-    .reduce((result, item) => {
-      result[item] = []
-      return result
-    }, {})
+    .reduce((result, item) => (result[item] = []) && result, {})
   const groupedTrainings = lodash.assign({}, trainingTypes, groupService.groupTrainingsByType(trainings))
 
   const types = Object.keys(groupedTrainings)
@@ -90,9 +85,9 @@ function getTrainingMessage (training, authors) {
   const now = new Date()
   const today = now.getDate()
   const date = new Date(training.date)
-  const timeString = timeHelper.getTime(date)
+  const timeString = getTime(date)
   const trainingDay = date.getDate()
-  const dateString = trainingDay === today ? 'Today' : trainingDay === today + 1 ? 'Tomorrow' : timeHelper.getDate(date)
+  const dateString = trainingDay === today ? 'Today' : trainingDay === today + 1 ? 'Tomorrow' : getDate(date)
   const author = authors.find(author => author.id === training.authorId)
   const hourDifference = date.getHours() - now.getHours()
 
@@ -102,14 +97,12 @@ function getTrainingMessage (training, authors) {
     if (hourDifference === 0) {
       const minuteDifference = date.getMinutes() - now.getMinutes()
       if (minuteDifference >= 0) {
-        result += `\n> :alarm_clock: Starts in: **${minuteDifference} ${pluralize('minute',
-          minuteDifference)}**`
+        result += `\n> :alarm_clock: Starts in: **${pluralize('minute', minuteDifference, true)}**`
       } else {
-        result += `\n> :alarm_clock: Started **${-1 * minuteDifference} ${pluralize('minute',
-          minuteDifference)}** ago`
+        result += `\n> :alarm_clock: Started **${pluralize('minute', -1 * minuteDifference, true)}** ago`
       }
     } else {
-      result += `\n> :alarm_clock: Starts in: **${hourDifference} ${pluralize('hour', hourDifference)}**`
+      result += `\n> :alarm_clock: Starts in: **${pluralize('hour', hourDifference, true)}**`
     }
   }
 
@@ -123,9 +116,9 @@ function getNextTrainingMessage (training, authors) {
   const now = new Date()
   const today = now.getDate()
   const date = new Date(training.date)
-  const timeString = timeHelper.getTime(date)
+  const timeString = getTime(date)
   const trainingDay = date.getDate()
-  const dateString = trainingDay === today ? 'today' : trainingDay === today + 1 ? 'tomorrow' : timeHelper.getDate(date)
+  const dateString = trainingDay === today ? 'today' : trainingDay === today + 1 ? 'tomorrow' : getDate(date)
   const author = authors.find(author => author.id === training.authorId)
 
   let result = `${training.type.abbreviation} **${dateString}** at **${timeString}** hosted by ${author.name}`
@@ -135,3 +128,5 @@ function getNextTrainingMessage (training, authors) {
   }
   return result
 }
+
+module.exports = announceTrainingsJob

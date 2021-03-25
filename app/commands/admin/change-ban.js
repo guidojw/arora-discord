@@ -1,11 +1,11 @@
 'use strict'
-const Command = require('../../controllers/command')
-const userService = require('../../services/user')
-const applicationAdapter = require('../../adapters/application')
+const BaseCommand = require('../base')
 
-const { getChannels, getTags, getUrls } = require('../../helpers/string')
+const { applicationAdapter } = require('../../adapters')
+const { userService } = require('../../services')
+const { noChannels, noTags, noUrls } = require('../../util').argumentUtil
 
-module.exports = class ChangeBanCommand extends Command {
+class ChangeBanCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'admin',
@@ -14,6 +14,7 @@ module.exports = class ChangeBanCommand extends Command {
       description: 'Changes given user\'s ban\'s key to given data.',
       examples: ['changeban Happywalker author builderman'],
       clientPermissions: ['SEND_MESSAGES'],
+      requiresRobloxGroup: true,
       args: [{
         key: 'username',
         type: 'member|string',
@@ -22,7 +23,8 @@ module.exports = class ChangeBanCommand extends Command {
         key: 'key',
         type: 'string',
         prompt: 'What key would you like to change?',
-        oneOf: ['author', 'reason']
+        oneOf: ['author', 'reason'],
+        parse: val => val.toLowerCase()
       }, {
         key: 'data',
         type: 'string',
@@ -31,22 +33,16 @@ module.exports = class ChangeBanCommand extends Command {
     })
   }
 
-  async execute (message, { username, key, data }) {
+  async run (message, { username, key, data }) {
     username = typeof username === 'string' ? username : username.displayName
-    key = key.toLowerCase()
     const changes = {}
     if (key === 'author') {
       changes.authorId = await userService.getIdFromUsername(data)
     } else if (key === 'reason') {
-      const error = getChannels(data)
-        ? 'Reason contains channels.'
-        : getTags(data)
-          ? 'Reason contains tags.'
-          : getUrls(data)
-            ? 'Reason contains URLs.'
-            : undefined
-      if (error) {
-        return message.reply(error)
+      const results = [noChannels(data, key), noTags(data, key), noUrls(data, key)]
+      if (!results.every(result => result && typeof result !== 'string')) {
+        const errors = results.filter(result => typeof result === 'string')
+        return message.reply(errors.join('\n'))
       }
 
       changes.reason = data
@@ -58,6 +54,8 @@ module.exports = class ChangeBanCommand extends Command {
 
     await applicationAdapter('put', `/v1/bans/${userId}`, { changes, editorId })
 
-    message.reply(`Successfully changed **${username}**'s ban.`)
+    return message.reply(`Successfully changed **${username}**'s ban.`)
   }
 }
+
+module.exports = ChangeBanCommand

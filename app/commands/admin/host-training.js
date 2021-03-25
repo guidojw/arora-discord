@@ -1,16 +1,20 @@
 'use strict'
-const Command = require('../../controllers/command')
-const groupService = require('../../services/group')
-const timeHelper = require('../../helpers/time')
-const applicationAdapter = require('../../adapters/application')
-const userService = require('../../services/user')
+const BaseCommand = require('../base')
 
 const { MessageEmbed } = require('discord.js')
-const { getChannels, getTags, getUrls } = require('../../helpers/string')
+const { applicationAdapter } = require('../../adapters')
+const { groupService, userService } = require('../../services')
+const {
+  validators,
+  noChannels,
+  noTags, noUrls,
+  parseNoneOrType,
+  validDate,
+  validTime
+} = require('../../util').argumentUtil
+const { getDateInfo, getTimeInfo } = require('../../util').timeUtil
 
-const applicationConfig = require('../../../config/application')
-
-module.exports = class HostTrainingCommand extends Command {
+class HostTrainingCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'admin',
@@ -21,39 +25,35 @@ module.exports = class HostTrainingCommand extends Command {
       description: 'Schedules a new training.',
       examples: ['host CD 4-3-2020 1:00 Be on time!', 'Host CSR 4-3-2020 2:00'],
       clientPermissions: ['SEND_MESSAGES'],
+      requiresRobloxGroup: true,
       args: [{
         key: 'type',
         type: 'string',
-        prompt: 'What kind of training is this?'
+        prompt: 'What kind of training is this?',
+        parse: val => val.toLowerCase()
       }, {
         key: 'date',
         type: 'string',
         prompt: 'At what date would you like to host this training?',
-        validate: timeHelper.validDate
+        validate: validators([validDate])
       }, {
         key: 'time',
         type: 'string',
         prompt: 'At what time would you like to host this training?',
-        validate: timeHelper.validTime
+        validate: validators([validTime])
       }, {
         key: 'notes',
         type: 'string',
         prompt: 'What notes would you like to add? Reply with "none" if you don\'t want to add any.',
-        validate: val => getChannels(val)
-          ? 'Notes contain channels.'
-          : getTags(val)
-            ? 'Notes contain tags.'
-            : getUrls(val)
-              ? 'Notes contain URLs.'
-              : true
+        validate: validators([noChannels, noTags, noUrls]),
+        parse: parseNoneOrType
       }]
     })
   }
 
-  async execute (message, { type, date, time, notes }, guild) {
-    type = type.toLowerCase()
-    const dateInfo = timeHelper.getDateInfo(date)
-    const timeInfo = timeHelper.getTimeInfo(time)
+  async run (message, { type, date, time, notes }, guild) {
+    const dateInfo = getDateInfo(date)
+    const timeInfo = getTimeInfo(time)
     const dateUnix = Math.floor(new Date(
       dateInfo.year,
       dateInfo.month,
@@ -61,28 +61,30 @@ module.exports = class HostTrainingCommand extends Command {
       timeInfo.hours,
       timeInfo.minutes
     ).getTime())
-    const afterNow = dateUnix - Math.floor(Date.now()) > 0
+    const afterNow = dateUnix - Date.now() > 0
     if (!afterNow) {
       return message.reply('Please give a date and time that are after now.')
     }
-    const trainingTypes = await groupService.getTrainingTypes(applicationConfig.groupId)
+    const trainingTypes = await groupService.getTrainingTypes(message.guild.robloxGroupId)
     const trainingType = trainingTypes.find(trainingType => trainingType.abbreviation.toLowerCase() === type)
     if (!trainingType) {
       return message.reply('Type not found.')
     }
     const authorId = await userService.getIdFromUsername(message.member.displayName)
 
-    const training = (await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId}/trainings`, {
-      notes: notes.toLowerCase() === 'none' ? undefined : notes,
+    const training = (await applicationAdapter('post', `/v1/groups/${message.guild.robloxGroupId}/trainings`, {
+      authorId,
       date: dateUnix,
-      typeId: trainingType.id,
-      authorId
+      notes,
+      typeId: trainingType.id
     })).data
 
     const embed = new MessageEmbed()
       .addField('Successfully scheduled', `**${trainingType.name}** training on **${date}** at **${time}**.`)
       .addField('Training ID', training.id.toString())
-      .setColor(guild.getData('primaryColor'))
+      .setColor(message.guild.primaryColor)
     return message.replyEmbed(embed)
   }
 }
+
+module.exports = HostTrainingCommand

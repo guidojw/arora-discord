@@ -1,23 +1,24 @@
 'use strict'
-const Command = require('../../controllers/command')
-const discordService = require('../../services/discord')
+const BaseCommand = require('../base')
 
-module.exports = class DeleteSuggestionCommand extends Command {
+const { discordService } = require('../../services')
+
+class DeleteSuggestionCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'main',
       name: 'deletesuggestion',
-      aliases: ['delete'],
       description: 'Deletes your last suggested suggestion.',
       clientPermissions: ['MANAGE_MESSAGES', 'ADD_REACTIONS', 'SEND_MESSAGES']
     })
   }
 
-  async execute (message, _args, guild) {
-    const channels = guild.getData('channels')
-    const channel = guild.guild.channels.cache.get(channels.suggestionsChannel)
-    const messages = await channel.messages.fetch()
-    const authorUrl = `https://discordapp.com/users/${message.author.id}`
+  async run (message) {
+    if (!message.guild.suggestionsChannel) {
+      return message.reply('This server has no suggestionsChannel set yet.')
+    }
+    const messages = await message.guild.suggestionsChannel.messages.fetch()
+    const authorUrl = `https://discord.com/users/${message.author.id}`
 
     for (const suggestion of messages.values()) {
       if (suggestion.embeds.length === 1 && suggestion.embeds[0].author && suggestion.embeds[0].author.url ===
@@ -29,14 +30,15 @@ module.exports = class DeleteSuggestionCommand extends Command {
 
         if (choice) {
           await suggestion.delete()
-          message.reply('Successfully deleted your last suggestion.')
+          return message.reply('Successfully deleted your last suggestion.')
         } else {
-          message.reply('Didn\'t delete your last suggestion.')
+          return message.reply('Didn\'t delete your last suggestion.')
         }
-        return
       }
     }
 
-    message.reply('Could not find a suggestion you made.')
+    return message.reply('Could not find a suggestion you made.')
   }
 }
+
+module.exports = DeleteSuggestionCommand

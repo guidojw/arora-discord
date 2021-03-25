@@ -1,50 +1,58 @@
 'use strict'
 const pluralize = require('pluralize')
-const stringHelper = require('../helpers/string')
-const timeHelper = require('../helpers/time')
-const userService = require('../services/user')
 const discordService = require('./discord')
-const applicationAdapter = require('../adapters/application')
+const userService = require('../services/user')
 
-const applicationConfig = require('../../config/application')
-
-exports.getTrainingSentence = async training => {
-  const date = new Date(training.date)
-  const readableDate = timeHelper.getDate(date)
-  const readableTime = timeHelper.getTime(date)
-
-  return `**${training.type.abbreviation}** training on **${readableDate}** at **${readableTime} ${(timeHelper.isDst(date) && 'CEST') || 'CET'}**, hosted by **${(await userService.getUser(training.authorId)).name}**.`
-}
+const { applicationAdapter } = require('../adapters')
+const { getDate, getTime, isDst } = require('../util').timeUtil
+const { getAbbreviation } = require('../util').util
 
 exports.getTrainingEmbeds = async trainings => {
-  return discordService.getListEmbeds('Upcoming Trainings', trainings, exports.getTrainingRow)
+  const userIds = [...new Set([
+    ...trainings.map(training => training.authorId)
+  ])]
+  const users = await userService.getUsers(userIds)
+
+  return discordService.getListEmbeds(
+    'Upcoming Trainings',
+    trainings,
+    exports.getTrainingRow,
+    { users }
+  )
 }
 
-exports.getTrainingRow = async training => {
-  return `${training.id}. ${await exports.getTrainingSentence(training)}`
+exports.getTrainingRow = (training, { users }) => {
+  const username = users.find(user => user.id === training.authorId).name
+  const date = new Date(training.date)
+  const readableDate = getDate(date)
+  const readableTime = getTime(date)
+
+  return `${training.id}. **${training.type.abbreviation}** training on **${readableDate}** at **${readableTime} ${isDst(date) ? 'CEST' : 'CET'}**, hosted by **${username}**.`
 }
 
-exports.getSuspensionEmbeds = async suspensions => {
+exports.getSuspensionEmbeds = async (groupId, suspensions) => {
   const userIds = [...new Set([
     ...suspensions.map(suspension => suspension.userId),
     ...suspensions.map(suspension => suspension.authorId)
   ])]
   const users = await userService.getUsers(userIds)
-  const roles = await this.getRoles(applicationConfig.groupId)
+  const roles = await this.getRoles(groupId)
 
-  return discordService.getListEmbeds('Current Suspensions', suspensions, exports.getSuspensionRow, {
-    users,
-    roles
-  })
+  return discordService.getListEmbeds(
+    'Current Suspensions',
+    suspensions,
+    exports.getSuspensionRow,
+    { users, roles }
+  )
 }
 
 exports.getSuspensionRow = (suspension, { users, roles }) => {
   const username = users.find(user => user.id === suspension.userId).name
   const author = users.find(user => user.id === suspension.authorId)
   const role = roles.roles.find(role => role.rank === suspension.rank)
-  const roleAbbreviation = role ? stringHelper.getAbbreviation(role.name) : 'Unknown'
+  const roleAbbreviation = role ? getAbbreviation(role.name) : 'Unknown'
   const rankBack = suspension.rankBack ? 'yes' : 'no'
-  const dateString = timeHelper.getDate(new Date(suspension.date))
+  const dateString = getDate(new Date(suspension.date))
   const days = suspension.duration / 86400000
   let extensionDays = 0
   if (suspension.extensions) {

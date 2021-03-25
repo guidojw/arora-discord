@@ -1,12 +1,10 @@
 'use strict'
-const Command = require('../../controllers/command')
-const userService = require('../../services/user')
+const Base = require('../base')
 
 const { MessageEmbed } = require('discord.js')
+const { userService } = require('../../services')
 
-const applicationConfig = require('../../../config/application')
-
-module.exports = class RoleCommand extends Command {
+class RoleCommand extends Base {
   constructor (client) {
     super(client, {
       group: 'main',
@@ -15,23 +13,26 @@ module.exports = class RoleCommand extends Command {
       description: 'Posts the group role of given user/you.',
       examples: ['role', 'role Happywalker'],
       clientPermissions: ['SEND_MESSAGES'],
+      requiresRobloxGroup: true,
       args: [{
         key: 'username',
         type: 'member|string',
         prompt: 'Of which user would you like to know the group role?',
-        default: ''
+        default: message => message.member.displayName
       }]
     })
   }
 
-  async execute (message, { username }, guild) {
-    username = username ? typeof username === 'string' ? username : username.displayName : message.member.displayName
+  async run (message, { username }) {
+    username = typeof username === 'string' ? username : username.displayName
     const userId = await userService.getIdFromUsername(username)
-    const role = await userService.getRole(userId, applicationConfig.groupId)
+    const role = await userService.getRole(userId, message.guild.robloxGroupId)
 
     const embed = new MessageEmbed()
-      .addField(`${message.argString ? username + '\'s' : 'Your'} role`, role)
-      .setColor(guild.getData('primaryColor'))
-    message.replyEmbed(embed)
+      .addField(`${message.argString ? `${username}'s` : 'Your'} role`, role)
+      .setColor(message.guild.primaryColor)
+    return message.replyEmbed(embed)
   }
 }
+
+module.exports = RoleCommand

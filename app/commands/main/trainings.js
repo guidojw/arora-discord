@@ -1,12 +1,12 @@
 'use strict'
-const Command = require('../../controllers/command')
-const applicationAdapter = require('../../adapters/application')
-const groupService = require('../../services/group')
+const BaseCommand = require('../base')
+
 const { MessageEmbed } = require('discord.js')
+const { applicationAdapter } = require('../../adapters')
+const { groupService, userService } = require('../../services')
+const { getDate, getTime, isDst } = require('../../util').timeUtil
 
-const applicationConfig = require('../../../config/application')
-
-module.exports = class TrainingsCommand extends Command {
+class TrainingsCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'main',
@@ -15,6 +15,7 @@ module.exports = class TrainingsCommand extends Command {
       description: 'Lists info of all trainings/training with given ID.',
       clientPermissions: ['SEND_MESSAGES'],
       details: 'TrainingId must be the ID of a currently scheduled training.',
+      requiresRobloxGroup: true,
       args: [{
         key: 'trainingId',
         type: 'integer',
@@ -24,17 +25,23 @@ module.exports = class TrainingsCommand extends Command {
     })
   }
 
-  async execute (message, { trainingId }, guild) {
+  async run (message, { trainingId }) {
     if (trainingId) {
-      const training = (await applicationAdapter('get', `/v1/groups/${applicationConfig.groupId}/trainings/${trainingId}`))
+      const training = (await applicationAdapter('get', `/v1/groups/${message.guild.robloxGroupId}/trainings/${trainingId}`))
         .data
+      const username = (await userService.getUser(training.authorId).name)
+      const date = new Date(training.date)
 
       const embed = new MessageEmbed()
-        .addField(`Training ${training.id}`, await groupService.getTrainingSentence(training))
-        .setColor(guild.getData('primaryColor'))
-      message.replyEmbed(embed)
+        .setTitle(`Training ${training.id}`)
+        .addField('Type', training.type.abbreviation, true)
+        .addField('Date', getDate(date), true)
+        .addField('Time', `${getTime(date)} ${isDst(date) ? 'CEST' : 'CET'}`, true)
+        .addField('Host', username, true)
+        .setColor(message.guild.primaryColor)
+      return message.replyEmbed(embed)
     } else {
-      const trainings = (await applicationAdapter('get', `/v1/groups/${applicationConfig.groupId}/trainings?sort=date`))
+      const trainings = (await applicationAdapter('get', `/v1/groups/${message.guild.robloxGroupId}/trainings?sort=date`))
         .data
       if (trainings.length === 0) {
         return message.reply('There are currently no hosted trainings.')
@@ -44,7 +51,9 @@ module.exports = class TrainingsCommand extends Command {
       for (const embed of embeds) {
         await message.author.send(embed)
       }
-      message.reply('Sent you a DM with the upcoming trainings.')
+      return message.reply('Sent you a DM with the upcoming trainings.')
     }
   }
 }
+
+module.exports = TrainingsCommand

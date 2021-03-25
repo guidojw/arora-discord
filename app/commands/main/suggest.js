@@ -1,10 +1,10 @@
 'use strict'
-const Command = require('../../controllers/command')
+const BaseCommand = require('../base')
 
 const { MessageEmbed } = require('discord.js')
-const { getTags } = require('../../helpers/string')
+const { validators, noTags } = require('../../util').argumentUtil
 
-module.exports = class SuggestCommand extends Command {
+class SuggestCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'main',
@@ -12,12 +12,12 @@ module.exports = class SuggestCommand extends Command {
       description: 'Suggests given suggestion.',
       details: 'Suggestion can be encapsulated in quotes (but this is not necessary).',
       examples: ['suggest Add cool new thing', 'suggest "Add cool new thing"'],
-      clientPermissions: ['ADD_REACTIONS', 'SEND_MESSAGES', 'USE_EXTERNAL_EMOJIS'],
+      clientPermissions: ['ADD_REACTIONS', 'SEND_MESSAGES'],
       args: [{
         key: 'suggestion',
         prompt: 'What would you like to suggest?',
         type: 'string',
-        validate: val => getTags(val) ? 'Suggestion contains tags.' : true
+        validate: validators([noTags])
       }],
       throttling: {
         usages: 1,
@@ -26,8 +26,11 @@ module.exports = class SuggestCommand extends Command {
     })
   }
 
-  async execute (message, { suggestion }, guild) {
-    const authorUrl = `https://discordapp.com/users/${message.author.id}`
+  async run (message, { suggestion }) {
+    if (!message.guild.suggestionsChannel) {
+      return message.reply('This server has no suggestionsChannel set yet.')
+    }
+    const authorUrl = `https://discord.com/users/${message.author.id}`
     const embed = new MessageEmbed()
       .setDescription(suggestion)
       .setAuthor(message.author.tag, message.author.displayAvatarURL(), authorUrl)
@@ -38,12 +41,13 @@ module.exports = class SuggestCommand extends Command {
         embed.setImage(attachment.url)
       }
     }
-    const channels = guild.getData('channels')
 
-    const newMessage = await guild.guild.channels.cache.get(channels.suggestionsChannel).send(embed)
+    const newMessage = await message.guild.suggestionsChannel.send(embed)
     await newMessage.react('⬆️')
     await newMessage.react('⬇️')
 
-    message.reply('Successfully suggested', { embed: embed })
+    return message.reply('Successfully suggested', { embed })
   }
 }
+
+module.exports = SuggestCommand

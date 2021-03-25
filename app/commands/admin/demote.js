@@ -1,11 +1,10 @@
 'use strict'
-const Command = require('../../controllers/command')
-const userService = require('../../services/user')
-const applicationAdapter = require('../../adapters/application')
+const BaseCommand = require('../base')
 
-const applicationConfig = require('../../../config/application')
+const { applicationAdapter } = require('../../adapters')
+const { userService } = require('../../services')
 
-module.exports = class DemoteCommand extends Command {
+class DemoteCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'admin',
@@ -13,6 +12,7 @@ module.exports = class DemoteCommand extends Command {
       description: 'Demotes given user in the group.',
       examples: ['demote Happywalker'],
       clientPermissions: ['SEND_MESSAGES'],
+      requiresRobloxGroup: true,
       args: [{
         key: 'username',
         prompt: 'Who would you like to demote?',
@@ -21,13 +21,13 @@ module.exports = class DemoteCommand extends Command {
     })
   }
 
-  async execute (message, { username }) {
-    username = username ? typeof username === 'string' ? username : username.displayName : message.member.displayName
+  async run (message, { username }) {
+    username = typeof username === 'string' ? username : username.displayName
     const [userId, authorId] = await Promise.all([
       userService.getIdFromUsername(username),
       userService.getIdFromUsername(message.member.displayName)
     ])
-    const rank = await userService.getRank(userId, applicationConfig.groupId)
+    const rank = await userService.getRank(userId, message.guild.robloxGroupId)
     if (rank === 0) {
       return message.reply('Can\'t change rank of non members.')
     }
@@ -44,7 +44,7 @@ module.exports = class DemoteCommand extends Command {
       return message.reply('Can\'t change rank of HRs.')
     }
 
-    const roles = (await applicationAdapter('put', `/v1/groups/${applicationConfig.groupId}/users/${userId}`, {
+    const roles = (await applicationAdapter('put', `/v1/groups/${message.guild.robloxGroupId}/users/${userId}`, {
       authorId,
       rank: rank > 100 && rank <= 102
         ? rank - 1
@@ -57,6 +57,8 @@ module.exports = class DemoteCommand extends Command {
               : undefined
     })).data
 
-    message.reply(`Successfully demoted **${username}** from **${roles.oldRole.name}** to **${roles.newRole.name}**.`)
+    return message.reply(`Successfully demoted **${username}** from **${roles.oldRole.name}** to **${roles.newRole.name}**.`)
   }
 }
+
+module.exports = DemoteCommand

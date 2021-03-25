@@ -1,8 +1,9 @@
 'use strict'
-const Command = require('../../controllers/command')
-const userService = require('../../services/user')
+const BaseCommand = require('../base')
 
-module.exports = class ProfileCommand extends Command {
+const { userService } = require('../../services')
+
+class ProfileCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'main',
@@ -14,16 +15,18 @@ module.exports = class ProfileCommand extends Command {
       args: [{
         key: 'username',
         prompt: 'Of which user would you like to know the profile?',
-        default: '',
-        type: 'member|string'
+        type: 'member|string',
+        default: message => message.member.displayName
       }]
     })
   }
 
-  async execute (message, { username }) {
-    username = username ? typeof username === 'string' ? username : username.displayName : message.member.displayName
-    const userId = await userService.getIdFromUsername(username || message.member.displayName)
+  async run (message, { username }) {
+    username = typeof username === 'string' ? username : username.displayName
+    const userId = await userService.getIdFromUsername(username)
 
-    message.reply(`https://www.roblox.com/users/${userId}/profile`)
+    return message.reply(`https://www.roblox.com/users/${userId}/profile`)
   }
 }
+
+module.exports = ProfileCommand

@@ -1,13 +1,11 @@
 'use strict'
-const Command = require('../../controllers/command')
-const userService = require('../../services/user')
-const applicationAdapter = require('../../adapters/application')
+const BaseCommand = require('../base')
 
-const { getChannels, getTags, getUrls } = require('../../helpers/string')
+const { applicationAdapter } = require('../../adapters')
+const { userService } = require('../../services')
+const { validators, noChannels, noTags, noUrls } = require('../../util').argumentUtil
 
-const applicationConfig = require('../../../config/application')
-
-module.exports = class SuspendCommand extends Command {
+class SuspendCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'admin',
@@ -16,6 +14,7 @@ module.exports = class SuspendCommand extends Command {
       description: 'Suspends given user in the group.',
       examples: ['suspend Happywalker 3 "Spamming the group wall." false', 'suspend Happywalker 3 "Ignoring rules."'],
       clientPermissions: ['SEND_MESSAGES'],
+      requiresRobloxGroup: true,
       args: [{
         key: 'username',
         type: 'member|string',
@@ -24,20 +23,13 @@ module.exports = class SuspendCommand extends Command {
         key: 'days',
         type: 'integer',
         prompt: 'How long would you like this suspension to be?',
-        validate: val => {
-          return val < 1 ? 'Insufficient amount of days.' : val > 7 ? 'Too many days.' : true
-        }
+        min: 1,
+        max: 7
       }, {
         key: 'reason',
         type: 'string',
         prompt: 'For what reason are you suspending this person?',
-        validate: val => getChannels(val)
-          ? 'Reason contains channels.'
-          : getTags(val)
-            ? 'Reason contains tags.'
-            : getUrls(val)
-              ? 'Reason contains URLs.'
-              : true
+        validate: validators([noChannels, noTags, noUrls])
       }, {
         key: 'rankBack',
         type: 'boolean',
@@ -46,14 +38,14 @@ module.exports = class SuspendCommand extends Command {
     })
   }
 
-  async execute (message, { username, days, reason, rankBack }) {
+  async run (message, { username, days, reason, rankBack }) {
     username = typeof username === 'string' ? username : username.displayName
     const [userId, authorId] = await Promise.all([
       userService.getIdFromUsername(username),
       userService.getIdFromUsername(message.member.displayName)
     ])
 
-    await applicationAdapter('post', `/v1/groups/${applicationConfig.groupId}/suspensions`, {
+    await applicationAdapter('post', `/v1/groups/${message.guild.robloxGroupId}/suspensions`, {
       duration: days * 86400000,
       rankBack,
       authorId,
@@ -61,6 +53,8 @@ module.exports = class SuspendCommand extends Command {
       reason
     })
 
-    message.reply(`Successfully suspended **${username}**.`)
+    return message.reply(`Successfully suspended **${username}**.`)
   }
 }
+
+module.exports = SuspendCommand

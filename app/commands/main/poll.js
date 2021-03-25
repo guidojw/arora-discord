@@ -1,11 +1,10 @@
 'use strict'
-const Command = require('../../controllers/command')
-const discordService = require('../../services/discord')
+const BaseCommand = require('../base')
 
 const { MessageEmbed } = require('discord.js')
-const { getTags } = require('../../helpers/string')
+const { validators, noTags } = require('../../util').argumentUtil
 
-module.exports = class PollCommand extends Command {
+class PollCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'main',
@@ -19,12 +18,12 @@ module.exports = class PollCommand extends Command {
         key: 'poll',
         type: 'string',
         prompt: 'What would you like the question to be?',
-        validate: val => getTags(val) ? 'Poll contains tags.' : true
+        validate: validators([noTags])
       }]
     })
   }
 
-  async execute (message, { poll }, guild) {
+  async run (message, { poll }) {
     const options = []
     for (let num = 1; num <= 10; num++) {
       if (message.content.indexOf(`(${num})`) !== -1) {
@@ -34,12 +33,12 @@ module.exports = class PollCommand extends Command {
     const embed = new MessageEmbed()
       .setDescription(poll)
       .setAuthor(message.author.tag, message.author.displayAvatarURL())
-      .setColor(guild.getData('primaryColor'))
+      .setColor(message.guild.primaryColor)
 
     const newMessage = await message.channel.send(embed)
     if (options.length > 0) {
       for (const option of options) {
-        await newMessage.react(discordService.getEmojiFromNumber(option))
+        await newMessage.react(`${option}⃣`)
       }
     } else {
       await newMessage.react('✔')
@@ -47,3 +46,5 @@ module.exports = class PollCommand extends Command {
     }
   }
 }
+
+module.exports = PollCommand

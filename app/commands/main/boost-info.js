@@ -1,10 +1,10 @@
 'use strict'
-const Command = require('../../controllers/command')
 const pluralize = require('pluralize')
+const BaseCommand = require('../base')
 
 const { MessageEmbed } = require('discord.js')
 
-module.exports = class BoostInfoCommand extends Command {
+class BoostInfoCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'main',
@@ -15,15 +15,12 @@ module.exports = class BoostInfoCommand extends Command {
         key: 'member',
         prompt: 'Whose boost info do you want to know?',
         type: 'member',
-        default: ''
+        default: message => message.member
       }]
     })
   }
 
-  async execute (message, { member }) {
-    if (!member) {
-      member = message.member
-    }
+  async run (message, { member }) {
     if (!member.premiumSince) {
       return message.reply(`${message.argString ? 'Member is not' : 'You\'re not'} a booster.`)
     }
@@ -38,8 +35,7 @@ module.exports = class BoostInfoCommand extends Command {
     }
     const years = Math.floor(months / 12)
     months %= 12
-    const emojis = this.client.bot.mainGuild.getData('emojis')
-    const emoji = this.client.bot.mainGuild.guild.emojis.cache.find(emoji => emoji.id === emojis.boostEmoji)
+    const emoji = this.client.mainGuild.emojis.cache.find(emoji => emoji.name.toLowerCase() === 'boost')
     if (member.user.partial) {
       await member.user.partial.fetch()
     }
@@ -47,8 +43,10 @@ module.exports = class BoostInfoCommand extends Command {
     const embed = new MessageEmbed()
       .setTitle(`${member.user.tag}${emoji ? ` ${emoji}` : ''}`)
       .setThumbnail(member.user.displayAvatarURL())
-      .setDescription(`Has been boosting this server for ${years > 0 ? `**${years}** ${pluralize('year', years)}, ` : ''}**${months}** ${pluralize('month', months)} and **${days}** ${pluralize('day', days)}!`)
+      .setDescription(`Has been boosting this server for ${years > 0 ? `**${pluralize('year', years, true)}**, ` : ''}**${pluralize('month', months, true)}** and **${pluralize('day', days, true)}**!`)
       .setColor(0xff73fa)
-    message.replyEmbed(embed)
+    return message.replyEmbed(embed)
   }
 }
+
+module.exports = BoostInfoCommand

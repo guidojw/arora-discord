@@ -1,9 +1,11 @@
 'use strict'
 const axios = require('axios')
 
-module.exports = async (method, pathname) => {
+function roVerAdapter (method, pathname) {
   return axios({
-    method,
-    url: 'https://verify.eryn.io/api' + pathname
+    url: 'https://verify.eryn.io/api' + pathname,
+    method
   })
 }
+
+module.exports = roVerAdapter
