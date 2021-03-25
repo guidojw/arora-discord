@@ -3,6 +3,7 @@ const pluralize = require('pluralize')
 const BaseCommand = require('../base')
 
 const { MessageEmbed } = require('discord.js')
+const { diffDays } = require('../../util').timeUtil
 
 class BoostInfoCommand extends BaseCommand {
   constructor (client) {
@@ -25,25 +26,19 @@ class BoostInfoCommand extends BaseCommand {
       return message.reply(`${message.argString ? 'Member is not' : 'You\'re not'} a booster.`)
     }
     const now = new Date()
-    const premiumDate = member.premiumSince
-    let months = now.getMonth() - premiumDate.getMonth() + (now.getFullYear() - premiumDate.getFullYear()) * 12
-    let days = now.getDate() - premiumDate.getDate()
-    if (days < 0) {
-      const daysInMonth = new Date(premiumDate.getFullYear(), premiumDate.getMonth() + 1, 0).getDate()
-      days += daysInMonth
-      months--
-    }
-    const years = Math.floor(months / 12)
-    months %= 12
-    const emoji = this.client.mainGuild.emojis.cache.find(emoji => emoji.name.toLowerCase() === 'boost')
+    const diffDays = diffDays(member.premiumSince, now)
+    const months = Math.floor(diffDays / 30)
+    const days = diffDays % 30
+    const emoji = this.client.mainGuild.guild.emojis.cache.find(emoji => emoji.name.toLowerCase() === 'boost')
+
     if (member.user.partial) {
       await member.user.partial.fetch()
     }
-
     const embed = new MessageEmbed()
-      .setTitle(`${member.user.tag}${emoji ? ` ${emoji}` : ''}`)
+      .setTitle(`${member.user.tag} ${emoji || ''}`)
       .setThumbnail(member.user.displayAvatarURL())
-      .setDescription(`Has been boosting this server for ${years > 0 ? `**${pluralize('year', years, true)}**, ` : ''}**${pluralize('month', months, true)}** and **${pluralize('day', days, true)}**!`)
+      .setDescription(`Has been boosting this server for **${pluralize('month', months, true)}** and **${pluralize('day', days, true)}**!`)
+      .setFooter('* Discord Nitro months are 30 days long.')
       .setColor(0xff73fa)
     return message.replyEmbed(embed)
   }
