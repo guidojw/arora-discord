@@ -29,7 +29,7 @@ class BoostInfoCommand extends BaseCommand {
     const diff = diffDays(member.premiumSince, now)
     const months = Math.floor(diffDays / 30)
     const days = diff % 30
-    const emoji = this.client.mainGuild.guild.emojis.cache.find(emoji => emoji.name.toLowerCase() === 'boost')
+    const emoji = this.client.mainGuild.emojis.cache.find(emoji => emoji.name.toLowerCase() === 'boost')
 
     if (member.user.partial) {
       await member.user.partial.fetch()
