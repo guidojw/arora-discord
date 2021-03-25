@@ -69,7 +69,7 @@ class NSadminClient extends CommandoClient {
       if (msg.command?.requiresRobloxGroup === true && msg.guild.robloxGroupId === null) {
         return {
           reason: 'robloxGroupRequired',
-          response: msg.reply('This command requires that the server has its `robloxGroup` setting set.')
+          response: msg.reply('This command requires that the server has its robloxGroup setting set.')
         }
       }
     })

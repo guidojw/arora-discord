@@ -7,7 +7,7 @@ class UnlinkTicketTypeCommand extends BaseCommand {
       group: 'settings',
       name: 'unlinktickettype',
       aliases: ['unlinktt'],
-      description: 'Unlinks a message reaction from a ticket type.',
+      description: 'Unlinks a ticket type from a message reaction.',
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
         key: 'type',
