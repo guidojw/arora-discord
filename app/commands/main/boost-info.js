@@ -26,9 +26,9 @@ class BoostInfoCommand extends BaseCommand {
       return message.reply(`${message.argString ? 'Member is not' : 'You\'re not'} a booster.`)
     }
     const now = new Date()
-    const diffDays = diffDays(member.premiumSince, now)
+    const diff = diffDays(member.premiumSince, now)
     const months = Math.floor(diffDays / 30)
-    const days = diffDays % 30
+    const days = diff % 30
     const emoji = this.client.mainGuild.guild.emojis.cache.find(emoji => emoji.name.toLowerCase() === 'boost')
 
     if (member.user.partial) {
