@@ -93,8 +93,8 @@ function getTrainingMessage (training, authors) {
   let result = `:calendar_spiral: **${dateString}** at **${timeString}** hosted by ${author.name}`
 
   if (trainingDay === today && hourDifference <= 5) {
-    if (hourDifference === 0) {
-      const minuteDifference = date.getMinutes() - now.getMinutes()
+    if (hourDifference <= 1) {
+      const minuteDifference = hourDifference * 60 + date.getMinutes() - now.getMinutes()
       if (minuteDifference >= 0) {
         result += `\n> :alarm_clock: Starts in: **${pluralize('minute', minuteDifference, true)}**`
       } else {
