@@ -11,6 +11,7 @@ class CreateRoleBindingCommand extends BaseCommand {
       aliases: ['createrolebnd'],
       description: 'Creates a new Roblox rank to Discord role binding.',
       clientPermissions: ['SEND_MESSAGES'],
+      requiresRobloxGroup: true,
       args: [{
         key: 'role',
         prompt: 'To what role would you like to bind this binding?',

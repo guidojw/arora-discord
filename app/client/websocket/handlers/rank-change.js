@@ -12,7 +12,8 @@ const rankChangeHandler = async (client, { data }) => {
       const member = await discordService.getMemberByName(guild, username)
 
       if (member) {
-        for (const roleBinding of guild.roleBindings.cache.values()) {
+        const roleBindings = await guild.roleBindings.fetch()
+        for (const roleBinding of roleBindings.values()) {
           if (rank === roleBinding.min || (roleBinding.max && rank >= roleBinding.min && rank <= roleBinding.max)) {
             member.roles.add(roleBinding.roleId)
           } else {

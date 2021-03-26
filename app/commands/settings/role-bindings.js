@@ -34,13 +34,14 @@ class RoleBindingsCommand extends BaseCommand {
         .setColor(message.guild.primaryColor)
       return message.replyEmbed(embed)
     } else {
-      if (message.guild.roleBindings.cache.size === 0) {
+      const roleBindings = await message.guild.roleBindings.fetch()
+      if (roleBindings.size === 0) {
         return message.reply('No role bindings found.')
       }
 
       const embeds = discordService.getListEmbeds(
         'Role Bindings',
-        lodash.groupBy(Array.from(message.guild.roleBindings.cache.values()), 'roleId'),
+        lodash.groupBy(Array.from(roleBindings.values()), 'roleId'),
         getGroupedRoleBindingRow
       )
       for (const embed of embeds) {

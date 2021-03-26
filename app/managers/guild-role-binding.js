@@ -1,7 +1,7 @@
 'use strict'
 const BaseManager = require('./base')
 
-const { RoleBinding: RoleBindingModel } = require('../models')
+const { Guild, RoleBinding: RoleBindingModel } = require('../models')
 const { RoleBinding } = require('../structures')
 
 class GuildRoleBindingManager extends BaseManager {
@@ -19,6 +19,7 @@ class GuildRoleBindingManager extends BaseManager {
     if (this.guild.robloxGroupId === null) {
       throw new Error('This server is not bound to a Roblox group yet.')
     }
+    await this.fetch()
     role = this.guild.roles.resolve(role)
     if (!role) {
       throw new Error('Invalid role.')
@@ -49,12 +50,22 @@ class GuildRoleBindingManager extends BaseManager {
     if (!id) {
       throw new Error('Invalid role binding.')
     }
+    await this.fetch()
     if (!this.cache.has(id)) {
       throw new Error('Role binding not found.')
     }
 
     await RoleBindingModel.destroy({ where: { id } })
     this.cache.delete(id)
+  }
+
+  async fetch () {
+    const data = await Guild.scope('withRoleBindings').findOne({ where: { id: this.guild.id } })
+    this.cache.clear()
+    for (const rawRoleBinding of data.roleBindings) {
+      this.add(rawRoleBinding)
+    }
+    return this.cache
   }
 }
 
