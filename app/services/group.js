@@ -4,7 +4,7 @@ const discordService = require('./discord')
 const userService = require('../services/user')
 
 const { applicationAdapter } = require('../adapters')
-const { getDate, getTime, isDst } = require('../util').timeUtil
+const { getDate, getTime, getTimeZoneAbbreviation } = require('../util').timeUtil
 const { getAbbreviation } = require('../util').util
 
 exports.getTrainingEmbeds = async trainings => {
@@ -27,7 +27,7 @@ exports.getTrainingRow = (training, { users }) => {
   const readableDate = getDate(date)
   const readableTime = getTime(date)
 
-  return `${training.id}. **${training.type.abbreviation}** training on **${readableDate}** at **${readableTime} ${isDst(date) ? 'CEST' : 'CET'}**, hosted by **${username}**.`
+  return `${training.id}. **${training.type.abbreviation}** training on **${readableDate}** at **${readableTime} ${getTimeZoneAbbreviation(date)}**, hosted by **${username}**.`
 }
 
 exports.getSuspensionEmbeds = async (groupId, suspensions) => {
