@@ -52,6 +52,14 @@ function getTimeInfo (timeString) {
   return { hours, minutes }
 }
 
+function getTimeZoneAbbreviation (date) {
+  return date.toLocaleTimeString('en-us', { hour12: false, hour: '2-digit', minute: '2-digit', timeZoneName: 'long' })
+    .replace(/^(2[0-3]|[0-1]?\d):[0-5]\d\s/, '')
+    .split(' ')
+    .map(word => word.charAt(0))
+    .join('')
+}
+
 function isDst (date) {
   const jan = new Date(date.getFullYear(), 0, 1).getTimezoneOffset()
   const jul = new Date(date.getFullYear(), 6, 1).getTimezoneOffset()
@@ -65,5 +73,6 @@ module.exports = {
   getDurationString,
   getTime,
   getTimeInfo,
+  getTimeZoneAbbreviation,
   isDst
 }
