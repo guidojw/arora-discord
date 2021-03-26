@@ -119,9 +119,9 @@ class NSadminClient extends CommandoClient {
     const member = guild.members.resolve(user) || await guild.members.fetch(user)
 
     for (const roleMessage of guild.roleMessages.cache.values()) {
-      if (reaction.message.id === roleMessage.messageId && reaction.emoji instanceof GuildEmoji
+      if (reaction.message.id === roleMessage.messageId && (reaction.emoji instanceof GuildEmoji
         ? roleMessage.emoji instanceof GuildEmoji && reaction.emoji.id === roleMessage.emojiId
-        : !(roleMessage.emoji instanceof GuildEmoji) && reaction.emoji.name === roleMessage.emojiId) {
+        : !(roleMessage.emoji instanceof GuildEmoji) && reaction.emoji.name === roleMessage.emojiId)) {
         await member.roles[type](roleMessage.roleId)
       }
     }
