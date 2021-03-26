@@ -5,7 +5,7 @@ const pluralize = require('pluralize')
 const { MessageEmbed } = require('discord.js')
 const { applicationAdapter } = require('../adapters')
 const { groupService, userService } = require('../services')
-const { getDate, getTime, isDst } = require('../util').timeUtil
+const { getDate, getTime, getTimeZoneAbbreviation } = require('../util').timeUtil
 
 async function announceTrainingsJob (guild) {
   if (guild.robloxGroupId === null) {
@@ -26,8 +26,7 @@ async function announceTrainingsJob (guild) {
     const embed = trainingsInfoPanel.embed.setColor(guild.primaryColor)
     const now = new Date()
 
-    const dstNow = isDst(now)
-    embed.setDescription(embed.description.replace(/{timezone}/g, dstNow ? 'CEST' : 'CET'))
+    embed.setDescription(embed.description.replace(/{timezone}/g, getTimeZoneAbbreviation(now)))
 
     const nextTraining = trainings.find(training => new Date(training.date) > now)
     embed.addField(

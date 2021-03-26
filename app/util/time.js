@@ -60,12 +60,6 @@ function getTimeZoneAbbreviation (date) {
     .join('')
 }
 
-function isDst (date) {
-  const jan = new Date(date.getFullYear(), 0, 1).getTimezoneOffset()
-  const jul = new Date(date.getFullYear(), 6, 1).getTimezoneOffset()
-  return Math.max(jan, jul) !== date.getTimezoneOffset()
-}
-
 module.exports = {
   diffDays,
   getDate,
@@ -73,6 +67,5 @@ module.exports = {
   getDurationString,
   getTime,
   getTimeInfo,
-  getTimeZoneAbbreviation,
-  isDst
+  getTimeZoneAbbreviation
 }
