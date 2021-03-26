@@ -143,9 +143,6 @@ module.exports = (sequelize, DataTypes) => {
         model: models.Panel,
         as: 'panels'
       }, {
-        model: models.RoleBinding,
-        as: 'roleBindings'
-      }, {
         model: models.RoleMessage,
         as: 'roleMessages'
       }, {
@@ -157,6 +154,12 @@ module.exports = (sequelize, DataTypes) => {
       }, {
         model: models.TicketType,
         as: 'ticketTypes'
+      }]
+    })
+    Guild.addScope('withRoleBindings', {
+      include: [{
+        model: models.RoleBinding,
+        as: 'roleBindings'
       }]
     })
   }

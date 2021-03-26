@@ -1,7 +1,7 @@
 'use strict'
 const BaseManager = require('./base')
 
-const { RoleBinding: RoleBindingModel } = require('../models')
+const { Guild, RoleBinding: RoleBindingModel } = require('../models')
 const { RoleBinding } = require('../structures')
 
 class GuildRoleBindingManager extends BaseManager {
@@ -55,6 +55,15 @@ class GuildRoleBindingManager extends BaseManager {
 
     await RoleBindingModel.destroy({ where: { id } })
     this.cache.delete(id)
+  }
+
+  async fetch () {
+    const data = await Guild.scope('withRoleBindings').findOne({ where: { id: this.guild.id } })
+    this.cache.clear()
+    for (const rawRoleBinding of data.roleBindings) {
+      this.add(rawRoleBinding)
+    }
+   return this.cache
   }
 }
 
