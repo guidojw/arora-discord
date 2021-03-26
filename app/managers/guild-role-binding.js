@@ -19,6 +19,7 @@ class GuildRoleBindingManager extends BaseManager {
     if (this.guild.robloxGroupId === null) {
       throw new Error('This server is not bound to a Roblox group yet.')
     }
+    await this.fetch()
     role = this.guild.roles.resolve(role)
     if (!role) {
       throw new Error('Invalid role.')
@@ -49,6 +50,7 @@ class GuildRoleBindingManager extends BaseManager {
     if (!id) {
       throw new Error('Invalid role binding.')
     }
+    await this.fetch()
     if (!this.cache.has(id)) {
       throw new Error('Role binding not found.')
     }
@@ -63,7 +65,7 @@ class GuildRoleBindingManager extends BaseManager {
     for (const rawRoleBinding of data.roleBindings) {
       this.add(rawRoleBinding)
     }
-   return this.cache
+    return this.cache
   }
 }
 

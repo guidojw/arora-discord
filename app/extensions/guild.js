@@ -72,12 +72,6 @@ const NSadminGuild = Structures.extend('Guild', Guild => {
         }
       }
 
-      if (data.roleBindings) {
-        for (const rawRoleBinding of data.roleBindings) {
-          this.roleBindings.add(rawRoleBinding)
-        }
-      }
-
       if (data.roleMessages) {
         for (const rawRoleMessage of data.roleMessages) {
           this.roleMessages.add(rawRoleMessage)
