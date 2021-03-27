@@ -40,7 +40,7 @@ class NSadminProvider extends SettingProvider {
     // Band-aid fix. idk why, but somehow after merging https://github.com/guidojw/nsadmin-discord/pull/164 the bot's
     // memory usage raised rapidly on start up and kept causing numerous out of memory errors. I tried several things
     // and it seems to be Sequelize related. Removing models from Guild model's defaultScope somehow fixed the issue.
-    if (guildId !== '0') {
+    if (guild) {
       data.channels = await data.getChannels()
       data.roles = await data.getRoles()
       // remove more from the Guild defaultScope and put it here if above error returns..
