@@ -134,12 +134,6 @@ module.exports = (sequelize, DataTypes) => {
         model: models.Group,
         as: 'groups'
       }, {
-        model: models.Role,
-        as: 'roles'
-      }, {
-        model: models.Channel,
-        as: 'channels'
-      }, {
         model: models.Panel,
         as: 'panels'
       }, {
