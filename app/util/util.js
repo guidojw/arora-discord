@@ -1,4 +1,5 @@
 'use strict'
+
 function getAbbreviation (val) {
   return val
     .trim()
