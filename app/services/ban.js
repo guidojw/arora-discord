@@ -1,4 +1,5 @@
 'use strict'
+
 const discordService = require('./discord')
 const groupService = require('./group')
 const userService = require('./user')
@@ -6,7 +7,7 @@ const userService = require('./user')
 const { getDate } = require('../util').timeUtil
 const { getAbbreviation } = require('../util').util
 
-exports.getBanEmbeds = async (groupId, bans) => {
+async function getBanEmbeds (groupId, bans) {
   const userIds = [...new Set([
     ...bans.map(ban => ban.userId),
     ...bans.map(ban => ban.authorId)
@@ -22,7 +23,7 @@ exports.getBanEmbeds = async (groupId, bans) => {
   )
 }
 
-exports.getBanRow = (ban, { users, roles }) => {
+function getBanRow (ban, { users, roles }) {
   const username = users.find(user => user.id === ban.userId).name
   const author = users.find(user => user.id === ban.authorId)
   const role = roles.roles.find(role => role.rank === ban.rank)
@@ -30,4 +31,9 @@ exports.getBanRow = (ban, { users, roles }) => {
   const dateString = getDate(new Date(ban.date))
 
   return `**${username}**${role ? ' (' + roleAbbreviation + ')' : ''}${author ? ' by **' + author.name + '**' : ''}${dateString ? ' at **' + dateString + '**' : ''}${ban.reason ? ' with reason:\n*' + ban.reason + '*' : ''}`
+}
+
+module.exports = {
+  getBanEmbeds,
+  getBanRow
 }

@@ -1,20 +1,21 @@
 'use strict'
+
 const { applicationAdapter } = require('../adapters')
 const { split } = require('../util').util
 
-exports.getIdFromUsername = async username => {
+async function getIdFromUsername (username) {
   const userId = (await applicationAdapter('get', `/v1/users/${username}/user-id`)).data
-  if (!userId) {
+  if (!userId) { // Roblox returns HTTP 200 even when it didn't find anyone.
     throw new Error(`**${username}** doesn't exist on Roblox.`)
   }
   return userId
 }
 
-exports.hasBadge = async (userId, badgeId) => {
+async function hasBadge (userId, badgeId) {
   return (await applicationAdapter('get', `/v1/users/${userId}/has-badge/${badgeId}`)).data
 }
 
-exports.getUsers = async userIds => {
+async function getUsers (userIds) {
   if (userIds.length <= 100) {
     return (await applicationAdapter('post', '/v1/users', { userIds })).data
   } else {
@@ -29,7 +30,7 @@ exports.getUsers = async userIds => {
   }
 }
 
-exports.getUser = async userId => {
+async function getUser (userId) {
   try {
     return (await applicationAdapter('get', `/v1/users/${userId}`)).data
   } catch (err) {
@@ -37,10 +38,19 @@ exports.getUser = async userId => {
   }
 }
 
-exports.getRank = async (userId, groupId) => {
+async function getRank (userId, groupId) {
   return (await applicationAdapter('get', `/v1/users/${userId}/rank/${groupId}`)).data
 }
 
-exports.getRole = async (userId, groupId) => {
+async function getRole (userId, groupId) {
   return (await applicationAdapter('get', `/v1/users/${userId}/role/${groupId}`)).data
+}
+
+module.exports = {
+  getIdFromUsername,
+  getRank,
+  getRole,
+  getUser,
+  getUsers,
+  hasBadge
 }

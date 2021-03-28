@@ -1,4 +1,5 @@
 'use strict'
+
 module.exports = {
   banService: require('./ban'),
   discordService: require('./discord'),
