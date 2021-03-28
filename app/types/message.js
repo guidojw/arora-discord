@@ -1,4 +1,5 @@
 'use strict'
+
 const { ArgumentType } = require('discord.js-commando')
 
 const messageUrlRegex = /^https:\/\/discord.com\/channels\/([0-9]+|@me)\/[0-9]+\/[0-9]+$/

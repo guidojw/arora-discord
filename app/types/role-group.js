@@ -1,4 +1,5 @@
 'use strict'
+
 const BaseArgumentType = require('./base')
 
 const { RoleGroup } = require('../structures')

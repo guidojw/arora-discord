@@ -1,4 +1,5 @@
 'use strict'
+
 const { ArgumentType } = require('discord.js-commando')
 
 class JsonObjectArgumentType extends ArgumentType {
