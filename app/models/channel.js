@@ -1,4 +1,5 @@
 'use strict'
+
 module.exports = (sequelize, DataTypes) => {
   const Channel = sequelize.define('Channel', {
     id: {

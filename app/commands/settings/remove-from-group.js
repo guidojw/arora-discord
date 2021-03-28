@@ -1,4 +1,5 @@
 'use strict'
+
 const pluralize = require('pluralize')
 const BaseCommand = require('../base')
 

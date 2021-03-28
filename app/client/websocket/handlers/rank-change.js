@@ -1,4 +1,5 @@
 'use strict'
+
 const { discordService, userService } = require('../../../services')
 
 const rankChangeHandler = async (client, { data }) => {

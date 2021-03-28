@@ -1,4 +1,5 @@
 'use strict'
+
 const Permissible = require('../structures/interfaces/permissible')
 
 const { Structures } = require('discord.js')

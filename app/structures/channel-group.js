@@ -1,4 +1,5 @@
 'use strict'
+
 const Group = require('./group')
 const GroupTextChannelManager = require('../managers/group-text-channel')
 

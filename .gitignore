@@ -2,8 +2,6 @@
 
 /node_modules
 
-ecosystem.conf.js
-config/application.js
+ecosystem.config.js
 
 .env
-data/*

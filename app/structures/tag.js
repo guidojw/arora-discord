@@ -1,4 +1,5 @@
 'use strict'
+
 const BaseStructure = require('./base')
 const TagTagNameManager = require('../managers/tag-tag-name')
 

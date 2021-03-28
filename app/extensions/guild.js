@@ -1,4 +1,5 @@
 'use strict'
+
 const cron = require('node-cron')
 
 const { MessageEmbed, Structures } = require('discord.js')

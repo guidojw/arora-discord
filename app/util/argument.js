@@ -1,4 +1,5 @@
 'use strict'
+
 const { MessageMentions } = require('discord.js')
 const { getDateInfo } = require('./time')
 

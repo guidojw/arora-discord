@@ -1,4 +1,5 @@
 'use strict'
+
 const BaseStructure = require('./base')
 
 class TagName extends BaseStructure {

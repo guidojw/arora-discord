@@ -1,4 +1,5 @@
 'use strict'
+
 const BaseCommand = require('../base')
 
 class RawPanelCommand extends BaseCommand {
@@ -18,7 +19,7 @@ class RawPanelCommand extends BaseCommand {
   }
 
   run (message, { panel }) {
-    return message.reply(panel.content, { allowedMentions: { users: [message.author.id] } })
+    return message.reply(panel.content, { code: true, allowedMentions: { users: [message.author.id] } })
   }
 }
 

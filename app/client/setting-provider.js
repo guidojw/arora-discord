@@ -1,4 +1,5 @@
 'use strict'
+
 const { SettingProvider } = require('discord.js-commando')
 
 const { Guild, Command } = require('../models')

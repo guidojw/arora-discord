@@ -1,4 +1,5 @@
 'use strict'
+
 const BaseManager = require('./base')
 const Permission = require('../structures/permission')
 

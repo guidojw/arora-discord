@@ -1,4 +1,5 @@
 'use strict'
+
 const path = require('path')
 const eventHandlers = require('./events')
 const NSadminProvider = require('./setting-provider')

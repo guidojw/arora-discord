@@ -1,4 +1,5 @@
 'use strict'
+
 module.exports = sequelize => {
   const Ticket = sequelize.define('Ticket', {}, {
     hooks: {

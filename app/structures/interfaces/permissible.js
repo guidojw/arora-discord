@@ -1,4 +1,5 @@
 'use strict'
+
 const PermissionManager = require('../../managers/permission')
 
 class Permissible {

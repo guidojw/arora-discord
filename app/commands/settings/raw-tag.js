@@ -1,4 +1,5 @@
 'use strict'
+
 const BaseCommand = require('../base')
 
 class RawTagCommand extends BaseCommand {
@@ -17,7 +18,7 @@ class RawTagCommand extends BaseCommand {
   }
 
   run (message, { tag }) {
-    return message.reply(tag._content, { allowedMentions: { users: [message.author.id] } })
+    return message.reply(tag._content, { code: true, allowedMentions: { users: [message.author.id] } })
   }
 }
 

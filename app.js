@@ -1,11 +1,12 @@
 'use strict'
+
 require('dotenv').config()
 
-const NSadminClient = require('./app/client/client')
 const Sentry = require('@sentry/node')
+const NSadminClient = require('./app/client/client')
 
 if (process.env.SENTRY_DSN) {
-  Sentry.init({dsn: process.env.SENTRY_DSN})
+  Sentry.init({ dsn: process.env.SENTRY_DSN })
 }
 
 new NSadminClient({

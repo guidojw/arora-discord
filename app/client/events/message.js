@@ -1,4 +1,5 @@
 'use strict'
+
 const { stripIndents } = require('common-tags')
 const { MessageEmbed } = require('discord.js')
 

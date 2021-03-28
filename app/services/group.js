@@ -1,4 +1,5 @@
 'use strict'
+
 const pluralize = require('pluralize')
 const discordService = require('./discord')
 const userService = require('../services/user')
@@ -7,7 +8,7 @@ const { applicationAdapter } = require('../adapters')
 const { getDate, getTime, getTimeZoneAbbreviation } = require('../util').timeUtil
 const { getAbbreviation } = require('../util').util
 
-exports.getTrainingEmbeds = async trainings => {
+async function getTrainingEmbeds (trainings) {
   const userIds = [...new Set([
     ...trainings.map(training => training.authorId)
   ])]
@@ -21,7 +22,7 @@ exports.getTrainingEmbeds = async trainings => {
   )
 }
 
-exports.getTrainingRow = (training, { users }) => {
+function getTrainingRow (training, { users }) {
   const username = users.find(user => user.id === training.authorId).name
   const date = new Date(training.date)
   const readableDate = getDate(date)
@@ -30,7 +31,7 @@ exports.getTrainingRow = (training, { users }) => {
   return `${training.id}. **${training.type.abbreviation}** training on **${readableDate}** at **${readableTime} ${getTimeZoneAbbreviation(date)}**, hosted by **${username}**.`
 }
 
-exports.getSuspensionEmbeds = async (groupId, suspensions) => {
+async function getSuspensionEmbeds (groupId, suspensions) {
   const userIds = [...new Set([
     ...suspensions.map(suspension => suspension.userId),
     ...suspensions.map(suspension => suspension.authorId)
@@ -46,7 +47,7 @@ exports.getSuspensionEmbeds = async (groupId, suspensions) => {
   )
 }
 
-exports.getSuspensionRow = (suspension, { users, roles }) => {
+function getSuspensionRow (suspension, { users, roles }) {
   const username = users.find(user => user.id === suspension.userId).name
   const author = users.find(user => user.id === suspension.authorId)
   const role = roles.roles.find(role => role.rank === suspension.rank)
@@ -65,7 +66,7 @@ exports.getSuspensionRow = (suspension, { users, roles }) => {
   return `**${username}** (${roleAbbreviation}, rankback **${rankBack}**) by **${author.name}** at **${dateString}** for **${days}${extensionString} ${pluralize('day', days + extensionDays)}** with reason:\n*${suspension.reason}*`
 }
 
-exports.groupTrainingsByType = trainings => {
+function groupTrainingsByType (trainings) {
   const result = {}
   for (const training of trainings) {
     if (!result[training.type.name]) {
@@ -77,10 +78,20 @@ exports.groupTrainingsByType = trainings => {
   return result
 }
 
-exports.getTrainingTypes = async groupId => {
+async function getTrainingTypes (groupId) {
   return (await applicationAdapter('get', `/v1/groups/${groupId}/trainings/types`)).data
 }
 
-exports.getRoles = async groupId => {
+async function getRoles (groupId) {
   return (await applicationAdapter('get', `/v1/groups/${groupId}/roles`)).data
+}
+
+module.exports = {
+  getRoles,
+  getSuspensionEmbeds,
+  getSuspensionRow,
+  getTrainingEmbeds,
+  getTrainingRow,
+  getTrainingTypes,
+  groupTrainingsByType
 }

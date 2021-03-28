@@ -1,4 +1,5 @@
 'use strict'
+
 class TextChannelGroupManager {
   constructor (channel) {
     this.channel = channel

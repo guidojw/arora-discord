@@ -1,4 +1,5 @@
 'use strict'
+
 const axios = require('axios')
 
 const applicationConfig = require('../../config/application')

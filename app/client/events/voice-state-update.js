@@ -1,4 +1,5 @@
 'use strict'
+
 const voiceStateUpdateHandler = async (_client, oldState, newState) => {
   if (oldState.channelID !== newState.channelId) {
     if (oldState.channel) {

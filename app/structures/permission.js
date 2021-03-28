@@ -1,4 +1,5 @@
 'use strict'
+
 const BaseStructure = require('./base')
 
 class Permission extends BaseStructure {

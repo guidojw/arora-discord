@@ -1,4 +1,5 @@
 'use strict'
+
 function getAbbreviation (val) {
   return val
     .trim()
@@ -25,7 +26,7 @@ function makeCommaSeparatedString (array) {
   }
   const firsts = array.slice(0, array.length - 1)
   const last = array[array.length - 1]
-  return `${firsts.join('`, `')} & ${last}`
+  return `${firsts.join(', ')} & ${last}`
 }
 
 function split (array, length) {

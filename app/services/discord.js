@@ -1,9 +1,10 @@
 'use strict'
+
 const { MessageEmbed } = require('discord.js')
 
 const REACTION_COLLECTOR_TIME = 60000
 
-exports.getMemberByName = async (guild, name) => {
+async function getMemberByName (guild, name) {
   name = name.toLowerCase()
   const members = await guild.members.fetch()
   for (const member of members.values()) {
@@ -13,7 +14,7 @@ exports.getMemberByName = async (guild, name) => {
   }
 }
 
-exports.prompt = async (channel, author, message, options) => {
+async function prompt (channel, author, message, options) {
   const filter = (reaction, user) => options.includes(reaction.emoji.name) && user.id === author.id
   const collector = message.createReactionCollector(filter, { time: REACTION_COLLECTOR_TIME })
   const promise = new Promise(resolve => {
@@ -29,7 +30,7 @@ exports.prompt = async (channel, author, message, options) => {
   return promise
 }
 
-exports.getListEmbeds = (title, values, getRow, data) => {
+function getListEmbeds (title, values, getRow, data) {
   if (values instanceof Map) {
     values = values.entries()
   } else if (values instanceof Object) {
@@ -39,7 +40,6 @@ exports.getListEmbeds = (title, values, getRow, data) => {
   const embeds = []
   let embed = new MessageEmbed()
     .setTitle(title)
-
   for (const value of values) {
     const row = getRow(value, data)
     const currentField = embed.fields.length - 1
@@ -65,7 +65,7 @@ exports.getListEmbeds = (title, values, getRow, data) => {
   return embeds
 }
 
-exports.validateEmbed = embed => {
+function validateEmbed (embed) {
   if (embed.length > 6000) {
     return 'Embed length is too big.'
   } else if (embed.title?.length > 256) {
@@ -88,4 +88,11 @@ exports.validateEmbed = embed => {
     }
   }
   return true
+}
+
+module.exports = {
+  getListEmbeds,
+  getMemberByName,
+  prompt,
+  validateEmbed
 }

@@ -1,4 +1,5 @@
 'use strict'
+
 class BaseStructure {
   constructor (client) {
     this.client = client

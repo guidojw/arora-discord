@@ -1,4 +1,5 @@
 'use strict'
+
 const guildMemberUpdateHandler = async (_client, oldMember, newMember) => {
   if (newMember.user.bot) {
     return

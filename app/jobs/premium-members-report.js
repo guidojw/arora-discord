@@ -1,4 +1,5 @@
 'use strict'
+
 const pluralize = require('pluralize')
 
 const { MessageEmbed } = require('discord.js')

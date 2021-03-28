@@ -1,4 +1,5 @@
 'use strict'
+
 const { Collection } = require('discord.js')
 const { PartialTypes } = require('discord.js').Constants
 const { Member } = require('../models')

@@ -1,4 +1,5 @@
 'use strict'
+
 const { Message } = require('discord.js')
 
 const BaseCommand = require('../base')

@@ -1,4 +1,5 @@
 'use strict'
+
 const { Channel } = require('../../models')
 
 const channelDeleteHandler = (_client, channel) => {

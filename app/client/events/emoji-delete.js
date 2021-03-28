@@ -1,4 +1,5 @@
 'use strict'
+
 const { Emoji } = require('../../models')
 
 const emojiDeleteHandler = (_client, emoji) => {

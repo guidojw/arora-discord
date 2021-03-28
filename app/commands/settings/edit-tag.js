@@ -1,4 +1,5 @@
 'use strict'
+
 const BaseCommand = require('../base')
 
 const { validators, isObject, typeOf } = require('../../util').argumentUtil

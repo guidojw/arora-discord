@@ -1,4 +1,5 @@
 'use strict'
+
 const BaseCommand = require('../base')
 
 const { discordService } = require('../../services')
@@ -21,12 +22,10 @@ class DeleteSuggestionCommand extends BaseCommand {
     const authorUrl = `https://discord.com/users/${message.author.id}`
 
     for (const suggestion of messages.values()) {
-      if (suggestion.embeds.length === 1 && suggestion.embeds[0].author && suggestion.embeds[0].author.url ===
-        authorUrl) {
-        const prompt = await message.replyEmbed(suggestion.embeds[0], 'Are you sure would like to delete this' +
-          ' suggestion?')
-        const choice = await discordService.prompt(message.channel, message.author, prompt, ['✅', '🚫']) ===
-          '✅'
+      if (suggestion.embeds[0]?.author?.url === authorUrl) {
+        const prompt = await message.replyEmbed(suggestion.embeds[0], 'Are you sure would like to delete this ' +
+          'suggestion?')
+        const choice = await discordService.prompt(message.channel, message.author, prompt, ['✅', '🚫']) === '✅'
 
         if (choice) {
           await suggestion.delete()
