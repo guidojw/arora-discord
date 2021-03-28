@@ -1,4 +1,5 @@
 'use strict'
+
 const { Structures } = require('discord.js')
 const { Channel } = require('../models')
 
