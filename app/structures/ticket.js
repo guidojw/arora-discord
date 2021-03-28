@@ -1,4 +1,5 @@
 'use strict'
+
 const pluralize = require('pluralize')
 const BaseStructure = require('./base')
 const TicketGuildMemberManager = require('../managers/ticket-guild-member')

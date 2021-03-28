@@ -1,4 +1,5 @@
 'use strict'
+
 const { PartialTypes } = require('discord.js').Constants
 
 class Postable {

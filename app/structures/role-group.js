@@ -1,4 +1,5 @@
 'use strict'
+
 const Group = require('./group')
 const Permissible = require('./interfaces/permissible')
 const GroupRoleManager = require('../managers/group-role')
