@@ -8,4 +8,6 @@ RUN npm install
 # Bundle app source
 COPY . .
 
+RUN chmod +x ./bin/wait-for-it.sh
+
 CMD node app.js
