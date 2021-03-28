@@ -1,4 +1,5 @@
 'use strict'
+
 class RoleGroupManager {
   constructor (role) {
     this.role = role

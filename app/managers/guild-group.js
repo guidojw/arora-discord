@@ -1,4 +1,5 @@
 'use strict'
+
 const BaseManager = require('./base')
 
 const { Group: GroupModel } = require('../models')

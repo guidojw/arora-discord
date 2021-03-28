@@ -1,4 +1,5 @@
 'use strict'
+
 const BaseManager = require('./base')
 
 const { GuildEmoji, MessageEmbed, TextChannel } = require('discord.js')

@@ -1,4 +1,5 @@
 'use strict'
+
 const { BaseManager: DiscordBaseManager } = require('discord.js')
 
 class BaseManager extends DiscordBaseManager {

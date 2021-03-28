@@ -1,4 +1,5 @@
 'use strict'
+
 const { Role, Group } = require('../models')
 
 class GroupRoleManager {
