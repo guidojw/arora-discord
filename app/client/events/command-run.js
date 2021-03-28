@@ -1,4 +1,5 @@
 'use strict'
+
 const { stripIndents } = require('common-tags')
 
 const commandRunHandler = async (client, command, promise, message, _args, _fromPattern, result) => {

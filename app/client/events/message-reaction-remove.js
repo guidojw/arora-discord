@@ -1,4 +1,5 @@
 'use strict'
+
 const messageReactionRemoveHandler = async (client, reaction, user) => {
   if (user.bot) {
     return

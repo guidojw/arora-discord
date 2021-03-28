@@ -1,4 +1,5 @@
 'use strict'
+
 const WebSocket = require('ws')
 const packetHandlers = require('./handlers')
 

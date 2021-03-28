@@ -1,4 +1,5 @@
 'use strict'
+
 const { Role } = require('../../models')
 
 const roleDeleteHandler = (_client, role) => {

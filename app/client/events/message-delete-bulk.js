@@ -1,4 +1,5 @@
 'use strict'
+
 const messageDeleteHandler = require('./message-delete')
 
 const messageDeleteBulkHandler = (client, messages) => {
