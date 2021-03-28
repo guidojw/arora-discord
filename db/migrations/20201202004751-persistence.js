@@ -1,4 +1,5 @@
 'use strict'
+
 const { stripIndents } = require('common-tags')
 
 module.exports = {

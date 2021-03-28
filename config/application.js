@@ -1,4 +1,5 @@
 'use strict'
+
 module.exports = {
   defaultPrefix: '/',
   owner: '235476265325428736',
