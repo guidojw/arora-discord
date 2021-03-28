@@ -1,4 +1,5 @@
 'use strict'
+
 const { GroupTypes } = require('../util').Constants
 
 module.exports = (sequelize, DataTypes) => {
