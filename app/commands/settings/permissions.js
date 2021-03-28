@@ -31,7 +31,7 @@ class PermissionsCommand extends BaseCommand {
       embed
         .setTitle(`${memberOrRoleOrGroup.name}'s Permissions`)
         .addField('Note', 'If a command group has a permission with allow: true (e.g. "**Settings: true' +
-          '**", all commands in it without a permission (e.g. "createtag: `null`") will implicitly also have a ' +
+          '**"), all commands in it without a permission (e.g. "createtag: `null`") will implicitly also have a ' +
           'permission with allow: true.')
     }
 
