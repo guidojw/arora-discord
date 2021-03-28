@@ -1,4 +1,5 @@
 'use strict'
+
 const Base = require('../base')
 
 class DeleteTagAliasCommand extends Base {

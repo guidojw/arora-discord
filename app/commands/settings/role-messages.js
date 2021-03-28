@@ -1,6 +1,7 @@
 'use strict'
-const BaseCommand = require('../base')
+
 const lodash = require('lodash')
+const BaseCommand = require('../base')
 
 const { MessageEmbed } = require('discord.js')
 const { discordService } = require('../../services')

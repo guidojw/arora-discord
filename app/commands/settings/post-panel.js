@@ -1,4 +1,5 @@
 'use strict'
+
 const BaseCommand = require('../base')
 
 const { validateNoneOrType, parseNoneOrType } = require('../../util').argumentUtil

@@ -1,4 +1,5 @@
 'use strict'
+
 const Commando = require('discord.js-commando')
 
 class BaseCommand extends Commando.Command {
