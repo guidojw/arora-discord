@@ -1,4 +1,4 @@
-/.idea/*
+.env
 
 # Git
 .git
@@ -7,10 +7,12 @@
 Dockerfile
 docker-compose.yml
 
-ecosystem.config.js
 
-# NPM dependencies
+# Dependencies
 node_modules
-npm-debug.log
 
-.env
+# Miscellaneous
+npm-debug.log
+yarn-error.log
+ecosystem.config.js
+/.idea/*
