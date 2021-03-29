@@ -11,4 +11,4 @@ RUN yarn install --frozen-lockfile
 # Bundle app source
 COPY . .
 
-CMD node app.js
+CMD yarn start
