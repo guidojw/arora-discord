@@ -12,7 +12,7 @@ services:
       - /opt/app/node_modules
       - ./data:/opt/app/data
       - ./config/application.js:/opt/app/config/application.js
-    command: /bin/bash ./bin/wait-for-it.sh db:5432 -- node app.js
+    command: /bin/bash ./bin/wait-for-it.sh db:5432 -- npm start
 
   db:
     image: postgres:11.2

@@ -2,8 +2,8 @@ FROM node:14.16.0
 
 # Install dependencies
 WORKDIR /opt/app
-COPY package*.json ./
-RUN npm install
+COPY package.json yarn.lock ./
+RUN yarn install
 
 # Bundle app source
 COPY . .
