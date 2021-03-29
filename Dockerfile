@@ -11,4 +11,6 @@ RUN yarn install --frozen-lockfile
 # Bundle app source
 COPY . .
 
+RUN chmod +x ./bin/wait-for-it.sh
+
 CMD yarn start
