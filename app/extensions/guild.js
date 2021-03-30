@@ -98,6 +98,29 @@ const NSadminGuild = Structures.extend('Guild', Guild => {
       }
     }
 
+    _patch (data) {
+      // Below patch was done so that Discord.js' Guild._patch method doesn't clear the roles manager which makes it
+      // lose all data. When channels ever get data that needs to be cached, this has to be done on that manager too.
+      const roles = data.roles
+      delete data.roles
+
+      super._patch(data)
+
+      for (const roleData of roles) {
+        const role = this.roles.cache.get(roleData.id)
+        if (role) {
+          role._patch(roleData)
+        } else {
+          this.roles.add(roleData)
+        }
+      }
+      for (const role of this.roles.cache.values()) {
+        if (!roles.some(roleData => roleData.id === role.id)) {
+          this.roles.cache.delete(role.id)
+        }
+      }
+    }
+
     async init () {
       if (applicationConfig.apiEnabled) {
         const announceTrainingsJob = cronConfig.announceTrainingsJob
