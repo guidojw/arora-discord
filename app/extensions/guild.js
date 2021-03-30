@@ -107,7 +107,7 @@ const NSadminGuild = Structures.extend('Guild', Guild => {
       super._patch(data)
 
       for (const roleData of roles) {
-        const role = this.roles.resolve(roleData.id)
+        const role = this.roles.cache.get(roleData.id)
         if (role) {
           role._patch(roleData)
         } else {
