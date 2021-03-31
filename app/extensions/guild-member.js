@@ -112,6 +112,9 @@ async function fetchRoVerData (userId) {
   try {
     response = (await roVerAdapter('get', `/user/${userId}`)).data
   } catch (err) {
+    if (err.response?.data?.status === 404) {
+      return err.response.data.error
+    }
     throw err.response?.data?.error ?? err
   }
 
@@ -124,7 +127,7 @@ async function fetchRoVerData (userId) {
 async function fetchBloxlinkData (userId, guildId) {
   const response = (await bloxlinkAdapter('get', `/user/${userId}${guildId ? `?guild=${guildId}` : ''}`)).data
   if (response.status === 'error') {
-    throw response.error
+    return response.status
   }
 
   return parseInt(response.matchingAccount ?? response.primaryAccount)

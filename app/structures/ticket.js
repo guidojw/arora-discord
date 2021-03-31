@@ -6,8 +6,7 @@ const TicketGuildMemberManager = require('../managers/ticket-guild-member')
 
 const { stripIndents } = require('common-tags')
 const { MessageEmbed } = require('discord.js')
-const { PartialTypes } = require('discord.js').Constants
-const { roVerAdapter } = require('../adapters')
+const { PartialTypes, VerificationProviders } = require('discord.js').Constants
 const { discordService } = require('../services')
 const { getDate, getTime } = require('../util').timeUtil
 const { makeCommaSeparatedString } = require('../util').util
@@ -57,17 +56,7 @@ class Ticket extends BaseStructure {
   }
 
   async populateChannel () {
-    let username
-    let userId
-    try {
-      const response = (await roVerAdapter('get', `/user/${this.authorId}`)).data
-      username = response.robloxUsername
-      userId = response.robloxId
-    } catch (err) {
-      if (err.response.status !== 404) {
-        throw err
-      }
-    }
+    const verificationData = await this.author.fetchVerificationData()
 
     const date = new Date()
     const readableDate = getDate(date)
