@@ -4,6 +4,7 @@ const BaseCommand = require('../base')
 
 const { GuildChannel } = require('discord.js')
 const { Guild } = require('../../models')
+const { VerificationProviders } = require('../../util').Constants
 
 class GetSettingCommand extends BaseCommand {
   constructor (client) {
@@ -35,7 +36,7 @@ class GetSettingCommand extends BaseCommand {
       setting = setting.slice(0, -2)
       result = message.guild[setting]
     } else if (setting === 'verificationPreference') {
-      result = message.guild[setting]
+      result = VerificationProviders[message.guild[setting].toUpperCase()]
     } else {
       result = message.guild[setting]
       setting = setting.slice(0, -2)

@@ -6,6 +6,7 @@ const { CategoryChannel, GuildChannel } = require('discord.js')
 const { NSadminTextChannel: TextChannel } = require('../../extensions')
 const { Channel: ChannelModel, Guild } = require('../../models')
 const { parseNoneOrType } = require('../../util').argumentUtil
+const { VerificationProviders } = require('../../util').Constants
 
 class SetSettingCommand extends BaseCommand {
   constructor (client) {
@@ -52,7 +53,7 @@ class SetSettingCommand extends BaseCommand {
           error = 'Invalid ID.'
         }
       } else if (setting === 'verificationPreference') {
-        if (typeof value !== 'string' || !['rover', 'bloxlink'].includes(value.toLowerCase())) {
+        if (typeof value !== 'string' || !Object.keys(VerificationProviders).includes(value.toUpperCase())) {
           error = 'Invalid verification provider.'
         }
       } else {
@@ -77,7 +78,7 @@ class SetSettingCommand extends BaseCommand {
 
     await message.guild.update({ [setting]: value instanceof GuildChannel ? value.id : value })
 
-    return message.reply(`Successfully changed ${setting.endsWith('Id') ? setting.slice(0, -2) : setting} to ${value instanceof GuildChannel ? value : `\`${value}\``}.`)
+    return message.reply(`Successfully changed ${setting.endsWith('Id') ? setting.slice(0, -2) : setting} to ${value instanceof GuildChannel ? value : `\`${setting === 'verificationPreference' ? VerificationProviders[value.toUpperCase()] : value}\``}.`)
   }
 }
 
