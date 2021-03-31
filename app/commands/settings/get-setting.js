@@ -34,6 +34,8 @@ class GetSettingCommand extends BaseCommand {
     } else if (setting.includes('Channel') || setting.includes('Category')) {
       setting = setting.slice(0, -2)
       result = message.guild[setting]
+    } else if (setting === 'verificationPreference') {
+      result = message.guild[setting]
     } else {
       result = message.guild[setting]
       setting = setting.slice(0, -2)

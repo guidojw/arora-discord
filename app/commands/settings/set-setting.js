@@ -51,6 +51,10 @@ class SetSettingCommand extends BaseCommand {
         if (typeof value !== 'number') {
           error = 'Invalid ID.'
         }
+      } else if (setting === 'verificationPreference') {
+        if (typeof value !== 'string' || !['rover', 'bloxlink'].includes(value.toLowerCase())) {
+          error = 'Invalid verification provider.'
+        }
       } else {
         if (setting === 'ticketsCategoryId') {
           if (!(value instanceof CategoryChannel)) {
