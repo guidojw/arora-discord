@@ -1,7 +1,9 @@
 'use strict'
 
 const { Structures } = require('discord.js')
+const { bloxlinkAdapter, roVerAdapter } = require('../adapters')
 const { Member, Role } = require('../models')
+const { userService } = require('../services')
 
 const NSadminGuildMember = Structures.extend('GuildMember', GuildMember => {
   class NSadminGuildMember extends GuildMember {
@@ -58,6 +60,39 @@ const NSadminGuildMember = Structures.extend('GuildMember', GuildMember => {
         return this.roles.remove(role)
       }
     }
+
+    async fetchVerificationData (verificationPreference = this.guild.verificationPreference) {
+      if (this.verificationData?.provider === verificationPreference) {
+        return this.verificationData
+      }
+
+      let data
+      try {
+        const fetch = verificationPreference === 'rover' ? fetchRoVerData : fetchBloxlinkData
+        data = await fetch(this.id, this.guild.id)
+      } catch (err) {
+        try {
+          const fetch = verificationPreference === 'rover' ? fetchBloxlinkData : fetchRoVerData
+          data = await fetch(this.id, this.guild.id)
+        } catch {
+          throw err
+        }
+      }
+      if (typeof data === 'number') {
+        data = {
+          robloxId: data,
+          robloxUsername: (await userService.getUser(data)).name,
+          provider: 'bloxlink'
+        }
+      } else {
+        data.provider = 'rover'
+      }
+
+      if (data.provider === this.guild.verificationPreference) {
+        this.verificationData = data
+      }
+      return data
+    }
   }
 
   return NSadminGuildMember
@@ -70,6 +105,29 @@ function getData (member) {
       guildId: member.guild.id
     }
   })
+}
+
+async function fetchRoVerData (userId) {
+  let response
+  try {
+    response = (await roVerAdapter('get', `/user/${userId}`)).data
+  } catch (err) {
+    throw err.response?.data?.error ?? err
+  }
+
+  return {
+    robloxUsername: response.robloxUsername,
+    robloxId: response.robloxId
+  }
+}
+
+async function fetchBloxlinkData (userId, guildId) {
+  const response = (await bloxlinkAdapter('get', `/user/${userId}${guildId ? `?guild=${guildId}` : ''}`)).data
+  if (response.status === 'error') {
+    throw response.error
+  }
+
+  return parseInt(response.matchingAccount ?? response.primaryAccount)
 }
 
 module.exports = NSadminGuildMember
