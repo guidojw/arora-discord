@@ -23,6 +23,13 @@ module.exports = (sequelize, DataTypes) => {
     robloxGroupId: {
       type: DataTypes.INTEGER,
       field: 'roblox_group_id'
+    },
+    verificationPreference: {
+      type: DataTypes.ENUM,
+      allowNull: false,
+      values: ['rover', 'bloxlink'],
+      defaultValue: 'rover',
+      field: 'verification_preference'
     }
   }, {
     tableName: 'guilds'

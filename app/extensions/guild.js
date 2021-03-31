@@ -42,6 +42,7 @@ const NSadminGuild = Structures.extend('Guild', Guild => {
       this.ticketsCategoryId = data.ticketsCategoryId
       this.trainingsPanelId = data.trainingsPanelId
       this.trainingsInfoPanelId = data.trainingsInfoPanelId
+      this.verificationPreference = data.verificationPreference
 
       if (data.channels) {
         for (const rawChannel of data.channels) {
@@ -185,7 +186,8 @@ const NSadminGuild = Structures.extend('Guild', Guild => {
         ratingsChannelId: data.ratingsChannelId,
         ticketsCategoryId: data.ticketsCategoryId,
         trainingsPanelId: data.trainingsPanelId,
-        trainingsInfoPanelId: data.trainingsInfoPanelId
+        trainingsInfoPanelId: data.trainingsInfoPanelId,
+        verificationPreference: data.verificationPreference
       }, {
         where: { id: this.id },
         returning: true
