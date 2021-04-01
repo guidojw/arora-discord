@@ -12,6 +12,14 @@ class RobloxUserArgumentType extends ArgumentType {
 
   async validate (val, msg, arg) {
     const key = `${msg.guild.id}_${val}`
+
+    // val is undefined when the argument's default is set to "self" and no argument input is given (see isEmpty).
+    // This patch was done in order to allow validation of the default value; the message member's Roblox user.
+    if (typeof val === 'undefined') {
+      const verificationData = await msg.member.fetchVerificationData()
+      return validateAndSet.call(this, arg, key, verificationData.robloxId, verificationData.robloxUsername)
+    }
+
     const matches = val.match(/^(?:<@!?)?([0-9]+)>?$/)
     if (matches) {
       try {
@@ -59,6 +67,10 @@ class RobloxUserArgumentType extends ArgumentType {
     const result = this.cache.get(key)
     this.cache.delete(key)
     return result ?? null
+  }
+
+  isEmpty (val, msg, arg) {
+    return arg.default === 'self' ? false : super.isEmpty(val, msg, arg)
   }
 }
 
