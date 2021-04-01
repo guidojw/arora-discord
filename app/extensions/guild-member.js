@@ -3,10 +3,24 @@
 const { Structures } = require('discord.js')
 const { bloxlinkAdapter, roVerAdapter } = require('../adapters')
 const { Member, Role } = require('../models')
-const { userService } = require('../services')
+const { VerificationProviders } = require('../util').Constants
 
 const NSadminGuildMember = Structures.extend('GuildMember', GuildMember => {
   class NSadminGuildMember extends GuildMember {
+    constructor (...args) {
+      super(...args)
+
+      this.verificationData = undefined
+    }
+
+    get robloxId () {
+      return this.verificationData?.robloxId
+    }
+
+    get robloxUsername () {
+      return this.verificationData?.robloxUsername
+    }
+
     canRunCommand (command) {
       let result = null
       const groupsChecked = []
@@ -66,29 +80,31 @@ const NSadminGuildMember = Structures.extend('GuildMember', GuildMember => {
         return this.verificationData
       }
 
-      let data
+      let data, error
       try {
-        const fetch = verificationPreference === 'rover' ? fetchRoVerData : fetchBloxlinkData
+        const fetch = verificationPreference === VerificationProviders.ROVER ? fetchRoVerData : fetchBloxlinkData
         data = await fetch(this.id, this.guild.id)
       } catch (err) {
+        error = err
+      }
+      if ((data ?? false) === false) {
         try {
-          const fetch = verificationPreference === 'rover' ? fetchBloxlinkData : fetchRoVerData
+          const fetch = verificationPreference === VerificationProviders.ROVER ? fetchBloxlinkData : fetchRoVerData
           data = await fetch(this.id, this.guild.id)
-        } catch {
-          throw err
+        } catch (err) {
+          throw error ?? err
         }
       }
       if (typeof data === 'number') {
         data = {
           robloxId: data,
-          robloxUsername: (await userService.getUser(data)).name,
-          provider: 'bloxlink'
+          provider: VerificationProviders.BLOXLINK
         }
-      } else {
-        data.provider = 'rover'
+      } else if (data) {
+        data.provider = VerificationProviders.ROVER
       }
 
-      if (data.provider === this.guild.verificationPreference) {
+      if (data === null || data.provider === this.guild.verificationPreference) {
         this.verificationData = data
       }
       return data
@@ -112,8 +128,8 @@ async function fetchRoVerData (userId) {
   try {
     response = (await roVerAdapter('get', `/user/${userId}`)).data
   } catch (err) {
-    if (err.response?.data?.status === 404) {
-      return err.response.data.error
+    if (err.response?.data?.errorCode === 404) {
+      return null
     }
     throw err.response?.data?.error ?? err
   }
@@ -127,10 +143,15 @@ async function fetchRoVerData (userId) {
 async function fetchBloxlinkData (userId, guildId) {
   const response = (await bloxlinkAdapter('get', `/user/${userId}${guildId ? `?guild=${guildId}` : ''}`)).data
   if (response.status === 'error') {
+    if (response.error.includes('not linked')) {
+      return null
+    }
     return response.status
   }
 
-  return parseInt(response.matchingAccount ?? response.primaryAccount)
+  return (response.matchingAccount !== null || response.primaryAccount !== null)
+    ? parseInt(response.matchingAccount ?? response.primaryAccount)
+    : null
 }
 
 module.exports = NSadminGuildMember

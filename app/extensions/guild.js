@@ -13,6 +13,7 @@ const {
   GuildTicketTypeManager
 } = require('../managers')
 const { Guild: GuildModel } = require('../models')
+const { VerificationProviders } = require('../util').Constants
 
 const applicationConfig = require('../../config/application')
 const cronConfig = require('../../config/cron')
@@ -43,6 +44,8 @@ const NSadminGuild = Structures.extend('Guild', Guild => {
       this.trainingsPanelId = data.trainingsPanelId
       this.trainingsInfoPanelId = data.trainingsInfoPanelId
       this.verificationPreference = data.verificationPreference
+        ? VerificationProviders[data.verificationPreference.toUpperCase()]
+        : null
 
       if (data.channels) {
         for (const rawChannel of data.channels) {
@@ -187,7 +190,7 @@ const NSadminGuild = Structures.extend('Guild', Guild => {
         ticketsCategoryId: data.ticketsCategoryId,
         trainingsPanelId: data.trainingsPanelId,
         trainingsInfoPanelId: data.trainingsInfoPanelId,
-        verificationPreference: data.verificationPreference
+        verificationPreference: data.verificationPreference?.toLowerCase()
       }, {
         where: { id: this.id },
         returning: true

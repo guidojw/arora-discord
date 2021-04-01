@@ -53,7 +53,7 @@ class SetSettingCommand extends BaseCommand {
           error = 'Invalid ID.'
         }
       } else if (setting === 'verificationPreference') {
-        if (typeof value !== 'string' || !Object.keys(VerificationProviders).includes(value.toUpperCase())) {
+        if (typeof value !== 'string' || typeof VerificationProviders[value.toUpperCase()] === 'undefined') {
           error = 'Invalid verification provider.'
         }
       } else {

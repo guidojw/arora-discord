@@ -5,7 +5,7 @@ const GroupTypes = {
   ROLE: 'role'
 }
 
-const VerificatonProviders = {
+const VerificationProviders = {
   BLOXLINK: 'Bloxlink',
   ROVER: 'RoVer'
 }
@@ -17,6 +17,6 @@ const WSEvents = {
 
 module.exports = {
   GroupTypes,
-  VerificatonProviders,
+  VerificationProviders,
   WSEvents
 }

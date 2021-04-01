@@ -6,8 +6,8 @@ const TicketGuildMemberManager = require('../managers/ticket-guild-member')
 
 const { stripIndents } = require('common-tags')
 const { MessageEmbed } = require('discord.js')
-const { PartialTypes, VerificationProviders } = require('discord.js').Constants
-const { discordService } = require('../services')
+const { PartialTypes } = require('discord.js').Constants
+const { discordService, userService } = require('../services')
 const { getDate, getTime } = require('../util').timeUtil
 const { makeCommaSeparatedString } = require('../util').util
 
@@ -56,7 +56,11 @@ class Ticket extends BaseStructure {
   }
 
   async populateChannel () {
-    const verificationData = await this.author.fetchVerificationData()
+    let robloxId, robloxUsername
+    try {
+      robloxId = this.author.robloxId ?? (await this.author.fetchVerificationData()).robloxId
+      robloxUsername = this.author.robloxUsername ?? (await userService.getUser(robloxId)).name
+    } catch {} // eslint-disable-line no-empty
 
     const date = new Date()
     const readableDate = getDate(date)
@@ -65,8 +69,8 @@ class Ticket extends BaseStructure {
       .setColor(this.guild.primaryColor)
       .setTitle('Ticket Information')
       .setDescription(stripIndents`
-      Username: ${username ? '**' + username + '**' : '*unknown (user is not verified with RoVer)*'}
-      User ID: ${userId ? '**' + userId + '**' : '*unknown (user is not verified with RoVer)*'}
+      Username: ${robloxUsername ? '**' + robloxUsername + '**' : '*unknown*'}
+      User ID: ${robloxId ? '**' + robloxId + '**' : '*unknown*'}
       Start time: ${readableDate} ${readableTime}
       `)
       .setFooter(`Ticket ID: ${this.id} | ${this.type.name}`)
