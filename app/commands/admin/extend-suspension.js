@@ -16,7 +16,6 @@ class ExtendSuspensionCommand extends BaseCommand {
       examples: ['extend Happywalker 3 He still doesn\'t understand.'],
       clientPermissions: ['SEND_MESSAGES'],
       requiresRobloxGroup: true,
-      requiresVerification: true,
       args: [{
         key: 'user',
         type: 'roblox-user',
@@ -37,8 +36,13 @@ class ExtendSuspensionCommand extends BaseCommand {
   }
 
   async run (message, { user, days, reason }) {
+    const authorId = message.member.robloxId ?? (await message.member.fetchVerificationData()).robloxId
+    if (typeof authorId === 'undefined') {
+      return message.reply('This command requires you to be verified with a verification provider.')
+    }
+
     await applicationAdapter('post', `/v1/groups/${message.guild.robloxGroupId}/suspensions/${user.id}/extend`, {
-      authorId: message.member.robloxId,
+      authorId,
       duration: days * 86400000,
       reason
     })

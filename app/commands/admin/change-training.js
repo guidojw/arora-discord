@@ -18,7 +18,6 @@ class ChangeTrainingCommand extends BaseCommand {
       examples: ['changetraining 1 date 5-3-2020'],
       clientPermissions: ['SEND_MESSAGES'],
       requiresRobloxGroup: true,
-      requiresVerification: true,
       args: [{
         key: 'trainingId',
         type: 'integer',
@@ -82,10 +81,14 @@ class ChangeTrainingCommand extends BaseCommand {
       changes.date = Math.floor(new Date(dateInfo.year, dateInfo.month, dateInfo.day, timeInfo.hours, timeInfo.minutes)
         .getTime())
     }
+    const editorId = message.member.robloxId ?? (await message.member.fetchVerificationData()).robloxId
+    if (typeof editorId === 'undefined') {
+      return message.reply('This command requires you to be verified with a verification provider.')
+    }
 
     await applicationAdapter('put', `/v1/groups/${message.guild.robloxGroupId}/trainings/${trainingId}`, {
       changes,
-      editorId: message.member.robloxId
+      editorId
     })
 
     return message.reply(`Successfully changed training with ID **${trainingId}**.`)

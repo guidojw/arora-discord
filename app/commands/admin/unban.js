@@ -15,7 +15,6 @@ class UnbanCommand extends BaseCommand {
       clientPermissions: ['SEND_MESSAGES'],
       ownerOnly: true,
       requiresRobloxGroup: true,
-      requiresVerification: true,
       args: [{
         key: 'user',
         type: 'roblox-user',
@@ -30,10 +29,12 @@ class UnbanCommand extends BaseCommand {
   }
 
   async run (message, { user, reason }) {
-    await applicationAdapter('post', `/v1/bans/${user.id}/cancel`, {
-      authorId: message.member.robloxId,
-      reason
-    })
+    const authorId = message.member.robloxId ?? (await message.member.fetchVerificationData()).robloxId
+    if (typeof authorId === 'undefined') {
+      return message.reply('This command requires you to be verified with a verification provider.')
+    }
+
+    await applicationAdapter('post', `/v1/bans/${user.id}/cancel`, { authorId, reason })
 
     return message.reply(`Successfully unbanned **${user.username ?? user.id}**.`)
   }

@@ -67,7 +67,6 @@ class NSadminClient extends CommandoClient {
       .registerCommandsIn(path.join(__dirname, '../commands'))
 
     this.dispatcher.addInhibitor(requiresRobloxGroupInhibitor)
-    this.dispatcher.addInhibitor(requiresVerificationInhibitor)
 
     if (applicationConfig.apiEnabled) {
       this.nsadminWs = new WebSocketManager(this)
@@ -175,15 +174,6 @@ function requiresRobloxGroupInhibitor (msg) {
     return {
       reason: 'robloxGroupRequired',
       response: msg.reply('This command requires that the server has its robloxGroup setting set.')
-    }
-  }
-}
-
-async function requiresVerificationInhibitor (msg) {
-  if (msg.command?.requiresVerification === true && !await msg.member.fetchVerificationData()) {
-    return {
-      reason: 'verificationRequired',
-      response: msg.reply('This command requires you to be verified with a verification provider.')
     }
   }
 }

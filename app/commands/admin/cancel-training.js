@@ -15,7 +15,6 @@ class CancelTrainingCommand extends BaseCommand {
       examples: ['canceltraining 1 Weird circumstances.'],
       clientPermissions: ['SEND_MESSAGES'],
       requiresRobloxGroup: true,
-      requiresVerification: true,
       args: [{
         key: 'trainingId',
         type: 'integer',
@@ -30,8 +29,13 @@ class CancelTrainingCommand extends BaseCommand {
   }
 
   async run (message, { trainingId, reason }) {
+    const authorId = message.member.robloxId ?? (await message.member.fetchVerificationData()).robloxId
+    if (typeof authorId === 'undefined') {
+      return message.reply('This command requires you to be verified with a verification provider.')
+    }
+
     await applicationAdapter('post', `/v1/groups/${message.guild.robloxGroupId}/trainings/${trainingId}/cancel`, {
-      authorId: message.member.robloxId,
+      authorId,
       reason
     })
 

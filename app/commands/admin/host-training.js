@@ -27,7 +27,6 @@ class HostTrainingCommand extends BaseCommand {
       examples: ['host CD 4-3-2020 1:00 Be on time!', 'Host CSR 4-3-2020 2:00'],
       clientPermissions: ['SEND_MESSAGES'],
       requiresRobloxGroup: true,
-      requiresVerification: true,
       args: [{
         key: 'type',
         type: 'string',
@@ -72,9 +71,13 @@ class HostTrainingCommand extends BaseCommand {
     if (!trainingType) {
       return message.reply('Type not found.')
     }
+    const authorId = message.member.robloxId ?? (await message.member.fetchVerificationData()).robloxId
+    if (typeof authorId === 'undefined') {
+      return message.reply('This command requires you to be verified with a verification provider.')
+    }
 
     const training = (await applicationAdapter('post', `/v1/groups/${message.guild.robloxGroupId}/trainings`, {
-      authorId: message.member.robloxId,
+      authorId,
       date: dateUnix,
       notes,
       typeId: trainingType.id

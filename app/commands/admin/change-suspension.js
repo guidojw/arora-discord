@@ -17,7 +17,6 @@ class ChangeSuspensionCommand extends BaseCommand {
       examples: ['changesuspension Happywalker rankBack false'],
       clientPermissions: ['SEND_MESSAGES'],
       requiresRobloxGroup: true,
-      requiresVerification: true,
       args: [{
         key: 'user',
         type: 'roblox-user',
@@ -55,10 +54,14 @@ class ChangeSuspensionCommand extends BaseCommand {
 
       changes.rankBack = data
     }
+    const editorId = message.member.robloxId ?? (await message.member.fetchVerificationData()).robloxId
+    if (typeof editorId === 'undefined') {
+      return message.reply('This command requires you to be verified with a verification provider.')
+    }
 
     await applicationAdapter('put', `/v1/groups/${message.guild.robloxGroupId}/suspensions/${user.id}`, {
       changes,
-      editorId: message.member.robloxId
+      editorId
     })
 
     return message.reply(`Successfully changed **${user.username ?? user.id}**'s suspension.`)

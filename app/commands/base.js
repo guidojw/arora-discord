@@ -10,7 +10,6 @@ class BaseCommand extends Commando.Command {
     super(client, info)
 
     this.requiresRobloxGroup = Boolean(info.requiresRobloxGroup)
-    this.requiresVerification = Boolean(info.requiresVerification)
   }
 
   hasPermission (message, ownerOverride = true) {

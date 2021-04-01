@@ -14,7 +14,6 @@ class CancelSuspensionCommand extends BaseCommand {
       examples: ['cancelsuspension Happywalker Good boy.'],
       clientPermissions: ['SEND_MESSAGES'],
       requiresRobloxGroup: true,
-      requiresVerification: true,
       args: [{
         key: 'user',
         type: 'roblox-user',
@@ -29,8 +28,13 @@ class CancelSuspensionCommand extends BaseCommand {
   }
 
   async run (message, { user, reason }) {
+    const authorId = message.member.robloxId ?? (await message.member.fetchVerificationData()).robloxId
+    if (typeof authorId === 'undefined') {
+      return message.reply('This command requires you to be verified with a verification provider.')
+    }
+
     await applicationAdapter('post', `/v1/groups/${message.guild.robloxGroupId}/suspensions/${user.id}/cancel`, {
-      authorId: message.member.robloxId,
+      authorId,
       reason
     })
 

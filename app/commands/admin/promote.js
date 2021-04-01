@@ -14,7 +14,6 @@ class PromoteCommand extends BaseCommand {
       examples: ['promote Happywalker'],
       clientPermissions: ['SEND_MESSAGES'],
       requiresRobloxGroup: true,
-      requiresVerification: true,
       args: [{
         key: 'user',
         prompt: 'Who would you like to promote?',
@@ -40,9 +39,13 @@ class PromoteCommand extends BaseCommand {
     if (rank >= 200) {
       return message.reply('Can\'t change rank of HRs.')
     }
+    const authorId = message.member.robloxId ?? (await message.member.fetchVerificationData()).robloxId
+    if (typeof authorId === 'undefined') {
+      return message.reply('This command requires you to be verified with a verification provider.')
+    }
 
     const roles = (await applicationAdapter('put', `/v1/groups/${message.guild.robloxGroupId}/users/${user.id}`, {
-      authorId: message.member.robloxId,
+      authorId,
       rank: rank === 1
         ? 3
         : (rank >= 3 && rank < 5) || (rank >= 100 && rank < 102)

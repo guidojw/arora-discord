@@ -16,7 +16,6 @@ class ShoutCommand extends BaseCommand {
       examples: ['shout Happywalker is awesome', 'shout "Happywalker is awesome"', 'shout clear'],
       clientPermissions: ['SEND_MESSAGES'],
       requiresRobloxGroup: true,
-      requiresVerification: true,
       args: [{
         key: 'body',
         type: 'string',
@@ -28,8 +27,13 @@ class ShoutCommand extends BaseCommand {
   }
 
   async run (message, { body }, guild) {
+    const authorId = message.member.robloxId ?? (await message.member.fetchVerificationData()).robloxId
+    if (typeof authorId === 'undefined') {
+      return message.reply('This command requires you to be verified with a verification provider.')
+    }
+
     const shout = (await applicationAdapter('post', `/v1/groups/${message.guild.robloxGroupId}/shout`, {
-      authorId: message.member.robloxId,
+      authorId,
       message: body === 'clear' ? '' : body
     })).data
 

@@ -16,7 +16,6 @@ class ChangeBanCommand extends BaseCommand {
       examples: ['changeban Happywalker author builderman'],
       clientPermissions: ['SEND_MESSAGES'],
       requiresRobloxGroup: true,
-      requiresVerification: true,
       args: [{
         key: 'user',
         type: 'roblox-user',
@@ -48,11 +47,12 @@ class ChangeBanCommand extends BaseCommand {
 
       changes.reason = data
     }
+    const editorId = message.member.robloxId ?? (await message.member.fetchVerificationData()).robloxId
+    if (typeof editorId === 'undefined') {
+      return message.reply('This command requires you to be verified with a verification provider.')
+    }
 
-    await applicationAdapter('put', `/v1/bans/${user.id}`, {
-      changes,
-      editorId: message.member.robloxId
-    })
+    await applicationAdapter('put', `/v1/bans/${user.id}`, { changes, editorId })
 
     return message.reply(`Successfully changed **${user.username ?? user.id}**'s ban.`)
   }
