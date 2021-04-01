@@ -34,15 +34,16 @@ const NSadminGuild = Structures.extend('Guild', Guild => {
 
     _setup (data) {
       this.id = data.id
-      this.primaryColor = data.primaryColor
-      this.supportEnabled = data.supportEnabled
-      this.robloxGroupId = data.robloxGroupId
       this.logsChannelId = data.logsChannelId
-      this.suggestionsChannelId = data.suggestionsChannelId
+      this.primaryColor = data.primaryColor
       this.ratingsChannelId = data.ratingsChannelId
+      this.robloxGroupId = data.robloxGroupId
+      this.robloxUsernamesAsNicknames = data.robloxUsernamesAsNicknames
+      this.suggestionsChannelId = data.suggestionsChannelId
+      this.supportEnabled = data.supportEnabled
       this.ticketsCategoryId = data.ticketsCategoryId
-      this.trainingsPanelId = data.trainingsPanelId
       this.trainingsInfoPanelId = data.trainingsInfoPanelId
+      this.trainingsPanelId = data.trainingsPanelId
       this.verificationPreference = data.verificationPreference
         ? VerificationProviders[data.verificationPreference.toUpperCase()]
         : null
@@ -180,16 +181,17 @@ const NSadminGuild = Structures.extend('Guild', Guild => {
 
     async update (data) {
       const [, [newData]] = await GuildModel.update({
-        primaryColor: data.primaryColor,
         commandPrefix: data.commandPrefix,
-        supportEnabled: data.supportEnabled,
-        robloxGroupId: data.robloxGroupId,
         logsChannelId: data.logsChannelId,
-        suggestionsChannelId: data.suggestionsChannelId,
+        primaryColor: data.primaryColor,
         ratingsChannelId: data.ratingsChannelId,
+        robloxGroupId: data.robloxGroupId,
+        robloxUsernamesAsNicknames: data.robloxUsernamesAsNicknames,
+        suggestionsChannelId: data.suggestionsChannelId,
+        supportEnabled: data.supportEnabled,
         ticketsCategoryId: data.ticketsCategoryId,
-        trainingsPanelId: data.trainingsPanelId,
         trainingsInfoPanelId: data.trainingsInfoPanelId,
+        trainingsPanelId: data.trainingsPanelId,
         verificationPreference: data.verificationPreference?.toLowerCase()
       }, {
         where: { id: this.id },

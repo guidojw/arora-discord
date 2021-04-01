@@ -28,14 +28,14 @@ class SetSettingCommand extends BaseCommand {
       }, {
         key: 'value',
         prompt: 'What would you like to change this setting to? Reply with "none" if you want to reset the setting.',
-        type: 'category-channel|text-channel|message|integer|string',
+        type: 'category-channel|text-channel|message|integer|boolean|string',
         parse: parseNoneOrType
       }]
     })
   }
 
   async run (message, { setting, value }) {
-    if (typeof value === 'undefined') {
+    if (typeof value === 'undefined' && !['robloxUsernamesAsNicknames', 'verificationPreference'].includes(setting)) {
       value = null
     } else {
       let error
@@ -52,11 +52,15 @@ class SetSettingCommand extends BaseCommand {
         if (typeof value !== 'number') {
           error = 'Invalid ID.'
         }
+      } else if (setting === 'robloxUsernamesAsNicknames') {
+        if (typeof value !== 'boolean') {
+          error = 'Invalid boolean.'
+        }
       } else if (setting === 'verificationPreference') {
         if (typeof value !== 'string' || typeof VerificationProviders[value.toUpperCase()] === 'undefined') {
           error = 'Invalid verification provider.'
         }
-      } else {
+      } else if (setting.includes('Channel') || setting.includes('Category')) {
         if (setting === 'ticketsCategoryId') {
           if (!(value instanceof CategoryChannel)) {
             error = 'Invalid category channel.'

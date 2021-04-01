@@ -6,23 +6,29 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BIGINT,
       primaryKey: true
     },
-    supportEnabled: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: false,
-      field: 'support_enabled'
+    commandPrefix: {
+      type: DataTypes.STRING,
+      fied: 'command_prefix'
     },
     primaryColor: {
       type: DataTypes.INTEGER,
       field: 'primary_color'
     },
-    commandPrefix: {
-      type: DataTypes.STRING,
-      fied: 'command_prefix'
-    },
     robloxGroupId: {
       type: DataTypes.INTEGER,
       field: 'roblox_group_id'
+    },
+    robloxUsernamesAsNicknames: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+      field: 'roblox_usernames_as_nicknames'
+    },
+    supportEnabled: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+      field: 'support_enabled'
     },
     verificationPreference: {
       type: DataTypes.ENUM,
