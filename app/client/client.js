@@ -180,13 +180,10 @@ function requiresRobloxGroupInhibitor (msg) {
 }
 
 async function requiresVerificationInhibitor (msg) {
-  if (msg.command?.requiresVerification === true) {
-    const verificationData = await msg.member.fetchVerificationData()
-    if (!verificationData) {
-      return {
-        reason: 'verificationRequired',
-        response: msg.reply('This command requires you to be verified with a verification provider.')
-      }
+  if (msg.command?.requiresVerification === true && !await msg.member.fetchVerificationData()) {
+    return {
+      reason: 'verificationRequired',
+      response: msg.reply('This command requires you to be verified with a verification provider.')
     }
   }
 }
