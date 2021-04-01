@@ -47,9 +47,11 @@ class RobloxUserArgumentType extends ArgumentType {
     const members = msg.guild?.members.cache.filter(memberFilterExact(search))
     if (members?.size === 1) {
       const member = members.first()
-      const verificationData = await member.fetchVerificationData()
-      if (verificationData) {
-        return validateAndSet.call(this, arg, key, verificationData.robloxId, verificationData.robloxUsername)
+      if (!member.user.bot) {
+        const verificationData = await member.fetchVerificationData()
+        if (verificationData) {
+          return validateAndSet.call(this, arg, key, verificationData.robloxId, verificationData.robloxUsername)
+        }
       }
     }
 
