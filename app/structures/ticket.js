@@ -69,12 +69,12 @@ class Ticket extends BaseStructure {
       .setColor(this.guild.primaryColor)
       .setTitle('Ticket Information')
       .setDescription(stripIndents`
-      Username: ${robloxUsername ? '**' + robloxUsername + '**' : '*unknown*'}
-      User ID: ${robloxId ? '**' + robloxId + '**' : '*unknown*'}
-      Start time: ${readableDate} ${readableTime}
+      Username: \`${robloxUsername ?? 'unknown'}\`
+      User ID: \`${robloxId ?? 'unknown'}\`
+      Start time: \`${readableDate} ${readableTime}\`
       `)
       .setFooter(`Ticket ID: ${this.id} | ${this.type.name}`)
-    await this.channel.send(this.author.toString(), { embed: ticketInfoEmbed })
+    await this.channel.send(this.author.toString(), ticketInfoEmbed)
 
     const modInfoEmbed = new MessageEmbed()
       .setColor(this.guild.primaryColor)
