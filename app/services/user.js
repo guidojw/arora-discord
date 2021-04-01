@@ -4,7 +4,7 @@ const { applicationAdapter } = require('../adapters')
 const { split } = require('../util').util
 
 async function getIdFromUsername (username) {
-  const userId = (await applicationAdapter('get', `/v1/users/${username}/user-id`)).data
+  const userId = (await applicationAdapter('get', `/v1/users/${encodeURIComponent(username)}/user-id`)).data
   if (!userId) { // Roblox returns HTTP 200 even when it didn't find anyone.
     throw new Error(`**${username}** doesn't exist on Roblox.`)
   }
