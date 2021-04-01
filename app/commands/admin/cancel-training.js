@@ -3,7 +3,6 @@
 const BaseCommand = require('../base')
 
 const { applicationAdapter } = require('../../adapters')
-const { userService } = require('../../services')
 const { validators, noChannels, noTags, noUrls } = require('../../util').argumentUtil
 
 class CancelTrainingCommand extends BaseCommand {
@@ -16,6 +15,7 @@ class CancelTrainingCommand extends BaseCommand {
       examples: ['canceltraining 1 Weird circumstances.'],
       clientPermissions: ['SEND_MESSAGES'],
       requiresRobloxGroup: true,
+      requiresVerification: true,
       args: [{
         key: 'trainingId',
         type: 'integer',
@@ -30,10 +30,8 @@ class CancelTrainingCommand extends BaseCommand {
   }
 
   async run (message, { trainingId, reason }) {
-    const authorId = await userService.getIdFromUsername(message.member.displayName)
-
     await applicationAdapter('post', `/v1/groups/${message.guild.robloxGroupId}/trainings/${trainingId}/cancel`, {
-      authorId,
+      authorId: message.member.robloxId,
       reason
     })
 

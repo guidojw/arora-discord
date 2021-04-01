@@ -16,9 +16,10 @@ class ChangeBanCommand extends BaseCommand {
       examples: ['changeban Happywalker author builderman'],
       clientPermissions: ['SEND_MESSAGES'],
       requiresRobloxGroup: true,
+      requiresVerification: true,
       args: [{
-        key: 'username',
-        type: 'member|string',
+        key: 'user',
+        type: 'roblox-user',
         prompt: 'Whose ban would you like to change?'
       }, {
         key: 'key',
@@ -34,8 +35,7 @@ class ChangeBanCommand extends BaseCommand {
     })
   }
 
-  async run (message, { username, key, data }) {
-    username = typeof username === 'string' ? username : username.displayName
+  async run (message, { user, key, data }) {
     const changes = {}
     if (key === 'author') {
       changes.authorId = await userService.getIdFromUsername(data)
@@ -48,14 +48,13 @@ class ChangeBanCommand extends BaseCommand {
 
       changes.reason = data
     }
-    const [userId, editorId] = await Promise.all([
-      userService.getIdFromUsername(username),
-      userService.getIdFromUsername(message.member.displayName)
-    ])
 
-    await applicationAdapter('put', `/v1/bans/${userId}`, { changes, editorId })
+    await applicationAdapter('put', `/v1/bans/${user.id}`, {
+      changes,
+      editorId: message.member.robloxId
+    })
 
-    return message.reply(`Successfully changed **${username}**'s ban.`)
+    return message.reply(`Successfully changed **${user.username ?? user.id}**'s ban.`)
   }
 }
 

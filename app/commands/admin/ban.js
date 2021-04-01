@@ -3,7 +3,6 @@
 const BaseCommand = require('../base')
 
 const { applicationAdapter } = require('../../adapters')
-const { userService } = require('../../services')
 const { validators, noChannels, noTags, noUrls } = require('../../util').argumentUtil
 
 class BanCommand extends BaseCommand {
@@ -15,9 +14,10 @@ class BanCommand extends BaseCommand {
       examples: ['unban Happywalker He apologized.'],
       clientPermissions: ['SEND_MESSAGES'],
       requiresRobloxGroup: true,
+      requiresVerification: true,
       args: [{
-        key: 'username',
-        type: 'member|string',
+        key: 'user',
+        type: 'roblox-user',
         prompt: 'Who would you like to ban?'
       }, {
         key: 'reason',
@@ -28,21 +28,15 @@ class BanCommand extends BaseCommand {
     })
   }
 
-  async run (message, { username, reason }) {
-    username = typeof username === 'string' ? username : username.displayName
-    const [userId, authorId] = await Promise.all([
-      userService.getIdFromUsername(username),
-      userService.getIdFromUsername(message.member.displayName)
-    ])
-
+  async run (message, { user, reason }) {
     await applicationAdapter('post', '/v1/bans', {
+      authorId: message.member.robloxId,
       groupId: message.guild.robloxGroupId,
-      authorId,
-      userId,
-      reason
+      reason,
+      userId: user.id
     })
 
-    return message.reply(`Successfully banned **${username}**.`)
+    return message.reply(`Successfully banned **${user.username ?? user.id}**.`)
   }
 }
 

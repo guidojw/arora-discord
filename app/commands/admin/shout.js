@@ -4,7 +4,6 @@ const BaseCommand = require('../base')
 
 const { MessageEmbed } = require('discord.js')
 const { applicationAdapter } = require('../../adapters')
-const { userService } = require('../../services')
 const { validators, noChannels, noTags, noUrls } = require('../../util').argumentUtil
 
 class ShoutCommand extends BaseCommand {
@@ -17,6 +16,7 @@ class ShoutCommand extends BaseCommand {
       examples: ['shout Happywalker is awesome', 'shout "Happywalker is awesome"', 'shout clear'],
       clientPermissions: ['SEND_MESSAGES'],
       requiresRobloxGroup: true,
+      requiresVerification: true,
       args: [{
         key: 'body',
         type: 'string',
@@ -28,11 +28,9 @@ class ShoutCommand extends BaseCommand {
   }
 
   async run (message, { body }, guild) {
-    const authorId = await userService.getIdFromUsername(message.member.displayName)
-
     const shout = (await applicationAdapter('post', `/v1/groups/${message.guild.robloxGroupId}/shout`, {
-      message: body === 'clear' ? '' : body,
-      authorId
+      authorId: message.member.robloxId,
+      message: body === 'clear' ? '' : body
     })).data
 
     if (shout.body === '') {

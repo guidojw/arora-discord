@@ -2,8 +2,6 @@
 
 const BaseCommand = require('../base')
 
-const { userService } = require('../../services')
-
 class ProfileCommand extends BaseCommand {
   constructor (client) {
     super(client, {
@@ -14,19 +12,16 @@ class ProfileCommand extends BaseCommand {
       examples: ['profile', 'profile Happywalker'],
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
-        key: 'username',
+        key: 'user',
         prompt: 'Of which user would you like to know the profile?',
-        type: 'member|string',
-        default: message => message.member.displayName
+        type: 'roblox-user',
+        default: 'self'
       }]
     })
   }
 
-  async run (message, { username }) {
-    username = typeof username === 'string' ? username : username.displayName
-    const userId = await userService.getIdFromUsername(username)
-
-    return message.reply(`https://www.roblox.com/users/${userId}/profile`)
+  run (message, { user }) {
+    return message.reply(`https://www.roblox.com/users/${user.id}/profile`)
   }
 }
 

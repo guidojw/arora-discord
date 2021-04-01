@@ -14,21 +14,17 @@ class DemoteCommand extends BaseCommand {
       examples: ['demote Happywalker'],
       clientPermissions: ['SEND_MESSAGES'],
       requiresRobloxGroup: true,
+      requiresVerification: true,
       args: [{
-        key: 'username',
+        key: 'user',
         prompt: 'Who would you like to demote?',
-        type: 'member|string'
+        type: 'roblox-user'
       }]
     })
   }
 
-  async run (message, { username }) {
-    username = typeof username === 'string' ? username : username.displayName
-    const [userId, authorId] = await Promise.all([
-      userService.getIdFromUsername(username),
-      userService.getIdFromUsername(message.member.displayName)
-    ])
-    const rank = await userService.getRank(userId, message.guild.robloxGroupId)
+  async run (message, { user }) {
+    const rank = await userService.getRank(user.id, message.guild.robloxGroupId)
     if (rank === 0) {
       return message.reply('Can\'t change rank of non members.')
     }
@@ -45,8 +41,8 @@ class DemoteCommand extends BaseCommand {
       return message.reply('Can\'t change rank of HRs.')
     }
 
-    const roles = (await applicationAdapter('put', `/v1/groups/${message.guild.robloxGroupId}/users/${userId}`, {
-      authorId,
+    const roles = (await applicationAdapter('put', `/v1/groups/${message.guild.robloxGroupId}/users/${user.id}`, {
+      authorId: message.member.robloxId,
       rank: rank > 100 && rank <= 102
         ? rank - 1
         : rank === 100
@@ -58,7 +54,7 @@ class DemoteCommand extends BaseCommand {
               : undefined
     })).data
 
-    return message.reply(`Successfully demoted **${username}** from **${roles.oldRole.name}** to **${roles.newRole.name}**.`)
+    return message.reply(`Successfully demoted **${user.username ?? user.id}** from **${roles.oldRole.name}** to **${roles.newRole.name}**.`)
   }
 }
 

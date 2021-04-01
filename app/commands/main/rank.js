@@ -16,21 +16,18 @@ class RankCommand extends BaseCommand {
       clientPermissions: ['SEND_MESSAGES'],
       requiresRobloxGroup: true,
       args: [{
-        key: 'username',
-        type: 'member|string',
+        key: 'user',
+        type: 'roblox-user',
         prompt: 'Of which user would you like to know the group rank?',
-        default: message => message.member.displayName
+        default: 'self'
       }]
     })
   }
 
-  async run (message, { username }) {
-    username = typeof username === 'string' ? username : username.displayName
-    const userId = await userService.getIdFromUsername(username)
-    const rank = await userService.getRank(userId, message.guild.robloxGroupId)
-
+  async run (message, { user }) {
+    const rank = await userService.getRank(user.id, message.guild.robloxGroupId)
     const embed = new MessageEmbed()
-      .addField(`${message.argString ? `${username}'s` : 'Your'} rank`, rank)
+      .addField(`${user.username ?? user.id}'s rank`, rank)
       .setColor(message.guild.primaryColor)
     return message.replyEmbed(embed)
   }

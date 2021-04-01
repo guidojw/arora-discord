@@ -3,7 +3,6 @@
 const BaseCommand = require('../base')
 
 const { applicationAdapter } = require('../../adapters')
-const { userService } = require('../../services')
 const { validators, noChannels, noTags, noUrls } = require('../../util').argumentUtil
 
 class ExtendSuspensionCommand extends BaseCommand {
@@ -17,9 +16,10 @@ class ExtendSuspensionCommand extends BaseCommand {
       examples: ['extend Happywalker 3 He still doesn\'t understand.'],
       clientPermissions: ['SEND_MESSAGES'],
       requiresRobloxGroup: true,
+      requiresVerification: true,
       args: [{
-        key: 'username',
-        type: 'member|string',
+        key: 'user',
+        type: 'roblox-user',
         prompt: 'Whose suspension would you like to extend?'
       }, {
         key: 'days',
@@ -36,20 +36,14 @@ class ExtendSuspensionCommand extends BaseCommand {
     })
   }
 
-  async run (message, { username, days, reason }) {
-    username = typeof username === 'string' ? username : username.displayName
-    const [userId, authorId] = await Promise.all([
-      userService.getIdFromUsername(username),
-      userService.getIdFromUsername(message.member.displayName)
-    ])
-
-    await applicationAdapter('post', `/v1/groups/${message.guild.robloxGroupId}/suspensions/${userId}/extend`, {
+  async run (message, { user, days, reason }) {
+    await applicationAdapter('post', `/v1/groups/${message.guild.robloxGroupId}/suspensions/${user.id}/extend`, {
+      authorId: message.member.robloxId,
       duration: days * 86400000,
-      authorId,
       reason
     })
 
-    return message.reply(`Successfully extended **${username}**'s suspension.`)
+    return message.reply(`Successfully extended **${user.username ?? user.id}**'s suspension.`)
   }
 }
 

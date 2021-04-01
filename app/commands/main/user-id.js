@@ -3,7 +3,6 @@
 const BaseCommand = require('../base')
 
 const { MessageEmbed } = require('discord.js')
-const { userService } = require('../../services')
 
 class UserIdCommand extends BaseCommand {
   constructor (client) {
@@ -15,20 +14,17 @@ class UserIdCommand extends BaseCommand {
       examples: ['userid', 'userid Happywalker'],
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
-        key: 'username',
+        key: 'user',
         prompt: 'Of which user would you like to know the user ID?',
-        type: 'member|string',
-        default: message => message.member.displayName
+        type: 'roblox-user',
+        default: 'self'
       }]
     })
   }
 
-  async run (message, { username }) {
-    username = typeof username === 'string' ? username : username.displayName
-    const userId = await userService.getIdFromUsername(username)
-
+  run (message, { user }) {
     const embed = new MessageEmbed()
-      .addField(`${message.argString ? `${username}'s` : 'Your'} user ID`, userId)
+      .addField(`${user.username ?? user.id}'s user ID`, user.id)
       .setColor(message.guild.primaryColor)
     return message.replyEmbed(embed)
   }

@@ -3,7 +3,6 @@
 const BaseCommand = require('../base')
 
 const { applicationAdapter } = require('../../adapters')
-const { userService } = require('../../services')
 const { validators, noChannels, noTags, noUrls } = require('../../util').argumentUtil
 
 class UnbanCommand extends BaseCommand {
@@ -16,9 +15,10 @@ class UnbanCommand extends BaseCommand {
       clientPermissions: ['SEND_MESSAGES'],
       ownerOnly: true,
       requiresRobloxGroup: true,
+      requiresVerification: true,
       args: [{
-        key: 'username',
-        type: 'member|string',
+        key: 'user',
+        type: 'roblox-user',
         prompt: 'Who would you like to unban?'
       }, {
         key: 'reason',
@@ -29,16 +29,13 @@ class UnbanCommand extends BaseCommand {
     })
   }
 
-  async run (message, { username, reason }) {
-    username = typeof username === 'string' ? username : username.displayName
-    const [userId, authorId] = await Promise.all([
-      userService.getIdFromUsername(username),
-      userService.getIdFromUsername(message.member.displayName)
-    ])
+  async run (message, { user, reason }) {
+    await applicationAdapter('post', `/v1/bans/${user.id}/cancel`, {
+      authorId: message.member.robloxId,
+      reason
+    })
 
-    await applicationAdapter('post', `/v1/bans/${userId}/cancel`, { authorId, reason })
-
-    return message.reply(`Successfully unbanned **${username}**.`)
+    return message.reply(`Successfully unbanned **${user.username ?? user.id}**.`)
   }
 }
 

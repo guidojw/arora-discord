@@ -16,21 +16,18 @@ class RoleCommand extends Base {
       clientPermissions: ['SEND_MESSAGES'],
       requiresRobloxGroup: true,
       args: [{
-        key: 'username',
-        type: 'member|string',
+        key: 'user',
+        type: 'roblox-user',
         prompt: 'Of which user would you like to know the group role?',
-        default: message => message.member.displayName
+        default: 'self'
       }]
     })
   }
 
-  async run (message, { username }) {
-    username = typeof username === 'string' ? username : username.displayName
-    const userId = await userService.getIdFromUsername(username)
-    const role = await userService.getRole(userId, message.guild.robloxGroupId)
-
+  async run (message, { user }) {
+    const role = await userService.getRole(user.id, message.guild.robloxGroupId)
     const embed = new MessageEmbed()
-      .addField(`${message.argString ? `${username}'s` : 'Your'} role`, role)
+      .addField(`${user.username ?? user.id}'s role`, role)
       .setColor(message.guild.primaryColor)
     return message.replyEmbed(embed)
   }

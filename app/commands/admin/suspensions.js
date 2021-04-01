@@ -5,7 +5,7 @@ const BaseCommand = require('../base')
 
 const { MessageEmbed } = require('discord.js')
 const { applicationAdapter } = require('../../adapters')
-const { groupService, userService } = require('../../services')
+const { groupService } = require('../../services')
 const { getDate, getTime } = require('../../util').timeUtil
 
 class SuspensionsCommand extends BaseCommand {
@@ -18,19 +18,17 @@ class SuspensionsCommand extends BaseCommand {
       clientPermissions: ['SEND_MESSAGES'],
       requiresRobloxGroup: true,
       args: [{
-        key: 'username',
-        type: 'member|string',
+        key: 'user',
+        type: 'roblox-user',
         prompt: 'Of whose suspension would you like to know the information?',
         default: ''
       }]
     })
   }
 
-  async run (message, { username }) {
-    if (username) {
-      username = typeof username === 'string' ? username : username.displayName
-      const userId = await userService.getIdFromUsername(username)
-      const suspension = (await applicationAdapter('get', `/v1/groups/${message.guild.groupId}/suspensions/${userId}`))
+  async run (message, { user }) {
+    if (user) {
+      const suspension = (await applicationAdapter('get', `/v1/groups/${message.guild.groupId}/suspensions/${user.id}`))
         .data
       const days = suspension.duration / 86400000
       const date = new Date(suspension.date)
@@ -47,7 +45,7 @@ class SuspensionsCommand extends BaseCommand {
           : ''
 
       const embed = new MessageEmbed()
-        .setTitle(`${message.argString ? `${username}'s` : 'Your'} suspension`)
+        .setTitle(`${user.username ?? user.id}'s suspension`)
         .addField('Start date', getDate(date), true)
         .addField('Start time', getTime(date), true)
         .addField('Duration', `${days}${extensionString} ${pluralize('day', days + extensionDays)}`, true)

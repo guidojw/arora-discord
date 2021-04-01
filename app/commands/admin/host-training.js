@@ -4,7 +4,7 @@ const BaseCommand = require('../base')
 
 const { MessageEmbed } = require('discord.js')
 const { applicationAdapter } = require('../../adapters')
-const { groupService, userService } = require('../../services')
+const { groupService } = require('../../services')
 const {
   validators,
   noChannels,
@@ -27,6 +27,7 @@ class HostTrainingCommand extends BaseCommand {
       examples: ['host CD 4-3-2020 1:00 Be on time!', 'Host CSR 4-3-2020 2:00'],
       clientPermissions: ['SEND_MESSAGES'],
       requiresRobloxGroup: true,
+      requiresVerification: true,
       args: [{
         key: 'type',
         type: 'string',
@@ -71,10 +72,9 @@ class HostTrainingCommand extends BaseCommand {
     if (!trainingType) {
       return message.reply('Type not found.')
     }
-    const authorId = await userService.getIdFromUsername(message.member.displayName)
 
     const training = (await applicationAdapter('post', `/v1/groups/${message.guild.robloxGroupId}/trainings`, {
-      authorId,
+      authorId: message.member.robloxId,
       date: dateUnix,
       notes,
       typeId: trainingType.id
