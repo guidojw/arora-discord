@@ -22,7 +22,7 @@ steps:
   - wait
 
   - label: ":docker: Build+Push `:production` image"
-    branches: master
+    branches: main
     plugins:
       - docker-login#v2.0.1:
           server: docker.guidojw.nl
@@ -34,18 +34,18 @@ steps:
           config: docker-compose.buildkite.yml
 
   - block: Deploy this stage
-    branches: master
+    branches: main
 
   - label: Restarting service
     command: .buildkite/release.sh
-    branches: master
+    branches: main
 
   - wait
 
   - label: Inform Sentry
     command: .buildkite/sentry.sh
-    branches: master
+    branches: main
 
   - label: Inform Discord
     command: .buildkite/discord.sh
-    branches: master
+    branches: main

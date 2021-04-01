@@ -1,5 +1,5 @@
 STAGE=$BUILDKITE_BRANCH
-if [ "$STAGE" = 'master' ]; then
+if [ "$STAGE" = 'main' ]; then
   STAGE='production'
 fi
 
