@@ -19,14 +19,7 @@ class RobloxUserArgumentType extends ArgumentType {
         if (member && !member.user.bot) {
           const verificationData = await member.fetchVerificationData()
           if (verificationData) {
-            if (arg.oneOf?.includes(verificationData.robloxId) ?? true) {
-              this.cache.set(key, {
-                id: verificationData.robloxId,
-                username: verificationData.robloxUsername
-              })
-              return true
-            }
-            return false
+            return validateAndSet.call(this, arg, key, verificationData.robloxId, verificationData.robloxUsername)
           }
         }
       } catch {} // eslint-disable-line no-empty
@@ -35,11 +28,7 @@ class RobloxUserArgumentType extends ArgumentType {
       if (!isNaN(id)) {
         try {
           const username = (await userService.getUser(id)).name
-          if (arg.oneOf?.includes(id) ?? true) {
-            this.cache.set(key, { id, username })
-            return true
-          }
-          return false
+          return validateAndSet.call(this, arg, key, id, username)
         } catch {} // eslint-disable-line no-empty
       } else {
         return false
@@ -52,25 +41,14 @@ class RobloxUserArgumentType extends ArgumentType {
       const member = members.first()
       const verificationData = await member.fetchVerificationData()
       if (verificationData) {
-        if (arg.oneOf?.includes(verificationData.robloxId) ?? true) {
-          this.cache.set(key, {
-            id: verificationData.robloxId,
-            username: verificationData.robloxUsername
-          })
-          return true
-        }
-        return false
+        return validateAndSet.call(this, arg, key, verificationData.robloxId, verificationData.robloxUsername)
       }
     }
 
     if (!search.includes(' ')) {
       try {
         const id = await userService.getIdFromUsername(search)
-        if (arg.oneOf?.includes(id) ?? true) {
-          this.cache.set(key, { id, username: search })
-          return true
-        }
-        return false
+        return validateAndSet.call(this, arg, key, id, search)
       } catch {} // eslint-disable-line no-empty
     }
     return false
@@ -82,6 +60,14 @@ class RobloxUserArgumentType extends ArgumentType {
     this.cache.delete(key)
     return result ?? null
   }
+}
+
+function validateAndSet (arg, key, id, username) {
+  if (arg.oneOf?.includes(id) ?? true) {
+    this.cache.set(key, { id, username })
+    return true
+  }
+  return false
 }
 
 function memberFilterExact (search) {
