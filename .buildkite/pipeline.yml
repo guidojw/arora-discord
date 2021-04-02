@@ -21,6 +21,18 @@ steps:
 
   - wait
 
+  - label: ":docker: Build+Push `:staging` image"
+    branches: staging
+    plugins:
+      - docker-login#v2.0.1:
+          server: docker.guidojw.nl
+          username: buildkite
+          password-env: DOCKER_PASSWORD
+      - docker-compose#v3.7.0:
+          push: app-production:docker.guidojw.nl/nsadmin/nsadmin-discord:staging
+          image-name: docker.guidojw.nl/nsadmin/nsadmin-discord:staging
+          config: docker-compose.buildkite.yml
+
   - label: ":docker: Build+Push `:production` image"
     branches: main
     plugins:
@@ -34,18 +46,18 @@ steps:
           config: docker-compose.buildkite.yml
 
   - block: Deploy this stage
-    branches: main
+    branches: main staging
 
   - label: Restarting service
     command: .buildkite/release.sh
-    branches: main
+    branches: main staging
 
   - wait
 
   - label: Inform Sentry
     command: .buildkite/sentry.sh
-    branches: main
+    branches: main staging
 
   - label: Inform Discord
     command: .buildkite/discord.sh
-    branches: main
+    branches: main staging
