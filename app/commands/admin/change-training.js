@@ -17,6 +17,7 @@ class ChangeTrainingCommand extends BaseCommand {
       description: 'Changes given training\'s key to given data.',
       examples: ['changetraining 1 date 5-3-2020'],
       clientPermissions: ['SEND_MESSAGES'],
+      requiresApi: true,
       requiresRobloxGroup: true,
       args: [{
         key: 'trainingId',

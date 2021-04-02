@@ -14,6 +14,7 @@ class RoleCommand extends Base {
       description: 'Posts the group role of given user/you.',
       examples: ['role', 'role Happywalker'],
       clientPermissions: ['SEND_MESSAGES'],
+      requiresApi: true,
       requiresRobloxGroup: true,
       args: [{
         key: 'user',

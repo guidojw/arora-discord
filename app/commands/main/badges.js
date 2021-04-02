@@ -17,6 +17,7 @@ class BadgesCommand extends Base {
       description: 'Checks if given user/you has the training badges.',
       examples: ['badges', 'badges Happywalker'],
       clientPermissions: ['SEND_MESSAGES'],
+      requiresApi: true,
       args: [{
         key: 'user',
         type: 'roblox-user',

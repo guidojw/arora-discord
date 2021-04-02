@@ -14,6 +14,7 @@ class SuspendCommand extends BaseCommand {
       description: 'Suspends given user in the group.',
       examples: ['suspend Happywalker 3 "Spamming the group wall." false', 'suspend Happywalker 3 "Ignoring rules."'],
       clientPermissions: ['SEND_MESSAGES'],
+      requiresApi: true,
       requiresRobloxGroup: true,
       args: [{
         key: 'user',

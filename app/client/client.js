@@ -66,6 +66,7 @@ class NSadminClient extends CommandoClient {
       .registerTypesIn({ dirname: path.join(__dirname, '../types'), filter: /^(?!base.js).+$/ })
       .registerCommandsIn(path.join(__dirname, '../commands'))
 
+    this.dispatcher.addInhibitor(requiresApiInhibitor)
     this.dispatcher.addInhibitor(requiresRobloxGroupInhibitor)
 
     if (applicationConfig.apiEnabled) {
@@ -166,6 +167,15 @@ class NSadminClient extends CommandoClient {
   bindEvent (eventName) {
     const handler = eventHandlers[eventName]
     this.on(eventName, (...args) => handler(this, ...args))
+  }
+}
+
+function requiresApiInhibitor (msg) {
+  if (msg.command?.requiresApi && !applicationConfig.apiEnabled) {
+    return {
+      reason: 'apiRequired',
+      response: msg.reply('This command requires that the bot has an API connected.')
+    }
   }
 }
 

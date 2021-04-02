@@ -13,6 +13,7 @@ class CancelSuspensionCommand extends BaseCommand {
       description: 'Cancels given user\'s suspension.',
       examples: ['cancelsuspension Happywalker Good boy.'],
       clientPermissions: ['SEND_MESSAGES'],
+      requiresApi: true,
       requiresRobloxGroup: true,
       args: [{
         key: 'user',

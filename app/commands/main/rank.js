@@ -14,6 +14,7 @@ class RankCommand extends BaseCommand {
       description: 'Posts the group rank of given user/you.',
       examples: ['rank', 'rank Happywalker'],
       clientPermissions: ['SEND_MESSAGES'],
+      requiresApi: true,
       requiresRobloxGroup: true,
       args: [{
         key: 'user',

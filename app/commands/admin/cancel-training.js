@@ -14,6 +14,7 @@ class CancelTrainingCommand extends BaseCommand {
       description: 'Cancels given training.',
       examples: ['canceltraining 1 Weird circumstances.'],
       clientPermissions: ['SEND_MESSAGES'],
+      requiresApi: true,
       requiresRobloxGroup: true,
       args: [{
         key: 'trainingId',

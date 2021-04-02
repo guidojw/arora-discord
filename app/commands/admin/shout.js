@@ -15,6 +15,7 @@ class ShoutCommand extends BaseCommand {
       description: 'Posts shout with given shout to the group.',
       examples: ['shout Happywalker is awesome', 'shout "Happywalker is awesome"', 'shout clear'],
       clientPermissions: ['SEND_MESSAGES'],
+      requiresApi: true,
       requiresRobloxGroup: true,
       args: [{
         key: 'body',

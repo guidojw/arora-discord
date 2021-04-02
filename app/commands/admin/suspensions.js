@@ -16,6 +16,7 @@ class SuspensionsCommand extends BaseCommand {
       aliases: ['suspensionlist', 'suspensioninfo'],
       description: 'Lists info of current suspensions/given user\'s suspension.',
       clientPermissions: ['SEND_MESSAGES'],
+      requiresApi: true,
       requiresRobloxGroup: true,
       args: [{
         key: 'user',

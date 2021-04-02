@@ -14,6 +14,7 @@ class UnbanCommand extends BaseCommand {
       examples: ['unban Happywalker'],
       clientPermissions: ['SEND_MESSAGES'],
       ownerOnly: true,
+      requiresApi: true,
       requiresRobloxGroup: true,
       args: [{
         key: 'user',

@@ -13,6 +13,7 @@ class BanCommand extends BaseCommand {
       description: 'Bans given user.',
       examples: ['unban Happywalker He apologized.'],
       clientPermissions: ['SEND_MESSAGES'],
+      requiresApi: true,
       requiresRobloxGroup: true,
       args: [{
         key: 'user',

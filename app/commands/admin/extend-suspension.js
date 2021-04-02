@@ -15,6 +15,7 @@ class ExtendSuspensionCommand extends BaseCommand {
       description: 'Extends the suspension of given user.',
       examples: ['extend Happywalker 3 He still doesn\'t understand.'],
       clientPermissions: ['SEND_MESSAGES'],
+      requiresApi: true,
       requiresRobloxGroup: true,
       args: [{
         key: 'user',
