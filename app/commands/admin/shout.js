@@ -4,7 +4,6 @@ const BaseCommand = require('../base')
 
 const { MessageEmbed } = require('discord.js')
 const { applicationAdapter } = require('../../adapters')
-const { userService } = require('../../services')
 const { validators, noChannels, noTags, noUrls } = require('../../util').argumentUtil
 
 class ShoutCommand extends BaseCommand {
@@ -28,11 +27,14 @@ class ShoutCommand extends BaseCommand {
   }
 
   async run (message, { body }, guild) {
-    const authorId = await userService.getIdFromUsername(message.member.displayName)
+    const authorId = message.member.robloxId ?? (await message.member.fetchVerificationData()).robloxId
+    if (typeof authorId === 'undefined') {
+      return message.reply('This command requires you to be verified with a verification provider.')
+    }
 
     const shout = (await applicationAdapter('post', `/v1/groups/${message.guild.robloxGroupId}/shout`, {
-      message: body === 'clear' ? '' : body,
-      authorId
+      authorId,
+      message: body === 'clear' ? '' : body
     })).data
 
     if (shout.body === '') {

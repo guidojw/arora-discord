@@ -15,21 +15,19 @@ class JoinDateCommand extends BaseCommand {
       examples: ['joindate', 'joindate Happywalker'],
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
-        key: 'username',
+        key: 'user',
         prompt: 'Of which user would you like to know the join date?',
-        type: 'member|string',
-        default: message => message.member.displayName
+        type: 'roblox-user',
+        default: 'self'
       }]
     })
   }
 
-  async run (message, { username }) {
-    username = typeof username === 'string' ? username : username.displayName
-    const userId = await userService.getIdFromUsername(username)
-    const user = await userService.getUser(userId)
+  async run (message, { user }) {
+    user = await userService.getUser(user.id)
 
     const embed = new MessageEmbed()
-      .addField(`${message.argString ? `${username}'s` : 'Your'} join date`, `${getDate(new Date(user.created))}`)
+      .addField(`${user.name}'s join date`, `${getDate(new Date(user.created))}`)
       .setColor(message.guild.primaryColor)
     return message.replyEmbed(embed)
   }

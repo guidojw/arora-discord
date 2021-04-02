@@ -7,8 +7,7 @@ const TicketGuildMemberManager = require('../managers/ticket-guild-member')
 const { stripIndents } = require('common-tags')
 const { MessageEmbed } = require('discord.js')
 const { PartialTypes } = require('discord.js').Constants
-const { roVerAdapter } = require('../adapters')
-const { discordService } = require('../services')
+const { discordService, userService } = require('../services')
 const { getDate, getTime } = require('../util').timeUtil
 const { makeCommaSeparatedString } = require('../util').util
 
@@ -57,17 +56,11 @@ class Ticket extends BaseStructure {
   }
 
   async populateChannel () {
-    let username
-    let userId
+    let robloxId, robloxUsername
     try {
-      const response = (await roVerAdapter('get', `/user/${this.authorId}`)).data
-      username = response.robloxUsername
-      userId = response.robloxId
-    } catch (err) {
-      if (err.response.status !== 404) {
-        throw err
-      }
-    }
+      robloxId = this.author.robloxId ?? (await this.author.fetchVerificationData()).robloxId
+      robloxUsername = this.author.robloxUsername ?? (await userService.getUser(robloxId)).name
+    } catch {} // eslint-disable-line no-empty
 
     const date = new Date()
     const readableDate = getDate(date)
@@ -76,12 +69,12 @@ class Ticket extends BaseStructure {
       .setColor(this.guild.primaryColor)
       .setTitle('Ticket Information')
       .setDescription(stripIndents`
-      Username: ${username ? '**' + username + '**' : '*unknown (user is not verified with RoVer)*'}
-      User ID: ${userId ? '**' + userId + '**' : '*unknown (user is not verified with RoVer)*'}
-      Start time: ${readableDate} ${readableTime}
+      Username: \`${robloxUsername ?? 'unknown'}\`
+      User ID: \`${robloxId ?? 'unknown'}\`
+      Start time: \`${readableDate} ${readableTime}\`
       `)
       .setFooter(`Ticket ID: ${this.id} | ${this.type.name}`)
-    await this.channel.send(this.author.toString(), { embed: ticketInfoEmbed })
+    await this.channel.send(this.author.toString(), ticketInfoEmbed)
 
     const modInfoEmbed = new MessageEmbed()
       .setColor(this.guild.primaryColor)

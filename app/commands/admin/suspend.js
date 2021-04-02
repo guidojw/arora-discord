@@ -3,7 +3,6 @@
 const BaseCommand = require('../base')
 
 const { applicationAdapter } = require('../../adapters')
-const { userService } = require('../../services')
 const { validators, noChannels, noTags, noUrls } = require('../../util').argumentUtil
 
 class SuspendCommand extends BaseCommand {
@@ -17,8 +16,8 @@ class SuspendCommand extends BaseCommand {
       clientPermissions: ['SEND_MESSAGES'],
       requiresRobloxGroup: true,
       args: [{
-        key: 'username',
-        type: 'member|string',
+        key: 'user',
+        type: 'roblox-user',
         prompt: 'Who would you like to suspend?'
       }, {
         key: 'days',
@@ -39,22 +38,21 @@ class SuspendCommand extends BaseCommand {
     })
   }
 
-  async run (message, { username, days, reason, rankBack }) {
-    username = typeof username === 'string' ? username : username.displayName
-    const [userId, authorId] = await Promise.all([
-      userService.getIdFromUsername(username),
-      userService.getIdFromUsername(message.member.displayName)
-    ])
+  async run (message, { user, days, reason, rankBack }) {
+    const authorId = message.member.robloxId ?? (await message.member.fetchVerificationData()).robloxId
+    if (typeof authorId === 'undefined') {
+      return message.reply('This command requires you to be verified with a verification provider.')
+    }
 
     await applicationAdapter('post', `/v1/groups/${message.guild.robloxGroupId}/suspensions`, {
+      authorId,
       duration: days * 86400000,
       rankBack,
-      authorId,
-      userId,
-      reason
+      reason,
+      userId: user.id
     })
 
-    return message.reply(`Successfully suspended **${username}**.`)
+    return message.reply(`Successfully suspended **${user.username ?? user.id}**.`)
   }
 }
 

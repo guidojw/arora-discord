@@ -5,6 +5,11 @@ const GroupTypes = {
   ROLE: 'role'
 }
 
+const VerificationProviders = {
+  BLOXLINK: 'Bloxlink',
+  ROVER: 'RoVer'
+}
+
 const WSEvents = {
   TRAIN_DEVELOPERS_PAYOUT: 'trainDevelopersPayout',
   RANK_CHANGE: 'rankChange'
@@ -12,5 +17,6 @@ const WSEvents = {
 
 module.exports = {
   GroupTypes,
+  VerificationProviders,
   WSEvents
 }

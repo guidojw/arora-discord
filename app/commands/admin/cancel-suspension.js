@@ -3,7 +3,6 @@
 const BaseCommand = require('../base')
 
 const { applicationAdapter } = require('../../adapters')
-const { userService } = require('../../services')
 const { validators, noChannels, noTags, noUrls } = require('../../util').argumentUtil
 
 class CancelSuspensionCommand extends BaseCommand {
@@ -16,8 +15,8 @@ class CancelSuspensionCommand extends BaseCommand {
       clientPermissions: ['SEND_MESSAGES'],
       requiresRobloxGroup: true,
       args: [{
-        key: 'username',
-        type: 'member|string',
+        key: 'user',
+        type: 'roblox-user',
         prompt: 'Whose suspension would you like to cancel?'
       }, {
         key: 'reason',
@@ -28,19 +27,18 @@ class CancelSuspensionCommand extends BaseCommand {
     })
   }
 
-  async run (message, { username, reason }) {
-    username = typeof username === 'string' ? username : username.displayName
-    const [userId, authorId] = await Promise.all([
-      userService.getIdFromUsername(username),
-      userService.getIdFromUsername(message.member.displayName)
-    ])
+  async run (message, { user, reason }) {
+    const authorId = message.member.robloxId ?? (await message.member.fetchVerificationData()).robloxId
+    if (typeof authorId === 'undefined') {
+      return message.reply('This command requires you to be verified with a verification provider.')
+    }
 
-    await applicationAdapter('post', `/v1/groups/${message.guild.robloxGroupId}/suspensions/${userId}/cancel`, {
+    await applicationAdapter('post', `/v1/groups/${message.guild.robloxGroupId}/suspensions/${user.id}/cancel`, {
       authorId,
       reason
     })
 
-    return message.reply(`Successfully cancelled **${username}**'s suspension.`)
+    return message.reply(`Successfully cancelled **${user.username ?? user.id}**'s suspension.`)
   }
 }
 

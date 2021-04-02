@@ -15,20 +15,15 @@ class PromoteCommand extends BaseCommand {
       clientPermissions: ['SEND_MESSAGES'],
       requiresRobloxGroup: true,
       args: [{
-        key: 'username',
+        key: 'user',
         prompt: 'Who would you like to promote?',
         type: 'member|string'
       }]
     })
   }
 
-  async run (message, { username }) {
-    username = typeof username === 'string' ? username : username.displayName
-    const [userId, authorId] = await Promise.all([
-      userService.getIdFromUsername(username),
-      userService.getIdFromUsername(message.member.displayName)
-    ])
-    const rank = await userService.getRank(userId, message.guild.robloxGroupId)
+  async run (message, { user }) {
+    const rank = await userService.getRank(user.id, message.guild.robloxGroupId)
     if (rank === 0) {
       return message.reply('Can\'t change rank of non members.')
     }
@@ -44,8 +39,12 @@ class PromoteCommand extends BaseCommand {
     if (rank >= 200) {
       return message.reply('Can\'t change rank of HRs.')
     }
+    const authorId = message.member.robloxId ?? (await message.member.fetchVerificationData()).robloxId
+    if (typeof authorId === 'undefined') {
+      return message.reply('This command requires you to be verified with a verification provider.')
+    }
 
-    const roles = (await applicationAdapter('put', `/v1/groups/${message.guild.robloxGroupId}/users/${userId}`, {
+    const roles = (await applicationAdapter('put', `/v1/groups/${message.guild.robloxGroupId}/users/${user.id}`, {
       authorId,
       rank: rank === 1
         ? 3
@@ -56,7 +55,7 @@ class PromoteCommand extends BaseCommand {
               : undefined
     })).data
 
-    return message.reply(`Successfully promoted **${username}** from **${roles.oldRole.name}** to **${roles.newRole.name}**.`)
+    return message.reply(`Successfully promoted **${user.username ?? user.id}** from **${roles.oldRole.name}** to **${roles.newRole.name}**.`)
   }
 }
 

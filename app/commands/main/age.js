@@ -16,22 +16,20 @@ class AgeCommand extends BaseCommand {
       examples: ['age', 'age Happywalker'],
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
-        key: 'username',
+        key: 'user',
         prompt: 'Of which user would you like to know the age?',
-        type: 'member|string',
-        default: message => message.member.displayName
+        type: 'roblox-user',
+        default: 'self'
       }]
     })
   }
 
-  async run (message, { username }) {
-    username = typeof username === 'string' ? username : username.displayName
-    const userId = await userService.getIdFromUsername(username)
-    const user = await userService.getUser(userId)
+  async run (message, { user }) {
+    user = await userService.getUser(user.id)
     const age = Math.floor((Date.now() - new Date(user.created).getTime()) / 86400000)
 
     const embed = new MessageEmbed()
-      .addField(`${message.argString ? `${username}'s` : 'Your'} age`, pluralize('day', age, true))
+      .addField(`${user.name}'s age`, pluralize('day', age, true))
       .setColor(message.guild.primaryColor)
     return message.replyEmbed(embed)
   }

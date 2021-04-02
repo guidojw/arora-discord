@@ -4,6 +4,7 @@ const BaseCommand = require('../base')
 
 const { GuildChannel } = require('discord.js')
 const { Guild } = require('../../models')
+const { VerificationProviders } = require('../../util').Constants
 
 class GetSettingCommand extends BaseCommand {
   constructor (client) {
@@ -34,9 +35,13 @@ class GetSettingCommand extends BaseCommand {
     } else if (setting.includes('Channel') || setting.includes('Category')) {
       setting = setting.slice(0, -2)
       result = message.guild[setting]
-    } else {
+    } else if (setting.includes('Id')) {
       result = message.guild[setting]
       setting = setting.slice(0, -2)
+    } else if (setting === 'verificationPreference') {
+      result = VerificationProviders[message.guild[setting].toUpperCase()]
+    } else {
+      result = message.guild[setting]
     }
 
     return message.reply(`The ${setting} is ${result instanceof GuildChannel ? result : `\`${result}\``}.`)

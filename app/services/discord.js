@@ -4,16 +4,6 @@ const { MessageEmbed } = require('discord.js')
 
 const REACTION_COLLECTOR_TIME = 60000
 
-async function getMemberByName (guild, name) {
-  name = name.toLowerCase()
-  const members = await guild.members.fetch()
-  for (const member of members.values()) {
-    if (member.displayName.toLowerCase() === name) {
-      return member
-    }
-  }
-}
-
 async function prompt (channel, author, message, options) {
   const filter = (reaction, user) => options.includes(reaction.emoji.name) && user.id === author.id
   const collector = message.createReactionCollector(filter, { time: REACTION_COLLECTOR_TIME })
@@ -92,7 +82,6 @@ function validateEmbed (embed) {
 
 module.exports = {
   getListEmbeds,
-  getMemberByName,
   prompt,
   validateEmbed
 }
