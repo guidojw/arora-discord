@@ -12,6 +12,7 @@ class GetShoutCommand extends Base {
       name: 'getshout',
       description: 'Gets the current group shout.',
       clientPermissions: ['SEND_MESSAGES'],
+      requiresApi: true,
       requiresRobloxGroup: true
     })
   }

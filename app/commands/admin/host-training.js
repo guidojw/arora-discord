@@ -26,6 +26,7 @@ class HostTrainingCommand extends BaseCommand {
       description: 'Schedules a new training.',
       examples: ['host CD 4-3-2020 1:00 Be on time!', 'Host CSR 4-3-2020 2:00'],
       clientPermissions: ['SEND_MESSAGES'],
+      requiresApi: true,
       requiresRobloxGroup: true,
       args: [{
         key: 'type',

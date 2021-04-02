@@ -13,6 +13,7 @@ class DemoteCommand extends BaseCommand {
       description: 'Demotes given user in the group.',
       examples: ['demote Happywalker'],
       clientPermissions: ['SEND_MESSAGES'],
+      requiresApi: true,
       requiresRobloxGroup: true,
       args: [{
         key: 'username',

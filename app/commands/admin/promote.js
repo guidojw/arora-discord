@@ -13,6 +13,7 @@ class PromoteCommand extends BaseCommand {
       description: 'Promotes given user in the group.',
       examples: ['promote Happywalker'],
       clientPermissions: ['SEND_MESSAGES'],
+      requiresApi: true,
       requiresRobloxGroup: true,
       args: [{
         key: 'username',

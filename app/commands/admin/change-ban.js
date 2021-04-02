@@ -15,6 +15,7 @@ class ChangeBanCommand extends BaseCommand {
       description: 'Changes given user\'s ban\'s key to given data.',
       examples: ['changeban Happywalker author builderman'],
       clientPermissions: ['SEND_MESSAGES'],
+      requiresApi: true,
       requiresRobloxGroup: true,
       args: [{
         key: 'username',

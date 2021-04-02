@@ -12,6 +12,7 @@ class MemberCountCommand extends BaseCommand {
       name: 'membercount',
       description: 'Posts the current member count of the group.',
       clientPermissions: ['SEND_MESSAGES'],
+      requiresApi: true,
       args: [
         {
           key: 'groupId',

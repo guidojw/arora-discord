@@ -16,6 +16,7 @@ class TrainingsCommand extends BaseCommand {
       description: 'Lists info of all trainings/training with given ID.',
       clientPermissions: ['SEND_MESSAGES'],
       details: 'TrainingId must be the ID of a currently scheduled training.',
+      requiresApi: true,
       requiresRobloxGroup: true,
       args: [{
         key: 'trainingId',

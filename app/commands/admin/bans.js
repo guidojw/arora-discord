@@ -15,6 +15,7 @@ class BansCommand extends BaseCommand {
       aliases: ['banlist', 'baninfo'],
       description: 'Lists info of current bans/given user\'s ban.',
       clientPermissions: ['SEND_MESSAGES'],
+      requiresApi: true,
       requiresRobloxGroup: true,
       args: [{
         key: 'username',

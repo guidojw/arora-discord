@@ -16,6 +16,7 @@ class ChangeSuspensionCommand extends BaseCommand {
       description: 'Changes given user\'s suspension\'s key to given data.',
       examples: ['changesuspension Happywalker rankBack false'],
       clientPermissions: ['SEND_MESSAGES'],
+      requiresApi: true,
       requiresRobloxGroup: true,
       args: [{
         key: 'username',
