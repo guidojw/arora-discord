@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     commandPrefix: {
       type: DataTypes.STRING,
-      fied: 'command_prefix'
+      field: 'command_prefix'
     },
     primaryColor: {
       type: DataTypes.INTEGER,
