@@ -3,8 +3,8 @@ if [ "$STAGE" = 'main' ]; then
   STAGE='production'
 fi
 
-if [ "$STAGE" != 'production' ] || [ "$STAGE" != 'staging' ]; then
-  echo 'Stage '$STAGE' unknown.. skipping Discord'
+if [ "$STAGE" != 'production' ] && [ "$STAGE" != 'staging' ]; then
+  echo 'Stage '$STAGE' unknown, skipping Discord'
   exit 0
 fi
 
