@@ -1,7 +1,7 @@
 'use strict'
 
-const announceTrainingsJob = require('../app/jobs/announce-trainings')
-const premiumMembersReportJob = require('../app/jobs/premium-members-report')
+const announceTrainingsJob = require('../src/jobs/announce-trainings')
+const premiumMembersReportJob = require('../src/jobs/premium-members-report')
 
 module.exports = {
   announceTrainingsJob: {
