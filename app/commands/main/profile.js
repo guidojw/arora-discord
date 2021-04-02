@@ -11,7 +11,6 @@ class ProfileCommand extends BaseCommand {
       description: 'Posts the Roblox profile of given user/you.',
       examples: ['profile', 'profile Happywalker'],
       clientPermissions: ['SEND_MESSAGES'],
-      requiresApi: true,
       args: [{
         key: 'user',
         prompt: 'Of which user would you like to know the profile?',

@@ -13,7 +13,6 @@ class UserIdCommand extends BaseCommand {
       description: 'Posts the user ID of given user/you.',
       examples: ['userid', 'userid Happywalker'],
       clientPermissions: ['SEND_MESSAGES'],
-      requiresApi: true,
       args: [{
         key: 'user',
         prompt: 'Of which user would you like to know the user ID?',
