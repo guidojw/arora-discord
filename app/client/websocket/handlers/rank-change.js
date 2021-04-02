@@ -4,7 +4,7 @@ const { userService } = require('../../../services')
 
 const rankChangeHandler = async (client, { data }) => {
   const { groupId, userId, rank } = data.args
-  let username
+  let usernameRegex
   let errored = false
   for (const guild of client.guilds.cache.values()) {
     if (guild.robloxGroupId === groupId) {
@@ -12,17 +12,21 @@ const rankChangeHandler = async (client, { data }) => {
       if (roleBindings.size > 0) {
         let userMembers
         if (guild.robloxUsernamesAsNicknames && !errored) {
-          if (!username) {
+          if (!usernameRegex) {
             try {
-              username = (await userService.getUser(userId)).name.toLowerCase()
+              const username = (await userService.getUser(userId)).name
+              usernameRegex = new RegExp(`(?:^|\\s+)(${username})(?:$|\\s+)`)
             } catch {
               errored = true
             }
           }
-          const members = await guild.members.fetch()
 
-          userMembers = members.filter(member => member.displayName.toLowerCase() === username)
-        } else {
+          if (!errored) {
+            const members = await guild.members.fetch()
+            userMembers = members.filter(member => usernameRegex.test(member.displayName))
+          }
+        }
+        if (!userMembers) {
           userMembers = guild.members.cache.filter(member => member.robloxId === userId)
         }
 
