@@ -11,7 +11,7 @@ const rankChangeHandler = async (client, { data }) => {
       const roleBindings = await guild.roleBindings.fetch()
       if (roleBindings.size > 0) {
         let userMembers
-        if (guild.robloxUsernamesAsNicknames && !errored) {
+        if (guild.robloxUsernamesInNicknames && !errored) {
           if (!usernameRegex) {
             try {
               const username = (await userService.getUser(userId)).name

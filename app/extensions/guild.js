@@ -38,7 +38,7 @@ const NSadminGuild = Structures.extend('Guild', Guild => {
       this.primaryColor = data.primaryColor
       this.ratingsChannelId = data.ratingsChannelId
       this.robloxGroupId = data.robloxGroupId
-      this.robloxUsernamesAsNicknames = data.robloxUsernamesAsNicknames
+      this.robloxUsernamesInNicknames = data.robloxUsernamesInNicknames
       this.suggestionsChannelId = data.suggestionsChannelId
       this.supportEnabled = data.supportEnabled
       this.ticketsCategoryId = data.ticketsCategoryId
@@ -186,7 +186,7 @@ const NSadminGuild = Structures.extend('Guild', Guild => {
         primaryColor: data.primaryColor,
         ratingsChannelId: data.ratingsChannelId,
         robloxGroupId: data.robloxGroupId,
-        robloxUsernamesAsNicknames: data.robloxUsernamesAsNicknames,
+        robloxUsernamesInNicknames: data.robloxUsernamesInNicknames,
         suggestionsChannelId: data.suggestionsChannelId,
         supportEnabled: data.supportEnabled,
         ticketsCategoryId: data.ticketsCategoryId,

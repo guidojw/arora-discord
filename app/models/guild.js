@@ -18,11 +18,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       field: 'roblox_group_id'
     },
-    robloxUsernamesAsNicknames: {
+    robloxUsernamesInNicknames: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
-      field: 'roblox_usernames_as_nicknames'
+      field: 'roblox_usernames_in_nicknames'
     },
     supportEnabled: {
       type: DataTypes.BOOLEAN,

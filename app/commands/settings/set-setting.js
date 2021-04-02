@@ -35,7 +35,7 @@ class SetSettingCommand extends BaseCommand {
   }
 
   async run (message, { setting, value }) {
-    if (typeof value === 'undefined' && !['robloxUsernamesAsNicknames', 'verificationPreference'].includes(setting)) {
+    if (typeof value === 'undefined' && !['robloxUsernamesInNicknames', 'verificationPreference'].includes(setting)) {
       value = null
     } else {
       let error
@@ -52,7 +52,7 @@ class SetSettingCommand extends BaseCommand {
         if (typeof value !== 'number') {
           error = 'Invalid ID.'
         }
-      } else if (setting === 'robloxUsernamesAsNicknames') {
+      } else if (setting === 'robloxUsernamesInNicknames') {
         if (typeof value !== 'boolean') {
           error = 'Invalid boolean.'
         }
