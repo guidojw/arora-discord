@@ -4,7 +4,7 @@ const BaseCommand = require('../base')
 
 const { MessageEmbed } = require('discord.js')
 const { applicationAdapter } = require('../../adapters')
-const { groupService, userService } = require('../../services')
+const { groupService } = require('../../services')
 const {
   validators,
   noChannels,
@@ -72,7 +72,10 @@ class HostTrainingCommand extends BaseCommand {
     if (!trainingType) {
       return message.reply('Type not found.')
     }
-    const authorId = await userService.getIdFromUsername(message.member.displayName)
+    const authorId = message.member.robloxId ?? (await message.member.fetchVerificationData()).robloxId
+    if (typeof authorId === 'undefined') {
+      return message.reply('This command requires you to be verified with a verification provider.')
+    }
 
     const training = (await applicationAdapter('post', `/v1/groups/${message.guild.robloxGroupId}/trainings`, {
       authorId,

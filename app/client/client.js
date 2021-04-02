@@ -67,14 +67,7 @@ class NSadminClient extends CommandoClient {
       .registerCommandsIn(path.join(__dirname, '../commands'))
 
     this.dispatcher.addInhibitor(requiresApiInhibitor)
-    this.dispatcher.addInhibitor(msg => {
-      if (msg.command?.requiresRobloxGroup === true && msg.guild.robloxGroupId === null) {
-        return {
-          reason: 'robloxGroupRequired',
-          response: msg.reply('This command requires that the server has its robloxGroup setting set.')
-        }
-      }
-    })
+    this.dispatcher.addInhibitor(requiresRobloxGroupInhibitor)
 
     if (applicationConfig.apiEnabled) {
       this.nsadminWs = new WebSocketManager(this)
@@ -182,6 +175,15 @@ function requiresApiInhibitor (msg) {
     return {
       reason: 'apiRequired',
       response: msg.reply('This command requires that the bot has an API connected.')
+    }
+  }
+}
+
+function requiresRobloxGroupInhibitor (msg) {
+  if (msg.command?.requiresRobloxGroup && msg.guild.robloxGroupId === null) {
+    return {
+      reason: 'robloxGroupRequired',
+      response: msg.reply('This command requires that the server has its robloxGroup setting set.')
     }
   }
 }

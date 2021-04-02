@@ -4,7 +4,7 @@ const BaseCommand = require('../base')
 
 const { MessageEmbed } = require('discord.js')
 const { applicationAdapter } = require('../../adapters')
-const { banService, userService } = require('../../services')
+const { banService } = require('../../services')
 const { getDate, getTime } = require('../../util').timeUtil
 
 class BansCommand extends BaseCommand {
@@ -18,22 +18,20 @@ class BansCommand extends BaseCommand {
       requiresApi: true,
       requiresRobloxGroup: true,
       args: [{
-        key: 'username',
-        type: 'member|string',
+        key: 'user',
+        type: 'roblox-user',
         prompt: 'Of whose ban would you like to know the information?',
         default: ''
       }]
     })
   }
 
-  async run (message, { username }) {
-    if (username) {
-      username = typeof username === 'string' ? username : username.displayName
-      const userId = await userService.getIdFromUsername(username)
-      const ban = (await applicationAdapter('get', `/v1/bans/${userId}`)).data
+  async run (message, { user }) {
+    if (user) {
+      const ban = (await applicationAdapter('get', `/v1/bans/${user.id}`)).data
 
       const embed = new MessageEmbed()
-        .setTitle(`${message.argString ? `${username}'s` : 'Your'} ban`)
+        .setTitle(`${user.username ?? user.id}'s ban`)
         .setColor(message.guild.primaryColor)
       if (ban.date) {
         const date = new Date(ban.date)

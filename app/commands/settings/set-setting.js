@@ -6,6 +6,7 @@ const { CategoryChannel, GuildChannel } = require('discord.js')
 const { NSadminTextChannel: TextChannel } = require('../../extensions')
 const { Channel: ChannelModel, Guild } = require('../../models')
 const { parseNoneOrType } = require('../../util').argumentUtil
+const { VerificationProviders } = require('../../util').Constants
 
 class SetSettingCommand extends BaseCommand {
   constructor (client) {
@@ -27,14 +28,14 @@ class SetSettingCommand extends BaseCommand {
       }, {
         key: 'value',
         prompt: 'What would you like to change this setting to? Reply with "none" if you want to reset the setting.',
-        type: 'category-channel|text-channel|message|integer|string',
+        type: 'category-channel|text-channel|message|integer|boolean|string',
         parse: parseNoneOrType
       }]
     })
   }
 
   async run (message, { setting, value }) {
-    if (typeof value === 'undefined') {
+    if (typeof value === 'undefined' && !['robloxUsernamesInNicknames', 'verificationPreference'].includes(setting)) {
       value = null
     } else {
       let error
@@ -51,7 +52,15 @@ class SetSettingCommand extends BaseCommand {
         if (typeof value !== 'number') {
           error = 'Invalid ID.'
         }
-      } else {
+      } else if (setting === 'robloxUsernamesInNicknames') {
+        if (typeof value !== 'boolean') {
+          error = 'Invalid boolean.'
+        }
+      } else if (setting === 'verificationPreference') {
+        if (typeof value !== 'string' || typeof VerificationProviders[value.toUpperCase()] === 'undefined') {
+          error = 'Invalid verification provider.'
+        }
+      } else if (setting.includes('Channel') || setting.includes('Category')) {
         if (setting === 'ticketsCategoryId') {
           if (!(value instanceof CategoryChannel)) {
             error = 'Invalid category channel.'
@@ -73,7 +82,7 @@ class SetSettingCommand extends BaseCommand {
 
     await message.guild.update({ [setting]: value instanceof GuildChannel ? value.id : value })
 
-    return message.reply(`Successfully changed ${setting.endsWith('Id') ? setting.slice(0, -2) : setting} to ${value instanceof GuildChannel ? value : `\`${value}\``}.`)
+    return message.reply(`Successfully changed ${setting.endsWith('Id') ? setting.slice(0, -2) : setting} to ${value instanceof GuildChannel ? value : `\`${setting === 'verificationPreference' ? VerificationProviders[value.toUpperCase()] : value}\``}.`)
   }
 }
 

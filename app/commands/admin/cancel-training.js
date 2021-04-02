@@ -3,7 +3,6 @@
 const BaseCommand = require('../base')
 
 const { applicationAdapter } = require('../../adapters')
-const { userService } = require('../../services')
 const { validators, noChannels, noTags, noUrls } = require('../../util').argumentUtil
 
 class CancelTrainingCommand extends BaseCommand {
@@ -31,7 +30,10 @@ class CancelTrainingCommand extends BaseCommand {
   }
 
   async run (message, { trainingId, reason }) {
-    const authorId = await userService.getIdFromUsername(message.member.displayName)
+    const authorId = message.member.robloxId ?? (await message.member.fetchVerificationData()).robloxId
+    if (typeof authorId === 'undefined') {
+      return message.reply('This command requires you to be verified with a verification provider.')
+    }
 
     await applicationAdapter('post', `/v1/groups/${message.guild.robloxGroupId}/trainings/${trainingId}/cancel`, {
       authorId,

@@ -13,6 +13,7 @@ const {
   GuildTicketTypeManager
 } = require('../managers')
 const { Guild: GuildModel } = require('../models')
+const { VerificationProviders } = require('../util').Constants
 
 const applicationConfig = require('../../config/application')
 const cronConfig = require('../../config/cron')
@@ -33,15 +34,19 @@ const NSadminGuild = Structures.extend('Guild', Guild => {
 
     _setup (data) {
       this.id = data.id
-      this.primaryColor = data.primaryColor
-      this.supportEnabled = data.supportEnabled
-      this.robloxGroupId = data.robloxGroupId
       this.logsChannelId = data.logsChannelId
-      this.suggestionsChannelId = data.suggestionsChannelId
+      this.primaryColor = data.primaryColor
       this.ratingsChannelId = data.ratingsChannelId
+      this.robloxGroupId = data.robloxGroupId
+      this.robloxUsernamesInNicknames = data.robloxUsernamesInNicknames
+      this.suggestionsChannelId = data.suggestionsChannelId
+      this.supportEnabled = data.supportEnabled
       this.ticketsCategoryId = data.ticketsCategoryId
-      this.trainingsPanelId = data.trainingsPanelId
       this.trainingsInfoPanelId = data.trainingsInfoPanelId
+      this.trainingsPanelId = data.trainingsPanelId
+      this.verificationPreference = data.verificationPreference
+        ? VerificationProviders[data.verificationPreference.toUpperCase()]
+        : null
 
       if (data.channels) {
         for (const rawChannel of data.channels) {
@@ -178,16 +183,18 @@ const NSadminGuild = Structures.extend('Guild', Guild => {
 
     async update (data) {
       const [, [newData]] = await GuildModel.update({
-        primaryColor: data.primaryColor,
         commandPrefix: data.commandPrefix,
-        supportEnabled: data.supportEnabled,
-        robloxGroupId: data.robloxGroupId,
         logsChannelId: data.logsChannelId,
-        suggestionsChannelId: data.suggestionsChannelId,
+        primaryColor: data.primaryColor,
         ratingsChannelId: data.ratingsChannelId,
+        robloxGroupId: data.robloxGroupId,
+        robloxUsernamesInNicknames: data.robloxUsernamesInNicknames,
+        suggestionsChannelId: data.suggestionsChannelId,
+        supportEnabled: data.supportEnabled,
         ticketsCategoryId: data.ticketsCategoryId,
+        trainingsInfoPanelId: data.trainingsInfoPanelId,
         trainingsPanelId: data.trainingsPanelId,
-        trainingsInfoPanelId: data.trainingsInfoPanelId
+        verificationPreference: data.verificationPreference?.toLowerCase()
       }, {
         where: { id: this.id },
         returning: true

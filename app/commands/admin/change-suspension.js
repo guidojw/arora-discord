@@ -19,8 +19,8 @@ class ChangeSuspensionCommand extends BaseCommand {
       requiresApi: true,
       requiresRobloxGroup: true,
       args: [{
-        key: 'username',
-        type: 'member|string',
+        key: 'user',
+        type: 'roblox-user',
         prompt: 'Whose suspension would you like to change?'
       }, {
         key: 'key',
@@ -36,8 +36,7 @@ class ChangeSuspensionCommand extends BaseCommand {
     })
   }
 
-  async run (message, { username, key, data }) {
-    username = typeof username === 'string' ? username : username.displayName
+  async run (message, { user, key, data }) {
     const changes = {}
     if (key === 'author') {
       changes.authorId = await userService.getIdFromUsername(data)
@@ -56,17 +55,17 @@ class ChangeSuspensionCommand extends BaseCommand {
 
       changes.rankBack = data
     }
-    const [userId, editorId] = await Promise.all([
-      userService.getIdFromUsername(username),
-      userService.getIdFromUsername(message.member.displayName)
-    ])
+    const editorId = message.member.robloxId ?? (await message.member.fetchVerificationData()).robloxId
+    if (typeof editorId === 'undefined') {
+      return message.reply('This command requires you to be verified with a verification provider.')
+    }
 
-    await applicationAdapter('put', `/v1/groups/${message.guild.robloxGroupId}/suspensions/${userId}`, {
+    await applicationAdapter('put', `/v1/groups/${message.guild.robloxGroupId}/suspensions/${user.id}`, {
       changes,
       editorId
     })
 
-    return message.reply(`Successfully changed **${username}**'s suspension.`)
+    return message.reply(`Successfully changed **${user.username ?? user.id}**'s suspension.`)
   }
 }
 

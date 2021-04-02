@@ -19,23 +19,22 @@ class BadgesCommand extends Base {
       clientPermissions: ['SEND_MESSAGES'],
       requiresApi: true,
       args: [{
-        key: 'username',
-        type: 'member|string',
+        key: 'user',
+        type: 'roblox-user',
         prompt: 'Whose badges would you like to check?',
-        default: message => message.member.displayName
+        default: 'self'
       }]
     })
   }
 
-  async run (message, { username }) {
-    username = typeof username === 'string' ? username : username.displayName
-    const userId = await userService.getIdFromUsername(username)
+  async run (message, { user }) {
+    const { id: userId, username } = user
     const hasTtdt = await userService.hasBadge(userId, TTDT_ID)
     const hasPtdt = await userService.hasBadge(userId, PTDT_ID)
     const hasTcct = await userService.hasBadge(userId, TCCT_ID)
 
     const embed = new MessageEmbed()
-      .setTitle(`${message.argString ? username + '\'s' : 'Your'} badges`)
+      .setTitle(`${username ?? userId}'s badges`)
       .addField('TTDT', hasTtdt ? 'yes' : 'no', true)
       .addField('PTDT', hasPtdt ? 'yes' : 'no', true)
       .addField('TCCT', hasTcct ? 'yes' : 'no', true)

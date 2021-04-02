@@ -6,23 +6,36 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BIGINT,
       primaryKey: true
     },
+    commandPrefix: {
+      type: DataTypes.STRING,
+      field: 'command_prefix'
+    },
+    primaryColor: {
+      type: DataTypes.INTEGER,
+      field: 'primary_color'
+    },
+    robloxGroupId: {
+      type: DataTypes.INTEGER,
+      field: 'roblox_group_id'
+    },
+    robloxUsernamesInNicknames: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+      field: 'roblox_usernames_in_nicknames'
+    },
     supportEnabled: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
       field: 'support_enabled'
     },
-    primaryColor: {
-      type: DataTypes.INTEGER,
-      field: 'primary_color'
-    },
-    commandPrefix: {
-      type: DataTypes.STRING,
-      fied: 'command_prefix'
-    },
-    robloxGroupId: {
-      type: DataTypes.INTEGER,
-      field: 'roblox_group_id'
+    verificationPreference: {
+      type: DataTypes.ENUM,
+      allowNull: false,
+      values: ['rover', 'bloxlink'],
+      defaultValue: 'rover',
+      field: 'verification_preference'
     }
   }, {
     tableName: 'guilds'

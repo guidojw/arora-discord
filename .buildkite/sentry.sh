@@ -3,8 +3,8 @@ if [ "$STAGE" = 'main' ]; then
   STAGE='production'
 fi
 
-if [ "$STAGE" != 'production' ]; then
-  echo 'Stage '$STAGE' unknown.. skipping Sentry'
+if [ "$STAGE" != 'production' ] && [ "$STAGE" != 'staging' ]; then
+  echo 'Stage '$STAGE' unknown, skipping Sentry'
   exit 0
 fi
 

@@ -3,7 +3,6 @@
 const BaseCommand = require('../base')
 
 const { applicationAdapter } = require('../../adapters')
-const { userService } = require('../../services')
 const { validators, noChannels, noTags, noUrls } = require('../../util').argumentUtil
 
 class ExtendSuspensionCommand extends BaseCommand {
@@ -19,8 +18,8 @@ class ExtendSuspensionCommand extends BaseCommand {
       requiresApi: true,
       requiresRobloxGroup: true,
       args: [{
-        key: 'username',
-        type: 'member|string',
+        key: 'user',
+        type: 'roblox-user',
         prompt: 'Whose suspension would you like to extend?'
       }, {
         key: 'days',
@@ -37,20 +36,19 @@ class ExtendSuspensionCommand extends BaseCommand {
     })
   }
 
-  async run (message, { username, days, reason }) {
-    username = typeof username === 'string' ? username : username.displayName
-    const [userId, authorId] = await Promise.all([
-      userService.getIdFromUsername(username),
-      userService.getIdFromUsername(message.member.displayName)
-    ])
+  async run (message, { user, days, reason }) {
+    const authorId = message.member.robloxId ?? (await message.member.fetchVerificationData()).robloxId
+    if (typeof authorId === 'undefined') {
+      return message.reply('This command requires you to be verified with a verification provider.')
+    }
 
-    await applicationAdapter('post', `/v1/groups/${message.guild.robloxGroupId}/suspensions/${userId}/extend`, {
-      duration: days * 86400000,
+    await applicationAdapter('post', `/v1/groups/${message.guild.robloxGroupId}/suspensions/${user.id}/extend`, {
       authorId,
+      duration: days * 86400000,
       reason
     })
 
-    return message.reply(`Successfully extended **${username}**'s suspension.`)
+    return message.reply(`Successfully extended **${user.username ?? user.id}**'s suspension.`)
   }
 }
 
