@@ -181,7 +181,7 @@ function requiresApiInhibitor (msg) {
   if (msg.command?.requiresApi && !applicationConfig.apiEnabled) {
     return {
       reason: 'apiRequired',
-      response: msg.reply('This command requires that the bot has a connected API.')
+      response: msg.reply('This command requires that the bot has an API connected.')
     }
   }
 }
