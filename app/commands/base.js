@@ -9,6 +9,7 @@ class BaseCommand extends Commando.Command {
     info.guildOnly = typeof info.guildOnly !== 'undefined' ? info.guildOnly : true
     super(client, info)
 
+    this.requiresApi = Boolean(info.requiresApi)
     this.requiresRobloxGroup = Boolean(info.requiresRobloxGroup)
   }
 
