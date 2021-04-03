@@ -6,7 +6,7 @@ const { MessageEmbed } = require('discord.js')
 const { userService } = require('../../../services')
 
 const trainDevelopersPayoutHandler = async (client, { data }) => {
-  const { developersSales } = data.args
+  const { developersSales } = data
   const developerIds = Object.keys(developersSales)
   const developers = await userService.getUsers(developerIds)
   const emoji = client.mainGuild.emojis.cache.find(emoji => emoji.name.toLowerCase() === 'robux')
