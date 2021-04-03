@@ -7,7 +7,7 @@ const { userService } = require('../../services')
 
 const TTDT_ID = 912438803
 const PTDT_ID = 496942494
-const TCCT_ID = 2124496060
+const TCDT_ID = 2124496060
 
 class BadgesCommand extends Base {
   constructor (client) {
@@ -17,7 +17,6 @@ class BadgesCommand extends Base {
       description: 'Checks if given user/you has the training badges.',
       examples: ['badges', 'badges Happywalker'],
       clientPermissions: ['SEND_MESSAGES'],
-      requiresApi: true,
       args: [{
         key: 'user',
         type: 'roblox-user',
@@ -31,13 +30,13 @@ class BadgesCommand extends Base {
     const { id: userId, username } = user
     const hasTtdt = await userService.hasBadge(userId, TTDT_ID)
     const hasPtdt = await userService.hasBadge(userId, PTDT_ID)
-    const hasTcct = await userService.hasBadge(userId, TCCT_ID)
+    const hasTcdt = await userService.hasBadge(userId, TCDT_ID)
 
     const embed = new MessageEmbed()
       .setTitle(`${username ?? userId}'s badges`)
       .addField('TTDT', hasTtdt ? 'yes' : 'no', true)
       .addField('PTDT', hasPtdt ? 'yes' : 'no', true)
-      .addField('TCCT', hasTcct ? 'yes' : 'no', true)
+      .addField('TCDT', hasTcdt ? 'yes' : 'no', true)
       .setColor(message.guild.primaryColor)
     return message.replyEmbed(embed)
   }

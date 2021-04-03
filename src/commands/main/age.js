@@ -15,7 +15,6 @@ class AgeCommand extends BaseCommand {
       description: 'Posts the age of given user/you.',
       examples: ['age', 'age Happywalker'],
       clientPermissions: ['SEND_MESSAGES'],
-      requiresApi: true,
       args: [{
         key: 'user',
         prompt: 'Of which user would you like to know the age?',

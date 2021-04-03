@@ -3,7 +3,7 @@
 const BaseCommand = require('../base')
 
 const { MessageEmbed } = require('discord.js')
-const { applicationAdapter } = require('../../adapters')
+const { groupService } = require('../../services')
 
 class MemberCountCommand extends BaseCommand {
   constructor (client) {
@@ -12,7 +12,6 @@ class MemberCountCommand extends BaseCommand {
       name: 'membercount',
       description: 'Posts the current member count of the group.',
       clientPermissions: ['SEND_MESSAGES'],
-      requiresApi: true,
       args: [
         {
           key: 'groupId',
@@ -28,7 +27,7 @@ class MemberCountCommand extends BaseCommand {
     if (typeof groupId === 'undefined') {
       return message.reply('Invalid group ID.')
     }
-    const group = (await applicationAdapter('get', `/v1/groups/${groupId}`)).data
+    const group = await groupService.getGroup(groupId)
 
     const embed = new MessageEmbed()
       .addField(`${group.name}'s member count`, group.memberCount)
