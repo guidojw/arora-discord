@@ -3,7 +3,7 @@
 const { userService } = require('../../../services')
 
 const rankChangeHandler = async (client, { data }) => {
-  const { groupId, userId, rank } = data.args
+  const { groupId, userId, rank } = data
   let usernameRegex
   let errored = false
   for (const guild of client.guilds.cache.values()) {
