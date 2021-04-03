@@ -4,7 +4,7 @@ const { robloxAdapter } = require('../adapters')
 const { split } = require('../util').util
 
 async function getIdFromUsername (username) {
-  const userIds = (await robloxAdapter('post', 'users', `v1/usernames/users`, {
+  const userIds = (await robloxAdapter('post', 'users', 'v1/usernames/users', {
     usernames: [username],
     excludeBannedUsers: false
   })).data.data
