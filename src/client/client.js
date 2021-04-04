@@ -135,8 +135,7 @@ class NSadminClient extends CommandoClient {
   }
 
   nextActivity (activity) {
-    this.currentActivity = activity ?? this.currentActivity + 1
-    this.currentActivity %= 2
+    this.currentActivity = (activity ?? this.currentActivity + 1) % 2
     switch (this.currentActivity) {
       case 0:
         return this.user.setActivity(`${this.commandPrefix}help`, { type: 'LISTENING' })
