@@ -124,8 +124,8 @@ class NSadminClient extends CommandoClient {
 
   startActivityCarousel () {
     if (!this.activityCarouselInterval) {
-      this.activityCarouselInterval = this.setInterval(this.setNextActivity.bind(this), ACTIVITY_CAROUSEL_INTERVAL)
-      return this.setNextActivity(0)
+      this.activityCarouselInterval = this.setInterval(this.nextActivity.bind(this), ACTIVITY_CAROUSEL_INTERVAL)
+      return this.nextActivity(0)
     }
   }
 
@@ -134,7 +134,7 @@ class NSadminClient extends CommandoClient {
     this.activityCarouselInterval = undefined
   }
 
-  setNextActivity (activity) {
+  nextActivity (activity) {
     this.currentActivity = activity ?? this.currentActivity + 1
     this.currentActivity %= 2
     switch (this.currentActivity) {
