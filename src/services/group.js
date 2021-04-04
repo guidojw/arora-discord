@@ -4,9 +4,17 @@ const pluralize = require('pluralize')
 const discordService = require('./discord')
 const userService = require('../services/user')
 
-const { applicationAdapter } = require('../adapters')
+const { applicationAdapter, robloxAdapter } = require('../adapters')
 const { getDate, getTime, getTimeZoneAbbreviation } = require('../util').timeUtil
 const { getAbbreviation } = require('../util').util
+
+async function getGroup (groupId) {
+  try {
+    return (await robloxAdapter('get', 'groups', `v1/groups/${groupId}`)).data
+  } catch (err) {
+    throw new Error('Invalid group.')
+  }
+}
 
 async function getTrainingEmbeds (trainings) {
   const userIds = [...new Set([
@@ -87,6 +95,7 @@ async function getRoles (groupId) {
 }
 
 module.exports = {
+  getGroup,
   getRoles,
   getSuspensionEmbeds,
   getSuspensionRow,

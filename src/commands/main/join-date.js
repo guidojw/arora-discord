@@ -14,7 +14,6 @@ class JoinDateCommand extends BaseCommand {
       description: 'Posts the join date of given user/you.',
       examples: ['joindate', 'joindate Happywalker'],
       clientPermissions: ['SEND_MESSAGES'],
-      requiresApi: true,
       args: [{
         key: 'user',
         prompt: 'Of which user would you like to know the join date?',
