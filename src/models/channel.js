@@ -52,6 +52,9 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'ratingsChannelId'
     })
     Channel.hasOne(models.Guild, {
+      foreignKey: 'ticketArchivesChannelId'
+    })
+    Channel.hasOne(models.Guild, {
       foreignKey: 'ticketsCategoryId'
     })
   }
