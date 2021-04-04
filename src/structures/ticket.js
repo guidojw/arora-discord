@@ -5,7 +5,7 @@ const BaseStructure = require('./base')
 const TicketGuildMemberManager = require('../managers/ticket-guild-member')
 
 const { stripIndents } = require('common-tags')
-const { MessageEmbed } = require('discord.js')
+const { Collection, MessageAttachment, MessageEmbed } = require('discord.js')
 const { PartialTypes } = require('discord.js').Constants
 const { discordService, userService } = require('../services')
 const { getDate, getTime } = require('../util').timeUtil
@@ -56,12 +56,7 @@ class Ticket extends BaseStructure {
   }
 
   async populateChannel () {
-    let robloxId, robloxUsername
-    try {
-      robloxId = this.author.robloxId ?? (await this.author.fetchVerificationData()).robloxId
-      robloxUsername = this.author.robloxUsername ?? (await userService.getUser(robloxId)).name
-    } catch {} // eslint-disable-line no-empty
-
+    const { robloxId, robloxUsername } = await this.fetchAuthorData()
     const date = new Date()
     const readableDate = getDate(date)
     const readableTime = getTime(date)
@@ -87,6 +82,9 @@ class Ticket extends BaseStructure {
 
   async close (message, success, color) {
     if (this.channel) {
+      if (this.guild.ticketArchivesChannel) {
+        await this.guild.ticketArchivesChannel.send(await this.fetchArchiveAttachment())
+      }
       await this.channel.delete()
     }
 
@@ -155,6 +153,75 @@ class Ticket extends BaseStructure {
       `)
       .setFooter(`Ticket ID: ${this.id}`)
     return this.guild.ratingsChannel.send(embed)
+  }
+
+  async fetchArchiveAttachment () {
+    let output = ''
+
+    output += 'TICKET INFORMATION\n'
+    output += `\tID: ${this.id}\n\tType: ${this.type.name}\n`
+    output += `\tCreated at: ${this.channel.createdAt}\n\tClosed at: ${new Date()}\n\n`
+
+    if (this.author.partial) {
+      try {
+        await this.author.fetch()
+      } catch {} // eslint-disable-line no-empty
+    }
+    const { robloxId, robloxUsername } = await this.fetchAuthorData()
+    output += 'AUTHOR INFORMATION\n'
+    output += `\tDiscord tag: ${this.author.user.tag ?? 'unknown'}\n\tDiscord ID: ${this.author.id}\n`
+    output += `\tRoblox username: ${robloxUsername ?? 'unknown'}\n\tRoblox ID: ${robloxId ?? 'unknown'}\n\n`
+
+    output += '='.repeat(100) + '\n\n'
+
+    let messages = await this.fetchMessages()
+    messages = messages.filter(message => message.author.id !== this.client.user.id)
+    for (const message of messages.values()) {
+      if (message.content !== '' || message.attachments.size > 0) {
+        output += `Sent by: ${message.author.tag} (${message.author.id})\n\n`
+
+        if (message.content !== '') {
+          output += `\t${message.cleanContent}\n\n`
+        }
+        if (message.attachments.size > 0) {
+          output += `Attachments\n${message.attachments.map(attachment => `- ${attachment.name}: ${attachment.url}\n`)}\n`
+        }
+
+        output += message.createdAt + '\n\n'
+
+        output += '='.repeat(100) + '\n\n'
+      }
+    }
+
+    output += 'END OF TICKET\n'
+
+    return new MessageAttachment(Buffer.from(output), `${this.id}-${this.channel.name}.txt`)
+  }
+
+  async fetchAuthorData () {
+    let robloxId, robloxUsername
+    try {
+      robloxId = this.author.robloxId ?? (await this.author.fetchVerificationData()).robloxId
+      robloxUsername = this.author.robloxUsername ?? robloxId !== null
+        ? (await userService.getUser(robloxId)).name
+        : null
+    } catch {} // eslint-disable-line no-empty
+    return { robloxId, robloxUsername }
+  }
+
+  async fetchMessages () {
+    if (!this.channel) {
+      return null
+    }
+
+    let result = new Collection()
+    let after = '0'
+    do {
+      const messages = (await this.channel.messages.fetch({ after })).sort()
+      result = result.concat(messages)
+      after = messages.last()?.id
+    } while (after)
+    return result
   }
 
   update (data) {
