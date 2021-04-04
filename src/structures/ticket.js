@@ -159,8 +159,7 @@ class Ticket extends BaseStructure {
     let output = ''
 
     output += 'TICKET INFORMATION\n'
-    output += `\tID: ${this.id}\n\tType: ${this.type.name}\n`
-    output += `\tCreated at: ${this.channel.createdAt}\n\tClosed at: ${new Date()}\n\n`
+    output += `ID: ${this.id}\nType: ${this.type.name}\n\n`
 
     if (this.author.partial) {
       try {
@@ -169,8 +168,10 @@ class Ticket extends BaseStructure {
     }
     const { robloxId, robloxUsername } = await this.fetchAuthorData()
     output += 'AUTHOR INFORMATION\n'
-    output += `\tDiscord tag: ${this.author.user.tag ?? 'unknown'}\n\tDiscord ID: ${this.author.id}\n`
-    output += `\tRoblox username: ${robloxUsername ?? 'unknown'}\n\tRoblox ID: ${robloxId ?? 'unknown'}\n\n`
+    output += `Discord tag: ${this.author.user.tag ?? 'unknown'}\nDiscord ID: ${this.author.id}\n`
+    output += `Roblox username: ${robloxUsername ?? 'unknown'}\nRoblox ID: ${robloxId ?? 'unknown'}\n\n`
+
+    output += `Created at: ${this.channel.createdAt}\n  Closed at: ${new Date()}\n\n`
 
     output += '='.repeat(100) + '\n\n'
 
@@ -181,7 +182,7 @@ class Ticket extends BaseStructure {
         output += `Sent by: ${message.author.tag} (${message.author.id})\n\n`
 
         if (message.content !== '') {
-          output += `\t${message.cleanContent}\n\n`
+          output += `  ${message.cleanContent}\n\n`
         }
         if (message.attachments.size > 0) {
           output += `Attachments\n${message.attachments.map(attachment => `- ${attachment.name}: ${attachment.url}\n`)}\n`
