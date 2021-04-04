@@ -68,6 +68,7 @@ class NSadminClient extends CommandoClient {
 
     this.dispatcher.addInhibitor(requiresApiInhibitor)
     this.dispatcher.addInhibitor(requiresRobloxGroupInhibitor)
+    this.dispatcher.addInhibitor(requiresSingleGuildInhibitor)
 
     if (applicationConfig.apiEnabled) {
       this.nsadminWs = new WebSocketManager(this)
@@ -103,8 +104,7 @@ class NSadminClient extends CommandoClient {
     this.bindEvent('roleDelete')
     this.bindEvent('voiceStateUpdate')
 
-    this.setActivity()
-    setInterval(this.setActivity.bind(this), ACTIVITY_CAROUSEL_INTERVAL)
+    this.startActivityCarousel()
 
     console.log(`Ready to serve on ${this.guilds.cache.size} servers, for ${this.users.cache.size} users.`)
   }
@@ -122,30 +122,31 @@ class NSadminClient extends CommandoClient {
     }
   }
 
-  getNextActivity () {
-    this.currentActivity++
-    this.currentActivity %= 2
+  startActivityCarousel () {
+    if (!this.activityCarouselInterval) {
+      this.activityCarouselInterval = this.setInterval(this.nextActivity.bind(this), ACTIVITY_CAROUSEL_INTERVAL)
+      return this.nextActivity(0)
+    }
+  }
 
+  stopActivityCarousel () {
+    this.clearInterval(this.activityCarouselInterval)
+    this.activityCarouselInterval = undefined
+  }
+
+  nextActivity (activity) {
+    this.currentActivity = (activity ?? this.currentActivity + 1) % 2
     switch (this.currentActivity) {
       case 0:
-        return { name: `${this.commandPrefix}help`, options: { type: 'LISTENING' } }
+        return this.user.setActivity(`${this.commandPrefix}help`, { type: 'LISTENING' })
       case 1: {
         let totalMemberCount = 0
         for (const guild of this.guilds.cache.values()) {
           totalMemberCount += guild.memberCount
         }
-        return { name: `${totalMemberCount} users`, options: { type: 'WATCHING' } }
+        return this.user.setActivity(`${totalMemberCount} users`, { type: 'WATCHING' })
       }
     }
-  }
-
-  setActivity (name, options) {
-    if (!name) {
-      const activity = this.getNextActivity()
-      name = activity.name
-      options = activity.options
-    }
-    return this.user.setActivity(name, options)
   }
 
   send (user, content) {
@@ -184,6 +185,15 @@ function requiresRobloxGroupInhibitor (msg) {
     return {
       reason: 'robloxGroupRequired',
       response: msg.reply('This command requires that the server has its robloxGroup setting set.')
+    }
+  }
+}
+
+function requiresSingleGuildInhibitor (msg) {
+  if (msg.command?.requiresSingleGuild && msg.client.guilds.cache.size !== 1) {
+    return {
+      reason: 'singleGuildRequired',
+      response: msg.reply('This command requires the bot to be in only one guild.')
     }
   }
 }

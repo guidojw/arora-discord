@@ -11,6 +11,7 @@ class BaseCommand extends Commando.Command {
 
     this.requiresApi = Boolean(info.requiresApi)
     this.requiresRobloxGroup = Boolean(info.requiresRobloxGroup)
+    this.requiresSingleGuild = Boolean(info.requiresSingleGuild)
   }
 
   hasPermission (message, ownerOverride = true) {

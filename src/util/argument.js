@@ -114,6 +114,7 @@ module.exports = {
   noUrls,
   parseNoneOrType,
   typeOf,
+  urlRegex,
   validateNoneOrType,
   validators,
   validDate,
