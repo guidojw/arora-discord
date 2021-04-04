@@ -36,7 +36,11 @@ class SetActivityCommand extends BaseCommand {
           .map(type => type.toLowerCase()),
         validate: validateNoneOrType,
         parse: type => ActivityTypes.includes(type.toUpperCase()) ? type.toUpperCase() : undefined
-      }]
+      }],
+      throttling: {
+        usages: 1,
+        duration: 10 * 60
+      }
     })
   }
 
