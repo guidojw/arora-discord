@@ -18,14 +18,14 @@ async function getRank (userId, groupId) {
   return (await robloxAdapter('get', 'groups', `v1/users/${userId}/groups/roles`)).data
     .data
     .find(group => group.group.id === groupId)
-    .role.name ?? 'Guest'
+    .role.rank ?? 0
 }
 
 async function getRole (userId, groupId) {
   return (await robloxAdapter('get', 'groups', `v1/users/${userId}/groups/roles`)).data
     .data
     .find(group => group.group.id === groupId)
-    .role.rank ?? 0
+    .role.name ?? 'Guest'
 }
 
 async function getUser (userId) {
