@@ -171,12 +171,16 @@ class Ticket extends BaseStructure {
     output += `Discord tag: ${this.author.user.tag ?? 'unknown'}\nDiscord ID: ${this.author.id}\n`
     output += `Roblox username: ${robloxUsername ?? 'unknown'}\nRoblox ID: ${robloxId ?? 'unknown'}\n\n`
 
-    output += `Created at: ${this.channel.createdAt}\n  Closed at: ${new Date()}\n\n`
+    output += `Created at: ${this.channel.createdAt}\nClosed at: ${new Date()}\n\n`
 
     output += '='.repeat(100) + '\n\n'
 
-    let messages = await this.fetchMessages()
-    messages = messages.filter(message => message.author.id !== this.client.user.id)
+    const messages = await this.fetchMessages()
+    const firstMessage = messages.first()
+    if (firstMessage?.author.id !== this.client.user.id || firstMessage?.content !== this.author.toString()) {
+      output += '...\n\n'
+      output += '='.repeat(100) + '\n\n'
+    }
     for (const message of messages.values()) {
       if (message.content !== '' || message.attachments.size > 0) {
         output += `Sent by: ${message.author.tag} (${message.author.id})\n\n`
