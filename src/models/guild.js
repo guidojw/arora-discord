@@ -113,6 +113,10 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'ratingsChannelId'
     })
     Guild.belongsTo(models.Channel, {
+      foreignKey: 'ticketArchivesChannelId',
+      onDelete: 'SET NULL'
+    })
+    Guild.belongsTo(models.Channel, {
       foreignKey: 'ticketsCategoryId'
     })
     Guild.hasMany(models.TicketType, {

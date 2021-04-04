@@ -41,6 +41,7 @@ const NSadminGuild = Structures.extend('Guild', Guild => {
       this.robloxUsernamesInNicknames = data.robloxUsernamesInNicknames
       this.suggestionsChannelId = data.suggestionsChannelId
       this.supportEnabled = data.supportEnabled
+      this.ticketArchivesChannelId = data.ticketArchivesChannelId
       this.ticketsCategoryId = data.ticketsCategoryId
       this.trainingsInfoPanelId = data.trainingsInfoPanelId
       this.trainingsPanelId = data.trainingsPanelId
@@ -156,6 +157,10 @@ const NSadminGuild = Structures.extend('Guild', Guild => {
       return this.channels.cache.get(this.ratingsChannelId) || null
     }
 
+    get ticketArchivesChannel () {
+      return this.channels.cache.get(this.ticketArchivesChannelId) || null
+    }
+
     get ticketsCategory () {
       return this.channels.cache.get(this.ticketsCategoryId) || null
     }
@@ -191,6 +196,7 @@ const NSadminGuild = Structures.extend('Guild', Guild => {
         robloxUsernamesInNicknames: data.robloxUsernamesInNicknames,
         suggestionsChannelId: data.suggestionsChannelId,
         supportEnabled: data.supportEnabled,
+        ticketArchivesChannelId: data.ticketArchivesChannelId,
         ticketsCategoryId: data.ticketsCategoryId,
         trainingsInfoPanelId: data.trainingsInfoPanelId,
         trainingsPanelId: data.trainingsPanelId,
