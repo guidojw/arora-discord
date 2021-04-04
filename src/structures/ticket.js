@@ -75,7 +75,7 @@ class Ticket extends BaseStructure {
       .setColor(this.guild.primaryColor)
       .setDescription(stripIndents`
       A Ticket Moderator will be with you shortly.
-      This may take up to 24 hours. You can still close your ticket by using the \`/closeticket\` command.
+      This may take up to 24 hours. You can still close your ticket by using the \`closeticket\` command.
       `)
     return this.channel.send(modInfoEmbed)
   }
