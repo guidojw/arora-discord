@@ -23,7 +23,7 @@ async function getBanEmbeds (groupId, bans) {
   )
 }
 
-function getBanRow (ban, { users, roles }) {
+function getBanRow ([, ban], { users, roles }) {
   const username = users.find(user => user.id === ban.userId).name
   const author = users.find(user => user.id === ban.authorId)
   const role = roles.roles.find(role => role.rank === ban.rank)
