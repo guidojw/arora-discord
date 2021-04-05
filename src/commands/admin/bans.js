@@ -28,7 +28,7 @@ class BansCommand extends BaseCommand {
 
   async run (message, { user }) {
     if (user) {
-      const ban = (await applicationAdapter('get', `/v1/bans/${user.id}`)).data
+      const ban = (await applicationAdapter('get', `/v1/groups/${message.guild.robloxGroupId}/bans/${user.id}`)).data
 
       const embed = new MessageEmbed()
         .setTitle(`${user.username ?? user.id}'s ban`)
@@ -44,7 +44,7 @@ class BansCommand extends BaseCommand {
 
       return message.replyEmbed(embed)
     } else {
-      const bans = (await applicationAdapter('get', '/v1/bans?sort=date')).data
+      const bans = (await applicationAdapter('get', `/v1/groups/${message.guild.robloxGroupId}/bans?sort=date`)).data
       if (bans.length === 0) {
         return message.reply('There are currently no bans.')
       }

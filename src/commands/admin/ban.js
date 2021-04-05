@@ -34,11 +34,10 @@ class BanCommand extends BaseCommand {
       return message.reply('This command requires you to be verified with a verification provider.')
     }
 
-    await applicationAdapter('post', '/v1/bans', {
+    await applicationAdapter('post', `/v1/groups/${message.guild.robloxGroupId}/bans`, {
+      userId: user.id,
       authorId,
-      groupId: message.guild.robloxGroupId,
-      reason,
-      userId: user.id
+      reason
     })
 
     return message.reply(`Successfully banned **${user.username ?? user.id}**.`)
