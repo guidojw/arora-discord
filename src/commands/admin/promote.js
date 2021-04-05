@@ -17,7 +17,7 @@ class PromoteCommand extends BaseCommand {
       args: [{
         key: 'user',
         prompt: 'Who would you like to promote?',
-        type: 'member|string'
+        type: 'roblox-user'
       }]
     })
   }
