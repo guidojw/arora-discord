@@ -30,7 +30,7 @@ async function getTrainingEmbeds (trainings) {
   )
 }
 
-function getTrainingRow (training, { users }) {
+function getTrainingRow ([, training], { users }) {
   const username = users.find(user => user.id === training.authorId).name
   const date = new Date(training.date)
   const readableDate = getDate(date)
@@ -55,7 +55,7 @@ async function getSuspensionEmbeds (groupId, suspensions) {
   )
 }
 
-function getSuspensionRow (suspension, { users, roles }) {
+function getSuspensionRow ([, suspension], { users, roles }) {
   const username = users.find(user => user.id === suspension.userId).name
   const author = users.find(user => user.id === suspension.authorId)
   const role = roles.roles.find(role => role.rank === suspension.rank)
