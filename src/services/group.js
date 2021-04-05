@@ -25,7 +25,7 @@ async function getTrainingEmbeds (trainings) {
   return discordService.getListEmbeds(
     'Upcoming Trainings',
     trainings,
-    exports.getTrainingRow,
+    getTrainingRow,
     { users }
   )
 }
@@ -50,7 +50,7 @@ async function getSuspensionEmbeds (groupId, suspensions) {
   return discordService.getListEmbeds(
     'Current Suspensions',
     suspensions,
-    exports.getSuspensionRow,
+    getSuspensionRow,
     { users, roles }
   )
 }
@@ -59,7 +59,7 @@ function getSuspensionRow (suspension, { users, roles }) {
   const username = users.find(user => user.id === suspension.userId).name
   const author = users.find(user => user.id === suspension.authorId)
   const role = roles.roles.find(role => role.rank === suspension.rank)
-  const roleAbbreviation = role ? getAbbreviation(role.name) : 'Unknown'
+  const roleAbbreviation = role ? getAbbreviation(role.name) : 'unknown'
   const rankBack = suspension.rankBack ? 'yes' : 'no'
   const dateString = getDate(new Date(suspension.date))
   const days = suspension.duration / 86400000
@@ -71,7 +71,7 @@ function getSuspensionRow (suspension, { users, roles }) {
   }
   const extensionString = extensionDays < 0 ? ` (${extensionDays})` : extensionDays > 0 ? ` (+${extensionDays})` : ''
 
-  return `**${username}** (${roleAbbreviation}, rankback **${rankBack}**) by **${author.name}** at **${dateString}** for **${days}${extensionString} ${pluralize('day', days + extensionDays)}** with reason:\n*${suspension.reason}*`
+  return `**${username}** (${roleAbbreviation}, rankBack **${rankBack}**) by **${author.name}** at **${dateString}** for **${days}${extensionString} ${pluralize('day', days + extensionDays)}** with reason:\n*${suspension.reason}*`
 }
 
 function groupTrainingsByType (trainings) {
