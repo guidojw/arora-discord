@@ -53,7 +53,7 @@ class ChangeBanCommand extends BaseCommand {
       return message.reply('This command requires you to be verified with a verification provider.')
     }
 
-    await applicationAdapter('put', `/v1/bans/${user.id}`, { changes, editorId })
+    await applicationAdapter('put', `/v1/groups/${message.guild.robloxGroupId}/bans/${user.id}`, { changes, editorId })
 
     return message.reply(`Successfully changed **${user.username ?? user.id}**'s ban.`)
   }
