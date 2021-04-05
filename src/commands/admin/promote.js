@@ -29,7 +29,7 @@ class PromoteCommand extends BaseCommand {
     }
 
     const roles = (await applicationAdapter('post', `/v1/groups/${message.guild.robloxGroupId}/users/${user.id}/promote`, {
-      authorId,
+      authorId
     })).data
 
     return message.reply(`Successfully promoted **${user.username ?? user.id}** from **${roles.oldRole.name}** to **${roles.newRole.name}**.`)
