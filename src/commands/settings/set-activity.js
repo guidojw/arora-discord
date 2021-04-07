@@ -32,7 +32,7 @@ class SetActivityCommand extends BaseCommand {
         prompt: 'What activity type do you want to use? Reply with "none" if you replied "none" to the previous ' +
           'question as well.',
         oneOf: ActivityTypes
-          .filter(type => !['WATCHING', 'CUSTOM_STATUS'].includes(type))
+          .filter(type => type !== 'CUSTOM_STATUS')
           .map(type => type.toLowerCase()),
         validate: validateNoneOrType,
         parse: type => ActivityTypes.includes(type.toUpperCase()) ? type.toUpperCase() : undefined
