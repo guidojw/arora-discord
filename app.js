@@ -3,11 +3,19 @@
 require('dotenv').config()
 
 const Sentry = require('@sentry/node')
+const cron = require('node-cron')
 const NSadminClient = require('./src/client/client')
+
+const healthCheckJobConfig = require('./config/cron').healthCheckJob
 
 if (process.env.SENTRY_DSN) {
   Sentry.init({ dsn: process.env.SENTRY_DSN })
 }
+
+cron.schedule(
+  healthCheckJobConfig.expression,
+  healthCheckJobConfig.job.bind(healthCheckJobConfig.job, 'main')
+)
 
 new NSadminClient({
   commandEditableDuration: 0
