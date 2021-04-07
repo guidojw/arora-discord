@@ -77,7 +77,7 @@ class HostTrainingCommand extends BaseCommand {
       return message.reply('This command requires you to be verified with a verification provider.')
     }
 
-    const training = (await applicationAdapter('post', `/v1/groups/${message.guild.robloxGroupId}/trainings`, {
+    const training = (await applicationAdapter('POST', `v1/groups/${message.guild.robloxGroupId}/trainings`, {
       authorId,
       date: dateUnix,
       notes,

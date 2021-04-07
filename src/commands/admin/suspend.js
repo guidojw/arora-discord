@@ -45,7 +45,7 @@ class SuspendCommand extends BaseCommand {
       return message.reply('This command requires you to be verified with a verification provider.')
     }
 
-    await applicationAdapter('post', `/v1/groups/${message.guild.robloxGroupId}/suspensions`, {
+    await applicationAdapter('POST', `v1/groups/${message.guild.robloxGroupId}/suspensions`, {
       authorId,
       duration: days * 86400000,
       rankBack,

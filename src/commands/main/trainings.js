@@ -29,7 +29,7 @@ class TrainingsCommand extends BaseCommand {
 
   async run (message, { trainingId }) {
     if (trainingId) {
-      const training = (await applicationAdapter('get', `/v1/groups/${message.guild.robloxGroupId}/trainings/${trainingId}`))
+      const training = (await applicationAdapter('GET', `v1/groups/${message.guild.robloxGroupId}/trainings/${trainingId}`))
         .data
       const username = (await userService.getUser(training.authorId).name)
       const date = new Date(training.date)
@@ -43,7 +43,7 @@ class TrainingsCommand extends BaseCommand {
         .setColor(message.guild.primaryColor)
       return message.replyEmbed(embed)
     } else {
-      const trainings = (await applicationAdapter('get', `/v1/groups/${message.guild.robloxGroupId}/trainings?sort=date`))
+      const trainings = (await applicationAdapter('GET', `v1/groups/${message.guild.robloxGroupId}/trainings?sort=date`))
         .data
       if (trainings.length === 0) {
         return message.reply('There are currently no hosted trainings.')

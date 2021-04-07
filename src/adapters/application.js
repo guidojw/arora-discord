@@ -7,7 +7,7 @@ const applicationConfig = require('../../config/application')
 function applicationAdapter (method, pathname, data) {
   if (applicationConfig.apiEnabled) {
     return axios({
-      url: process.env.HOST + pathname,
+      url: process.env.HOST + '/' + pathname,
       method,
       data,
       headers: {

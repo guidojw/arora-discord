@@ -28,7 +28,7 @@ class PromoteCommand extends BaseCommand {
       return message.reply('This command requires you to be verified with a verification provider.')
     }
 
-    const roles = (await applicationAdapter('post', `/v1/groups/${message.guild.robloxGroupId}/users/${user.id}/promote`, {
+    const roles = (await applicationAdapter('POST', `v1/groups/${message.guild.robloxGroupId}/users/${user.id}/promote`, {
       authorId
     })).data
 

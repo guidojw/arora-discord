@@ -4,7 +4,7 @@ const axios = require('axios')
 
 function roVerAdapter (method, pathname) {
   return axios({
-    url: 'https://verify.eryn.io/api' + pathname,
+    url: 'https://verify.eryn.io/api/' + pathname,
     method
   })
 }

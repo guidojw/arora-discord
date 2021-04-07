@@ -29,7 +29,7 @@ class SuspensionsCommand extends BaseCommand {
 
   async run (message, { user }) {
     if (user) {
-      const suspension = (await applicationAdapter('get', `/v1/groups/${message.guild.groupId}/suspensions/${user.id}`))
+      const suspension = (await applicationAdapter('GET', `v1/groups/${message.guild.groupId}/suspensions/${user.id}`))
         .data
       const days = suspension.duration / 86400000
       const date = new Date(suspension.date)
@@ -55,7 +55,7 @@ class SuspensionsCommand extends BaseCommand {
         .setColor(message.guild.primaryColor)
       return message.replyEmbed(embed)
     } else {
-      const suspensions = (await applicationAdapter('get', `/v1/groups/${message.guild.robloxGroupId}/suspensions?sort=date`))
+      const suspensions = (await applicationAdapter('GET', `v1/groups/${message.guild.robloxGroupId}/suspensions?sort=date`))
         .data
       if (suspensions.length === 0) {
         return message.reply('There are currently no suspensions.')

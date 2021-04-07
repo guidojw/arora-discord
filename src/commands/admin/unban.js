@@ -35,7 +35,7 @@ class UnbanCommand extends BaseCommand {
       return message.reply('This command requires you to be verified with a verification provider.')
     }
 
-    await applicationAdapter('post', `/v1/groups/${message.guild.robloxGroupId}/bans/${user.id}/cancel`, { authorId, reason })
+    await applicationAdapter('POST', `v1/groups/${message.guild.robloxGroupId}/bans/${user.id}/cancel`, { authorId, reason })
 
     return message.reply(`Successfully unbanned **${user.username ?? user.id}**.`)
   }

@@ -38,7 +38,7 @@ class NSadminProvider extends SettingProvider {
     const guild = this.client.guilds.cache.get(guildId)
     const [data] = await Guild.findOrCreate({ where: { id: guildId } })
 
-    // Band-aid fix. idk why, but somehow after merging https://github.com/guidojw/nsadmin-discord/pull/164 the bot's
+    // Band-aid fix. idk why, but somehow after merging https://github.com/guidojw/arora-discord/pull/164 the bot's
     // memory usage raised rapidly on start up and kept causing numerous out of memory errors. I tried several things
     // and it seems to be Sequelize related. Removing models from Guild model's defaultScope somehow fixed the issue.
     if (guild) {
