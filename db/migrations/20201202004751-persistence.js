@@ -577,7 +577,7 @@ module.exports = {
         groupId: {
           type: Sequelize.INTEGER,
           primaryKey: true,
-          references:  {
+          references: {
             model: 'groups',
             key: 'id'
           },
