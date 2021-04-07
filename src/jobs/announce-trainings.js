@@ -18,7 +18,7 @@ async function announceTrainingsJob (guild) {
     return
   }
 
-  const trainings = (await applicationAdapter('get', `/v1/groups/${guild.robloxGroupId}/trainings?sort=date`)).data
+  const trainings = (await applicationAdapter('GET', `v1/groups/${guild.robloxGroupId}/trainings?sort=date`)).data
   const authorIds = [...new Set(trainings.map(training => training.authorId))]
   const authors = await userService.getUsers(authorIds)
 

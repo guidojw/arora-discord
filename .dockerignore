@@ -7,7 +7,6 @@
 Dockerfile
 docker-compose.yml
 
-
 # Dependencies
 node_modules
 

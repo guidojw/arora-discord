@@ -33,7 +33,7 @@ class ShoutCommand extends BaseCommand {
       return message.reply('This command requires you to be verified with a verification provider.')
     }
 
-    const shout = (await applicationAdapter('post', `/v1/groups/${message.guild.robloxGroupId}/shout`, {
+    const shout = (await applicationAdapter('POST', `v1/groups/${message.guild.robloxGroupId}/shout`, {
       authorId,
       message: body === 'clear' ? '' : body
     })).data

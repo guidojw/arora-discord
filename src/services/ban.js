@@ -18,16 +18,16 @@ async function getBanEmbeds (groupId, bans) {
   return discordService.getListEmbeds(
     'Banlist',
     bans,
-    exports.getBanRow,
+    getBanRow,
     { users, roles }
   )
 }
 
-function getBanRow (ban, { users, roles }) {
+function getBanRow ([, ban], { users, roles }) {
   const username = users.find(user => user.id === ban.userId).name
   const author = users.find(user => user.id === ban.authorId)
   const role = roles.roles.find(role => role.rank === ban.rank)
-  const roleAbbreviation = role ? getAbbreviation(role.name) : 'Unknown'
+  const roleAbbreviation = role ? getAbbreviation(role.name) : 'unknown'
   const dateString = getDate(new Date(ban.date))
 
   return `**${username}**${role ? ' (' + roleAbbreviation + ')' : ''}${author ? ' by **' + author.name + '**' : ''}${dateString ? ' at **' + dateString + '**' : ''}${ban.reason ? ' with reason:\n*' + ban.reason + '*' : ''}`

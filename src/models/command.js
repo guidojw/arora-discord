@@ -11,6 +11,8 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       values: ['command', 'group']
     }
+  }, {
+    tableName: 'commands'
   })
 
   Command.associate = models => {

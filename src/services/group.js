@@ -10,7 +10,7 @@ const { getAbbreviation } = require('../util').util
 
 async function getGroup (groupId) {
   try {
-    return (await robloxAdapter('get', 'groups', `v1/groups/${groupId}`)).data
+    return (await robloxAdapter('GET', 'groups', `v1/groups/${groupId}`)).data
   } catch (err) {
     throw new Error('Invalid group.')
   }
@@ -25,12 +25,12 @@ async function getTrainingEmbeds (trainings) {
   return discordService.getListEmbeds(
     'Upcoming Trainings',
     trainings,
-    exports.getTrainingRow,
+    getTrainingRow,
     { users }
   )
 }
 
-function getTrainingRow (training, { users }) {
+function getTrainingRow ([, training], { users }) {
   const username = users.find(user => user.id === training.authorId).name
   const date = new Date(training.date)
   const readableDate = getDate(date)
@@ -50,16 +50,16 @@ async function getSuspensionEmbeds (groupId, suspensions) {
   return discordService.getListEmbeds(
     'Current Suspensions',
     suspensions,
-    exports.getSuspensionRow,
+    getSuspensionRow,
     { users, roles }
   )
 }
 
-function getSuspensionRow (suspension, { users, roles }) {
+function getSuspensionRow ([, suspension], { users, roles }) {
   const username = users.find(user => user.id === suspension.userId).name
   const author = users.find(user => user.id === suspension.authorId)
   const role = roles.roles.find(role => role.rank === suspension.rank)
-  const roleAbbreviation = role ? getAbbreviation(role.name) : 'Unknown'
+  const roleAbbreviation = role ? getAbbreviation(role.name) : 'unknown'
   const rankBack = suspension.rankBack ? 'yes' : 'no'
   const dateString = getDate(new Date(suspension.date))
   const days = suspension.duration / 86400000
@@ -71,7 +71,7 @@ function getSuspensionRow (suspension, { users, roles }) {
   }
   const extensionString = extensionDays < 0 ? ` (${extensionDays})` : extensionDays > 0 ? ` (+${extensionDays})` : ''
 
-  return `**${username}** (${roleAbbreviation}, rankback **${rankBack}**) by **${author.name}** at **${dateString}** for **${days}${extensionString} ${pluralize('day', days + extensionDays)}** with reason:\n*${suspension.reason}*`
+  return `**${username}** (${roleAbbreviation}, rankBack **${rankBack}**) by **${author.name}** at **${dateString}** for **${days}${extensionString} ${pluralize('day', days + extensionDays)}** with reason:\n*${suspension.reason}*`
 }
 
 function groupTrainingsByType (trainings) {
@@ -87,11 +87,11 @@ function groupTrainingsByType (trainings) {
 }
 
 async function getTrainingTypes (groupId) {
-  return (await applicationAdapter('get', `/v1/groups/${groupId}/trainings/types`)).data
+  return (await applicationAdapter('GET', `v1/groups/${groupId}/trainings/types`)).data
 }
 
 async function getRoles (groupId) {
-  return (await applicationAdapter('get', `/v1/groups/${groupId}/roles`)).data
+  return (await applicationAdapter('GET', `v1/groups/${groupId}/roles`)).data
 }
 
 module.exports = {

@@ -1,7 +1,6 @@
-/.idea/*
+.env
 
 /node_modules
 
 ecosystem.config.js
-
-.env
+/.idea/*
