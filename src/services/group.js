@@ -10,7 +10,7 @@ const { getAbbreviation } = require('../util').util
 
 async function getGroup (groupId) {
   try {
-    return (await robloxAdapter('get', 'groups', `v1/groups/${groupId}`)).data
+    return (await robloxAdapter('GET', 'groups', `v1/groups/${groupId}`)).data
   } catch (err) {
     throw new Error('Invalid group.')
   }
@@ -87,11 +87,11 @@ function groupTrainingsByType (trainings) {
 }
 
 async function getTrainingTypes (groupId) {
-  return (await applicationAdapter('get', `/v1/groups/${groupId}/trainings/types`)).data
+  return (await applicationAdapter('GET', `v1/groups/${groupId}/trainings/types`)).data
 }
 
 async function getRoles (groupId) {
-  return (await applicationAdapter('get', `/v1/groups/${groupId}/roles`)).data
+  return (await applicationAdapter('GET', `v1/groups/${groupId}/roles`)).data
 }
 
 module.exports = {

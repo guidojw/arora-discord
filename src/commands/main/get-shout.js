@@ -18,7 +18,7 @@ class GetShoutCommand extends Base {
   }
 
   async run (message) {
-    const shout = (await applicationAdapter('get', `/v1/groups/${message.guild.robloxGroupId}/shout`)).data
+    const shout = (await applicationAdapter('GET', `v1/groups/${message.guild.robloxGroupId}/shout`)).data
 
     if (shout.body) {
       const embed = new MessageEmbed()

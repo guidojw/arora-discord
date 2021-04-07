@@ -181,7 +181,7 @@ function requiresApiInhibitor (msg) {
 }
 
 function requiresRobloxGroupInhibitor (msg) {
-  if (msg.command?.requiresRobloxGroup && msg.guild.robloxGroupId === null) {
+  if (msg.command?.requiresRobloxGroup && (!msg.guild || msg.guild.robloxGroupId === null)) {
     return {
       reason: 'robloxGroupRequired',
       response: msg.reply('This command requires that the server has its robloxGroup setting set.')

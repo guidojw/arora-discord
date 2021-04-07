@@ -60,7 +60,7 @@ class ChangeSuspensionCommand extends BaseCommand {
       return message.reply('This command requires you to be verified with a verification provider.')
     }
 
-    await applicationAdapter('put', `/v1/groups/${message.guild.robloxGroupId}/suspensions/${user.id}`, {
+    await applicationAdapter('PUT', `v1/groups/${message.guild.robloxGroupId}/suspensions/${user.id}`, {
       changes,
       editorId
     })

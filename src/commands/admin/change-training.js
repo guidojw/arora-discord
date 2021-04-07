@@ -59,7 +59,7 @@ class ChangeTrainingCommand extends BaseCommand {
 
       changes.typeId = trainingType.id
     } else if (key === 'date' || key === 'time') {
-      const training = (await applicationAdapter('get', `/v1/groups/${message.guild.robloxGroupId}/trainings/${trainingId}`))
+      const training = (await applicationAdapter('GET', `v1/groups/${message.guild.robloxGroupId}/trainings/${trainingId}`))
         .data
       const date = new Date(training.date)
 
@@ -87,7 +87,7 @@ class ChangeTrainingCommand extends BaseCommand {
       return message.reply('This command requires you to be verified with a verification provider.')
     }
 
-    await applicationAdapter('put', `/v1/groups/${message.guild.robloxGroupId}/trainings/${trainingId}`, {
+    await applicationAdapter('PUT', `v1/groups/${message.guild.robloxGroupId}/trainings/${trainingId}`, {
       changes,
       editorId
     })

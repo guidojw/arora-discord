@@ -1,14 +1,13 @@
 {
-  "name": "nsadmin-discord",
+  "name": "arora-discord",
   "version": "1.0.0",
-  "description": "Discord bot for the NSadmin Roblox group bot.",
   "private": true,
-  "repository": "github:guidojw/nsadmin-discord",
+  "repository": "github:guidojw/arora-discord",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
     "start:dev": "nodemon app.js",
-    "lint": "eslint src"
+    "lint": "eslint src db"
   },
   "author": "Guido de Jong",
   "license": "MIT",

@@ -7,6 +7,8 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       field: 'user_id'
     }
+  }, {
+    tableName: 'members'
   })
 
   Member.associate = models => {
