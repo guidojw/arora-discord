@@ -44,9 +44,9 @@ class WhoIsCommand extends BaseCommand {
       const groupsRoles = await userService.getGroupsRoles(user.id)
       const group = groupsRoles.find(group => group.group.id === message.guild.robloxGroupId)
       embed
-        .addField('Role', group.role.name ?? 'Guest', true)
+        .addField('Role', group?.role.name ?? 'Guest', true)
         .addField('\u200b', '\u200b', true)
-        .addField('Rank', group.role.rank ?? 0, true)
+        .addField('Rank', group?.role.rank ?? 0, true)
     }
     embed.addField('\u200b', `[Profile](https://www.roblox.com/users/${user.id}/profile)`)
     return message.replyEmbed(embed)
