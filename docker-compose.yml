@@ -2,7 +2,7 @@ version: '3'
 
 services:
   app:
-    image: docker.guidojw.nl/nsadmin/nsadmin-discord:latest
+    image: docker.guidojw.nl/arora/arora-discord:latest
     restart: unless-stopped
     env_file: .env
     environment:
