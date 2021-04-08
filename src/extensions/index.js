@@ -1,9 +1,9 @@
 'use strict'
 
 module.exports = {
-  NSadminGuild: require('./guild'),
-  NSadminGuildMember: require('./guild-member'),
-  NSadminRole: require('./role'),
-  NSadminTextChannel: require('./text-channel'),
-  NSadminVoiceChannel: require('./voice-channel')
+  AroraGuild: require('./guild'),
+  AroraGuildMember: require('./guild-member'),
+  AroraRole: require('./role'),
+  AroraTextChannel: require('./text-channel'),
+  AroraVoiceChannel: require('./voice-channel')
 }

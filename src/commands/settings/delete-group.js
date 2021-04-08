@@ -13,7 +13,7 @@ class DeleteGroupCommand extends BaseCommand {
       args: [{
         key: 'group',
         prompt: 'What group would you like to delete?',
-        type: 'nsadmin-group'
+        type: 'arora-group'
       }]
     })
   }

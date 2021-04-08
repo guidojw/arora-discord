@@ -3,7 +3,7 @@
 const BaseCommand = require('../base')
 
 const { CategoryChannel, GuildChannel } = require('discord.js')
-const { NSadminTextChannel: TextChannel } = require('../../extensions')
+const { AroraTextChannel: TextChannel } = require('../../extensions')
 const { Channel: ChannelModel, Guild } = require('../../models')
 const { parseNoneOrType } = require('../../util').argumentUtil
 const { VerificationProviders } = require('../../util').Constants

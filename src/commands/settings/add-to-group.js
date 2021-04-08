@@ -13,7 +13,7 @@ class AddToGroupCommand extends BaseCommand {
       args: [{
         key: 'group',
         prompt: 'To what group do you want to add a channel or role?',
-        type: 'nsadmin-group'
+        type: 'arora-group'
       }, {
         key: 'channelOrRole',
         label: 'channel/role',

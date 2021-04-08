@@ -3,7 +3,7 @@
 const BaseCommand = require('../base')
 
 const { MessageEmbed } = require('discord.js')
-const { NSadminGuildMember: GuildMember } = require('../../extensions')
+const { AroraGuildMember: GuildMember } = require('../../extensions')
 
 class PermissionsCommand extends BaseCommand {
   constructor (client) {

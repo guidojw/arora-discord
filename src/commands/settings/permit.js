@@ -2,7 +2,7 @@
 
 const BaseCommand = require('../base')
 
-const { NSadminRole: Role } = require('../../extensions')
+const { AroraRole: Role } = require('../../extensions')
 const { validateNoneOrType, parseNoneOrType } = require('../../util').argumentUtil
 
 class PermitCommand extends BaseCommand {
@@ -51,19 +51,19 @@ class PermitCommand extends BaseCommand {
     const subject = `${permissibleType} ${permissibleType === 'role' ? roleOrGroup : `\`${roleOrGroup}\``}`
 
     if (typeof allow === 'undefined') {
-      await roleOrGroup.nsadminPermissions.delete(commandOrGroup)
+      await roleOrGroup.aroraPermissions.delete(commandOrGroup)
       return message.reply(`Successfully deleted \`${commandOrGroup.name}\` ${commandType} permission from ${subject}.`, {
         allowedMentions: { users: [message.author.id] }
       })
     } else {
-      const permission = roleOrGroup.nsadminPermissions.resolve(commandOrGroup)
+      const permission = roleOrGroup.aroraPermissions.resolve(commandOrGroup)
       if (permission) {
         await permission.update({ allow })
         return message.reply(`Successfully changed \`${commandOrGroup.name}\` ${commandType} permission for ${subject} to allow: \`${allow}\`.`, {
           allowedMentions: { users: [message.author.id] }
         })
       } else {
-        await roleOrGroup.nsadminPermissions.create(commandOrGroup, allow)
+        await roleOrGroup.aroraPermissions.create(commandOrGroup, allow)
         return message.reply(`Successfully created \`${commandOrGroup.name}\` ${commandType} permission for ${subject} with allow: \`${allow}\`.`, {
           allowedMentions: { users: [message.author.id] }
         })

@@ -9,7 +9,7 @@ class RoleGroup extends Group {
   constructor (client, data, guild) {
     super(client, data, guild)
 
-    this.nsadminPermissions = new PermissionManager(this)
+    this.aroraPermissions = new PermissionManager(this)
 
     this._roles = []
 
@@ -21,7 +21,7 @@ class RoleGroup extends Group {
 
     if (data.permissions) {
       for (const rawPermission of data.permissions) {
-        this.nsadminPermissions.add(rawPermission)
+        this.aroraPermissions.add(rawPermission)
       }
     }
 

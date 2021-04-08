@@ -13,7 +13,7 @@ class RemoveFromGroupCommand extends BaseCommand {
       args: [{
         key: 'group',
         prompt: 'From what group do you want to remove a channel or role?',
-        type: 'nsadmin-group'
+        type: 'arora-group'
       }, {
         key: 'channelOrRole',
         prompt: 'What channel or role do you want to remove from this group?',

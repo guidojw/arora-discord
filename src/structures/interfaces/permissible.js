@@ -4,12 +4,12 @@ const PermissionManager = require('../../managers/permission')
 
 class Permissible {
   constructor () {
-    this.nsadminPermissions = new PermissionManager(this)
+    this.aroraPermissions = new PermissionManager(this)
   }
 
   permissionFor (commandOrGroup, bypassGroup) {
-    const commandPermission = this.nsadminPermissions.resolve(commandOrGroup)?.allow ?? null
-    const groupPermission = this.nsadminPermissions.resolve(commandOrGroup.group)?.allow ?? null
+    const commandPermission = this.aroraPermissions.resolve(commandOrGroup)?.allow ?? null
+    const groupPermission = this.aroraPermissions.resolve(commandOrGroup.group)?.allow ?? null
     return (bypassGroup || commandPermission === groupPermission)
       ? commandPermission
       : commandPermission !== false && groupPermission !== false

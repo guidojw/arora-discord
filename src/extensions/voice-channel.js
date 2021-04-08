@@ -3,8 +3,8 @@
 const { Structures } = require('discord.js')
 const { Channel } = require('../models')
 
-const NSadminVoiceChannel = Structures.extend('VoiceChannel', VoiceChannel => {
-  class NSadminVoiceChannel extends VoiceChannel {
+const AroraVoiceChannel = Structures.extend('VoiceChannel', VoiceChannel => {
+  class AroraVoiceChannel extends VoiceChannel {
     async fetchToLinks () {
       const data = await getData(this)
       const toLinks = await data?.getToLinks() ?? []
@@ -36,7 +36,7 @@ const NSadminVoiceChannel = Structures.extend('VoiceChannel', VoiceChannel => {
     }
   }
 
-  return NSadminVoiceChannel
+  return AroraVoiceChannel
 })
 
 function getData (channel) {
@@ -48,4 +48,4 @@ function getData (channel) {
   })
 }
 
-module.exports = NSadminVoiceChannel
+module.exports = AroraVoiceChannel
