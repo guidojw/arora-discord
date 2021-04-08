@@ -20,8 +20,8 @@ class StatusCommand extends BaseCommand {
 
   run (message) {
     const embed = new MessageEmbed()
-      .setColor(0xff82d1)
       .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
+      .setColor(0xff82d1)
       .addField('System Statuses', `Tickets System: **${message.guild.supportEnabled ? 'online' : 'offline'}**`)
       .addField('Load Average', os.loadavg().join(', '), true)
       .addField('Memory Usage', `${formatBytes(os.freemem(), 3)} / ${formatBytes(os.totalmem(), 3)}`, true)
