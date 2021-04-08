@@ -11,7 +11,7 @@ class BaseArgumentType extends ArgumentType {
   constructor (client, holds, managerName) {
     let id = lodash.kebabCase(holds.name)
     if (client.registry.types.has(id)) {
-      id = `nsadmin-${id}`
+      id = `arora-${id}`
     }
     super(client, id)
 

@@ -5,18 +5,18 @@ const Permissible = require('../structures/interfaces/permissible')
 const { Structures } = require('discord.js')
 const { PermissionManager, RoleGroupManager } = require('../managers')
 
-const NSadminRole = Structures.extend('Role', Role => {
-  class NSadminRole extends Role {
+const AroraRole = Structures.extend('Role', Role => {
+  class AroraRole extends Role {
     constructor (...args) {
       super(...args)
 
-      this.nsadminPermissions = new PermissionManager(this)
+      this.aroraPermissions = new PermissionManager(this)
     }
 
     _setup (data) {
       if (data.permissions) {
         for (const rawPermission of data.permissions) {
-          this.nsadminPermissions.add(rawPermission)
+          this.aroraPermissions.add(rawPermission)
         }
       }
     }
@@ -26,9 +26,9 @@ const NSadminRole = Structures.extend('Role', Role => {
     }
   }
 
-  Permissible.applyToClass(NSadminRole)
+  Permissible.applyToClass(AroraRole)
 
-  return NSadminRole
+  return AroraRole
 })
 
-module.exports = NSadminRole
+module.exports = AroraRole

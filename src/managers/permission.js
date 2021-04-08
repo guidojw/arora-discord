@@ -38,7 +38,7 @@ class PermissionManager extends BaseManager {
     if (this.resolve(commandOrGroup)) {
       throw new Error('A permission for that command or command group already exists.')
     }
-    const commandId = commandOrGroup.nsadminId
+    const commandId = commandOrGroup.aroraId
 
     const permission = await PermissionModel.create({
       roleId: this.permissible instanceof Role ? this.permissible.id : null,
@@ -96,10 +96,10 @@ class PermissionManager extends BaseManager {
     }
     let commandId
     try {
-      commandId = this.client.registry.resolveCommand(permission).nsadminId
+      commandId = this.client.registry.resolveCommand(permission).aroraId
     } catch {
       try {
-        commandId = this.client.registry.resolveGroup(permission).nsadminId
+        commandId = this.client.registry.resolveGroup(permission).aroraId
       } catch {} // eslint-disable-line no-empty
     }
     if (commandId) {
@@ -115,10 +115,10 @@ class PermissionManager extends BaseManager {
     }
     let commandId
     try {
-      commandId = this.client.registry.resolveCommand(permission).nsadminId
+      commandId = this.client.registry.resolveCommand(permission).aroraId
     } catch {
       try {
-        commandId = this.client.registry.resolveGroup(permission).nsadminId
+        commandId = this.client.registry.resolveGroup(permission).aroraId
       } catch {} // eslint-disable-line no-empty
     }
     if (commandId) {

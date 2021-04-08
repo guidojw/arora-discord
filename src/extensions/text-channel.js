@@ -3,14 +3,14 @@
 const { Structures } = require('discord.js')
 const { TextChannelGroupManager } = require('../managers')
 
-const NSadminTextChannel = Structures.extend('TextChannel', TextChannel => {
-  class NSadminTextChannel extends TextChannel {
+const AroraTextChannel = Structures.extend('TextChannel', TextChannel => {
+  class AroraTextChannel extends TextChannel {
     get groups () {
       return new TextChannelGroupManager(this)
     }
   }
 
-  return NSadminTextChannel
+  return AroraTextChannel
 })
 
-module.exports = NSadminTextChannel
+module.exports = AroraTextChannel

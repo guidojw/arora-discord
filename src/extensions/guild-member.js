@@ -5,8 +5,8 @@ const { bloxlinkAdapter, roVerAdapter } = require('../adapters')
 const { Member, Role } = require('../models')
 const { VerificationProviders } = require('../util').Constants
 
-const NSadminGuildMember = Structures.extend('GuildMember', GuildMember => {
-  class NSadminGuildMember extends GuildMember {
+const AroraGuildMember = Structures.extend('GuildMember', GuildMember => {
+  class AroraGuildMember extends GuildMember {
     constructor (...args) {
       super(...args)
 
@@ -111,7 +111,7 @@ const NSadminGuildMember = Structures.extend('GuildMember', GuildMember => {
     }
   }
 
-  return NSadminGuildMember
+  return AroraGuildMember
 })
 
 function getData (member) {
@@ -154,4 +154,4 @@ async function fetchBloxlinkData (userId, guildId) {
     : null
 }
 
-module.exports = NSadminGuildMember
+module.exports = AroraGuildMember

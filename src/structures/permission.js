@@ -18,11 +18,11 @@ class Permission extends BaseStructure {
   }
 
   update (data) {
-    return this.permissible.nsadminPermissions.update(this, data)
+    return this.permissible.aroraPermissions.update(this, data)
   }
 
   delete () {
-    return this.permissible.nsadminPermissions.delete(this)
+    return this.permissible.aroraPermissions.delete(this)
   }
 }
 
