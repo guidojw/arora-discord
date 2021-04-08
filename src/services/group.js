@@ -22,7 +22,7 @@ async function getBanEmbeds (groupId, bans) {
     ...bans.map(ban => ban.authorId)
   ])]
   const users = await userService.getUsers(userIds)
-  const roles = await groupService.getRoles(groupId)
+  const roles = await getRoles(groupId)
 
   return discordService.getListEmbeds(
     'Banlist',
