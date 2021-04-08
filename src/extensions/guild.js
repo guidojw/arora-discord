@@ -18,8 +18,8 @@ const { VerificationProviders } = require('../util').Constants
 const applicationConfig = require('../../config/application')
 const cronConfig = require('../../config/cron')
 
-const NSadminGuild = Structures.extend('Guild', Guild => {
-  class NSadminGuild extends Guild {
+const AroraGuild = Structures.extend('Guild', Guild => {
+  class AroraGuild extends Guild {
     constructor (...args) {
       super(...args)
 
@@ -211,7 +211,7 @@ const NSadminGuild = Structures.extend('Guild', Guild => {
     }
   }
 
-  return NSadminGuild
+  return AroraGuild
 })
 
-module.exports = NSadminGuild
+module.exports = AroraGuild

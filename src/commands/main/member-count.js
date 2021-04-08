@@ -8,7 +8,7 @@ const { groupService } = require('../../services')
 class MemberCountCommand extends BaseCommand {
   constructor (client) {
     super(client, {
-      group: 'miscellaneous',
+      group: 'main',
       name: 'membercount',
       description: 'Posts the current member count of the group.',
       clientPermissions: ['SEND_MESSAGES'],

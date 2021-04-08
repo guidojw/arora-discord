@@ -2,7 +2,7 @@
 
 const path = require('path')
 const eventHandlers = require('./events')
-const NSadminProvider = require('./setting-provider')
+const AroraProvider = require('./setting-provider')
 const WebSocketManager = require('./websocket/websocket')
 
 const { DiscordAPIError, GuildEmoji } = require('discord.js')
@@ -15,7 +15,7 @@ const ACTIVITY_CAROUSEL_INTERVAL = 60 * 1000
 
 require('../extensions') // Extend Discord.js structures before the client's collections get instantiated.
 
-class NSadminClient extends CommandoClient {
+class AroraClient extends CommandoClient {
   constructor (options = {}) {
     if (typeof options.commandPrefix === 'undefined') {
       options.commandPrefix = applicationConfig.defaultPrefix
@@ -61,7 +61,6 @@ class NSadminClient extends CommandoClient {
       .registerGroup('admin', 'Admin')
       .registerGroup('bot', 'Bot')
       .registerGroup('main', 'Main')
-      .registerGroup('miscellaneous', 'Miscellaneous')
       .registerGroup('settings', 'Settings')
       .registerTypesIn({ dirname: path.join(__dirname, '../types'), filter: /^(?!base.js).+$/ })
       .registerCommandsIn(path.join(__dirname, '../commands'))
@@ -71,14 +70,14 @@ class NSadminClient extends CommandoClient {
     this.dispatcher.addInhibitor(requiresSingleGuildInhibitor)
 
     if (applicationConfig.apiEnabled) {
-      this.nsadminWs = new WebSocketManager(this)
+      this.aroraWs = new WebSocketManager(this)
     }
 
     this.once('ready', this.ready.bind(this))
   }
 
   async ready () {
-    await this.setProvider(new NSadminProvider())
+    await this.setProvider(new AroraProvider())
 
     const mainGuildId = process.env.NODE_ENV === 'production'
       ? applicationConfig.productionMainGuildId
@@ -162,7 +161,7 @@ class NSadminClient extends CommandoClient {
 
   async login (token = this.token) {
     await super.login(token)
-    this.nsadminWs?.connect()
+    this.aroraWs?.connect()
   }
 
   bindEvent (eventName) {
@@ -208,4 +207,4 @@ async function failSilently (fn, codes) {
   }
 }
 
-module.exports = NSadminClient
+module.exports = AroraClient

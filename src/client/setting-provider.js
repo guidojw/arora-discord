@@ -4,7 +4,7 @@ const { SettingProvider } = require('discord.js-commando')
 
 const { Guild, Command } = require('../models')
 
-class NSadminProvider extends SettingProvider {
+class AroraProvider extends SettingProvider {
   async init (client) {
     this.client = client
 
@@ -25,13 +25,13 @@ class NSadminProvider extends SettingProvider {
   async setupCommand (command, settings) {
     const commandSettings = settings.find(cmd => cmd.type === 'command' && cmd.name === command.name) ||
       await Command.create({ name: command.name, type: 'command' })
-    command.nsadminId = commandSettings.id
+    command.aroraId = commandSettings.id
   }
 
   async setupGroup (group, settings) {
     const groupSettings = settings.find(grp => grp.type === 'group' && grp.name === group.id) ||
       await Command.create({ name: group.id, type: 'group' })
-    group.nsadminId = groupSettings.id
+    group.aroraId = groupSettings.id
   }
 
   async setupGuild (guildId) {
@@ -113,8 +113,8 @@ class NSadminProvider extends SettingProvider {
   async onCommandStatusChange (type, guild, commandOrGroup, enabled) {
     const guildId = this.constructor.getGuildID(guild)
     const data = await Guild.findOne({ where: { id: guildId !== 'global' ? guildId : 0 } })
-    data.addCommand(commandOrGroup.nsadminId, { through: { enabled } })
+    data.addCommand(commandOrGroup.aroraId, { through: { enabled } })
   }
 }
 
-module.exports = NSadminProvider
+module.exports = AroraProvider

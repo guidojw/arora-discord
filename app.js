@@ -4,7 +4,7 @@ require('dotenv').config()
 
 const Sentry = require('@sentry/node')
 const cron = require('node-cron')
-const NSadminClient = require('./src/client/client')
+const AroraClient = require('./src/client/client')
 
 const healthCheckJobConfig = require('./config/cron').healthCheckJob
 
@@ -17,6 +17,6 @@ cron.schedule(
   healthCheckJobConfig.job.bind(healthCheckJobConfig.job, 'main')
 )
 
-new NSadminClient({
+new AroraClient({
   commandEditableDuration: 0
 }).login(process.env.DISCORD_TOKEN)

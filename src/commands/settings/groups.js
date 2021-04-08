@@ -15,7 +15,7 @@ class GroupsCommand extends BaseCommand {
       args: [{
         key: 'group',
         prompt: 'What group would you like to know the information of?',
-        type: 'nsadmin-group',
+        type: 'arora-group',
         default: ''
       }]
     })

@@ -3,6 +3,10 @@
 const { robloxAdapter } = require('../adapters')
 const { split } = require('../util').util
 
+async function getGroupsRoles (userId) {
+  return (await robloxAdapter('GET', 'groups', `v1/users/${userId}/groups/roles`)).data.data
+}
+
 async function getIdFromUsername (username) {
   const userIds = (await robloxAdapter('POST', 'users', 'v1/usernames/users', {
     usernames: [username],
@@ -14,26 +18,16 @@ async function getIdFromUsername (username) {
   return userIds[0].id
 }
 
-async function getRank (userId, groupId) {
-  return (await robloxAdapter('GET', 'groups', `v1/users/${userId}/groups/roles`)).data
-    .data
-    .find(group => group.group.id === groupId)
-    .role.rank ?? 0
-}
-
-async function getRole (userId, groupId) {
-  return (await robloxAdapter('GET', 'groups', `v1/users/${userId}/groups/roles`)).data
-    .data
-    .find(group => group.group.id === groupId)
-    .role.name ?? 'Guest'
-}
-
 async function getUser (userId) {
   try {
     return (await robloxAdapter('GET', 'users', `v1/users/${userId}`)).data
   } catch (err) {
     throw new Error(`**${userId}** doesn't exist on Roblox.`)
   }
+}
+
+async function getUserOutfits (userId) {
+  return (await robloxAdapter('GET', 'avatar', `v1/users/${userId}/outfits`)).data.data
 }
 
 async function getUsers (userIds) {
@@ -53,10 +47,10 @@ async function hasBadge (userId, badgeId) {
 }
 
 module.exports = {
+  getGroupsRoles,
   getIdFromUsername,
-  getRank,
-  getRole,
   getUser,
+  getUserOutfits,
   getUsers,
   hasBadge
 }
