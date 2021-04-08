@@ -9,7 +9,7 @@ class ExileCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'admin',
-      name: 'ban',
+      name: 'exile',
       description: 'Exiles given user.',
       examples: ['exile Happywalker Spamming the group wall.'],
       clientPermissions: ['SEND_MESSAGES'],
