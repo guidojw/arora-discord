@@ -16,27 +16,53 @@ async function getGroup (groupId) {
   }
 }
 
-async function getTrainingEmbeds (trainings) {
+async function getBanEmbeds (groupId, bans) {
   const userIds = [...new Set([
-    ...trainings.map(training => training.authorId)
+    ...bans.map(ban => ban.userId),
+    ...bans.map(ban => ban.authorId)
+  ])]
+  const users = await userService.getUsers(userIds)
+  const roles = await getRoles(groupId)
+
+  return discordService.getListEmbeds(
+    'Banlist',
+    bans,
+    getBanRow,
+    { users, roles }
+  )
+}
+
+function getBanRow ([, ban], { users, roles }) {
+  const username = users.find(user => user.id === ban.userId).name
+  const author = users.find(user => user.id === ban.authorId)
+  const role = roles.roles.find(role => role.rank === ban.rank)
+  const roleAbbreviation = role ? getAbbreviation(role.name) : 'unknown'
+  const dateString = getDate(new Date(ban.date))
+
+  return `**${username}**${role ? ' (' + roleAbbreviation + ')' : ''}${author ? ' by **' + author.name + '**' : ''}${dateString ? ' at **' + dateString + '**' : ''}${ban.reason ? ' with reason:\n*' + ban.reason + '*' : ''}`
+}
+
+async function getExileEmbeds (exiles) {
+  const userIds = [...new Set([
+    ...exiles.map(ban => ban.userId),
+    ...exiles.map(ban => ban.authorId)
   ])]
   const users = await userService.getUsers(userIds)
 
   return discordService.getListEmbeds(
-    'Upcoming Trainings',
-    trainings,
-    getTrainingRow,
+    'Current Exiles',
+    exiles,
+    getExileRow,
     { users }
   )
 }
 
-function getTrainingRow ([, training], { users }) {
-  const username = users.find(user => user.id === training.authorId).name
-  const date = new Date(training.date)
-  const readableDate = getDate(date)
-  const readableTime = getTime(date)
+function getExileRow ([, exile], { users }) {
+  const username = users.find(user => user.id === exile.userId).name
+  const author = users.find(user => user.id === exile.authorId)
+  const dateString = getDate(new Date(exile.date))
 
-  return `${training.id}. **${training.type.abbreviation}** training on **${readableDate}** at **${readableTime} ${getTimeZoneAbbreviation(date)}**, hosted by **${username}**.`
+  return `**${username}**${author ? ' by **' + author.name + '**' : ''}${dateString ? ' at **' + dateString + '**' : ''}${exile.reason ? ' with reason:\n*' + exile.reason + '*' : ''}`
 }
 
 async function getSuspensionEmbeds (groupId, suspensions) {
@@ -74,6 +100,29 @@ function getSuspensionRow ([, suspension], { users, roles }) {
   return `**${username}** (${roleAbbreviation}, rankBack **${rankBack}**) by **${author.name}** at **${dateString}** for **${days}${extensionString} ${pluralize('day', days + extensionDays)}** with reason:\n*${suspension.reason}*`
 }
 
+async function getTrainingEmbeds (trainings) {
+  const userIds = [...new Set([
+    ...trainings.map(training => training.authorId)
+  ])]
+  const users = await userService.getUsers(userIds)
+
+  return discordService.getListEmbeds(
+    'Upcoming Trainings',
+    trainings,
+    getTrainingRow,
+    { users }
+  )
+}
+
+function getTrainingRow ([, training], { users }) {
+  const username = users.find(user => user.id === training.authorId).name
+  const date = new Date(training.date)
+  const readableDate = getDate(date)
+  const readableTime = getTime(date)
+
+  return `${training.id}. **${training.type.abbreviation}** training on **${readableDate}** at **${readableTime} ${getTimeZoneAbbreviation(date)}**, hosted by **${username}**.`
+}
+
 function groupTrainingsByType (trainings) {
   const result = {}
   for (const training of trainings) {
@@ -86,16 +135,20 @@ function groupTrainingsByType (trainings) {
   return result
 }
 
-async function getTrainingTypes (groupId) {
-  return (await applicationAdapter('GET', `v1/groups/${groupId}/trainings/types`)).data
-}
-
 async function getRoles (groupId) {
   return (await applicationAdapter('GET', `v1/groups/${groupId}/roles`)).data
 }
 
+async function getTrainingTypes (groupId) {
+  return (await applicationAdapter('GET', `v1/groups/${groupId}/trainings/types`)).data
+}
+
 module.exports = {
   getGroup,
+  getBanEmbeds,
+  getBanRow,
+  getExileEmbeds,
+  getExileRow,
   getRoles,
   getSuspensionEmbeds,
   getSuspensionRow,

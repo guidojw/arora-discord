@@ -5,24 +5,24 @@ const BaseCommand = require('../base')
 const { applicationAdapter } = require('../../adapters')
 const { validators, noChannels, noTags, noUrls } = require('../../util').argumentUtil
 
-class BanCommand extends BaseCommand {
+class ExileCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'admin',
       name: 'ban',
-      description: 'Bans given user.',
-      examples: ['ban Happywalker Doing stuff.'],
+      description: 'Exiles given user.',
+      examples: ['exile Happywalker Spamming the group wall.'],
       clientPermissions: ['SEND_MESSAGES'],
       requiresApi: true,
       requiresRobloxGroup: true,
       args: [{
         key: 'user',
         type: 'roblox-user',
-        prompt: 'Who would you like to ban?'
+        prompt: 'Who would you like to exile?'
       }, {
         key: 'reason',
         type: 'string',
-        prompt: 'With what reason would you like to ban this person?',
+        prompt: 'With what reason would you like to exile this person?',
         validate: validators([noChannels, noTags, noUrls])
       }]
     })
@@ -34,14 +34,14 @@ class BanCommand extends BaseCommand {
       return message.reply('This command requires you to be verified with a verification provider.')
     }
 
-    await applicationAdapter('POST', `v1/groups/${message.guild.robloxGroupId}/bans`, {
+    await applicationAdapter('POST', `v1/groups/${message.guild.robloxGroupId}/exiles`, {
       userId: user.id,
       authorId,
       reason
     })
 
-    return message.reply(`Successfully banned **${user.username ?? user.id}**.`)
+    return message.reply(`Successfully exiled **${user.username ?? user.id}**.`)
   }
 }
 
-module.exports = BanCommand
+module.exports = ExileCommand
