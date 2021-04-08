@@ -1,24 +1,32 @@
 'use strict'
 
+const os = require('os')
 const BaseCommand = require('../base')
 
 const { MessageEmbed } = require('discord.js')
+const { getDurationString } = require('../../util').timeUtil
+const { formatBytes } = require('../../util').util
 
 class StatusCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'bot',
       name: 'status',
-      description: 'Posts the bot\'s systems\' statuses.',
+      aliases: ['stats'],
+      description: 'Posts the system statuses.',
       clientPermissions: ['SEND_MESSAGES']
     })
   }
 
   run (message) {
     const embed = new MessageEmbed()
-      .setColor(message.guild.supportEnabled ? 0x00ff00 : 0xff0000)
-      .setTitle('Status')
-      .setDescription(`Tickets System: **${message.guild.supportEnabled ? 'online' : 'offline'}**`)
+      .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
+      .setColor(0xff82d1)
+      .addField('System Statuses', `Tickets System: **${message.guild.supportEnabled ? 'online' : 'offline'}**`)
+      .addField('Load Average', os.loadavg().join(', '), true)
+      .addField('Memory Usage', `${formatBytes(os.freemem(), 3)} / ${formatBytes(os.totalmem(), 3)}`, true)
+      .addField('Uptime', getDurationString(this.client.uptime), true)
+      .setFooter(`Process ID: ${process.pid} | ${os.hostname()}`)
       .setTimestamp()
     return message.replyEmbed(embed)
   }
