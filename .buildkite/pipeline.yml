@@ -19,8 +19,6 @@ steps:
             run: app
             config: docker-compose.buildkite.yml
 
-  - wait
-
   - label: ":yarn: Test"
     command: yarn test
     plugins:
