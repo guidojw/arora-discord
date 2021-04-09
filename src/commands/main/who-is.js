@@ -36,8 +36,8 @@ class WhoIsCommand extends BaseCommand {
       .setColor(message.guild.primaryColor)
       .addField('Blurb', user.description !== '' ? user.description : 'No blurb')
       .addField('Join Date', getDate(new Date(user.created)), true)
-      .addField('\u200b', '\u200b', true)
       .addField('Account Age', pluralize('day', age, true), true)
+      .addField('\u200b', '\u200b', true)
       .setFooter(`User ID: ${user.id}`)
       .setTimestamp()
     if (message.guild.robloxGroupId !== null) {
@@ -45,8 +45,8 @@ class WhoIsCommand extends BaseCommand {
       const group = groupsRoles.find(group => group.group.id === message.guild.robloxGroupId)
       embed
         .addField('Role', group?.role.name ?? 'Guest', true)
-        .addField('\u200b', '\u200b', true)
         .addField('Rank', group?.role.rank ?? 0, true)
+        .addField('\u200b', '\u200b', true)
     }
     embed.addField('\u200b', `[Profile](https://www.roblox.com/users/${user.id}/profile)`)
     return message.replyEmbed(embed)
