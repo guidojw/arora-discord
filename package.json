@@ -5,9 +5,10 @@
   "repository": "github:guidojw/arora-discord",
   "main": "app.js",
   "scripts": {
+    "lint": "eslint src db",
     "start": "node app.js",
     "start:dev": "nodemon app.js",
-    "lint": "eslint src db"
+    "test": "mocha --require ./test/helper.js --recursive "
   },
   "author": "Guido de Jong",
   "license": "MIT",

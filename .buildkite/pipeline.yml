@@ -12,6 +12,13 @@ steps:
 
   - wait
 
+  - label: ":yarn: Test"
+    command: yarn test
+    plugins:
+      - docker-compose#v3.7.0:
+          run: app
+          config: docker-compose.buildkite.yml
+
   - label: ":eslint: Lint"
     command: yarn lint
     plugins:
