@@ -1,5 +1,6 @@
 'use strict'
 
+const pluralize = require('pluralize')
 const BaseCommand = require('../base')
 
 const { MessageEmbed } = require('discord.js')
@@ -34,7 +35,7 @@ class BansCommand extends BaseCommand {
       const date = new Date(ban.date)
       let extensionDays = 0
       for (const extension of ban.extensions) {
-        extensionDays += ban.duration / (24 * 60 * 60 * 1000)
+        extensionDays += extension.duration / (24 * 60 * 60 * 1000)
       }
       const extensionString = extensionDays !== 0
         ? ` (${Math.sign(extensionDays) === 1 ? '+' : ''}${extensionDays})`
