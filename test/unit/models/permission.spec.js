@@ -52,7 +52,7 @@ describe('src/models/permission', () => {
       expect(Permission.belongsTo).to.have.been.calledWith(Group, {
         foreignKey: {
           name: 'groupId',
-          validate: { roleXorGroup: sinon.match.instanceOf(Function) }
+          validate: sinon.match.every(sinon.match.instanceOf(Function))
         },
         onDelete: 'CASCADE'
       })
@@ -62,7 +62,7 @@ describe('src/models/permission', () => {
       expect(Permission.belongsTo).to.have.been.calledWith(Role, {
         foreignKey: {
           name: 'roleId',
-          validate: { roleXorGroup: sinon.match.instanceOf(Function) }
+          validate: sinon.match.every(sinon.match.instanceOf(Function))
         },
         onDelete: 'CASCADE'
       })

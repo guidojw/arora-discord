@@ -45,7 +45,7 @@ describe('src/models/ticket-type', () => {
         foreignKey: {
           name: 'emojiId',
           defaultValue: null,
-          validate: { emojiNandEmojiId: sinon.match.instanceOf(Function) }
+          validate: sinon.match.every(sinon.match.instanceOf(Function))
         }
       })
     })

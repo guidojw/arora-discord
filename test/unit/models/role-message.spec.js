@@ -44,7 +44,7 @@ describe('src/models/role-message', () => {
       expect(RoleMessage.belongsTo).to.have.been.calledWith(Emoji, {
         foreignKey: {
           name: 'emojiId',
-          validate: { emojiXorEmojiId: sinon.match.instanceOf(Function) }
+          validate: sinon.match.every(sinon.match.instanceOf(Function))
         },
         onDelete: 'CASCADE'
       })
