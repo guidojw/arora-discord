@@ -3,7 +3,14 @@
 const BaseCommand = require('../base')
 
 const { applicationAdapter } = require('../../adapters')
-const { validators, noChannels, noTags, noUrls } = require('../../util').argumentUtil
+const {
+  validators,
+  noChannels,
+  noTags,
+  noUrls,
+  parseNoneOrType,
+  validateNoneOrType
+} = require('../../util').argumentUtil
 
 class BanCommand extends BaseCommand {
   constructor (client) {
@@ -20,6 +27,15 @@ class BanCommand extends BaseCommand {
         type: 'roblox-user',
         prompt: 'Who would you like to ban?'
       }, {
+        key: 'days',
+        type: 'integer',
+        prompt: 'For how long would you like this ban this person? Reply with "none" if you want this ban to be ' +
+          'permanent.',
+        min: 1,
+        max: 7,
+        validate: validateNoneOrType,
+        parse: parseNoneOrType
+      }, {
         key: 'reason',
         type: 'string',
         prompt: 'With what reason would you like to ban this person?',
@@ -28,7 +44,7 @@ class BanCommand extends BaseCommand {
     })
   }
 
-  async run (message, { user, reason }) {
+  async run (message, { user, days, reason }) {
     const authorId = message.member.robloxId ?? (await message.member.fetchVerificationData()).robloxId
     if (typeof authorId === 'undefined') {
       return message.reply('This command requires you to be verified with a verification provider.')
@@ -37,6 +53,7 @@ class BanCommand extends BaseCommand {
     await applicationAdapter('POST', `v1/groups/${message.guild.robloxGroupId}/bans`, {
       userId: user.id,
       authorId,
+      duration: days * 24 * 60 * 60 * 1000,
       reason
     })
 

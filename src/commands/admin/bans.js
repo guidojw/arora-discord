@@ -30,17 +30,22 @@ class BansCommand extends BaseCommand {
     if (user) {
       const ban = (await applicationAdapter('GET', `v1/groups/${message.guild.robloxGroupId}/bans/${user.id}`)).data
 
+      const days = ban.duration / 86400000
+      const date = new Date(ban.date)
+      let extensionDays = 0
+      for (const extension of ban.extensions) {
+        extensionDays += ban.duration / 86400000
+      }
+      const extensionString = extensionDays !== 0
+        ? ` (${Math.sign(extensionDays) === 1 ? '+' : ''}${extensionDays})`
+        : ''
       const embed = new MessageEmbed()
         .setTitle(`${user.username ?? user.id}'s ban`)
         .setColor(message.guild.primaryColor)
-      if (ban.date) {
-        const date = new Date(ban.date)
-        embed.addField('Start date', getDate(date), true)
-        embed.addField('Start time', getTime(date), true)
-      }
-      if (ban.reason) {
-        embed.addField('Reason', ban.reason)
-      }
+        .addField('Start date', getDate(date), true)
+        .addField('Start time', getTime(date), true)
+        .addField('Duration', `${days}${extensionString} ${pluralize('day', days + extensionDays)}`, true)
+        .addField('Reason', ban.reason)
 
       return message.replyEmbed(embed)
     } else {

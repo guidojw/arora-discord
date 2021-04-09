@@ -5,14 +5,14 @@ const BaseCommand = require('../base')
 const { applicationAdapter } = require('../../adapters')
 const { validators, noChannels, noTags, noUrls } = require('../../util').argumentUtil
 
-class ExtendSuspensionCommand extends BaseCommand {
+class ExtendBanCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'admin',
-      name: 'extendsuspension',
-      details: 'A suspension can be max 7 days long.',
+      name: 'extendban',
+      description: 'Extends the ban of given user.',
+      details: 'A ban can be max 7 days long, or permanent.',
       aliases: ['extend'],
-      description: 'Extends the suspension of given user.',
       examples: ['extend Happywalker 3 He still doesn\'t understand.'],
       clientPermissions: ['SEND_MESSAGES'],
       requiresApi: true,
@@ -20,17 +20,17 @@ class ExtendSuspensionCommand extends BaseCommand {
       args: [{
         key: 'user',
         type: 'roblox-user',
-        prompt: 'Whose suspension would you like to extend?'
+        prompt: 'Whose ban would you like to extend?'
       }, {
         key: 'days',
         type: 'integer',
-        prompt: 'With how many days would you like to extend this person\'s suspension?',
+        prompt: 'With how many days would you like to extend this person\'s ban?',
         min: 1,
         max: 7
       }, {
         key: 'reason',
         type: 'string',
-        prompt: 'With what reason are you extending this person\'s suspension?',
+        prompt: 'With what reason are you extending this person\'s ban?',
         validate: validators([noChannels, noTags, noUrls])
       }]
     })
@@ -42,14 +42,14 @@ class ExtendSuspensionCommand extends BaseCommand {
       return message.reply('This command requires you to be verified with a verification provider.')
     }
 
-    await applicationAdapter('POST', `v1/groups/${message.guild.robloxGroupId}/suspensions/${user.id}/extend`, {
+    await applicationAdapter('POST', `v1/groups/${message.guild.robloxGroupId}/bans/${user.id}/extend`, {
       authorId,
       duration: days * 86400000,
       reason
     })
 
-    return message.reply(`Successfully extended **${user.username ?? user.id}**'s suspension.`)
+    return message.reply(`Successfully extended **${user.username ?? user.id}**'s ban.`)
   }
 }
 
-module.exports = ExtendSuspensionCommand
+module.exports = ExtendBanCommand
