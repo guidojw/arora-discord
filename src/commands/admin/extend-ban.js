@@ -44,7 +44,7 @@ class ExtendBanCommand extends BaseCommand {
 
     await applicationAdapter('POST', `v1/groups/${message.guild.robloxGroupId}/bans/${user.id}/extend`, {
       authorId,
-      duration: days * 86400000,
+      duration: days * 24 * 60 * 60 * 1000,
       reason
     })
 

@@ -30,11 +30,11 @@ class BansCommand extends BaseCommand {
     if (user) {
       const ban = (await applicationAdapter('GET', `v1/groups/${message.guild.robloxGroupId}/bans/${user.id}`)).data
 
-      const days = ban.duration / 86400000
+      const days = ban.duration / (24 * 60 * 60 * 1000)
       const date = new Date(ban.date)
       let extensionDays = 0
       for (const extension of ban.extensions) {
-        extensionDays += ban.duration / 86400000
+        extensionDays += ban.duration / (24 * 60 * 60 * 1000)
       }
       const extensionString = extensionDays !== 0
         ? ` (${Math.sign(extensionDays) === 1 ? '+' : ''}${extensionDays})`

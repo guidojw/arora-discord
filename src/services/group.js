@@ -41,7 +41,7 @@ function getBanRow ([, ban], { users, roles }) {
   const days = ban.duration / (24 * 60 * 60 * 1000)
   let extensionDays = 0
   for (const extension of ban.extensions) {
-    extensionDays += extension.duration / 86400000
+    extensionDays += extension.duration / (24 * 60 * 60 * 1000)
   }
   const extensionString = extensionDays !== 0
     ? ` (${Math.sign(extensionDays) === 1 ? '+' : ''}${extensionDays})`
