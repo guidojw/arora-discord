@@ -1,10 +1,10 @@
 'use strict'
 
 const {
-  sequelize,
-  dataTypes,
   checkModelName,
-  checkPropertyExists
+  checkPropertyExists,
+  dataTypes,
+  sequelize
 } = require('sequelize-test-helpers')
 
 const GuildCommandModel = require('../../../src/models/guild-command')

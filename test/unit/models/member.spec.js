@@ -2,10 +2,10 @@
 
 const { expect } = require('chai')
 const {
-  sequelize,
-  dataTypes,
   checkModelName,
-  checkPropertyExists
+  checkPropertyExists,
+  dataTypes,
+  sequelize
 } = require('sequelize-test-helpers')
 
 const MemberModel = require('../../../src/models/member')

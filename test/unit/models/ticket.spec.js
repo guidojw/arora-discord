@@ -2,10 +2,10 @@
 
 const { expect } = require('chai')
 const {
-  sequelize,
-  dataTypes,
   // checkHookDefined,
-  checkModelName
+  checkModelName,
+  dataTypes,
+  sequelize
 } = require('sequelize-test-helpers')
 
 const TicketModel = require('../../../src/models/ticket')

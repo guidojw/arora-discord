@@ -2,11 +2,11 @@
 
 const { expect } = require('chai')
 const {
-  sequelize,
-  dataTypes,
   // checkHookDefined,
   checkModelName,
-  checkPropertyExists
+  checkPropertyExists,
+  dataTypes,
+  sequelize
 } = require('sequelize-test-helpers')
 
 const sinon = require('sinon')
