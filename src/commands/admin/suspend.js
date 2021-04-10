@@ -10,8 +10,8 @@ class SuspendCommand extends BaseCommand {
     super(client, {
       group: 'admin',
       name: 'suspend',
-      details: 'Days can be max 7 and rankBack must be true or false. The reason must be encapsulated in quotes.',
       description: 'Suspends given user in the group.',
+      details: 'Days can be max 7 and roleBack must be true or false.',
       examples: ['suspend Happywalker 3 "Spamming the group wall." false', 'suspend Happywalker 3 "Ignoring rules."'],
       clientPermissions: ['SEND_MESSAGES'],
       requiresApi: true,
@@ -32,14 +32,14 @@ class SuspendCommand extends BaseCommand {
         prompt: 'For what reason are you suspending this person?',
         validate: validators([noChannels, noTags, noUrls])
       }, {
-        key: 'rankBack',
+        key: 'roleBack',
         type: 'boolean',
-        prompt: 'Should this person get his old rank back when the suspension finishes?'
+        prompt: 'Should this person get their old role back when the suspension finishes?'
       }]
     })
   }
 
-  async run (message, { user, days, reason, rankBack }) {
+  async run (message, { user, days, reason, roleBack }) {
     const authorId = message.member.robloxId ?? (await message.member.fetchVerificationData()).robloxId
     if (typeof authorId === 'undefined') {
       return message.reply('This command requires you to be verified with a verification provider.')
@@ -48,7 +48,7 @@ class SuspendCommand extends BaseCommand {
     await applicationAdapter('POST', `v1/groups/${message.guild.robloxGroupId}/suspensions`, {
       authorId,
       duration: days * 86400000,
-      rankBack,
+      roleBack,
       reason,
       userId: user.id
     })
