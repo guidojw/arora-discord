@@ -50,7 +50,7 @@ class SuspensionsCommand extends BaseCommand {
         .addField('Start date', getDate(date), true)
         .addField('Start time', getTime(date), true)
         .addField('Duration', `${days}${extensionString} ${pluralize('day', days + extensionDays)}`, true)
-        .addField('Rank back', suspension.rankBack ? 'yes' : 'no', true)
+        .addField('Role back', suspension.roleBack ? 'yes' : 'no', true)
         .addField('Reason', suspension.reason)
         .setColor(message.guild.primaryColor)
       return message.replyEmbed(embed)

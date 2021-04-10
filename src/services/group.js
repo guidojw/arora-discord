@@ -35,7 +35,7 @@ async function getBanEmbeds (groupId, bans) {
 function getBanRow ([, ban], { users, roles }) {
   const username = users.find(user => user.id === ban.userId).name
   const author = users.find(user => user.id === ban.authorId)
-  const role = roles.roles.find(role => role.rank === ban.rank)
+  const role = roles.roles.find(role => role.id === ban.roleId)
   const roleAbbreviation = role ? getAbbreviation(role.name) : 'unknown'
   const dateString = getDate(new Date(ban.date))
 
@@ -84,9 +84,9 @@ async function getSuspensionEmbeds (groupId, suspensions) {
 function getSuspensionRow ([, suspension], { users, roles }) {
   const username = users.find(user => user.id === suspension.userId).name
   const author = users.find(user => user.id === suspension.authorId)
-  const role = roles.roles.find(role => role.rank === suspension.rank)
+  const role = roles.roles.find(role => role.id === suspension.roleId)
   const roleAbbreviation = role ? getAbbreviation(role.name) : 'unknown'
-  const rankBack = suspension.rankBack ? 'yes' : 'no'
+  const roleBack = suspension.roleBack ? 'yes' : 'no'
   const dateString = getDate(new Date(suspension.date))
   const days = suspension.duration / 86400000
   let extensionDays = 0
@@ -97,7 +97,7 @@ function getSuspensionRow ([, suspension], { users, roles }) {
   }
   const extensionString = extensionDays < 0 ? ` (${extensionDays})` : extensionDays > 0 ? ` (+${extensionDays})` : ''
 
-  return `**${username}** (${roleAbbreviation}, rankBack **${rankBack}**) by **${author.name}** at **${dateString}** for **${days}${extensionString} ${pluralize('day', days + extensionDays)}** with reason:\n*${suspension.reason}*`
+  return `**${username}** (${roleAbbreviation}, roleBack **${roleBack}**) by **${author.name}** at **${dateString}** for **${days}${extensionString} ${pluralize('day', days + extensionDays)}** with reason:\n*${suspension.reason}*`
 }
 
 async function getTrainingEmbeds (trainings) {

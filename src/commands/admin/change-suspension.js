@@ -11,10 +11,10 @@ class ChangeSuspensionCommand extends BaseCommand {
     super(client, {
       group: 'admin',
       name: 'changesuspension',
-      details: 'Key must be "author", "reason" or "rankBack". You can only change the author of suspensions you ' +
+      details: 'Key must be "author", "reason" or "roleBack". You can only change the author of suspensions you ' +
         'created.',
       description: 'Changes given user\'s suspension\'s key to given data.',
-      examples: ['changesuspension Happywalker rankBack false'],
+      examples: ['changesuspension Happywalker roleBack false'],
       clientPermissions: ['SEND_MESSAGES'],
       requiresApi: true,
       requiresRobloxGroup: true,
@@ -26,7 +26,7 @@ class ChangeSuspensionCommand extends BaseCommand {
         key: 'key',
         type: 'string',
         prompt: 'What key would you like to change?',
-        oneOf: ['author', 'reason', 'rankback'],
+        oneOf: ['author', 'reason', 'roleback'],
         parse: val => val.toLowerCase()
       }, {
         key: 'data',
@@ -48,12 +48,12 @@ class ChangeSuspensionCommand extends BaseCommand {
       }
 
       changes.reason = data
-    } else if (key === 'rankback') {
+    } else if (key === 'roleback') {
       if (data !== true && data !== false) {
-        return message.reply('`rankBack` must be true or false.')
+        return message.reply('`roleBack` must be true or false.')
       }
 
-      changes.rankBack = data
+      changes.roleBack = data
     }
     const editorId = message.member.robloxId ?? (await message.member.fetchVerificationData()).robloxId
     if (typeof editorId === 'undefined') {
