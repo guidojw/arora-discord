@@ -1,8 +1,8 @@
 'use strict'
 
 module.exports = {
-  up: async (queryInterface, Sequelize) => {
-    await queryInterface.addColumn('guilds', 'ticket_archives_channel_id', {
+  up: (queryInterface, Sequelize) => {
+    return queryInterface.addColumn('guilds', 'ticket_archives_channel_id', {
       type: Sequelize.BIGINT,
       references: {
         model: 'channels',
@@ -12,7 +12,7 @@ module.exports = {
     })
   },
 
-  down: async (queryInterface /* , Sequelize */) => {
-    await queryInterface.removeColumn('guilds', 'ticket_archives_channel_id')
+  down: (queryInterface /* , Sequelize */) => {
+    return queryInterface.removeColumn('guilds', 'ticket_archives_channel_id')
   }
 }

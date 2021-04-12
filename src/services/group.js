@@ -35,7 +35,7 @@ async function getBanEmbeds (groupId, bans) {
 function getBanRow ([, ban], { users, roles }) {
   const username = users.find(user => user.id === ban.userId).name
   const author = users.find(user => user.id === ban.authorId)
-  const role = roles.roles.find(role => role.rank === ban.rank)
+  const role = roles.roles.find(role => role.id === ban.roleId)
   const roleAbbreviation = role ? getAbbreviation(role.name) : 'unknown'
   const dateString = getDate(new Date(ban.date))
   const days = ban.duration / (24 * 60 * 60 * 1000)
