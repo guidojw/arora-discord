@@ -7,32 +7,32 @@ const { groupService, userService } = require('../../services')
 const { noChannels, noTags, noUrls, validDate, validTime } = require('../../util').argumentUtil
 const { getDate, getDateInfo, getTime, getTimeInfo } = require('../../util').timeUtil
 
-class ChangeTrainingCommand extends BaseCommand {
+class EditTrainingCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'admin',
-      name: 'changetraining',
-      details: 'TrainingId must be the ID of a currently scheduled training. Key must be author, type, date, time or ' +
-        'notes.',
-      description: 'Changes given training\'s key to given data.',
-      examples: ['changetraining 1 date 5-3-2020'],
+      name: 'edittraining',
+      description: 'Edits given training\'s key to given data.',
+      details: 'Key must be author, type, date, time or notes. trainingId must be the ID of a currently scheduled ' +
+        'training. ',
+      examples: ['edittraining 1 date 5-3-2020'],
       clientPermissions: ['SEND_MESSAGES'],
       requiresApi: true,
       requiresRobloxGroup: true,
       args: [{
         key: 'trainingId',
         type: 'integer',
-        prompt: 'Which training would you like to change?'
+        prompt: 'Which training would you like to edit?'
       }, {
         key: 'key',
         type: 'string',
-        prompt: 'What key would you like to change?',
+        prompt: 'What key would you like to edit?',
         oneOf: ['author', 'type', 'date', 'time', 'notes'],
         parse: val => val.toLowerCase()
       }, {
         key: 'data',
         type: 'string',
-        prompt: 'What would you like to change this key\'s data to?'
+        prompt: 'What would you like to edit this key\'s data to?'
       }]
     })
   }
@@ -92,8 +92,8 @@ class ChangeTrainingCommand extends BaseCommand {
       editorId
     })
 
-    return message.reply(`Successfully changed training with ID **${trainingId}**.`)
+    return message.reply(`Successfully edited training with ID **${trainingId}**.`)
   }
 }
 
-module.exports = ChangeTrainingCommand
+module.exports = EditTrainingCommand

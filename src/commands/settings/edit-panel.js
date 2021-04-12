@@ -19,12 +19,12 @@ class EditPanelCommand extends BaseCommand {
       }, {
         key: 'key',
         type: 'string',
-        prompt: 'What key would you like to change?',
+        prompt: 'What key would you like to edit?',
         oneOf: ['content', 'message'],
         parse: val => val.toLowerCase()
       }, {
         key: 'data',
-        prompt: 'What would you like to change this key\'s data to?',
+        prompt: 'What would you like to edit this key\'s data to?',
         type: 'json-object|message'
       }]
     })

@@ -6,25 +6,25 @@ const { applicationAdapter } = require('../../adapters')
 const { userService } = require('../../services')
 const { noChannels, noTags, noUrls } = require('../../util').argumentUtil
 
-class ChangeBanCommand extends BaseCommand {
+class EditBanCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'admin',
-      name: 'changeban',
-      details: 'Key must be author or reason. You can only change the author of bans you created.',
-      description: 'Changes given user\'s ban\'s key to given data.',
-      examples: ['changeban Happywalker author builderman'],
+      name: 'editban',
+      description: 'Edits given user\'s ban\'s key to given data.',
+      details: 'Key must be author or reason.',
+      examples: ['editban Happywalker author builderman'],
       clientPermissions: ['SEND_MESSAGES'],
       requiresApi: true,
       requiresRobloxGroup: true,
       args: [{
         key: 'user',
         type: 'roblox-user',
-        prompt: 'Whose ban would you like to change?'
+        prompt: 'Whose ban would you like to edit?'
       }, {
         key: 'key',
         type: 'string',
-        prompt: 'What key would you like to change?',
+        prompt: 'What key would you like to edit?',
         oneOf: ['author', 'reason'],
         parse: val => val.toLowerCase()
       }, {
@@ -55,8 +55,8 @@ class ChangeBanCommand extends BaseCommand {
 
     await applicationAdapter('PUT', `v1/groups/${message.guild.robloxGroupId}/bans/${user.id}`, { changes, editorId })
 
-    return message.reply(`Successfully changed **${user.username ?? user.id}**'s ban.`)
+    return message.reply(`Successfully edited **${user.username ?? user.id}**'s ban.`)
   }
 }
 
-module.exports = ChangeBanCommand
+module.exports = EditBanCommand

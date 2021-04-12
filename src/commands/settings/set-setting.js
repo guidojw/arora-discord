@@ -27,7 +27,7 @@ class SetSettingCommand extends BaseCommand {
         parse: parseSetting
       }, {
         key: 'value',
-        prompt: 'What would you like to change this setting to? Reply with "none" if you want to reset the setting.',
+        prompt: 'What would you like to set this setting to? Reply with "none" if you want to reset the setting.',
         type: 'category-channel|text-channel|message|integer|boolean|string',
         parse: parseNoneOrType
       }]
@@ -82,7 +82,7 @@ class SetSettingCommand extends BaseCommand {
 
     await message.guild.update({ [setting]: value instanceof GuildChannel ? value.id : value })
 
-    return message.reply(`Successfully changed ${setting.endsWith('Id') ? setting.slice(0, -2) : setting} to ${value instanceof GuildChannel ? value : `\`${setting === 'verificationPreference' ? VerificationProviders[value.toUpperCase()] : value}\``}.`)
+    return message.reply(`Successfully set ${setting.endsWith('Id') ? setting.slice(0, -2) : setting} to ${value instanceof GuildChannel ? value : `\`${setting === 'verificationPreference' ? VerificationProviders[value.toUpperCase()] : value}\``}.`)
   }
 }
 
