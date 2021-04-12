@@ -25,8 +25,8 @@ class ExtendBanCommand extends BaseCommand {
         key: 'days',
         type: 'integer',
         prompt: 'With how many days would you like to extend this person\'s ban?',
-        min: 1,
-        max: 7
+        min: -6,
+        max: 6
       }, {
         key: 'reason',
         type: 'string',
