@@ -30,7 +30,7 @@ class EditBanCommand extends BaseCommand {
       }, {
         key: 'data',
         type: 'string',
-        prompt: 'What would you like to change this key\'s data to?'
+        prompt: 'What would you like to edit this key\'s data to?'
       }]
     })
   }

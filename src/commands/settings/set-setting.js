@@ -18,7 +18,7 @@ class SetSettingCommand extends BaseCommand {
       clientPermissions: ['SEND_MESSAGES'],
       args: [{
         key: 'setting',
-        prompt: 'What setting would you like to change?',
+        prompt: 'What setting would you like to set?',
         type: 'string',
         oneOf: Object.keys(Guild.rawAttributes)
           .filter(attribute => !['id', 'supportEnabled', 'commandPrefix'].includes(attribute))
