@@ -11,7 +11,7 @@ class ExtendBanCommand extends BaseCommand {
       group: 'admin',
       name: 'extendban',
       description: 'Extends the ban of given user.',
-      details: 'A ban can be max 7 days long, or permanent.',
+      details: 'A ban can be max 7 days long or permanent.',
       aliases: ['extend'],
       examples: ['extend Happywalker 3 He still doesn\'t understand.'],
       clientPermissions: ['SEND_MESSAGES'],

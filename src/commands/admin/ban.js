@@ -18,6 +18,7 @@ class BanCommand extends BaseCommand {
       group: 'admin',
       name: 'ban',
       description: 'Bans given user.',
+      details: 'A ban can be max 7 days long or permanent.',
       examples: ['ban Happywalker Doing stuff.'],
       clientPermissions: ['SEND_MESSAGES'],
       requiresApi: true,
