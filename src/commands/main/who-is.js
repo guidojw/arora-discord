@@ -27,7 +27,7 @@ class WhoIsCommand extends BaseCommand {
 
   async run (message, { user }) {
     user = await userService.getUser(user.id)
-    const age = Math.floor((Date.now() - new Date(user.created).getTime()) / 86400000)
+    const age = Math.floor((Date.now() - new Date(user.created).getTime()) / (24 * 60 * 60 * 1000))
     const outfits = await userService.getUserOutfits(user.id)
 
     const embed = new MessageEmbed()
