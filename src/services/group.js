@@ -39,10 +39,8 @@ function getBanRow ([, ban], { users, roles }) {
   const roleAbbreviation = role ? getAbbreviation(role.name) : 'unknown'
   const dateString = getDate(new Date(ban.date))
   const days = ban.duration / (24 * 60 * 60 * 1000)
-  let extensionDays = 0
-  for (const extension of ban.extensions) {
-    extensionDays += extension.duration / (24 * 60 * 60 * 1000)
-  }
+  const extensionDays = ban.extensions.reduce((result, extension) => result + extension.duration, 0) /
+    (24 * 60 * 60 * 1000)
   const extensionString = extensionDays !== 0
     ? ` (${Math.sign(extensionDays) === 1 ? '+' : ''}${extensionDays})`
     : ''
