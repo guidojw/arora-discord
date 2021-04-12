@@ -59,7 +59,7 @@ class PermitCommand extends BaseCommand {
       const permission = roleOrGroup.aroraPermissions.resolve(commandOrGroup)
       if (permission) {
         await permission.update({ allow })
-        return message.reply(`Successfully changed \`${commandOrGroup.name}\` ${commandType} permission for ${subject} to allow: \`${allow}\`.`, {
+        return message.reply(`Successfully edited \`${commandOrGroup.name}\` ${commandType} permission for ${subject} to allow: \`${allow}\`.`, {
           allowedMentions: { users: [message.author.id] }
         })
       } else {
