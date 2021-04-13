@@ -46,7 +46,8 @@ describe('src/models/ticket-type', () => {
           name: 'emojiId',
           defaultValue: null,
           validate: sinon.match.every(sinon.match.instanceOf(Function))
-        }
+        },
+        onDelete: 'SET NULL'
       })
     })
 
@@ -63,7 +64,8 @@ describe('src/models/ticket-type', () => {
     it('defined a belongsTo association with Message', () => {
       expect(TicketType.belongsTo).to.have.been.calledWith(Message, {
         foreignKey: 'messageId',
-        as: 'message'
+        as: 'message',
+        onDelete: 'SET NULL'
       })
     })
 

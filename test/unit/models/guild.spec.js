@@ -72,19 +72,22 @@ describe('src/models/guild', () => {
 
     it('defined a belongsTo association with Channel', () => {
       expect(Guild.belongsTo).to.have.been.calledWith(Channel, {
-        foreignKey: 'logsChannelId'
+        foreignKey: 'logsChannelId',
+        onDelete: 'SET NULL'
       })
     })
 
     it('defined a belongsTo association with Channel', () => {
       expect(Guild.belongsTo).to.have.been.calledWith(Channel, {
-        foreignKey: 'ratingsChannelId'
+        foreignKey: 'ratingsChannelId',
+        onDelete: 'SET NULL'
       })
     })
 
     it('defined a belongsTo association with Channel', () => {
       expect(Guild.belongsTo).to.have.been.calledWith(Channel, {
-        foreignKey: 'suggestionsChannelId'
+        foreignKey: 'suggestionsChannelId',
+        onDelete: 'SET NULL'
       })
     })
 
@@ -97,7 +100,8 @@ describe('src/models/guild', () => {
 
     it('defined a belongsTo association with Channel', () => {
       expect(Guild.belongsTo).to.have.been.calledWith(Channel, {
-        foreignKey: 'ticketsCategoryId'
+        foreignKey: 'ticketsCategoryId',
+        onDelete: 'SET NULL'
       })
     })
 
