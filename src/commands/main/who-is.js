@@ -32,7 +32,7 @@ class WhoIsCommand extends BaseCommand {
 
     const embed = new MessageEmbed()
       .setAuthor(user.name, `https://www.roblox.com/headshot-thumbnail/image?width=150&height=150&format=png&userId=${user.id}`)
-      .setThumbnail(`https://www.roblox.com/outfit-thumbnail/image?width=150&height=150&format=png&userOutfitId=${outfits[0].id}`)
+      .setThumbnail(`https://www.roblox.com/outfit-thumbnail/image?width=150&height=150&format=png&userOutfitId=${outfits[0]?.id ?? 0}`)
       .setColor(message.guild.primaryColor)
       .addField('Blurb', user.description !== '' ? user.description : 'No blurb')
       .addField('Join Date', getDate(new Date(user.created)), true)
