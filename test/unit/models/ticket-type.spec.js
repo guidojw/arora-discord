@@ -71,10 +71,7 @@ describe('src/models/ticket-type', () => {
 
     it('defined a hasMany association with Ticket', () => {
       expect(TicketType.hasMany).to.have.been.calledWith(Ticket, {
-        foreignKey: {
-          name: 'typeId',
-          allowNull: false
-        }
+        foreignKey: 'typeId'
       })
     })
   })
