@@ -28,8 +28,7 @@ module.exports = {
       ])
 
       return queryInterface.changeColumn('tickets', 'type_id', {
-        type: Sequelize.INTEGER,
-        allowNull: true
+        type: Sequelize.INTEGER
       }, { transaction: t })
     })
   },
