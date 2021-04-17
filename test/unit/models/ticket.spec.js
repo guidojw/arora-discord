@@ -37,7 +37,7 @@ describe('src/models/ticket', () => {
     it('defined a belongsTo association with Channel', () => {
       expect(Ticket.belongsTo).to.have.been.calledWith(Channel, {
         foreignKey: 'channelId',
-        onDelete: 'CASCADE'
+        onDelete: 'SET NULL'
       })
     })
 
@@ -57,7 +57,8 @@ describe('src/models/ticket', () => {
           name: 'authorId',
           allowNull: false
         },
-        as: 'author'
+        as: 'author',
+        onDelete: 'CASCADE'
       })
     })
 
@@ -70,10 +71,8 @@ describe('src/models/ticket', () => {
 
     it('defined a belongsTo association with TicketType', () => {
       expect(Ticket.belongsTo).to.have.been.calledWith(TicketType, {
-        foreignKey: {
-          name: 'typeId',
-          allowNull: false
-        }
+        foreignKey: 'typeId',
+        onDelete: 'SET NULL'
       })
     })
   })

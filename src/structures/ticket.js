@@ -48,7 +48,7 @@ class Ticket extends BaseStructure {
   }
 
   get type () {
-    return this.guild.ticketTypes.cache.get(this.typeId)
+    return this.guild.ticketTypes.cache.get(this.typeId) || null
   }
 
   get moderators () {

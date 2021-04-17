@@ -49,7 +49,8 @@ describe('src/models/panel', () => {
       expect(Panel.belongsTo).to.have.been.calledWith(Message, {
         foreignKey: 'messageId',
         unique: true,
-        as: 'message'
+        as: 'message',
+        onDelete: 'SET NULL'
       })
     })
   })
