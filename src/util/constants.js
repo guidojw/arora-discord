@@ -11,7 +11,7 @@ const VerificationProviders = {
 }
 
 const WSEvents = {
-  TRAIN_DEVELOPERS_PAYOUT: 'trainDevelopersPayout',
+  TRAIN_DEVELOPERS_PAYOUT_REPORT: 'trainDevelopersPayoutReport',
   RANK_CHANGE: 'rankChange'
 }
 
