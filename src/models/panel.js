@@ -38,7 +38,8 @@ module.exports = (sequelize, DataTypes) => {
     Panel.belongsTo(models.Message, {
       foreignKey: 'messageId',
       unique: true,
-      as: 'message'
+      as: 'message',
+      onDelete: 'SET NULL'
     })
   }
 
