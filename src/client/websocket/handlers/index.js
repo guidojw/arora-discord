@@ -6,7 +6,7 @@ const { WSEvents } = require('../../../util/constants')
 
 const handlers = {}
 
-for (const name of Object.keys(WSEvents)) {
+for (const name of Object.values(WSEvents)) {
   try {
     handlers[name] = require(`./${lodash.kebabCase(name)}`)
   } catch {} // eslint-disable-line no-empty
