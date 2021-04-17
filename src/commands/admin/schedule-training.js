@@ -15,16 +15,16 @@ const {
 } = require('../../util').argumentUtil
 const { getDateInfo, getTimeInfo } = require('../../util').timeUtil
 
-class HostTrainingCommand extends BaseCommand {
+class ScheduleTrainingCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'admin',
-      name: 'hosttraining',
+      name: 'scheduletraining',
+      aliases: ['schedule'],
       details: 'Type must be CD or CSR. You can add special notes that will be shown in the training\'s announcement.' +
         ' The date argument should be dd-mm-yyyy format.',
-      aliases: ['host'],
       description: 'Schedules a new training.',
-      examples: ['host CD 4-3-2020 1:00 Be on time!', 'Host CSR 4-3-2020 2:00'],
+      examples: ['schedule CD 4-3-2020 1:00 Be on time!', 'schedule CSR 4-3-2020 2:00 none'],
       clientPermissions: ['SEND_MESSAGES'],
       requiresApi: true,
       requiresRobloxGroup: true,
@@ -92,4 +92,4 @@ class HostTrainingCommand extends BaseCommand {
   }
 }
 
-module.exports = HostTrainingCommand
+module.exports = ScheduleTrainingCommand

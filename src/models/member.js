@@ -34,15 +34,15 @@ module.exports = (sequelize, DataTypes) => {
       through: 'members_roles',
       as: 'roles'
     })
+  }
 
-    Member.loadScopes = models => {
-      Member.addScope('withRoles', {
-        include: [{
-          model: models.Role,
-          as: 'roles'
-        }]
-      })
-    }
+  Member.loadScopes = models => {
+    Member.addScope('withRoles', {
+      include: [{
+        model: models.Role,
+        as: 'roles'
+      }]
+    })
   }
 
   return Member

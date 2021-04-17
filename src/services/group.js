@@ -35,11 +35,17 @@ async function getBanEmbeds (groupId, bans) {
 function getBanRow ([, ban], { users, roles }) {
   const username = users.find(user => user.id === ban.userId).name
   const author = users.find(user => user.id === ban.authorId)
-  const role = roles.roles.find(role => role.rank === ban.rank)
+  const role = roles.roles.find(role => role.id === ban.roleId)
   const roleAbbreviation = role ? getAbbreviation(role.name) : 'unknown'
   const dateString = getDate(new Date(ban.date))
+  const days = ban.duration / (24 * 60 * 60 * 1000)
+  const extensionDays = ban.extensions.reduce((result, extension) => result + extension.duration, 0) /
+    (24 * 60 * 60 * 1000)
+  const extensionString = extensionDays !== 0
+    ? ` (${Math.sign(extensionDays) === 1 ? '+' : ''}${extensionDays})`
+    : ''
 
-  return `**${username}**${role ? ' (' + roleAbbreviation + ')' : ''}${author ? ' by **' + author.name + '**' : ''}${dateString ? ' at **' + dateString + '**' : ''}${ban.reason ? ' with reason:\n*' + ban.reason + '*' : ''}`
+  return `**${username}** (${roleAbbreviation}) by **${author.name}** at **${dateString}**${days !== 0 ? ` for **${days}${extensionString} ${pluralize('day', days + extensionDays)}**` : ''} with reason:\n*${ban.reason}*`
 }
 
 async function getExileEmbeds (exiles) {
@@ -63,41 +69,6 @@ function getExileRow ([, exile], { users }) {
   const dateString = getDate(new Date(exile.date))
 
   return `**${username}**${author ? ' by **' + author.name + '**' : ''}${dateString ? ' at **' + dateString + '**' : ''}${exile.reason ? ' with reason:\n*' + exile.reason + '*' : ''}`
-}
-
-async function getSuspensionEmbeds (groupId, suspensions) {
-  const userIds = [...new Set([
-    ...suspensions.map(suspension => suspension.userId),
-    ...suspensions.map(suspension => suspension.authorId)
-  ])]
-  const users = await userService.getUsers(userIds)
-  const roles = await getRoles(groupId)
-
-  return discordService.getListEmbeds(
-    'Current Suspensions',
-    suspensions,
-    getSuspensionRow,
-    { users, roles }
-  )
-}
-
-function getSuspensionRow ([, suspension], { users, roles }) {
-  const username = users.find(user => user.id === suspension.userId).name
-  const author = users.find(user => user.id === suspension.authorId)
-  const role = roles.roles.find(role => role.rank === suspension.rank)
-  const roleAbbreviation = role ? getAbbreviation(role.name) : 'unknown'
-  const rankBack = suspension.rankBack ? 'yes' : 'no'
-  const dateString = getDate(new Date(suspension.date))
-  const days = suspension.duration / 86400000
-  let extensionDays = 0
-  if (suspension.extensions) {
-    for (const extension of suspension.extensions) {
-      extensionDays += extension.duration / 86400000
-    }
-  }
-  const extensionString = extensionDays < 0 ? ` (${extensionDays})` : extensionDays > 0 ? ` (+${extensionDays})` : ''
-
-  return `**${username}** (${roleAbbreviation}, rankBack **${rankBack}**) by **${author.name}** at **${dateString}** for **${days}${extensionString} ${pluralize('day', days + extensionDays)}** with reason:\n*${suspension.reason}*`
 }
 
 async function getTrainingEmbeds (trainings) {
@@ -150,8 +121,6 @@ module.exports = {
   getExileEmbeds,
   getExileRow,
   getRoles,
-  getSuspensionEmbeds,
-  getSuspensionRow,
   getTrainingEmbeds,
   getTrainingRow,
   getTrainingTypes,

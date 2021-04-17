@@ -36,6 +36,9 @@ module.exports = (sequelize, DataTypes) => {
     Message.hasMany(models.Panel, {
       foreignKey: 'messageId'
     })
+    Message.hasMany(models.TicketType, {
+      foreignKey: 'messageId'
+    })
   }
 
   return Message

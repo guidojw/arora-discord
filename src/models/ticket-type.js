@@ -49,17 +49,16 @@ module.exports = (sequelize, DataTypes) => {
         name: 'emojiId',
         defaultValue: null,
         validate: { emojiNandEmojiId }
-      }
+      },
+      onDelete: 'SET NULL'
     })
     TicketType.belongsTo(models.Message, {
       foreignKey: 'messageId',
-      as: 'message'
+      as: 'message',
+      onDelete: 'SET NULL'
     })
     TicketType.hasMany(models.Ticket, {
-      foreignKey: {
-        name: 'typeId',
-        allowNull: false
-      }
+      foreignKey: 'typeId'
     })
   }
 

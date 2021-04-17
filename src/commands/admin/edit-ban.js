@@ -6,32 +6,31 @@ const { applicationAdapter } = require('../../adapters')
 const { userService } = require('../../services')
 const { noChannels, noTags, noUrls } = require('../../util').argumentUtil
 
-class ChangeSuspensionCommand extends BaseCommand {
+class EditBanCommand extends BaseCommand {
   constructor (client) {
     super(client, {
       group: 'admin',
-      name: 'changesuspension',
-      details: 'Key must be "author", "reason" or "rankBack". You can only change the author of suspensions you ' +
-        'created.',
-      description: 'Changes given user\'s suspension\'s key to given data.',
-      examples: ['changesuspension Happywalker rankBack false'],
+      name: 'editban',
+      description: 'Edits given user\'s ban\'s key to given data.',
+      details: 'Key must be author or reason.',
+      examples: ['editban Happywalker author builderman'],
       clientPermissions: ['SEND_MESSAGES'],
       requiresApi: true,
       requiresRobloxGroup: true,
       args: [{
         key: 'user',
         type: 'roblox-user',
-        prompt: 'Whose suspension would you like to change?'
+        prompt: 'Whose ban would you like to edit?'
       }, {
         key: 'key',
         type: 'string',
-        prompt: 'What key would you like to change?',
-        oneOf: ['author', 'reason', 'rankback'],
+        prompt: 'What key would you like to edit?',
+        oneOf: ['author', 'reason'],
         parse: val => val.toLowerCase()
       }, {
         key: 'data',
-        type: 'boolean|string',
-        prompt: 'What would you like to change this key\'s data to?'
+        type: 'string',
+        prompt: 'What would you like to edit this key\'s data to?'
       }]
     })
   }
@@ -48,25 +47,16 @@ class ChangeSuspensionCommand extends BaseCommand {
       }
 
       changes.reason = data
-    } else if (key === 'rankback') {
-      if (data !== true && data !== false) {
-        return message.reply('`rankBack` must be true or false.')
-      }
-
-      changes.rankBack = data
     }
     const editorId = message.member.robloxId ?? (await message.member.fetchVerificationData()).robloxId
     if (typeof editorId === 'undefined') {
       return message.reply('This command requires you to be verified with a verification provider.')
     }
 
-    await applicationAdapter('PUT', `v1/groups/${message.guild.robloxGroupId}/suspensions/${user.id}`, {
-      changes,
-      editorId
-    })
+    await applicationAdapter('PUT', `v1/groups/${message.guild.robloxGroupId}/bans/${user.id}`, { changes, editorId })
 
-    return message.reply(`Successfully changed **${user.username ?? user.id}**'s suspension.`)
+    return message.reply(`Successfully edited **${user.username ?? user.id}**'s ban.`)
   }
 }
 
-module.exports = ChangeSuspensionCommand
+module.exports = EditBanCommand
