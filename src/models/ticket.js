@@ -44,7 +44,8 @@ module.exports = sequelize => {
         name: 'authorId',
         allowNull: false
       },
-      as: 'author'
+      as: 'author',
+      onDelete: 'CASCADE'
     })
     Ticket.belongsTo(models.Channel, {
       foreignKey: 'channelId',
