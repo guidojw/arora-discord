@@ -6,8 +6,6 @@ services:
       context: .
       args:
         - NODE_ENV=test
-    environment:
-      - BUILD_HASH=${BUILDKITE_COMMIT}
 
   app-production: &production
     build: .
