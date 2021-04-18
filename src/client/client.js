@@ -5,7 +5,7 @@ const eventHandlers = require('./events')
 const AroraProvider = require('./setting-provider')
 const WebSocketManager = require('./websocket/websocket')
 
-const { DiscordAPIError } = require('discord.js')
+const { DiscordAPIError, Intents } = require('discord.js')
 const { PartialTypes } = require('discord.js').Constants
 const { CommandoClient } = require('discord.js-commando')
 
@@ -25,6 +25,27 @@ class AroraClient extends CommandoClient {
     }
     if (typeof options.invite === 'undefined') {
       options.invite = applicationConfig.invite
+    }
+    if (!options.intents) {
+      options.intents = []
+    }
+    if (!options.intents.includes(Intents.FLAGS.GUILDS)) {
+      options.intents.push(Intents.FLAGS.GUILDS)
+    }
+    if (!options.intents.includes(Intents.FLAGS.GUILD_MEMBERS)) {
+      options.intents.push(Intents.FLAGS.GUILD_MEMBERS)
+    }
+    if (!options.intents.includes(Intents.FLAGS.GUILD_VOICE_STATES)) {
+      options.intents.push(Intents.FLAGS.GUILD_VOICE_STATES)
+    }
+    if (!options.intents.includes(Intents.FLAGS.GUILD_MESSAGES)) {
+      options.intents.push(Intents.FLAGS.GUILD_MESSAGES)
+    }
+    if (!options.intents.includes(Intents.FLAGS.GUILD_MESSAGE_REACTIONS)) {
+      options.intents.push(Intents.FLAGS.GUILD_MESSAGE_REACTIONS)
+    }
+    if (!options.intents.includes(Intents.FLAGS.DIRECT_MESSAGES)) {
+      options.intents.push(Intents.FLAGS.DIRECT_MESSAGES)
     }
     if (!options.partials) {
       options.partials = []
