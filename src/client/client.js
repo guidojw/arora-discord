@@ -47,9 +47,6 @@ class AroraClient extends CommandoClient {
     if (!options.intents.includes(Intents.FLAGS.DIRECT_MESSAGES)) {
       options.intents.push(Intents.FLAGS.DIRECT_MESSAGES)
     }
-    if (!options.intents.includes(Intents.FLAGS.DIRECT_MESSAGE_REACTIONS)) {
-      options.intents.push(Intents.FLAGS.DIRECT_MESSAGE_REACTIONS)
-    }
     if (!options.partials) {
       options.partials = []
     }
