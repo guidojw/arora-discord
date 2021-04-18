@@ -8,9 +8,10 @@ services:
         - NODE_ENV=test
 
   app-production: &production
-    build: .
-    environment:
-      - BUILD_HASH=${BUILDKITE_COMMIT}
+    build:
+      context: .
+      args:
+        - BUILD_HASH=${BUILDKITE_COMMIT}
 
   app-staging:
     <<: *production

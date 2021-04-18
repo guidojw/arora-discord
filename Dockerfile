@@ -2,6 +2,8 @@ FROM node:14.16.1
 
 ARG NODE_ENV
 ENV NODE_ENV=$NODE_ENV
+ARG BUILD_HASH
+ENV BUILD_HASH=$BUILD_HASH
 
 # Install dependencies
 WORKDIR /opt/app
