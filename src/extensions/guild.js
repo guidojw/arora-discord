@@ -2,7 +2,7 @@
 
 const cron = require('node-cron')
 
-const { MessageEmbed, Structures } = require('discord.js')
+const { GuildEmoji, MessageEmbed, Structures } = require('discord.js')
 const {
   GuildGroupManager,
   GuildPanelManager,
@@ -163,6 +163,17 @@ const AroraGuild = Structures.extend('Guild', Guild => {
 
     get ticketsCategory () {
       return this.channels.cache.get(this.ticketsCategoryId) || null
+    }
+
+    async handleRoleMessage (type, reaction, user) {
+      const member = await this.members.fetch(user)
+      for (const roleMessage of this.roleMessages.cache.values()) {
+        if (reaction.message.id === roleMessage.messageId && (reaction.emoji instanceof GuildEmoji
+          ? roleMessage.emoji instanceof GuildEmoji && reaction.emoji.id === roleMessage.emojiId
+          : !(roleMessage.emoji instanceof GuildEmoji) && reaction.emoji.name === roleMessage.emojiId)) {
+          await member.roles[type](roleMessage.roleId)
+        }
+      }
     }
 
     async log (author, content, options = {}) {
