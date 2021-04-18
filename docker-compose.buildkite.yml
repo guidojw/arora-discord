@@ -5,7 +5,12 @@ services:
     build:
       context: .
       args:
-        NODE_ENV: test
+        - NODE_ENV=test
 
-  app-production:
+  app-production: &production
     build: .
+    environment:
+      - BUILD_HASH=${BUILDKITE_COMMIT}
+
+  app-staging:
+    <<: *production
