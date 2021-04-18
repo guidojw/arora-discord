@@ -1,6 +1,6 @@
 'use strict'
 
-const messageReactionAddHandler = async (client, reaction, user) => {
+const messageReactionAddHandler = async (_client, reaction, user) => {
   if (user.bot) {
     return
   }
@@ -11,8 +11,7 @@ const messageReactionAddHandler = async (client, reaction, user) => {
     return
   }
 
-  client.handleRoleMessage('add', reaction, user)
-
+  reaction.message.guild.handleRoleMessage('add', reaction, user)
   reaction.message.guild.tickets.onMessageReactionAdd(reaction, user)
 }
 

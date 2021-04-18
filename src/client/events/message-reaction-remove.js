@@ -1,6 +1,6 @@
 'use strict'
 
-const messageReactionRemoveHandler = async (client, reaction, user) => {
+const messageReactionRemoveHandler = async (_client, reaction, user) => {
   if (user.bot) {
     return
   }
@@ -11,7 +11,7 @@ const messageReactionRemoveHandler = async (client, reaction, user) => {
     return
   }
 
-  client.handleRoleMessage('remove', reaction, user)
+  reaction.message.guild.handleRoleMessage('remove', reaction, user)
 }
 
 module.exports = messageReactionRemoveHandler

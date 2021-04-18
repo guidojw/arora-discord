@@ -5,7 +5,7 @@ const eventHandlers = require('./events')
 const AroraProvider = require('./setting-provider')
 const WebSocketManager = require('./websocket/websocket')
 
-const { DiscordAPIError, GuildEmoji } = require('discord.js')
+const { DiscordAPIError } = require('discord.js')
 const { PartialTypes } = require('discord.js').Constants
 const { CommandoClient } = require('discord.js-commando')
 
@@ -106,19 +106,6 @@ class AroraClient extends CommandoClient {
     this.startActivityCarousel()
 
     console.log(`Ready to serve on ${this.guilds.cache.size} servers, for ${this.users.cache.size} users.`)
-  }
-
-  async handleRoleMessage (type, reaction, user) {
-    const guild = reaction.message.guild
-    const member = guild.members.resolve(user) || await guild.members.fetch(user)
-
-    for (const roleMessage of guild.roleMessages.cache.values()) {
-      if (reaction.message.id === roleMessage.messageId && (reaction.emoji instanceof GuildEmoji
-        ? roleMessage.emoji instanceof GuildEmoji && reaction.emoji.id === roleMessage.emojiId
-        : !(roleMessage.emoji instanceof GuildEmoji) && reaction.emoji.name === roleMessage.emojiId)) {
-        await member.roles[type](roleMessage.roleId)
-      }
-    }
   }
 
   startActivityCarousel () {
