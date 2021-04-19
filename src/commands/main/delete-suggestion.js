@@ -23,7 +23,7 @@ class DeleteSuggestionCommand extends BaseCommand {
 
     for (const suggestion of messages.values()) {
       if (suggestion.embeds[0]?.author?.url === authorUrl) {
-        const prompt = await message.replyEmbed(suggestion.embeds[0], 'Are you sure would like to delete this ' +
+        const prompt = await message.replyEmbed(suggestion.embeds[0], 'Are you sure you would like to delete this ' +
           'suggestion?')
         const choice = await discordService.prompt(message.channel, message.author, prompt, ['✅', '🚫']) === '✅'
 
