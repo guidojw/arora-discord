@@ -42,15 +42,10 @@ async function getUsers (userIds) {
   return result
 }
 
-async function hasBadge (userId, badgeId) {
-  return (await robloxAdapter('GET', 'inventory', `v1/users/${userId}/items/Badge/${badgeId}`)).data.data.length === 1
-}
-
 module.exports = {
   getGroupsRoles,
   getIdFromUsername,
   getUser,
   getUserOutfits,
-  getUsers,
-  hasBadge
+  getUsers
 }

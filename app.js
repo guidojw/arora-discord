@@ -9,7 +9,11 @@ const AroraClient = require('./src/client/client')
 const healthCheckJobConfig = require('./config/cron').healthCheckJob
 
 if (process.env.SENTRY_DSN) {
-  Sentry.init({ dsn: process.env.SENTRY_DSN })
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    environment: process.env.NODE_ENV,
+    release: process.env.BUILD_HASH
+  })
 }
 
 cron.schedule(

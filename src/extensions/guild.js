@@ -2,9 +2,10 @@
 
 const cron = require('node-cron')
 
-const { MessageEmbed, Structures } = require('discord.js')
+const { GuildEmoji, MessageEmbed, Structures } = require('discord.js')
 const {
   GuildGroupManager,
+  GuildMemberManager,
   GuildPanelManager,
   GuildRoleBindingManager,
   GuildRoleMessageManager,
@@ -30,6 +31,8 @@ const AroraGuild = Structures.extend('Guild', Guild => {
       this.tags = new GuildTagManager(this)
       this.tickets = new GuildTicketManager(this)
       this.ticketTypes = new GuildTicketTypeManager(this)
+
+      this.members = new GuildMemberManager(this)
     }
 
     _setup (data) {
@@ -45,9 +48,6 @@ const AroraGuild = Structures.extend('Guild', Guild => {
       this.ticketsCategoryId = data.ticketsCategoryId
       this.trainingsInfoPanelId = data.trainingsInfoPanelId
       this.trainingsPanelId = data.trainingsPanelId
-      this.verificationPreference = data.verificationPreference
-        ? VerificationProviders[data.verificationPreference.toUpperCase()]
-        : null
 
       if (data.channels) {
         for (const rawChannel of data.channels) {
@@ -102,6 +102,10 @@ const AroraGuild = Structures.extend('Guild', Guild => {
           this.ticketTypes.add(rawTicketType)
         }
       }
+
+      this.verificationPreference = data.verificationPreference
+        ? VerificationProviders[data.verificationPreference.toUpperCase()]
+        : null
     }
 
     _patch (data) {
@@ -163,6 +167,17 @@ const AroraGuild = Structures.extend('Guild', Guild => {
 
     get ticketsCategory () {
       return this.channels.cache.get(this.ticketsCategoryId) || null
+    }
+
+    async handleRoleMessage (type, reaction, user) {
+      const member = await this.members.fetch(user)
+      for (const roleMessage of this.roleMessages.cache.values()) {
+        if (reaction.message.id === roleMessage.messageId && (reaction.emoji instanceof GuildEmoji
+          ? roleMessage.emoji instanceof GuildEmoji && reaction.emoji.id === roleMessage.emojiId
+          : !(roleMessage.emoji instanceof GuildEmoji) && reaction.emoji.name === roleMessage.emojiId)) {
+          await member.roles[type](roleMessage.roleId)
+        }
+      }
     }
 
     async log (author, content, options = {}) {

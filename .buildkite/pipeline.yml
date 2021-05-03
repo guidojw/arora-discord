@@ -36,7 +36,7 @@ steps:
           username: buildkite
           password-env: DOCKER_PASSWORD
       - docker-compose#v3.7.0:
-          push: app-production:docker.guidojw.nl/arora/arora-discord:staging
+          push: app-staging:docker.guidojw.nl/arora/arora-discord:staging
           image-name: docker.guidojw.nl/arora/arora-discord:staging
           config: docker-compose.buildkite.yml
 
