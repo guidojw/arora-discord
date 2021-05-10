@@ -28,9 +28,10 @@ class StatusCommand extends BaseCommand {
     if (message.guild) {
       embed.addField('System Statuses', `Tickets System: **${message.guild.supportEnabled ? 'online' : 'offline'}**`)
     }
+    const totalMem = os.totalmem()
     embed
       .addField('Load Average', os.loadavg().join(', '), true)
-      .addField('Memory Usage', `${formatBytes(os.freemem(), 3)} / ${formatBytes(os.totalmem(), 3)}`, true)
+      .addField('Memory Usage', `${formatBytes(totalMem - os.freemem(), 3)} / ${formatBytes(totalMem, 3)}`, true)
       .addField('Uptime', getDurationString(this.client.uptime), true)
       .setFooter(`Process ID: ${process.pid} | ${os.hostname()}`)
       .setTimestamp()
