@@ -5,7 +5,7 @@ const pluralize = require('pluralize')
 const { MessageEmbed } = require('discord.js')
 const { userService } = require('../../../services')
 
-const trainDevelopersPayoutReportHandler = async (client, { data }) => {
+const trainDeveloperPayoutReportHandler = async (client, { data }) => {
   const { developersSales } = data
   const developerIds = Object.keys(developersSales)
   const developers = await userService.getUsers(developerIds)
@@ -38,4 +38,4 @@ const trainDevelopersPayoutReportHandler = async (client, { data }) => {
   client.owners.forEach(owner => owner.send(embed))
 }
 
-module.exports = trainDevelopersPayoutReportHandler
+module.exports = trainDeveloperPayoutReportHandler
