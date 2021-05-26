@@ -1,6 +1,6 @@
 import { Argument, ArgumentType, CommandoClient, CommandoMessage, util } from 'discord.js-commando'
 import { BaseStructure } from '../structures'
-import { Constructable } from '../util/util'
+import { Constructor } from '../util/util'
 import { Util } from 'discord.js'
 import lodash from 'lodash'
 import pluralize from 'pluralize'
@@ -9,11 +9,11 @@ const { disambiguation } = util
 const { escapeMarkdown } = Util
 
 export default class BaseArgumentType<T extends BaseStructure> extends ArgumentType implements FilterableArgumentType {
-  readonly holds: Constructable<T>
+  readonly holds: Constructor<T>
   private readonly managerName: string
   private readonly label: string
 
-  constructor (client: CommandoClient, holds: Constructable<T>, managerName?: string) {
+  constructor (client: CommandoClient, holds: Constructor<T>, managerName?: string) {
     let id = lodash.kebabCase(holds.name)
     if (client.registry.types.has(id)) {
       id = `arora-${id}`

@@ -1,4 +1,4 @@
-export type Constructable<T> = new (...args: any[]) => T
+export type Constructor<T> = new (...args: any[]) => T
 
 export function formatBytes (bytes: number, decimals = 2): string {
   if (bytes === 0) {
@@ -32,8 +32,8 @@ export function getOrdinalNum (number: number): string {
 }
 
 export function makeCommaSeparatedString (array: string[]): string {
-  if (array.length === 1) {
-    return array[0]
+  if (array.length <= 1) {
+    return array[0] ?? ''
   }
   const firsts = array.slice(0, array.length - 1)
   const last = array[array.length - 1]

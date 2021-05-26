@@ -1,9 +1,15 @@
-'use strict'
-
-const cron = require('node-cron')
-
-const { GuildEmoji, MessageEmbed, Structures } = require('discord.js')
-const {
+import {
+  CategoryChannel,
+  Client,
+  Guild,
+  GuildEmoji,
+  MessageEmbed,
+  MessageReaction,
+  Structures,
+  TextChannel,
+  User
+} from 'discord.js'
+import {
   GuildGroupManager,
   GuildMemberManager,
   GuildPanelManager,
@@ -12,17 +18,43 @@ const {
   GuildTagManager,
   GuildTicketManager,
   GuildTicketTypeManager
-} = require('../managers')
-const { Guild: GuildModel } = require('../models')
-const { VerificationProviders } = require('../util').Constants
+} from '../managers'
+import { Guild as GuildModel } from '../models'
+import { VerificationProvider } from '../util/constants'
+import applicationConfig from '../configs/application'
+import cron from 'node-cron'
+import cronConfig from '../configs/cron'
 
-const applicationConfig = require('../../config/application')
-const cronConfig = require('../../config/cron')
+declare module 'discord.js' {
+  export interface Guild {
+    groups: GuildGroupManager
+    panels: GuildPanelManager
+    roleBindings: GuildRoleBindingManager
+    roleMessages: GuildRoleMessageManager
+    tags: GuildTagManager
+    tickets: GuildTicketManager
+    ticketTypes: GuildTicketTypeManager
 
-const AroraGuild = Structures.extend('Guild', Guild => {
+    logsChannelId: string | null
+    primaryColor: number | null
+    ratingsChannelId: string | null
+    robloxGroupId: number | null
+    robloxUsernamesInNicknames: boolean
+    suggestionsChannelId: string | null
+    supportEnabled: boolean
+    ticketArchivesChannelId: string | null
+    ticketsCategoryId: string | null
+    trainingsInfoPanelId: number | null
+    trainingsPanelId: number | null
+    verificationPreference: VerificationProvider
+  }
+}
+
+// @ts-expect-error
+const AroraGuild: Guild = Structures.extend('Guild', Guild => {
   class AroraGuild extends Guild {
-    constructor (...args) {
-      super(...args)
+    constructor (client: Client, data: object) {
+      super(client, data)
 
       this.groups = new GuildGroupManager(this)
       this.panels = new GuildPanelManager(this)
@@ -35,8 +67,19 @@ const AroraGuild = Structures.extend('Guild', Guild => {
       this.members = new GuildMemberManager(this)
     }
 
-    _setup (data) {
-      this.id = data.id
+    _setup (data: {
+      logsChannelId: string | null
+      primaryColor: number | null
+      ratingsChannelId: string | null
+      robloxGroupId: number | null
+      robloxUsernamesInNicknames: boolean
+      suggestionsChannelId: string | null
+      supportEnabled: boolean
+      ticketArchivesChannelId: string | null
+      ticketsCategoryId: string | null
+      trainingsInfoPanelId: number | null
+      trainingsPanelId: number | null
+    }): void {
       this.logsChannelId = data.logsChannelId
       this.primaryColor = data.primaryColor
       this.ratingsChannelId = data.ratingsChannelId
@@ -73,7 +116,7 @@ const AroraGuild = Structures.extend('Guild', Guild => {
       if (data.roles) {
         for (const rawRole of data.roles) {
           const role = this.roles.cache.get(rawRole.id)
-          if (role) {
+          if (typeof role !== 'undefined') {
             role._setup(rawRole)
           }
         }
@@ -103,38 +146,38 @@ const AroraGuild = Structures.extend('Guild', Guild => {
         }
       }
 
-      this.verificationPreference = data.verificationPreference
-        ? VerificationProviders[data.verificationPreference.toUpperCase()]
+      this.verificationPreference = data.verificationPreference !== null
+        ? VerificationProvider[data.verificationPreference.toUpperCase()]
         : null
     }
 
-    _patch (data) {
+    _patch (data: any): void {
       // Below patch was done so that Discord.js' Guild._patch method doesn't clear the roles manager which makes it
       // lose all data. When channels ever get data that needs to be cached, this has to be done on that manager too.
-      const roles = data.roles
+      const roles: any[] = data.roles
       delete data.roles
 
+      // @ts-expect-error
       super._patch(data)
 
-      if (roles) {
-        for (const roleData of roles) {
-          const role = this.roles.cache.get(roleData.id)
-          if (role) {
-            role._patch(roleData)
-          } else {
-            this.roles.add(roleData)
-          }
+      for (const roleData of roles) {
+        const role = this.roles.cache.get(roleData.id)
+        if (typeof role !== 'undefined') {
+          // @ts-expect-error
+          role._patch(roleData)
+        } else {
+          this.roles.add(roleData)
         }
-        for (const role of this.roles.cache.values()) {
-          if (!roles.some(roleData => roleData.id === role.id)) {
-            this.roles.cache.delete(role.id)
-          }
+      }
+      for (const role of this.roles.cache.values()) {
+        if (!roles.some(roleData => roleData.id === role.id)) {
+          this.roles.cache.delete(role.id)
         }
       }
     }
 
-    async init () {
-      if (applicationConfig.apiEnabled) {
+    async init (): Promise<void> {
+      if (applicationConfig.apiEnabled === true) {
         const announceTrainingsJobConfig = cronConfig.announceTrainingsJob
         cron.schedule(
           announceTrainingsJobConfig.expression,
@@ -149,27 +192,27 @@ const AroraGuild = Structures.extend('Guild', Guild => {
       )
     }
 
-    get logsChannel () {
-      return this.channels.cache.get(this.logsChannelId) || null
+    get logsChannel (): TextChannel | null {
+      return this.channels.cache.get(this.logsChannelId) ?? null
     }
 
-    get suggestionsChannel () {
-      return this.channels.cache.get(this.suggestionsChannelId) || null
+    get suggestionsChannel (): TextChannel | null {
+      return this.channels.cache.get(this.suggestionsChannelId) ?? null
     }
 
-    get ratingsChannel () {
+    get ratingsChannel (): TextChannel | null {
       return this.channels.cache.get(this.ratingsChannelId) || null
     }
 
-    get ticketArchivesChannel () {
+    get ticketArchivesChannel (): TextChannel | null {
       return this.channels.cache.get(this.ticketArchivesChannelId) || null
     }
 
-    get ticketsCategory () {
+    get ticketsCategory (): CategoryChannel | null {
       return this.channels.cache.get(this.ticketsCategoryId) || null
     }
 
-    async handleRoleMessage (type, reaction, user) {
+    async handleRoleMessage (type: 'add' | 'remove', reaction: MessageReaction, user: User): Promise<void> {
       const member = await this.members.fetch(user)
       for (const roleMessage of this.roleMessages.cache.values()) {
         if (reaction.message.id === roleMessage.messageId && (reaction.emoji instanceof GuildEmoji
@@ -229,4 +272,4 @@ const AroraGuild = Structures.extend('Guild', Guild => {
   return AroraGuild
 })
 
-module.exports = AroraGuild
+export default AroraGuild

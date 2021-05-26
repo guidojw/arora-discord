@@ -36,6 +36,7 @@
     "ws": "^7.4.5"
   },
   "devDependencies": {
+    "@types/common-tags": "^1.8.0",
     "@types/lodash": "^4.14.169",
     "@types/node": "^15.3.0",
     "@types/node-cron": "^2.0.3",

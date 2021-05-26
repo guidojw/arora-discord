@@ -8,8 +8,8 @@ export enum GroupType {
 }
 
 export enum VerificationProvider {
-  Bloxlink = 'Bloxlink',
-  RoVer = 'RoVer'
+  Bloxlink = 'bloxlink',
+  RoVer = 'rover'
 }
 
 export enum WSEvent {

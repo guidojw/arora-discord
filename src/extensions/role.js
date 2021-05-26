@@ -1,6 +1,6 @@
 'use strict'
 
-const Permissible = require('../structures/interfaces/permissible')
+const Permissible = require('../structures/mixins/permissible')
 
 const { Structures } = require('discord.js')
 const { PermissionManager, RoleGroupManager } = require('../managers')

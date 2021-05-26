@@ -3,7 +3,8 @@ import { CommandoClient } from 'discord.js-commando'
 import { GroupType } from '../util/constants'
 import { Guild } from 'discord.js'
 
-export default class Group extends BaseStructure {
+export default class Group implements BaseStructure {
+  readonly client: CommandoClient
   readonly type: GroupType
   readonly guild: Guild
   id!: string
@@ -11,14 +12,12 @@ export default class Group extends BaseStructure {
   guarded!: boolean
 
   constructor (client: CommandoClient, data: any, guild: Guild) {
-    super(client)
-
+    this.client = client
     this.type = data.type
-
     this.guild = guild
   }
 
-  _setup (data: any): void {
+  setup (data: any): void {
     this.id = data.id
     this.name = data.name
     this.guarded = data.guarded
