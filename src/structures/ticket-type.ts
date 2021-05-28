@@ -5,18 +5,23 @@ import Panel from './panel'
 import Postable from './mixins/postable'
 
 export default class TicketType extends Postable(BaseStructure) {
+  guild: Guild
   id!: number
   name!: string
   _emoji!: string | null
   _emojiId!: string | null
 
   constructor (client: CommandoClient, data: any, guild: Guild) {
-    super(client, guild)
+    super(client)
+
+    this.guild = guild
 
     this.setup(data)
   }
 
   setup (data: any): void {
+    super.setup(data)
+
     this.id = data.id
     this.name = data.name
     this._emoji = data.emoji

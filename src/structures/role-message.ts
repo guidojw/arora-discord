@@ -3,14 +3,17 @@ import BaseStructure from './base'
 import { CommandoClient } from 'discord.js-commando'
 import Postable from './mixins/postable'
 
-export default class RoleMessage extends Postable implements BaseStructure {
+export default class RoleMessage extends Postable(BaseStructure) {
+  guild: Guild
   id!: number
   roleId!: string
   _emoji!: string | null
   _emojiId!: string | null
 
   constructor (client: CommandoClient, data: any, guild: Guild) {
-    super(client, guild)
+    super(client)
+
+    this.guild = guild
 
     this.setup(data)
   }
@@ -22,8 +25,6 @@ export default class RoleMessage extends Postable implements BaseStructure {
     this.roleId = data.roleId
     this._emoji = data.emoji
     this._emojiId = data.emojiId
-    this.messageId = data.message.id
-    this.channelId = data.message.channelId
   }
 
   get emoji (): GuildEmoji | string | null {
@@ -38,7 +39,7 @@ export default class RoleMessage extends Postable implements BaseStructure {
     return this.guild.roles.cache.get(this.roleId) ?? null
   }
 
-  delete (): void{
+  delete (): void {
     return this.guild.roleMessages.delete(this)
   }
 }

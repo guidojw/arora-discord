@@ -7,7 +7,7 @@ export default class BaseStructure {
     this.client = client
   }
 
-  _setup (data: any): any {
+  setup (data: any): any {
     return data
   }
 }
