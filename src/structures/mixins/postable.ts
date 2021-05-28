@@ -6,8 +6,8 @@ const { PartialTypes } = Constants
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export default function Postable<T extends Constructor<BaseStructure>> (Base: T) {
-  return class extends Base {
-    readonly guild!: Guild
+  abstract class Postable extends Base {
+    abstract guild: Guild
     messageId!: string | null
     channelId!: string | null
 
@@ -31,4 +31,5 @@ export default function Postable<T extends Constructor<BaseStructure>> (Base: T)
         : null
     }
   }
+  return Postable
 }
