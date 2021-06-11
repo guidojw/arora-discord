@@ -1,4 +1,5 @@
 import { Argument, ArgumentType, CommandoClient, CommandoMessage, util } from 'discord.js-commando'
+import { BaseManager } from '../managers'
 import { BaseStructure } from '../structures'
 import { Constructor } from '../util/util'
 import { Util } from 'discord.js'
@@ -34,7 +35,8 @@ export default class BaseArgumentType<T extends BaseStructure> extends ArgumentT
     }
     const id = parseInt(val)
     if (!isNaN(id)) {
-      const structure = msg.guild[this.managerName].cache.get(id)
+      // @ts-expect-error
+      const structure = (msg.guild[this.managerName] as BaseManager | undefined)?.cache.get(id)
       if (typeof structure === 'undefined') {
         return false
       }

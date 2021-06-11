@@ -1,8 +1,10 @@
 import {
   CategoryChannel,
   Client,
+  ColorResolvable,
   Guild,
   GuildEmoji,
+  Message,
   MessageEmbed,
   MessageReaction,
   Structures,
@@ -27,14 +29,6 @@ import cronConfig from '../configs/cron'
 
 declare module 'discord.js' {
   export interface Guild {
-    groups: GuildGroupManager
-    panels: GuildPanelManager
-    roleBindings: GuildRoleBindingManager
-    roleMessages: GuildRoleMessageManager
-    tags: GuildTagManager
-    tickets: GuildTicketManager
-    ticketTypes: GuildTicketTypeManager
-
     logsChannelId: string | null
     primaryColor: number | null
     ratingsChannelId: string | null
@@ -47,15 +41,37 @@ declare module 'discord.js' {
     trainingsInfoPanelId: number | null
     trainingsPanelId: number | null
     verificationPreference: VerificationProvider
+
+    members: GuildMemberManager
+    groups: GuildGroupManager
+    panels: GuildPanelManager
+    roleBindings: GuildRoleBindingManager
+    roleMessages: GuildRoleMessageManager
+    tags: GuildTagManager
+    tickets: GuildTicketManager
+    ticketTypes: GuildTicketTypeManager
+
+    readonly logsChannel: TextChannel | null
+    readonly suggestionsChannel: TextChannel | null
+    readonly ratingsChannel: TextChannel | null
+    readonly ticketArchivesChannel: TextChannel | null
+    readonly ticketsCategory: CategoryChannel | null
+
+    setup (data: any): void
+    init (): Promise<void>
+    handleRoleMessage (type: 'add' | 'remove', reaction: MessageReaction, user: User): Promise<void>
+    log (author: User, content: string, options?: { color?: ColorResolvable, footer?: string }): Promise<Message | null>
+    update (data: any): Promise<this>
   }
 }
 
 // @ts-expect-error
-const AroraGuild: Guild = Structures.extend('Guild', Guild => {
+const AroraGuild: Guild = Structures.extend('Guild', Guild => (
   class AroraGuild extends Guild {
-    constructor (client: Client, data: object) {
+    public constructor (client: Client, data: object) {
       super(client, data)
 
+      this.members = new GuildMemberManager(this)
       this.groups = new GuildGroupManager(this)
       this.panels = new GuildPanelManager(this)
       this.roleBindings = new GuildRoleBindingManager(this)
@@ -63,23 +79,9 @@ const AroraGuild: Guild = Structures.extend('Guild', Guild => {
       this.tags = new GuildTagManager(this)
       this.tickets = new GuildTicketManager(this)
       this.ticketTypes = new GuildTicketTypeManager(this)
-
-      this.members = new GuildMemberManager(this)
     }
 
-    _setup (data: {
-      logsChannelId: string | null
-      primaryColor: number | null
-      ratingsChannelId: string | null
-      robloxGroupId: number | null
-      robloxUsernamesInNicknames: boolean
-      suggestionsChannelId: string | null
-      supportEnabled: boolean
-      ticketArchivesChannelId: string | null
-      ticketsCategoryId: string | null
-      trainingsInfoPanelId: number | null
-      trainingsPanelId: number | null
-    }): void {
+    public setup (data: any): void {
       this.logsChannelId = data.logsChannelId
       this.primaryColor = data.primaryColor
       this.ratingsChannelId = data.ratingsChannelId
@@ -91,64 +93,52 @@ const AroraGuild: Guild = Structures.extend('Guild', Guild => {
       this.ticketsCategoryId = data.ticketsCategoryId
       this.trainingsInfoPanelId = data.trainingsInfoPanelId
       this.trainingsPanelId = data.trainingsPanelId
+      this.verificationPreference = data.verificationPreference
 
-      if (data.channels) {
-        for (const rawChannel of data.channels) {
-          const channel = this.channels.cache.get(rawChannel.id)
-          if (channel && channel._setup) {
-            channel._setup(rawChannel)
-          }
-        }
-      }
-
-      if (data.groups) {
+      if (typeof data.groups !== 'undefined') {
         for (const rawGroup of data.groups) {
           this.groups.add(rawGroup)
         }
       }
 
-      if (data.panels) {
+      if (typeof data.panels !== 'undefined') {
         for (const rawPanel of data.panels) {
           this.panels.add(rawPanel)
         }
       }
 
-      if (data.roles) {
+      if (typeof data.roles !== 'undefined') {
         for (const rawRole of data.roles) {
           const role = this.roles.cache.get(rawRole.id)
           if (typeof role !== 'undefined') {
-            role._setup(rawRole)
+            role.setup(rawRole)
           }
         }
       }
 
-      if (data.roleMessages) {
+      if (typeof data.roleMessages !== 'undefined') {
         for (const rawRoleMessage of data.roleMessages) {
           this.roleMessages.add(rawRoleMessage)
         }
       }
 
-      if (data.tags) {
+      if (typeof data.tags !== 'undefined') {
         for (const rawTag of data.tags) {
           this.tags.add(rawTag)
         }
       }
 
-      if (data.tickets) {
+      if (typeof data.tickets !== 'undefined') {
         for (const rawTicket of data.tickets) {
           this.tickets.add(rawTicket)
         }
       }
 
-      if (data.ticketTypes) {
+      if (typeof data.ticketTypes !== 'undefined') {
         for (const rawTicketType of data.ticketTypes) {
           this.ticketTypes.add(rawTicketType)
         }
       }
-
-      this.verificationPreference = data.verificationPreference !== null
-        ? VerificationProvider[data.verificationPreference.toUpperCase()]
-        : null
     }
 
     _patch (data: any): void {
@@ -176,7 +166,7 @@ const AroraGuild: Guild = Structures.extend('Guild', Guild => {
       }
     }
 
-    async init (): Promise<void> {
+    public async init (): Promise<void> {
       if (applicationConfig.apiEnabled === true) {
         const announceTrainingsJobConfig = cronConfig.announceTrainingsJob
         cron.schedule(
@@ -192,27 +182,37 @@ const AroraGuild: Guild = Structures.extend('Guild', Guild => {
       )
     }
 
-    get logsChannel (): TextChannel | null {
-      return this.channels.cache.get(this.logsChannelId) ?? null
+    public get logsChannel (): TextChannel | null {
+      return this.logsChannelId !== null
+        ? (this.channels.cache.get(this.logsChannelId) as TextChannel | undefined) ?? null
+        : null
     }
 
-    get suggestionsChannel (): TextChannel | null {
-      return this.channels.cache.get(this.suggestionsChannelId) ?? null
+    public get ratingsChannel (): TextChannel | null {
+      return this.ratingsChannelId !== null
+        ? (this.channels.cache.get(this.ratingsChannelId) as TextChannel | undefined) ?? null
+        : null
     }
 
-    get ratingsChannel (): TextChannel | null {
-      return this.channels.cache.get(this.ratingsChannelId) || null
+    public get suggestionsChannel (): TextChannel | null {
+      return this.suggestionsChannelId !== null
+        ? (this.channels.cache.get(this.suggestionsChannelId) as TextChannel | undefined) ?? null
+        : null
     }
 
-    get ticketArchivesChannel (): TextChannel | null {
-      return this.channels.cache.get(this.ticketArchivesChannelId) || null
+    public get ticketArchivesChannel (): TextChannel | null {
+      return this.ticketArchivesChannelId !== null
+        ? (this.channels.cache.get(this.ticketArchivesChannelId) as TextChannel | undefined) ?? null
+        : null
     }
 
-    get ticketsCategory (): CategoryChannel | null {
-      return this.channels.cache.get(this.ticketsCategoryId) || null
+    public get ticketsCategory (): CategoryChannel | null {
+      return this.ticketsCategoryId !== null
+        ? (this.channels.cache.get(this.ticketsCategoryId) as CategoryChannel | undefined) ?? null
+        : null
     }
 
-    async handleRoleMessage (type: 'add' | 'remove', reaction: MessageReaction, user: User): Promise<void> {
+    public async handleRoleMessage (type: 'add' | 'remove', reaction: MessageReaction, user: User): Promise<void> {
       const member = await this.members.fetch(user)
       for (const roleMessage of this.roleMessages.cache.values()) {
         if (reaction.message.id === roleMessage.messageId && (reaction.emoji instanceof GuildEmoji
@@ -223,28 +223,33 @@ const AroraGuild: Guild = Structures.extend('Guild', Guild => {
       }
     }
 
-    async log (author, content, options = {}) {
-      if (this.logsChannel) {
+    public async log (
+      author: User,
+      content: string,
+      options: { color?: ColorResolvable, footer?: string } = {}
+    ): Promise<Message | null> {
+      if (this.logsChannel !== null) {
         if (author.partial) {
           await author.fetch()
         }
 
         const embed = new MessageEmbed()
           .setAuthor(author.tag, author.displayAvatarURL())
-          .setColor(this.primaryColor)
+          .setColor(this.primaryColor ?? 0xffffff)
           .setDescription(content)
         if (typeof options.color !== 'undefined') {
           embed.setColor(options.color)
         }
-        if (options.footer) {
+        if (typeof options.footer !== 'undefined') {
           embed.setFooter(options.footer)
         }
 
-        return this.logsChannel.send(embed)
+        return await this.logsChannel.send(embed)
       }
+      return null
     }
 
-    async update (data) {
+    public async update (data: any): Promise<this> {
       const [, [newData]] = await GuildModel.update({
         commandPrefix: data.commandPrefix,
         logsChannelId: data.logsChannelId,
@@ -264,12 +269,10 @@ const AroraGuild: Guild = Structures.extend('Guild', Guild => {
         returning: true
       })
 
-      this._setup(newData)
+      this.setup(newData)
       return this
     }
   }
-
-  return AroraGuild
-})
+))
 
 export default AroraGuild

@@ -1,13 +1,13 @@
-import { CommandoClient } from 'discord.js-commando'
+import Client from '../client/client'
 
 export default class BaseStructure {
-  readonly client: CommandoClient
+  public readonly client: Client
 
-  constructor (client: CommandoClient) {
+  public constructor (client: Client) {
     this.client = client
   }
 
-  setup (data: any): any {
+  public setup (data: any): any {
     return data
   }
 }

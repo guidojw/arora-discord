@@ -6,7 +6,7 @@ const { CategoryChannel, GuildChannel } = require('discord.js')
 const { AroraTextChannel: TextChannel } = require('../../extensions')
 const { Channel: ChannelModel, Guild } = require('../../models')
 const { parseNoneOrType } = require('../../util').argumentUtil
-const { VerificationProviders } = require('../../util').Constants
+const { VerificationProvider } = require('../../util').Constants
 
 class SetSettingCommand extends BaseCommand {
   constructor (client) {
@@ -57,9 +57,10 @@ class SetSettingCommand extends BaseCommand {
           error = 'Invalid boolean.'
         }
       } else if (setting === 'verificationPreference') {
-        if (typeof value !== 'string' || typeof VerificationProviders[value.toUpperCase()] === 'undefined') {
+        if (typeof value !== 'string' || Object.values(VerificationProvider).includes(value.toLowerCase())) {
           error = 'Invalid verification provider.'
         }
+        value = value.toLowerCase()
       } else if (setting.includes('Channel') || setting.includes('Category')) {
         if (setting === 'ticketsCategoryId') {
           if (!(value instanceof CategoryChannel)) {
@@ -82,7 +83,7 @@ class SetSettingCommand extends BaseCommand {
 
     await message.guild.update({ [setting]: value instanceof GuildChannel ? value.id : value })
 
-    return message.reply(`Successfully set ${setting.endsWith('Id') ? setting.slice(0, -2) : setting} to ${value instanceof GuildChannel ? value : `\`${setting === 'verificationPreference' ? VerificationProviders[value.toUpperCase()] : value}\``}.`)
+    return message.reply(`Successfully set ${setting.endsWith('Id') ? setting.slice(0, -2) : setting} to ${value instanceof GuildChannel ? value : `\`${setting === 'verificationPreference' ? VerificationProvider[value.toUpperCase()] : value}\``}.`)
   }
 }
 

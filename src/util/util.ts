@@ -1,4 +1,4 @@
-export type Constructor<T> = new (...args: any[]) => T
+export type Constructor<T = {}> = new (...args: any[]) => T
 
 export function formatBytes (bytes: number, decimals = 2): string {
   if (bytes === 0) {

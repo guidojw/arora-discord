@@ -20,6 +20,7 @@ module.exports = {
         ignoreRegExpLiterals: true
       }
     ],
-    'sort-imports': 'error'
+    'sort-imports': 'error',
+    '@typescript-eslint/method-signature-style': ['error', 'method']
   }
 }

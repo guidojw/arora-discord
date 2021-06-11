@@ -13,17 +13,18 @@ const dateRegex = /(([0-2]?[0-9]|3[0-1])[-](0?[1-9]|1[0-2])[-][0-9]{4})/
 const timeRegex = /^(2[0-3]|[0-1]?[\d]):[0-5][\d]$/
 const urlRegex = /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/gi
 
-export function validators (steps: Array<Validator | Validator[]> = []):
-((val: string, msg: CommandoMessage) => Promise<boolean | string>) | undefined {
-  if (steps.length === 0) {
-    return
-  }
+export function validators (
+  steps: Array<Validator | Validator[]> = []
+): ((val: string, msg: CommandoMessage) => Promise<boolean | string>) {
   return async function (this: Argument, val, msg) {
     const valid = await this.type.validate(val, msg, this)
     if (valid === false || typeof valid === 'string') {
       return valid
     }
 
+    if (steps.length === 0) {
+      return true
+    }
     for (const step of steps) {
       if (step instanceof Array) {
         const validations = step.map(validator => validator.call(this.type, val, msg, this))

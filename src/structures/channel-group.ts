@@ -1,28 +1,28 @@
-import { CommandoClient } from 'discord.js-commando'
+import Client from '../client/client'
 import Group from './group'
 import GroupTextChannelManager from '../managers/group-text-channel'
 import { Guild } from 'discord.js'
 
 export default class ChannelGroup extends Group {
-  _channels: string[]
+  public _channels: string[]
 
-  constructor (client: CommandoClient, data: any, guild: Guild) {
+  public constructor (client: Client, data: any, guild: Guild) {
     super(client, data, guild)
 
     this._channels = []
 
-    this._setup(data)
+    this.setup(data)
   }
 
-  _setup (data: any): void {
-    super._setup(data)
+  public setup (data: any): void {
+    super.setup(data)
 
     if (typeof data.channels !== 'undefined') {
       this._channels = data.channels.map((channel: { id: string }) => channel.id)
     }
   }
 
-  get channels (): GroupTextChannelManager {
+  public get channels (): GroupTextChannelManager {
     return new GroupTextChannelManager(this)
   }
 }

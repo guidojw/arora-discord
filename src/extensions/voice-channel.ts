@@ -1,18 +1,19 @@
-'use strict'
+import { Collection, GuildChannel, Structures, TextChannel, VoiceChannel } from 'discord.js'
+import { Channel } from '../models'
 
-const { Structures } = require('discord.js')
-const { Channel } = require('../models')
-
-const AroraVoiceChannel = Structures.extend('VoiceChannel', VoiceChannel => {
+// @ts-expect-error
+const AroraVoiceChannel: VoiceChannel = Structures.extend('VoiceChannel', VoiceChannel => (
   class AroraVoiceChannel extends VoiceChannel {
-    async fetchToLinks () {
+    public async fetchToLinks (): Promise<Collection<string, TextChannel>> {
       const data = await getData(this)
       const toLinks = await data?.getToLinks() ?? []
 
-      return this.guild.channels.cache.filter(channel => toLinks.some(link => link.id === channel.id))
+      return this.guild.channels.cache.filter(channel => (
+        channel.isText() && toLinks.some((link: { id: string }) => link.id === channel.id))
+      ) as Collection<string, TextChannel>
     }
 
-    async linkChannel (channel) {
+    public async linkChannel (channel: TextChannel): Promise<this> {
       const [data] = await Channel.findOrCreate({ where: { id: this.id, guildId: this.guild.id } })
       await Channel.findOrCreate({ where: { id: channel.id, guildId: this.guild.id } })
       const added = typeof await data.addToLink(channel.id) !== 'undefined'
@@ -24,7 +25,7 @@ const AroraVoiceChannel = Structures.extend('VoiceChannel', VoiceChannel => {
       }
     }
 
-    async unlinkChannel (channel) {
+    public async unlinkChannel (channel: TextChannel): Promise<this> {
       const data = await getData(this)
       const removed = await data?.removeToLink(channel.id) === 1
 
@@ -35,11 +36,11 @@ const AroraVoiceChannel = Structures.extend('VoiceChannel', VoiceChannel => {
       }
     }
   }
+))
 
-  return AroraVoiceChannel
-})
+export default AroraVoiceChannel
 
-function getData (channel) {
+async function getData (channel: GuildChannel): Promise<Channel> {
   return Channel.findOne({
     where: {
       id: channel.id,
@@ -47,5 +48,3 @@ function getData (channel) {
     }
   })
 }
-
-module.exports = AroraVoiceChannel

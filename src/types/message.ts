@@ -32,17 +32,17 @@ export default class MessageArgumentType extends ArgumentType {
     }
   }
 
-  parse (val: string, msg: CommandoMessage): Message | undefined {
+  parse (val: string, msg: CommandoMessage): Message | null {
     const match = val.match(messageUrlRegex)
     if (match === null) {
-      return undefined
+      return null
     }
     const [, channelId, messageId] = match[0]
       .replace(endpointUrl, '')
       .split('/')
     const channel = typeof msg.guild !== 'undefined' ? msg.guild.channels.cache.get(channelId) : msg.channel
     return typeof channel !== 'undefined' && channel.isText()
-      ? channel.messages.cache.get(messageId)
-      : undefined
+      ? channel.messages.cache.get(messageId) ?? null
+      : null
   }
 }

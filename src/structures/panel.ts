@@ -1,22 +1,25 @@
 import { Guild, MessageEmbed, TextChannel } from 'discord.js'
 import BaseStructure from './base'
-import { CommandoClient } from 'discord.js-commando'
+import Client from '../client/client'
 import Postable from './mixins/postable'
 
-export default class Panel extends Postable implements BaseStructure {
-  id!: string
-  name!: string
-  content!: string
-  messageId!: string | null
-  channelId!: string | null
+export default class Panel extends Postable(BaseStructure) {
+  public readonly guild: Guild
+  public id!: string
+  public name!: string
+  public content!: string
+  public messageId!: string | null
+  public channelId!: string | null
 
-  constructor (client: CommandoClient, data: any, guild: Guild) {
-    super(client, data, guild)
+  public constructor (client: Client, data: any, guild: Guild) {
+    super(client)
+
+    this.guild = guild
 
     this.setup(data)
   }
 
-  setup (data: any): void {
+  public setup (data: any): void {
     super.setup(data)
 
     this.id = data.id
@@ -24,23 +27,23 @@ export default class Panel extends Postable implements BaseStructure {
     this.content = data.content
   }
 
-  get embed (): MessageEmbed {
+  public get embed (): MessageEmbed {
     return new MessageEmbed(JSON.parse(this.content))
   }
 
-  toString (): string {
+  public toString (): string {
     return this.name
   }
 
-  update (data: any): this {
+  public update (data: any): this {
     return this.guild.panels.update(this, data)
   }
 
-  delete (): void {
+  public delete (): void {
     return this.guild.panels.delete(this)
   }
 
-  post (channel: TextChannel): this {
+  public post (channel: TextChannel): this {
     return this.guild.panels.post(this, channel)
   }
 }

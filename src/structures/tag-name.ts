@@ -1,24 +1,23 @@
 import BaseStructure from './base'
-import { CommandoClient } from 'discord.js-commando'
+import Client from '../client/client'
 import Tag from './tag'
 
-export default class TagName implements BaseStructure {
-  readonly client: CommandoClient
-  readonly tag: Tag
-  name!: string
+export default class TagName extends BaseStructure {
+  public readonly tag: Tag
+  public name!: string
 
-  constructor (client: CommandoClient, data: any, tag: Tag) {
-    this.client = client
+  public constructor (client: Client, data: any, tag: Tag) {
+    super(client )
     this.tag = tag
 
     this.setup(data)
   }
 
-  setup (data: any): void {
+  public setup (data: any): void {
     this.name = data.name
   }
 
-  delete (): void {
+  public delete (): void {
     return this.tag.names.delete(this)
   }
 }

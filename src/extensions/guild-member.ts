@@ -1,29 +1,44 @@
-'use strict'
+import { Collection, GuildMember, Structures } from 'discord.js'
+import { Command, CommandGroup } from 'discord.js-commando'
+import { Member, Role } from '../models'
+import { bloxlinkAdapter, roVerAdapter } from '../adapters'
+import { VerificationProvider } from '../util/constants'
 
-const { Structures } = require('discord.js')
-const { bloxlinkAdapter, roVerAdapter } = require('../adapters')
-const { Member, Role } = require('../models')
-const { VerificationProviders } = require('../util').Constants
+export interface VerificationData {
+  provider: VerificationProvider
+  robloxId: number
+  robloxUsername: string | null
+}
 
-const AroraGuildMember = Structures.extend('GuildMember', GuildMember => {
+declare module 'discord.js' {
+  export interface GuildMember {
+    verificationData: VerificationData | null
+    readonly robloxId: number | null
+    readonly robloxUsername: string | null
+  }
+}
+
+// @ts-expect-error
+const AroraGuildMember: GuildMember = Structures.extend('GuildMember', GuildMember => (
   class AroraGuildMember extends GuildMember {
-    constructor (...args) {
+    public constructor (...args: any[]) {
+      // @ts-expect-error
       super(...args)
 
-      this.verificationData = undefined
+      this.verificationData = null
     }
 
-    get robloxId () {
-      return this.verificationData?.robloxId
+    public get robloxId (): number | null {
+      return this.verificationData?.robloxId ?? null
     }
 
-    get robloxUsername () {
-      return this.verificationData?.robloxUsername
+    public get robloxUsername (): string | null {
+      return this.verificationData?.robloxUsername ?? null
     }
 
-    canRunCommand (command) {
+    public canRunCommand (command: Command | CommandGroup): boolean {
       let result = null
-      const groupsChecked = []
+      const groupsChecked: string[] = []
       for (const role of this.roles.cache.values()) {
         for (const group of role.groups.cache.values()) {
           if (groupsChecked.includes(group.id)) {
@@ -43,15 +58,15 @@ const AroraGuildMember = Structures.extend('GuildMember', GuildMember => {
       return result === true
     }
 
-    async fetchPersistentRoles () {
+    public async fetchPersistentRoles (): Promise<Collection<string, Role>> {
       const data = await getData(this)
 
       return this.guild.roles.cache.filter(role => (
-        data?.roles.some(persistentRole => persistentRole.id === role.id) || false
+        data?.roles.some((persistentRole: { id: string }) => persistentRole.id === role.id) ?? false
       ))
     }
 
-    async persistRole (role) {
+    public async persistRole (role: Role): Promise<this> {
       await this.roles.add(role)
       const [data] = await Member.findOrCreate({ where: { userId: this.id, guildId: this.guild.id } })
       await Role.findOrCreate({ where: { id: role.id, guildId: this.guild.id } })
@@ -64,32 +79,36 @@ const AroraGuildMember = Structures.extend('GuildMember', GuildMember => {
       }
     }
 
-    async unpersistRole (role) {
+    public async unpersistRole (role: Role): Promise<this> {
       const data = await getData(this)
       const removed = await data?.removeRole(role.id) === 1
 
       if (!removed) {
         throw new Error('Member does not have role.')
       } else {
-        return this.roles.remove(role)
+        await this.roles.remove(role)
+        return this
       }
     }
 
-    async fetchVerificationData (verificationPreference = this.guild.verificationPreference) {
+    public async fetchVerificationData (
+      verificationPreference = this.guild.verificationPreference
+    ): Promise<VerificationData | null> {
       if (this.verificationData?.provider === verificationPreference) {
         return this.verificationData
       }
 
-      let data, error
+      let data = null
+      let error
       try {
-        const fetch = verificationPreference === VerificationProviders.ROVER ? fetchRoVerData : fetchBloxlinkData
+        const fetch = verificationPreference === VerificationProvider.RoVer ? fetchRoVerData : fetchBloxlinkData
         data = await fetch(this.id, this.guild.id)
       } catch (err) {
         error = err
       }
       if ((data ?? false) === false) {
         try {
-          const fetch = verificationPreference === VerificationProviders.ROVER ? fetchBloxlinkData : fetchRoVerData
+          const fetch = verificationPreference === VerificationProvider.RoVer ? fetchBloxlinkData : fetchRoVerData
           data = await fetch(this.id, this.guild.id)
         } catch (err) {
           throw error ?? err
@@ -97,11 +116,15 @@ const AroraGuildMember = Structures.extend('GuildMember', GuildMember => {
       }
       if (typeof data === 'number') {
         data = {
+          provider: VerificationProvider.Bloxlink,
           robloxId: data,
-          provider: VerificationProviders.BLOXLINK
+          robloxUsername: null
         }
-      } else if (data) {
-        data.provider = VerificationProviders.ROVER
+      } else if (data !== null) {
+        data = {
+          provider: VerificationProvider.RoVer,
+          ...data
+        }
       }
 
       if (data === null || data.provider === this.guild.verificationPreference) {
@@ -110,11 +133,11 @@ const AroraGuildMember = Structures.extend('GuildMember', GuildMember => {
       return data
     }
   }
+))
 
-  return AroraGuildMember
-})
+export default AroraGuildMember
 
-function getData (member) {
+async function getData (member: GuildMember): Promise<Member> {
   return Member.scope('withRoles').findOne({
     where: {
       userId: member.id,
@@ -123,7 +146,7 @@ function getData (member) {
   })
 }
 
-async function fetchRoVerData (userId) {
+async function fetchRoVerData (userId: string): Promise<{ robloxUsername: string, robloxId: number } | null> {
   let response
   try {
     response = (await roVerAdapter('GET', `user/${userId}`)).data
@@ -140,10 +163,13 @@ async function fetchRoVerData (userId) {
   }
 }
 
-async function fetchBloxlinkData (userId, guildId) {
-  const response = (await bloxlinkAdapter('GET', `user/${userId}${guildId ? `?guild=${guildId}` : ''}`)).data
+async function fetchBloxlinkData (userId: string, guildId?: string): Promise<number | null> {
+  const response = (await bloxlinkAdapter(
+    'GET',
+    `user/${userId}${typeof guildId !== 'undefined' ? `?guild=${guildId}` : ''}`
+  )).data
   if (response.status === 'error') {
-    if (response.error.includes('not linked')) {
+    if ((response.error as string).includes('not linked')) {
       return null
     }
     return response.status
@@ -153,5 +179,3 @@ async function fetchBloxlinkData (userId, guildId) {
     ? parseInt(response.matchingAccount ?? response.primaryAccount)
     : null
 }
-
-module.exports = AroraGuildMember

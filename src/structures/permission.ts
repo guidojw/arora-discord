@@ -1,18 +1,17 @@
 import BaseStructure from './base'
-import { CommandoClient } from 'discord.js-commando'
-import { Role } from '../extensions'
+import Client from '../client/client'
+import { Role } from 'discord.js'
 import RoleGroup from './role-group'
 
-export default class Permission implements BaseStructure {
-  readonly client: CommandoClient
+export default class Permission extends BaseStructure {
   readonly permissible: Role | RoleGroup
   id!: string
   allow!: boolean
   commandId!: number
 
+  constructor (client: Client, data: any, permissible: Role | RoleGroup) {
+    super(client)
 
-  constructor (client: CommandoClient, data: any, permissible: Role | RoleGroup) {
-    this.client = client
     this.permissible = permissible
 
     this.setup(data)

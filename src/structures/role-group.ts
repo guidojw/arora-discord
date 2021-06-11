@@ -1,18 +1,15 @@
-import { CommandoClient } from 'discord.js-commando'
+import Client from '../client/client'
 import Group from './group'
+import GroupRoleManager from '../managers/group-role'
 import { Guild } from 'discord.js'
 import Permissible from './mixins/permissible'
-import GroupRoleManager from '../managers/group-role'
-import PermissionManager from '../managers/permission'
 
-export default class RoleGroup extends Group {
-  readonly aroraPermissions: PermissionManager
+export default class RoleGroup extends Permissible(Group) {
   _roles: string[]
 
-  constructor (client: CommandoClient, data: any, guild: Guild) {
+  constructor (client: Client, data: any, guild: Guild) {
     super(client, data, guild)
 
-    this.aroraPermissions = new PermissionManager(this)
     this._roles = []
 
     this.setup(data)

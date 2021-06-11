@@ -1,18 +1,18 @@
 import BaseStructure from './base'
-import { CommandoClient } from 'discord.js-commando'
+import Client from '../client/client'
 import { GroupType } from '../util/constants'
 import { Guild } from 'discord.js'
 
-export default class Group implements BaseStructure {
-  readonly client: CommandoClient
+export default class Group extends BaseStructure {
   readonly type: GroupType
   readonly guild: Guild
   id!: string
   name!: string
   guarded!: boolean
 
-  constructor (client: CommandoClient, data: any, guild: Guild) {
-    this.client = client
+  constructor (client: Client, data: any, guild: Guild) {
+    super(client)
+
     this.type = data.type
     this.guild = guild
   }
@@ -35,7 +35,7 @@ export default class Group implements BaseStructure {
     return this.guild.groups.delete(this)
   }
 
-  static create (client: CommandoClient, data: any, guild: Guild): Group {
+  static create (client: Client, data: any, guild: Guild): Group {
     let group
     switch (data.type) {
       case GroupType.Channel: {

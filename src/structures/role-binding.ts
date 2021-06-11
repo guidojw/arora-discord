@@ -1,24 +1,24 @@
 import { Guild, Role } from 'discord.js'
 import BaseStructure from './base'
-import { CommandoClient } from 'discord.js-commando'
+import Client from '../client/client'
 
-export default class RoleBinding implements BaseStructure {
-  readonly client: CommandoClient
-  readonly guild: Guild
-  id!: string
-  roleId!: string
-  robloxGroupId!: number
-  min!: number
-  max!: number | null
+export default class RoleBinding extends BaseStructure {
+  public readonly guild: Guild
+  public id!: string
+  public roleId!: string
+  public robloxGroupId!: number
+  public min!: number
+  public max!: number | null
 
-  constructor (client: CommandoClient, data: any, guild: Guild) {
-    this.client = client
+  public constructor (client: Client, data: any, guild: Guild) {
+    super(client)
+
     this.guild = guild
 
     this.setup(data)
   }
 
-  setup (data: any): void {
+  public setup (data: any): void {
     this.id = data.id
     this.roleId = data.roleId
     this.robloxGroupId = data.robloxGroupId
@@ -26,11 +26,11 @@ export default class RoleBinding implements BaseStructure {
     this.max = data.max
   }
 
-  get role (): Role | null {
+  public get role (): Role | null {
     return this.guild.roles.cache.get(this.roleId) ?? null
   }
 
-  delete (): void {
+  public delete (): void {
     return this.guild.roleBindings.delete(this)
   }
 }

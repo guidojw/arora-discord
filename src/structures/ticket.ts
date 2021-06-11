@@ -11,7 +11,7 @@ import {
 import { discordService, userService } from '../services'
 import { timeUtil, util } from '../util'
 import BaseStructure from './base'
-import { CommandoClient } from 'discord.js-commando'
+import Client from '../client/client'
 import TicketGuildMemberManager from '../managers/ticket-guild-member'
 import TicketType from './ticket-type'
 import pluralize from 'pluralize'
@@ -21,26 +21,28 @@ const { PartialTypes } = Constants
 const { getDate, getTime } = timeUtil
 const { makeCommaSeparatedString } = util
 
-export default class Ticket implements BaseStructure {
-  readonly client: CommandoClient
-  readonly guild: Guild
-  _moderators: String[]
-  id!: string
-  channelId!: string
-  guildId!: string
-  typeId!: number
-  authorId!: string
-  timeout?: NodeJS.Timeout
+export default class Ticket extends BaseStructure {
+  public readonly client: Client
+  public readonly guild: Guild
 
-  constructor (client: CommandoClient, data: any, guild: Guild) {
-    this.client = client
+  public id!: string
+  public channelId!: string
+  public guildId!: string
+  public typeId!: number
+  public authorId!: string
+  public timeout?: NodeJS.Timeout
+  public _moderators: String[]
+
+  public constructor (client: Client, data: any, guild: Guild) {
+    super(client)
+
     this.guild = guild
     this._moderators = []
 
     this.setup(data)
   }
 
-  setup (data: any): void {
+  public setup (data: any): void {
     this.id = data.id
     this.channelId = data.channelId
     this.guildId = data.guildId
@@ -52,7 +54,7 @@ export default class Ticket implements BaseStructure {
     }
   }
 
-  get author (): GuildMember | null {
+  public get author (): GuildMember | null {
     return this.authorId !== null
       ? this.guild.members.cache.get(this.authorId) ??
       (this.client.options.partials?.includes(PartialTypes.GUILD_MEMBER) === true
@@ -61,25 +63,25 @@ export default class Ticket implements BaseStructure {
       : null
   }
 
-  get channel (): TextChannel | null {
+  public get channel (): TextChannel | null {
     return (this.guild.channels.cache.get(this.channelId) as TextChannel | undefined) ?? null
   }
 
-  get type (): TicketType | null {
+  public get type (): TicketType | null {
     return this.guild.ticketTypes.cache.get(this.typeId) ?? null
   }
 
-  get moderators (): TicketGuildMemberManager {
+  public get moderators (): TicketGuildMemberManager {
     return new TicketGuildMemberManager(this)
   }
 
-  async populateChannel (): Promise<void> {
+  public async populateChannel (): Promise<void> {
     const { robloxId, robloxUsername } = await this.fetchAuthorData()
     const date = new Date()
     const readableDate = getDate(date)
     const readableTime = getTime(date)
     const ticketInfoEmbed = new MessageEmbed()
-      .setColor(this.guild.primaryColor)
+      .setColor(this.guild.primaryColor ?? 0xffffff)
       .setTitle('Ticket Information')
       .setDescription(stripIndents`
       Username: \`${robloxUsername ?? 'unknown'}\`
@@ -90,7 +92,7 @@ export default class Ticket implements BaseStructure {
     await this.channel?.send(this.author.toString(), ticketInfoEmbed)
 
     const modInfoEmbed = new MessageEmbed()
-      .setColor(this.guild.primaryColor)
+      .setColor(this.guild.primaryColor ?? 0xffffff)
       .setDescription(stripIndents`
       A Ticket Moderator will be with you shortly.
       This may take up to 24 hours. You can still close your ticket by using the \`closeticket\` command.
@@ -98,7 +100,7 @@ export default class Ticket implements BaseStructure {
     await this.channel?.send(modInfoEmbed)
   }
 
-  async close (message: Message, success: boolean, color?: number): Promise<void> {
+  public async close (message: Message, success: boolean, color?: number): Promise<void> {
     if (this.channel !== null) {
       if (this.guild.ticketArchivesChannel !== null) {
         await this.guild.ticketArchivesChannel.send(await this.fetchArchiveAttachment())
@@ -118,14 +120,14 @@ export default class Ticket implements BaseStructure {
         await this.logRating(rating)
 
         const embed = new MessageEmbed()
-          .setColor(this.guild.primaryColor)
+          .setColor(this.guild.primaryColor ?? 0xffffff)
           .setAuthor(this.client.user?.username, this.client.user?.displayAvatarURL())
           .setTitle('Rating submitted')
           .setDescription('Thank you!')
         this.client.send(this.author, embed)
       } else {
         const embed = new MessageEmbed()
-          .setColor(this.guild.primaryColor)
+          .setColor(this.guild.primaryColor ?? 0xffffff)
           .setAuthor(this.client.user?.username, this.client.user?.displayAvatarURL())
           .setTitle('No rating submitted')
         this.client.send(this.author, embed)
@@ -135,9 +137,9 @@ export default class Ticket implements BaseStructure {
     return await this.delete()
   }
 
-  async requestRating (): Promise<string | null> {
+  public async requestRating (): Promise<string | null> {
     const embed = new MessageEmbed()
-      .setColor(this.guild.primaryColor)
+      .setColor(this.guild.primaryColor ?? 0xffffff)
       .setAuthor(this.client.user?.username, this.client.user?.displayAvatarURL())
       .setTitle('How would you rate the support you got?')
     const message = await this.client.send(this.author, embed)
@@ -151,7 +153,7 @@ export default class Ticket implements BaseStructure {
     return rating?.name.substring(0, 1) ?? null
   }
 
-  async logRating (rating: string): Promise<Message> {
+  public async logRating (rating: string): Promise<Message> {
     await Promise.allSettled([
       this.author.partial && this.author.fetch(),
       ...this.moderators.cache.map(moderator => moderator.partial && moderator.fetch())
@@ -164,7 +166,7 @@ export default class Ticket implements BaseStructure {
     }
 
     const embed = new MessageEmbed()
-      .setColor(this.guild.primaryColor)
+      .setColor(this.guild.primaryColor ?? 0xffffff)
       .setAuthor(this.author.user.tag ?? this.author.id, this.author.user.displayAvatarURL())
       .setTitle('Ticket Rating')
       .setDescription(stripIndents`
@@ -175,13 +177,13 @@ export default class Ticket implements BaseStructure {
     return await this.guild.ratingsChannel.send(embed)
   }
 
-  async fetchArchiveAttachment (): Promise<MessageAttachment> {
+  public async fetchArchiveAttachment (): Promise<MessageAttachment> {
     let output = ''
 
     output += 'TICKET INFORMATION\n'
     output += `ID: ${this.id}\nType: ${this.type.name}\n\n`
 
-    if (this.author.partial) {
+    if (this.author?.partial) {
       try {
         await this.author.fetch()
       } catch {} // eslint-disable-line no-empty
@@ -223,7 +225,7 @@ export default class Ticket implements BaseStructure {
     return new MessageAttachment(Buffer.from(output), `${this.id}-${this.channel.name}.txt`)
   }
 
-  async fetchAuthorData (): Promise<{ robloxId: number | null, robloxUsername: number | null }> {
+  public async fetchAuthorData (): Promise<{ robloxId: number | null, robloxUsername: number | null }> {
     let robloxId, robloxUsername
     try {
       robloxId = this.author.robloxId ?? (await this.author.fetchVerificationData()).robloxId
@@ -234,7 +236,7 @@ export default class Ticket implements BaseStructure {
     return { robloxId, robloxUsername }
   }
 
-  async fetchMessages (): Promise<Collection<string, Message> | null> {
+  public async fetchMessages (): Promise<Collection<string, Message> | null> {
     if (this.channel === null) {
       return null
     }

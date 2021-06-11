@@ -1,24 +1,25 @@
 import { Guild, MessageEmbed } from 'discord.js'
 import BaseStructure from './base'
-import { CommandoClient } from 'discord.js-commando'
+import Client from '../client/client'
 import TagTagNameManager from '../managers/tag-tag-name'
 
-export default class Tag implements BaseStructure {
-  readonly client: CommandoClient
-  readonly guild: Guild
-  readonly names: TagTagNameManager
-  id!: string
-  _content!: string
+export default class Tag extends BaseStructure {
+  public readonly guild: Guild
+  public readonly names: TagTagNameManager
+  public id!: string
 
-  constructor (client: CommandoClient, data: any, guild: Guild) {
-    this.client = client
+  private _content!: string
+
+  public constructor (client: Client, data: any, guild: Guild) {
+    super(client)
+
     this.guild = guild
     this.names = new TagTagNameManager(this)
 
     this.setup(data)
   }
 
-  setup (data: any): void {
+  public setup (data: any): void {
     this.id = data.id
     this._content = data.content
 
@@ -29,7 +30,7 @@ export default class Tag implements BaseStructure {
     }
   }
 
-  get content (): MessageEmbed | string {
+  public get content (): MessageEmbed | string {
     try {
       return new MessageEmbed(JSON.parse(this._content))
     } catch (err) {
@@ -37,11 +38,11 @@ export default class Tag implements BaseStructure {
     }
   }
 
-  update (data: any): this {
+  public update (data: any): this {
     return this.guild.tags.update(this, data)
   }
 
-  delete (): void {
+  public delete (): void {
     return this.guild.tags.delete(this)
   }
 }

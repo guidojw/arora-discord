@@ -1,16 +1,17 @@
 import { Guild, GuildEmoji, Role } from 'discord.js'
 import BaseStructure from './base'
-import { CommandoClient } from 'discord.js-commando'
+import Client from '../client/client'
 import Postable from './mixins/postable'
 
 export default class RoleMessage extends Postable(BaseStructure) {
-  guild: Guild
-  id!: number
-  roleId!: string
-  _emoji!: string | null
-  _emojiId!: string | null
+  public readonly guild: Guild
+  public id!: number
+  public roleId!: string
 
-  constructor (client: CommandoClient, data: any, guild: Guild) {
+  private _emoji!: string | null
+  private _emojiId!: string | null
+
+  public constructor (client: Client, data: any, guild: Guild) {
     super(client)
 
     this.guild = guild
@@ -18,7 +19,7 @@ export default class RoleMessage extends Postable(BaseStructure) {
     this.setup(data)
   }
 
-  setup (data: any): void {
+  public setup (data: any): void {
     super.setup(data)
 
     this.id = data.id
@@ -27,19 +28,19 @@ export default class RoleMessage extends Postable(BaseStructure) {
     this._emojiId = data.emojiId
   }
 
-  get emoji (): GuildEmoji | string | null {
+  public get emoji (): GuildEmoji | string | null {
     return this._emojiId !== null ? this.guild.emojis.cache.get(this._emojiId) ?? null : this._emoji
   }
 
-  get emojiId (): string {
+  public get emojiId (): string {
     return (this._emoji ?? this._emojiId) as string
   }
 
-  get role (): Role | null {
+  public get role (): Role | null {
     return this.guild.roles.cache.get(this.roleId) ?? null
   }
 
-  delete (): void {
+  public delete (): void {
     return this.guild.roleMessages.delete(this)
   }
 }
