@@ -40,7 +40,7 @@ export default class RoleMessage extends Postable(BaseStructure) {
     return this.guild.roles.cache.get(this.roleId) ?? null
   }
 
-  public delete (): void {
-    return this.guild.roleMessages.delete(this)
+  public async delete (): Promise<void> {
+    return await this.guild.roleMessages.delete(this)
   }
 }

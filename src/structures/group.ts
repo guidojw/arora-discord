@@ -4,38 +4,38 @@ import { GroupType } from '../util/constants'
 import { Guild } from 'discord.js'
 
 export default class Group extends BaseStructure {
-  readonly type: GroupType
-  readonly guild: Guild
-  id!: string
-  name!: string
-  guarded!: boolean
+  public readonly type: GroupType
+  public readonly guild: Guild
+  public id!: number
+  public name!: string
+  public guarded!: boolean
 
-  constructor (client: Client, data: any, guild: Guild) {
+  public constructor (client: Client, data: any, guild: Guild) {
     super(client)
 
     this.type = data.type
     this.guild = guild
   }
 
-  setup (data: any): void {
+  public setup (data: any): void {
     this.id = data.id
     this.name = data.name
     this.guarded = data.guarded
   }
 
-  toString (): string {
+  public toString (): string {
     return this.name
   }
 
-  update (data: any): this {
-    return this.guild.groups.update(this, data)
+  public async update (data: any): Promise<this> {
+    return await this.guild.groups.update(this, data)
   }
 
-  delete (): void {
-    return this.guild.groups.delete(this)
+  public async delete (): Promise<void> {
+    return await this.guild.groups.delete(this)
   }
 
-  static create (client: Client, data: any, guild: Guild): Group {
+  public static create (client: Client, data: any, guild: Guild): Group {
     let group
     switch (data.type) {
       case GroupType.Channel: {

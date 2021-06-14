@@ -2,7 +2,7 @@ import { Structures, TextChannel } from 'discord.js'
 import { TextChannelGroupManager } from '../managers'
 
 declare module 'discord.js' {
-  export interface TextChannel {
+  interface TextChannel {
     groups: TextChannelGroupManager
   }
 }

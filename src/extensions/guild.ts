@@ -21,6 +21,7 @@ import {
   GuildTicketManager,
   GuildTicketTypeManager
 } from '../managers'
+import { BaseStructure } from '../structures'
 import { Guild as GuildModel } from '../models'
 import { VerificationProvider } from '../util/constants'
 import applicationConfig from '../configs/application'
@@ -28,7 +29,7 @@ import cron from 'node-cron'
 import cronConfig from '../configs/cron'
 
 declare module 'discord.js' {
-  export interface Guild {
+  interface Guild {
     logsChannelId: string | null
     primaryColor: number | null
     ratingsChannelId: string | null
@@ -58,6 +59,7 @@ declare module 'discord.js' {
     readonly ticketsCategory: CategoryChannel | null
 
     setup (data: any): void
+
     init (): Promise<void>
     handleRoleMessage (type: 'add' | 'remove', reaction: MessageReaction, user: User): Promise<void>
     log (author: User, content: string, options?: { color?: ColorResolvable, footer?: string }): Promise<Message | null>
@@ -67,7 +69,7 @@ declare module 'discord.js' {
 
 // @ts-expect-error
 const AroraGuild: Guild = Structures.extend('Guild', Guild => (
-  class AroraGuild extends Guild {
+  class AroraGuild extends Guild implements Omit<BaseStructure, 'client'> {
     public constructor (client: Client, data: object) {
       super(client, data)
 

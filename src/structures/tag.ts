@@ -6,7 +6,7 @@ import TagTagNameManager from '../managers/tag-tag-name'
 export default class Tag extends BaseStructure {
   public readonly guild: Guild
   public readonly names: TagTagNameManager
-  public id!: string
+  public id!: number
 
   private _content!: string
 
@@ -38,11 +38,11 @@ export default class Tag extends BaseStructure {
     }
   }
 
-  public update (data: any): this {
-    return this.guild.tags.update(this, data)
+  public async update (data: any): Promise<this> {
+    return await this.guild.tags.update(this, data)
   }
 
-  public delete (): void {
-    return this.guild.tags.delete(this)
+  public async delete (): Promise<void> {
+    return await this.guild.tags.delete(this)
   }
 }

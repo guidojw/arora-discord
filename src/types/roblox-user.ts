@@ -2,18 +2,18 @@ import { Argument, ArgumentType, CommandoClient, CommandoMessage } from 'discord
 import { GuildMember } from 'discord.js'
 import { userService } from '../services'
 
-interface RobloxUser { id: number, username?: string }
+export interface RobloxUser { id: number, username?: string }
 
 export default class RobloxUserArgumentType extends ArgumentType {
   protected readonly cache: Map<string, RobloxUser>
 
-  constructor (client: CommandoClient) {
+  public constructor (client: CommandoClient) {
     super(client, 'roblox-user')
 
     this.cache = new Map()
   }
 
-  async validate (val: string, msg: CommandoMessage, arg: Argument): Promise<boolean> {
+  public async validate (val: string, msg: CommandoMessage, arg: Argument): Promise<boolean> {
     const key = `${msg.guild.id}_${val}`
 
     // val is undefined when the argument's default is set to "self" and no argument input is given (see isEmpty).
@@ -67,7 +67,7 @@ export default class RobloxUserArgumentType extends ArgumentType {
     return false
   }
 
-  parse (val: string, msg: CommandoMessage): RobloxUser | null {
+  public parse (val: string, msg: CommandoMessage): RobloxUser | null {
     const key = `${msg.guild.id}_${val}`
     const result = this.cache.get(key)
     this.cache.delete(key)

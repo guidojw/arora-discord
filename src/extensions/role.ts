@@ -1,10 +1,11 @@
 import { Command, CommandGroup } from 'discord.js-commando'
 import { PermissionManager, RoleGroupManager } from '../managers'
 import { Role, Structures } from 'discord.js'
+import { BaseStructure } from '../structures'
 import Permissible from '../structures/mixins/permissible'
 
 declare module 'discord.js' {
-  export interface Role {
+  interface Role {
     groups: RoleGroupManager
 
     setup (data: any): void
@@ -16,7 +17,7 @@ declare module 'discord.js' {
 
 // @ts-expect-error
 const AroraRole: Role = Structures.extend('Role', Role => (
-  class AroraRole extends Permissible(Role) {
+  class AroraRole extends Permissible(Role) implements Omit<BaseStructure, 'client'> {
     public setup (data: any): void {
       for (const rawPermission of data.permissions) {
         this.aroraPermissions.add(rawPermission)

@@ -5,9 +5,9 @@ import { Guild } from 'discord.js'
 import Permissible from './mixins/permissible'
 
 export default class RoleGroup extends Permissible(Group) {
-  _roles: string[]
+  public _roles: string[]
 
-  constructor (client: Client, data: any, guild: Guild) {
+  public constructor (client: Client, data: any, guild: Guild) {
     super(client, data, guild)
 
     this._roles = []
@@ -15,7 +15,7 @@ export default class RoleGroup extends Permissible(Group) {
     this.setup(data)
   }
 
-  setup (data: any): void {
+  public setup (data: any): void {
     super.setup(data)
 
     if (typeof data.permissions !== 'undefined') {
@@ -29,7 +29,7 @@ export default class RoleGroup extends Permissible(Group) {
     }
   }
 
-  get roles (): GroupRoleManager {
+  public get roles (): GroupRoleManager {
     return new GroupRoleManager(this)
   }
 }

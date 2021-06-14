@@ -1,3 +1,4 @@
+export { default as BaseStructure } from './base'
 export { default as ChannelGroup } from './channel-group'
 export { default as Group } from './group'
 export { default as Panel } from './panel'

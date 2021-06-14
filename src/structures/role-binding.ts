@@ -4,7 +4,7 @@ import Client from '../client/client'
 
 export default class RoleBinding extends BaseStructure {
   public readonly guild: Guild
-  public id!: string
+  public id!: number
   public roleId!: string
   public robloxGroupId!: number
   public min!: number
@@ -30,7 +30,7 @@ export default class RoleBinding extends BaseStructure {
     return this.guild.roles.cache.get(this.roleId) ?? null
   }
 
-  public delete (): void {
-    return this.guild.roleBindings.delete(this)
+  public async delete (): Promise<void> {
+    return await this.guild.roleBindings.delete(this)
   }
 }

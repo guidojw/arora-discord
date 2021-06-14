@@ -5,7 +5,7 @@ import Postable from './mixins/postable'
 
 export default class Panel extends Postable(BaseStructure) {
   public readonly guild: Guild
-  public id!: string
+  public id!: number
   public name!: string
   public content!: string
   public messageId!: string | null
@@ -35,15 +35,15 @@ export default class Panel extends Postable(BaseStructure) {
     return this.name
   }
 
-  public update (data: any): this {
-    return this.guild.panels.update(this, data)
+  public async update (data: any): Promise<this> {
+    return await this.guild.panels.update(this, data)
   }
 
-  public delete (): void {
-    return this.guild.panels.delete(this)
+  public async delete (): Promise<void> {
+    return await this.guild.panels.delete(this)
   }
 
-  public post (channel: TextChannel): this {
-    return this.guild.panels.post(this, channel)
+  public async post (channel: TextChannel): Promise<this> {
+    return await this.guild.panels.post(this, channel)
   }
 }

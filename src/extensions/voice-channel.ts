@@ -1,6 +1,14 @@
 import { Collection, GuildChannel, Structures, TextChannel, VoiceChannel } from 'discord.js'
 import { Channel } from '../models'
 
+declare module 'discord.js' {
+  interface VoiceChannel {
+    fetchToLinks (): Promise<Collection<string, TextChannel>>
+    linkChannel (channel: TextChannel): Promise<this>
+    unlinkChannel (channel: TextChannel): Promise<this>
+  }
+}
+
 // @ts-expect-error
 const AroraVoiceChannel: VoiceChannel = Structures.extend('VoiceChannel', VoiceChannel => (
   class AroraVoiceChannel extends VoiceChannel {

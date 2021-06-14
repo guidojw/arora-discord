@@ -4,12 +4,12 @@ import { Role } from 'discord.js'
 import RoleGroup from './role-group'
 
 export default class Permission extends BaseStructure {
-  readonly permissible: Role | RoleGroup
-  id!: string
-  allow!: boolean
-  commandId!: number
+  public readonly permissible: Role | RoleGroup
+  public id!: number
+  public allow!: boolean
+  public commandId!: number
 
-  constructor (client: Client, data: any, permissible: Role | RoleGroup) {
+  public constructor (client: Client, data: any, permissible: Role | RoleGroup) {
     super(client)
 
     this.permissible = permissible
@@ -17,17 +17,17 @@ export default class Permission extends BaseStructure {
     this.setup(data)
   }
 
-  setup (data: any): void {
+  public setup (data: any): void {
     this.id = data.id
     this.allow = data.allow
     this.commandId = data.commandId
   }
 
-  update (data: any): this {
-    return this.permissible.aroraPermissions.update(this, data)
+  public async update (data: any): Promise<this> {
+    return await this.permissible.aroraPermissions.update(this, data)
   }
 
-  delete (): void {
-    return this.permissible.aroraPermissions.delete(this)
+  public async delete (): Promise<void> {
+    return await this.permissible.aroraPermissions.delete(this)
   }
 }

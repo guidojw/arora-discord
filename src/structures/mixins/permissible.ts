@@ -1,11 +1,11 @@
+import { AbstractConstructor, Constructor } from '../../util/util'
 import { Command, CommandGroup } from 'discord.js-commando'
 import BaseStructure from '../base'
-import { Constructor } from '../../util/util'
 import { Base as DiscordBaseStructure } from 'discord.js'
 import PermissionManager from '../../managers/permission'
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export default function Permissible<T extends Constructor<BaseStructure> | Constructor<DiscordBaseStructure>> (
+export default function Permissible<T extends AbstractConstructor<BaseStructure> | Constructor<DiscordBaseStructure>> (
   Base: T
 ) {
   class Permissible extends Base {

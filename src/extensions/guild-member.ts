@@ -11,10 +11,16 @@ export interface VerificationData {
 }
 
 declare module 'discord.js' {
-  export interface GuildMember {
+  interface GuildMember {
     verificationData: VerificationData | null
     readonly robloxId: number | null
     readonly robloxUsername: string | null
+
+    canRunCommand (command: Command | CommandGroup): boolean
+    fetchPersistentRoles (): Promise<Collection<string, Role>>
+    persistRole (role: Role): Promise<this>
+    unpersistRole (role: Role): Promise<this>
+    fetchVerificationData (verificationPreference?: VerificationProvider): Promise<VerificationData | null>
   }
 }
 

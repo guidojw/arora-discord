@@ -22,10 +22,9 @@ const { getDate, getTime } = timeUtil
 const { makeCommaSeparatedString } = util
 
 export default class Ticket extends BaseStructure {
-  public readonly client: Client
   public readonly guild: Guild
 
-  public id!: string
+  public id!: number
   public channelId!: string
   public guildId!: string
   public typeId!: number
@@ -251,15 +250,15 @@ export default class Ticket extends BaseStructure {
     return result
   }
 
-  async update (data: any): Promise<this> {
-    return this.guild.tickets.update(this, data)
+  public async update (data: any): Promise<this> {
+    return await this.guild.tickets.update(this, data)
   }
 
-  async delete (): Promise<void> {
-    return this.guild.tickets.delete(this)
+  public async delete (): Promise<void> {
+    return await this.guild.tickets.delete(this)
   }
 
-  onMessage (message: Message): void {
+  public async onMessage (message: Message): Promise<void> {
     if (message.member === null) {
       return
     }
@@ -270,7 +269,7 @@ export default class Ticket extends BaseStructure {
       }
     } else {
       if (!this.moderators.cache.has(message.member.id)) {
-        return this.moderators.add(message.member)
+        await this.moderators.add(message.member)
       }
     }
   }

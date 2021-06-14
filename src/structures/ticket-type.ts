@@ -8,7 +8,6 @@ export default class TicketType extends Postable(BaseStructure) {
   public guild: Guild
   public id!: number
   public name!: string
-
   private _emoji!: string | null
   private _emojiId!: string | null
 
@@ -30,7 +29,9 @@ export default class TicketType extends Postable(BaseStructure) {
   }
 
   public get emoji (): GuildEmoji | string | null {
-    return this._emojiId !== null ? this.guild.emojis.cache.get(this._emojiId) ?? null : this._emoji
+    return this._emojiId !== null
+      ? this.guild.emojis.cache.get(this._emojiId) ?? null
+      : this._emoji
   }
 
   public get emojiId (): string {

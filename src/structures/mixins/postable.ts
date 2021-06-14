@@ -1,28 +1,32 @@
-import { Constants, Base as DiscordBaseStructure, Guild, GuildChannel, Message } from 'discord.js'
+import { AbstractConstructor, Constructor } from '../../util/util'
+import { Constants, Base as DiscordBaseStructure, Guild, Message, TextChannel } from 'discord.js'
 import BaseStructure from '../base'
-import { Constructor } from '../../util/util'
 
 const { PartialTypes } = Constants
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export default function Postable<T extends Constructor<BaseStructure> | Constructor<DiscordBaseStructure>> (Base: T) {
+export default function Postable<T extends AbstractConstructor<BaseStructure> | Constructor<DiscordBaseStructure>> (
+  Base: T
+) {
   abstract class Postable extends Base {
-    abstract readonly guild: Guild
-    messageId!: string | null
-    channelId!: string | null
+    public abstract readonly guild: Guild
+    public messageId!: string | null
+    public channelId!: string | null
 
-    setup (data: any): void {
+    public setup (data: any): void {
       super.setup?.(data)
 
       this.messageId = data.message?.id ?? null
       this.channelId = data.message?.channelId ?? null
     }
 
-    get channel (): GuildChannel | null {
-      return this.channelId !== null ? this.guild.channels.cache.get(this.channelId) ?? null : null
+    public get channel (): TextChannel | null {
+      return this.channelId !== null
+        ? (this.guild.channels.cache.get(this.channelId) as TextChannel | undefined) ?? null
+        : null
     }
 
-    get message (): Message | null {
+    public get message (): Message | null {
       return this.messageId !== null && this.channel !== null && this.channel.isText()
         ? this.channel.messages.cache.get(this.messageId) ??
         (super.client.options.partials?.includes(PartialTypes.MESSAGE) === true

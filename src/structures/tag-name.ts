@@ -7,7 +7,7 @@ export default class TagName extends BaseStructure {
   public name!: string
 
   public constructor (client: Client, data: any, tag: Tag) {
-    super(client )
+    super(client)
     this.tag = tag
 
     this.setup(data)
@@ -17,7 +17,7 @@ export default class TagName extends BaseStructure {
     this.name = data.name
   }
 
-  public delete (): void {
-    return this.tag.names.delete(this)
+  public async delete (): Promise<void> {
+    return await this.tag.names.delete(this)
   }
 }

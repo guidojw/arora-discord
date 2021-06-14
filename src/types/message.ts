@@ -5,11 +5,11 @@ const messageUrlRegex = /^https:\/\/discord.com\/channels\/([0-9]+|@me)\/[0-9]+\
 const endpointUrl = 'https://discord.com/channels/'
 
 export default class MessageArgumentType extends ArgumentType {
-  constructor (client: CommandoClient) {
+  public constructor (client: CommandoClient) {
     super(client, 'message')
   }
 
-  async validate (val: string, msg: CommandoMessage): Promise<boolean> {
+  public async validate (val: string, msg: CommandoMessage): Promise<boolean> {
     const match = val.match(messageUrlRegex)
     if (match === null) {
       return false
@@ -32,7 +32,7 @@ export default class MessageArgumentType extends ArgumentType {
     }
   }
 
-  parse (val: string, msg: CommandoMessage): Message | null {
+  public parse (val: string, msg: CommandoMessage): Message | null {
     const match = val.match(messageUrlRegex)
     if (match === null) {
       return null

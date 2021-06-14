@@ -1,11 +1,11 @@
 import { Argument, ArgumentType, CommandoClient, CommandoMessage } from 'discord.js-commando'
 
 export default class JsonObjectArgumentType extends ArgumentType {
-  constructor (client: CommandoClient) {
+  public constructor (client: CommandoClient) {
     super(client, 'json-object')
   }
 
-  validate (val: string, _msg: CommandoMessage, arg: Argument): boolean | string {
+  public validate (val: string, _msg: CommandoMessage, arg: Argument): boolean | string {
     try {
       JSON.parse(val)
     } catch (err) {
@@ -20,7 +20,7 @@ export default class JsonObjectArgumentType extends ArgumentType {
     return true
   }
 
-  parse (val: string): any {
+  public parse (val: string): any {
     return JSON.parse(val)
   }
 }
