@@ -11,5 +11,5 @@ fi
 cd /opt/docker/arora-discord/$STAGE || exit
 docker-compose pull app
 docker-compose build app
-docker-compose run --rm app npx sequelize-cli db:migrate
+docker-compose run --rm app npx typeorm migration:run
 docker-compose up -d app
