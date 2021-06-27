@@ -21,6 +21,7 @@ module.exports = {
       }
     ],
     'sort-imports': 'error',
+    '@typescript-eslint/explicit-member-accessibility': 'error',
     '@typescript-eslint/method-signature-style': ['error', 'method']
   }
 }
