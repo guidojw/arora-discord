@@ -1,4 +1,13 @@
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm'
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn
+} from 'typeorm'
 import { Expose, Type } from 'class-transformer'
 import Channel from './channel'
 import { GroupType } from '../util/constants'
@@ -32,7 +41,7 @@ export default class Group {
 
   @Expose()
   @Type(() => Guild)
-  @OneToOne(() => Guild, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Guild, guild => guild.groups, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'guild_id' })
   public guild!: Guild
 

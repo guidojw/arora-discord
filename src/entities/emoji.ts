@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryColumn } from 'typeorm'
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn } from 'typeorm'
 import { Expose, Type } from 'class-transformer'
 import Guild from './guild'
 import RoleMessage from './role-message'
@@ -16,7 +16,7 @@ export default class Emoji {
 
   @Expose()
   @Type(() => Guild)
-  @OneToOne(() => Guild, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Guild, guild => guild.emojis, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'guild_id' })
   public guild!: Guild
 

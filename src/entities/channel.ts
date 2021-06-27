@@ -1,8 +1,19 @@
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToMany, OneToOne, PrimaryColumn } from 'typeorm'
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+  PrimaryColumn
+} from 'typeorm'
 import { Expose, Type } from 'class-transformer'
 import Group from './group'
 import Guild from './guild'
 import Message from './message'
+import Ticket from './ticket'
 
 @Entity({ name: 'channels' })
 export default class Channel {
@@ -16,7 +27,7 @@ export default class Channel {
 
   @Expose()
   @Type(() => Guild)
-  @OneToOne(() => Guild, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Guild, guild => guild.channels, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'guild_id' })
   public guild!: Guild
 
@@ -49,4 +60,9 @@ export default class Channel {
   @Type(() => Message)
   @OneToMany(() => Message, message => message.channel)
   public messages!: Message[]
+
+  @Expose()
+  @Type(() => Ticket)
+  @OneToOne(() => Ticket, ticket => ticket.channel)
+  public ticket!: Ticket
 }
