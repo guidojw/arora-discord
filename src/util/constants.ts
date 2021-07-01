@@ -1,5 +1,6 @@
-export const TYPES = {
-
+export enum CommandType {
+  Command = 'command',
+  Group = 'group'
 }
 
 export enum GroupType {

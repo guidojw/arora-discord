@@ -1,7 +1,8 @@
 import BaseStructure from './base'
-import Client from '../client/client'
+import type Client from '../client/client'
+import type { Group as GroupEntity } from '../entities'
 import { GroupType } from '../util/constants'
-import { Guild } from 'discord.js'
+import type { Guild } from 'discord.js'
 
 export default class Group extends BaseStructure {
   public readonly type: GroupType
@@ -10,24 +11,24 @@ export default class Group extends BaseStructure {
   public name!: string
   public guarded!: boolean
 
-  public constructor (client: Client, data: any, guild: Guild) {
+  public constructor (client: Client, data: GroupEntity, guild: Guild) {
     super(client)
 
     this.type = data.type
     this.guild = guild
   }
 
-  public setup (data: any): void {
+  public setup (data: GroupEntity): void {
     this.id = data.id
     this.name = data.name
     this.guarded = data.guarded
   }
 
-  public toString (): string {
+  public override toString (): string {
     return this.name
   }
 
-  public async update (data: any): Promise<this> {
+  public async update (data: Partial<GroupEntity>): Promise<this> {
     return await this.guild.groups.update(this, data)
   }
 
@@ -35,7 +36,7 @@ export default class Group extends BaseStructure {
     return await this.guild.groups.delete(this)
   }
 
-  public static create (client: Client, data: any, guild: Guild): Group {
+  public static create (client: Client, data: GroupEntity, guild: Guild): Group {
     let group
     switch (data.type) {
       case GroupType.Channel: {

@@ -1,5 +1,6 @@
-import { Collection, GuildChannel, Structures, TextChannel, VoiceChannel } from 'discord.js'
+import type { Collection, GuildChannel, TextChannel, VoiceChannel } from 'discord.js'
 import { Channel } from '../models'
+import { Structures } from 'discord.js'
 
 declare module 'discord.js' {
   interface VoiceChannel {
@@ -12,7 +13,7 @@ declare module 'discord.js' {
 // @ts-expect-error
 const AroraVoiceChannel: VoiceChannel = Structures.extend('VoiceChannel', VoiceChannel => (
   class AroraVoiceChannel extends VoiceChannel {
-    public async fetchToLinks (): Promise<Collection<string, TextChannel>> {
+    public override async fetchToLinks (): Promise<Collection<string, TextChannel>> {
       const data = await getData(this)
       const toLinks = await data?.getToLinks() ?? []
 
@@ -21,7 +22,7 @@ const AroraVoiceChannel: VoiceChannel = Structures.extend('VoiceChannel', VoiceC
       ) as Collection<string, TextChannel>
     }
 
-    public async linkChannel (channel: TextChannel): Promise<this> {
+    public override async linkChannel (channel: TextChannel): Promise<this> {
       const [data] = await Channel.findOrCreate({ where: { id: this.id, guildId: this.guild.id } })
       await Channel.findOrCreate({ where: { id: channel.id, guildId: this.guild.id } })
       const added = typeof await data.addToLink(channel.id) !== 'undefined'
@@ -33,7 +34,7 @@ const AroraVoiceChannel: VoiceChannel = Structures.extend('VoiceChannel', VoiceC
       }
     }
 
-    public async unlinkChannel (channel: TextChannel): Promise<this> {
+    public override async unlinkChannel (channel: TextChannel): Promise<this> {
       const data = await getData(this)
       const removed = await data?.removeToLink(channel.id) === 1
 

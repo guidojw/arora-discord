@@ -5,7 +5,7 @@ import GuildCommand from './guild-command'
 import { IsNotEmpty } from 'class-validator'
 import Permission from './permission'
 
-@Entity({ name: 'commands' })
+@Entity('commands')
 export default class Command {
   @Expose()
   @PrimaryGeneratedColumn()
@@ -23,10 +23,10 @@ export default class Command {
   @Expose({ name: 'guild_commands' })
   @Type(() => GuildCommand)
   @OneToMany(() => GuildCommand, guildCommand => guildCommand.command)
-  public guildCommands!: GuildCommand[]
+  public guildCommands?: GuildCommand[]
 
   @Expose()
   @Type(() => Permission)
   @OneToMany(() => Permission, permission => permission.command)
-  public permissions!: Permission[]
+  public permissions?: Permission[]
 }

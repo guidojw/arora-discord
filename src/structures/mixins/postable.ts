@@ -1,6 +1,7 @@
-import { AbstractConstructor, Constructor } from '../../util/util'
-import { Constants, Base as DiscordBaseStructure, Guild, Message, TextChannel } from 'discord.js'
-import BaseStructure from '../base'
+import type { AbstractConstructor, Constructor } from '../../util/util'
+import type { Base as DiscordBaseStructure, Guild, Message, TextChannel } from 'discord.js'
+import type BaseStructure from '../base'
+import { Constants } from 'discord.js'
 
 const { PartialTypes } = Constants
 
@@ -10,15 +11,8 @@ export default function Postable<T extends AbstractConstructor<BaseStructure> | 
 ) {
   abstract class Postable extends Base {
     public abstract readonly guild: Guild
-    public messageId!: string | null
-    public channelId!: string | null
-
-    public setup (data: any): void {
-      super.setup?.(data)
-
-      this.messageId = data.message?.id ?? null
-      this.channelId = data.message?.channelId ?? null
-    }
+    public abstract messageId: string | null
+    public abstract channelId: string | null
 
     public get channel (): TextChannel | null {
       return this.channelId !== null

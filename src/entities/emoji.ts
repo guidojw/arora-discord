@@ -4,7 +4,7 @@ import Guild from './guild'
 import RoleMessage from './role-message'
 import TicketType from './ticket-type'
 
-@Entity({ name: 'emojis' })
+@Entity('emojis')
 export default class Emoji {
   @Expose()
   @PrimaryColumn({ type: 'bigint' })
@@ -18,15 +18,15 @@ export default class Emoji {
   @Type(() => Guild)
   @ManyToOne(() => Guild, guild => guild.emojis, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'guild_id' })
-  public guild!: Guild
+  public guild?: Guild
 
   @Expose({ name: 'ticket_types' })
   @Type(() => TicketType)
   @OneToMany(() => TicketType, ticketType => ticketType.emoji)
-  public ticketTypes!: TicketType[]
+  public ticketTypes?: TicketType[]
 
   @Expose({ name: 'role_messages' })
   @Type(() => RoleMessage)
   @OneToMany(() => RoleMessage, roleMessage => roleMessage.emoji)
-  public roleMessages!: RoleMessage[]
+  public roleMessages?: RoleMessage[]
 }

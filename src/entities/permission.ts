@@ -5,7 +5,7 @@ import Group from './group'
 import Role from './role'
 import { Xor } from '../util/util'
 
-@Entity({ name: 'permissions' })
+@Entity('permissions')
 export default class Permission {
   @Expose()
   @PrimaryGeneratedColumn()
@@ -45,5 +45,5 @@ export default class Permission {
   @Type(() => Command)
   @ManyToOne(() => Command, command => command.permissions, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'command_id' })
-  public command!: Command
+  public command?: Command
 }

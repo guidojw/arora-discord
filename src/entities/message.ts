@@ -6,7 +6,7 @@ import Panel from './panel'
 import RoleMessage from './role-message'
 import TicketType from './ticket-type'
 
-@Entity({ name: 'messages' })
+@Entity('messages')
 export default class Message {
   @Expose()
   @PrimaryColumn({ type: 'bigint' })
@@ -24,26 +24,26 @@ export default class Message {
   @Type(() => Guild)
   @ManyToOne(() => Guild, guild => guild.messages, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'guild_id' })
-  public guild!: Guild
+  public guild?: Guild
 
   @Expose()
   @Type(() => Channel)
   @ManyToOne(() => Channel, channel => channel.messages, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'channel_id' })
-  public channel!: Channel
+  public channel?: Channel
 
   @Expose()
   @Type(() => Panel)
   @OneToOne(() => Panel, panel => panel.message)
-  public panel!: Panel
+  public panel?: Panel | null
 
   @Expose({ name: 'ticket_type' })
   @Type(() => TicketType)
   @OneToOne(() => TicketType, ticketType => ticketType.message)
-  public ticketType!: TicketType
+  public ticketType?: TicketType | null
 
   @Expose({ name: 'role_messages' })
   @Type(() => RoleMessage)
   @OneToMany(() => RoleMessage, roleMessage => roleMessage.message)
-  public roleMessages!: RoleMessage[]
+  public roleMessages?: RoleMessage[]
 }

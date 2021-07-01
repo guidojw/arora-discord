@@ -3,7 +3,7 @@ import { Expose, Type } from 'class-transformer'
 import Command from './command'
 import Guild from './guild'
 
-@Entity({ name: 'guilds_commands' })
+@Entity('guilds_commands')
 export default class GuildCommand {
   @Expose({ name: 'guild_id' })
   @PrimaryColumn({ type: 'bigint', name: 'guild_id' })
@@ -11,7 +11,7 @@ export default class GuildCommand {
 
   @Expose({ name: 'command_id' })
   @PrimaryColumn({ name: 'command_id' })
-  public command_id!: number
+  public commandId!: number
 
   @Expose()
   @Column()
@@ -20,10 +20,10 @@ export default class GuildCommand {
   @Expose()
   @Type(() => Guild)
   @ManyToOne(() => Guild, guild => guild.guildCommands, { onDelete: 'CASCADE' })
-  public guild!: Guild
+  public guild?: Guild
 
   @Expose()
   @Type(() => Command)
   @ManyToOne(() => Command, command => command.guildCommands, { onDelete: 'CASCADE' })
-  public command!: Command
+  public command?: Command
 }

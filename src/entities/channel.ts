@@ -15,7 +15,7 @@ import Guild from './guild'
 import Message from './message'
 import Ticket from './ticket'
 
-@Entity({ name: 'channels' })
+@Entity('channels')
 export default class Channel {
   @Expose()
   @PrimaryColumn({ type: 'bigint' })
@@ -29,7 +29,7 @@ export default class Channel {
   @Type(() => Guild)
   @ManyToOne(() => Guild, guild => guild.channels, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'guild_id' })
-  public guild!: Guild
+  public guild?: Guild
 
   @Expose()
   @Type(() => Group)
@@ -39,7 +39,7 @@ export default class Channel {
     joinColumn: { name: 'channel_id' },
     inverseJoinColumn: { name: 'group_id' }
   })
-  public groups!: Group[]
+  public groups?: Group[]
 
   @Expose({ name: 'from_links' })
   @Type(() => Channel)
@@ -49,20 +49,20 @@ export default class Channel {
     joinColumn: { name: 'from_channel_id' },
     inverseJoinColumn: { name: 'to_channel_id' }
   })
-  public fromLinks!: Channel[]
+  public fromLinks?: Channel[]
 
   @Expose({ name: 'to_links' })
   @Type(() => Channel)
   @ManyToMany(() => Channel, channel => channel.fromLinks)
-  public toLinks!: Channel[]
+  public toLinks?: Channel[]
 
   @Expose()
   @Type(() => Message)
   @OneToMany(() => Message, message => message.channel)
-  public messages!: Message[]
+  public messages?: Message[]
 
   @Expose()
   @Type(() => Ticket)
   @OneToOne(() => Ticket, ticket => ticket.channel)
-  public ticket!: Ticket
+  public ticket?: Ticket | null
 }

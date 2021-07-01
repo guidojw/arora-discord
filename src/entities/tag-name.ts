@@ -3,7 +3,7 @@ import { Expose, Type } from 'class-transformer'
 import { IsLowercase, IsNotEmpty } from 'class-validator'
 import Tag from './tag'
 
-@Entity({ name: 'tag_names' })
+@Entity('tag_names')
 export default class TagName {
   @Expose()
   @PrimaryColumn({ length: 255 })
@@ -19,5 +19,5 @@ export default class TagName {
   @Type(() => Tag)
   @ManyToOne(() => Tag, tag => tag.names, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'tag_id' })
-  public tag!: Tag
+  public tag?: Tag
 }

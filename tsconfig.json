@@ -51,6 +51,8 @@
     /* Raise error on 'this' expressions with an implied 'any' type. */
     "alwaysStrict": true,
     /* Parse in strict mode and emit "use strict" for each source file. */
+    "noImplicitOverride": true,
+    /* Report error when overriding a method without using the 'override' keyword. */
 
     /* Additional Checks */
     "noUnusedLocals": true,

@@ -16,7 +16,7 @@ import { IsNotEmpty } from 'class-validator'
 import Permission from './permission'
 import Role from './role'
 
-@Entity({ name: 'groups' })
+@Entity('groups')
 export default class Group {
   @Expose()
   @PrimaryGeneratedColumn()
@@ -43,12 +43,12 @@ export default class Group {
   @Type(() => Guild)
   @ManyToOne(() => Guild, guild => guild.groups, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'guild_id' })
-  public guild!: Guild
+  public guild?: Guild
 
   @Expose()
   @Type(() => Channel)
   @ManyToMany(() => Channel, channel => channel.groups)
-  public channels!: Channel[]
+  public channels?: Channel[]
 
   @Expose()
   @Type(() => Role)
@@ -58,10 +58,10 @@ export default class Group {
     joinColumn: { name: 'group_id' },
     inverseJoinColumn: { name: 'role_id' }
   })
-  public roles!: Role[]
+  public roles?: Role[]
 
   @Expose()
   @Type(() => Permission)
   @OneToMany(() => Permission, permission => permission.group)
-  public permissions!: Permission[]
+  public permissions?: Permission[]
 }

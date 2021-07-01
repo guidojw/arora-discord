@@ -1,14 +1,16 @@
-import { Command, CommandGroup } from 'discord.js-commando'
+import type { Command, CommandGroup } from 'discord.js-commando'
 import { PermissionManager, RoleGroupManager } from '../managers'
-import { Role, Structures } from 'discord.js'
-import { BaseStructure } from '../structures'
+import type { BaseStructure } from '../structures'
 import Permissible from '../structures/mixins/permissible'
+import type { Role } from 'discord.js'
+import type { Role as RoleEntity } from '../entities'
+import { Structures } from 'discord.js'
 
 declare module 'discord.js' {
   interface Role {
     groups: RoleGroupManager
 
-    setup (data: any): void
+    setup (data: RoleEntity): void
 
     readonly aroraPermissions: PermissionManager
     permissionFor (commandOrGroup: Command | CommandGroup): boolean | null
@@ -18,13 +20,15 @@ declare module 'discord.js' {
 // @ts-expect-error
 const AroraRole: Role = Structures.extend('Role', Role => (
   class AroraRole extends Permissible(Role) implements Omit<BaseStructure, 'client'> {
-    public setup (data: any): void {
-      for (const rawPermission of data.permissions) {
-        this.aroraPermissions.add(rawPermission)
+    public override setup (data: RoleEntity): void {
+      if (typeof data.permissions !== 'undefined') {
+        for (const rawPermission of data.permissions) {
+          this.aroraPermissions.add(rawPermission)
+        }
       }
     }
 
-    public get groups (): RoleGroupManager {
+    public override get groups (): RoleGroupManager {
       return new RoleGroupManager(this)
     }
   }

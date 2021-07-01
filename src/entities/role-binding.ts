@@ -3,7 +3,7 @@ import { Expose, Type } from 'class-transformer'
 import Guild from './guild'
 import Role from './role'
 
-@Entity({ name: 'role_bindings' })
+@Entity('role_bindings')
 export default class RoleBinding {
   @Expose()
   @PrimaryGeneratedColumn()
@@ -33,11 +33,11 @@ export default class RoleBinding {
   @Type(() => Guild)
   @ManyToOne(() => Guild, guild => guild.roleBindings, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'guild_id' })
-  public guild!: Guild
+  public guild?: Guild
 
   @Expose()
   @Type(() => Role)
   @ManyToOne(() => Role, role => role.roleBindings, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'role_id' })
-  public role!: Role
+  public role?: Role
 }

@@ -1,7 +1,7 @@
-import { AbstractConstructor, Constructor } from '../../util/util'
-import { Command, CommandGroup } from 'discord.js-commando'
-import BaseStructure from '../base'
-import { Base as DiscordBaseStructure } from 'discord.js'
+import type { AbstractConstructor, Constructor } from '../../util/util'
+import type { Command, CommandGroup } from 'discord.js-commando'
+import type BaseStructure from '../base'
+import type { Base as DiscordBaseStructure } from 'discord.js'
 import PermissionManager from '../../managers/permission'
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type

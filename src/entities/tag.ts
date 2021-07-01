@@ -4,7 +4,7 @@ import Guild from './guild'
 import { IsNotEmpty } from 'class-validator'
 import TagName from './tag-name'
 
-@Entity({ name: 'tags' })
+@Entity('tags')
 export default class Tag {
   @Expose()
   @PrimaryGeneratedColumn()
@@ -23,10 +23,10 @@ export default class Tag {
   @Type(() => Guild)
   @ManyToOne(() => Guild, guild => guild.roleMessages, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'guild_id' })
-  public guild!: Guild
+  public guild?: Guild
 
   @Expose()
   @Type(() => TagName)
   @OneToMany(() => TagName, tagName => tagName.tag)
-  public names!: TagName[]
+  public names?: TagName[]
 }

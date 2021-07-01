@@ -13,7 +13,7 @@ import Guild from './guild'
 import Role from './role'
 import Ticket from './ticket'
 
-@Entity({ name: 'members' })
+@Entity('members')
 export default class Member {
   @Expose()
   @PrimaryGeneratedColumn()
@@ -31,12 +31,12 @@ export default class Member {
   @Type(() => Guild)
   @ManyToOne(() => Guild, guild => guild.members, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'guild_id' })
-  public guild!: Guild
+  public guild?: Guild
 
   @Expose()
   @Type(() => Ticket)
   @OneToMany(() => Ticket, ticket => ticket.author)
-  public tickets!: Ticket[]
+  public tickets?: Ticket[]
 
   @Expose({ name: 'moderating_tickets' })
   @Type(() => Ticket)
@@ -46,7 +46,7 @@ export default class Member {
     joinColumn: { name: 'member_id' },
     inverseJoinColumn: { name: 'ticket_id' }
   })
-  public moderatingTickets!: Ticket[]
+  public moderatingTickets?: Ticket[]
 
   @Expose()
   @Type(() => Role)
@@ -56,5 +56,5 @@ export default class Member {
     joinColumn: { name: 'member_id' },
     inverseJoinColumn: { name: 'role_id' }
   })
-  public roles!: Role[]
+  public roles?: Role[]
 }

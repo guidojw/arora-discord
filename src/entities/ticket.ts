@@ -5,7 +5,7 @@ import Guild from './guild'
 import Member from './member'
 import TicketType from './ticket-type'
 
-@Entity({ name: 'tickets' })
+@Entity('tickets')
 export default class Ticket {
   @Expose()
   @PrimaryGeneratedColumn()
@@ -31,18 +31,18 @@ export default class Ticket {
   @Type(() => Guild)
   @ManyToOne(() => Guild, guild => guild.roles, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'guild_id' })
-  public guild!: Guild
+  public guild?: Guild
 
   @Expose()
   @Type(() => Member)
   @ManyToMany(() => Member, member => member.moderatingTickets)
-  public moderators!: Member[]
+  public moderators?: Member[]
 
   @Expose()
   @Type(() => Member)
   @ManyToOne(() => Member, member => member.tickets, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'author_id' })
-  public author!: Member
+  public author?: Member
 
   @Expose()
   @Type(() => Channel)

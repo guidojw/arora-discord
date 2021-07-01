@@ -1,10 +1,11 @@
-import { Collection, GuildMember, Structures } from 'discord.js'
-import { Command, CommandGroup } from 'discord.js-commando'
+import type { Collection, GuildMember } from 'discord.js'
+import type { Command, CommandGroup } from 'discord.js-commando'
 import { Member, Role } from '../models'
 import { bloxlinkAdapter, roVerAdapter } from '../adapters'
+import { Structures } from 'discord.js'
 import { VerificationProvider } from '../util/constants'
 
-export interface VerificationData {
+export type VerificationData = {
   provider: VerificationProvider
   robloxId: number
   robloxUsername: string | null
@@ -34,15 +35,15 @@ const AroraGuildMember: GuildMember = Structures.extend('GuildMember', GuildMemb
       this.verificationData = null
     }
 
-    public get robloxId (): number | null {
+    public override get robloxId (): number | null {
       return this.verificationData?.robloxId ?? null
     }
 
-    public get robloxUsername (): string | null {
+    public override get robloxUsername (): string | null {
       return this.verificationData?.robloxUsername ?? null
     }
 
-    public canRunCommand (command: Command | CommandGroup): boolean {
+    public override canRunCommand (command: Command | CommandGroup): boolean {
       let result = null
       const groupsChecked: string[] = []
       for (const role of this.roles.cache.values()) {
@@ -64,7 +65,7 @@ const AroraGuildMember: GuildMember = Structures.extend('GuildMember', GuildMemb
       return result === true
     }
 
-    public async fetchPersistentRoles (): Promise<Collection<string, Role>> {
+    public override async fetchPersistentRoles (): Promise<Collection<string, Role>> {
       const data = await getData(this)
 
       return this.guild.roles.cache.filter(role => (
@@ -72,7 +73,7 @@ const AroraGuildMember: GuildMember = Structures.extend('GuildMember', GuildMemb
       ))
     }
 
-    public async persistRole (role: Role): Promise<this> {
+    public override async persistRole (role: Role): Promise<this> {
       await this.roles.add(role)
       const [data] = await Member.findOrCreate({ where: { userId: this.id, guildId: this.guild.id } })
       await Role.findOrCreate({ where: { id: role.id, guildId: this.guild.id } })
@@ -85,7 +86,7 @@ const AroraGuildMember: GuildMember = Structures.extend('GuildMember', GuildMemb
       }
     }
 
-    public async unpersistRole (role: Role): Promise<this> {
+    public override async unpersistRole (role: Role): Promise<this> {
       const data = await getData(this)
       const removed = await data?.removeRole(role.id) === 1
 
@@ -97,7 +98,7 @@ const AroraGuildMember: GuildMember = Structures.extend('GuildMember', GuildMemb
       }
     }
 
-    public async fetchVerificationData (
+    public override async fetchVerificationData (
       verificationPreference = this.guild.verificationPreference
     ): Promise<VerificationData | null> {
       if (this.verificationData?.provider === verificationPreference) {

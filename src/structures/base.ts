@@ -1,4 +1,4 @@
-import Client from '../client/client'
+import type Client from '../client/client'
 
 export default abstract class BaseStructure {
   public readonly client: Client

@@ -1,16 +1,14 @@
-import {
+import type {
   CategoryChannel,
   Client,
   ColorResolvable,
   Guild,
-  GuildEmoji,
   Message,
-  MessageEmbed,
   MessageReaction,
-  Structures,
   TextChannel,
   User
 } from 'discord.js'
+import { GuildEmoji, MessageEmbed, Structures } from 'discord.js'
 import {
   GuildGroupManager,
   GuildMemberManager,
@@ -21,9 +19,10 @@ import {
   GuildTicketManager,
   GuildTicketTypeManager
 } from '../managers'
-import { BaseStructure } from '../structures'
+import type { BaseStructure } from '../structures'
+import type { Guild as GuildEntity } from '../entities'
 import { Guild as GuildModel } from '../models'
-import { VerificationProvider } from '../util/constants'
+import type { VerificationProvider } from '../util/constants'
 import applicationConfig from '../configs/application'
 import cron from 'node-cron'
 import cronConfig from '../configs/cron'
@@ -58,12 +57,12 @@ declare module 'discord.js' {
     readonly ticketArchivesChannel: TextChannel | null
     readonly ticketsCategory: CategoryChannel | null
 
-    setup (data: any): void
+    setup (data: GuildEntity): void
 
     init (): Promise<void>
     handleRoleMessage (type: 'add' | 'remove', reaction: MessageReaction, user: User): Promise<void>
     log (author: User, content: string, options?: { color?: ColorResolvable, footer?: string }): Promise<Message | null>
-    update (data: any): Promise<this>
+    update (data: Partial<GuildEntity>): Promise<this>
   }
 }
 
@@ -83,18 +82,16 @@ const AroraGuild: Guild = Structures.extend('Guild', Guild => (
       this.ticketTypes = new GuildTicketTypeManager(this)
     }
 
-    public setup (data: any): void {
-      this.logsChannelId = data.logsChannelId
-      this.primaryColor = data.primaryColor
-      this.ratingsChannelId = data.ratingsChannelId
-      this.robloxGroupId = data.robloxGroupId
+    public override setup (data: GuildEntity): void {
+      this.logsChannelId = data.logsChannelId ?? null
+      this.primaryColor = data.primaryColor ?? null
+      this.ratingsChannelId = data.ratingsChannelId ?? null
+      this.robloxGroupId = data.robloxGroupId ?? null
       this.robloxUsernamesInNicknames = data.robloxUsernamesInNicknames
-      this.suggestionsChannelId = data.suggestionsChannelId
+      this.suggestionsChannelId = data.suggestionsChannelId ?? null
       this.supportEnabled = data.supportEnabled
-      this.ticketArchivesChannelId = data.ticketArchivesChannelId
-      this.ticketsCategoryId = data.ticketsCategoryId
-      this.trainingsInfoPanelId = data.trainingsInfoPanelId
-      this.trainingsPanelId = data.trainingsPanelId
+      this.ticketArchivesChannelId = data.ticketArchivesChannelId ?? null
+      this.ticketsCategoryId = data.ticketsCategoryId ?? null
       this.verificationPreference = data.verificationPreference
 
       if (typeof data.groups !== 'undefined') {
@@ -168,7 +165,7 @@ const AroraGuild: Guild = Structures.extend('Guild', Guild => (
       }
     }
 
-    public async init (): Promise<void> {
+    public override async init (): Promise<void> {
       if (applicationConfig.apiEnabled === true) {
         const announceTrainingsJobConfig = cronConfig.announceTrainingsJob
         cron.schedule(
@@ -184,37 +181,37 @@ const AroraGuild: Guild = Structures.extend('Guild', Guild => (
       )
     }
 
-    public get logsChannel (): TextChannel | null {
+    public override get logsChannel (): TextChannel | null {
       return this.logsChannelId !== null
         ? (this.channels.cache.get(this.logsChannelId) as TextChannel | undefined) ?? null
         : null
     }
 
-    public get ratingsChannel (): TextChannel | null {
+    public override get ratingsChannel (): TextChannel | null {
       return this.ratingsChannelId !== null
         ? (this.channels.cache.get(this.ratingsChannelId) as TextChannel | undefined) ?? null
         : null
     }
 
-    public get suggestionsChannel (): TextChannel | null {
+    public override get suggestionsChannel (): TextChannel | null {
       return this.suggestionsChannelId !== null
         ? (this.channels.cache.get(this.suggestionsChannelId) as TextChannel | undefined) ?? null
         : null
     }
 
-    public get ticketArchivesChannel (): TextChannel | null {
+    public override get ticketArchivesChannel (): TextChannel | null {
       return this.ticketArchivesChannelId !== null
         ? (this.channels.cache.get(this.ticketArchivesChannelId) as TextChannel | undefined) ?? null
         : null
     }
 
-    public get ticketsCategory (): CategoryChannel | null {
+    public override get ticketsCategory (): CategoryChannel | null {
       return this.ticketsCategoryId !== null
         ? (this.channels.cache.get(this.ticketsCategoryId) as CategoryChannel | undefined) ?? null
         : null
     }
 
-    public async handleRoleMessage (type: 'add' | 'remove', reaction: MessageReaction, user: User): Promise<void> {
+    public override async handleRoleMessage (type: 'add' | 'remove', reaction: MessageReaction, user: User): Promise<void> {
       const member = await this.members.fetch(user)
       for (const roleMessage of this.roleMessages.cache.values()) {
         if (reaction.message.id === roleMessage.messageId && (reaction.emoji instanceof GuildEmoji
@@ -225,7 +222,7 @@ const AroraGuild: Guild = Structures.extend('Guild', Guild => (
       }
     }
 
-    public async log (
+    public override async log (
       author: User,
       content: string,
       options: { color?: ColorResolvable, footer?: string } = {}
@@ -251,7 +248,7 @@ const AroraGuild: Guild = Structures.extend('Guild', Guild => (
       return null
     }
 
-    public async update (data: any): Promise<this> {
+    public override async update (data: Partial<GuildEntity>): Promise<this> {
       const [, [newData]] = await GuildModel.update({
         commandPrefix: data.commandPrefix,
         logsChannelId: data.logsChannelId,
@@ -263,8 +260,6 @@ const AroraGuild: Guild = Structures.extend('Guild', Guild => (
         supportEnabled: data.supportEnabled,
         ticketArchivesChannelId: data.ticketArchivesChannelId,
         ticketsCategoryId: data.ticketsCategoryId,
-        trainingsInfoPanelId: data.trainingsInfoPanelId,
-        trainingsPanelId: data.trainingsPanelId,
         verificationPreference: data.verificationPreference?.toLowerCase()
       }, {
         where: { id: this.id },

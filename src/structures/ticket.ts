@@ -1,17 +1,10 @@
-import {
-  Collection,
-  Constants,
-  Guild,
-  GuildMember,
-  Message,
-  MessageAttachment,
-  MessageEmbed,
-  TextChannel
-} from 'discord.js'
+import { Collection, Constants, MessageAttachment, MessageEmbed } from 'discord.js'
+import type { Guild, GuildMember, Message, TextChannel } from 'discord.js'
 import { discordService, userService } from '../services'
 import { timeUtil, util } from '../util'
 import BaseStructure from './base'
-import Client from '../client/client'
+import type Client from '../client/client'
+import type { Ticket as TicketEntity } from '../entities'
 import TicketGuildMemberManager from '../managers/ticket-guild-member'
 import TicketType from './ticket-type'
 import pluralize from 'pluralize'
@@ -23,7 +16,6 @@ const { makeCommaSeparatedString } = util
 
 export default class Ticket extends BaseStructure {
   public readonly guild: Guild
-
   public id!: number
   public channelId!: string
   public guildId!: string
@@ -32,7 +24,7 @@ export default class Ticket extends BaseStructure {
   public timeout?: NodeJS.Timeout
   public _moderators: String[]
 
-  public constructor (client: Client, data: any, guild: Guild) {
+  public constructor (client: Client, data: TicketEntity, guild: Guild) {
     super(client)
 
     this.guild = guild
@@ -41,7 +33,7 @@ export default class Ticket extends BaseStructure {
     this.setup(data)
   }
 
-  public setup (data: any): void {
+  public setup (data: TicketEntity): void {
     this.id = data.id
     this.channelId = data.channelId
     this.guildId = data.guildId
@@ -49,7 +41,7 @@ export default class Ticket extends BaseStructure {
     this.authorId = data.author.userId
 
     if (typeof data.moderators !== 'undefined') {
-      this._moderators = data.moderators.map((moderator: { userId: string }) => moderator.userId)
+      this._moderators = data.moderators.map(moderator => moderator.userId)
     }
   }
 
@@ -250,7 +242,7 @@ export default class Ticket extends BaseStructure {
     return result
   }
 
-  public async update (data: any): Promise<this> {
+  public async update (data: Partial<TicketEntity>): Promise<this> {
     return await this.guild.tickets.update(this, data)
   }
 

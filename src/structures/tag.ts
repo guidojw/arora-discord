@@ -1,6 +1,8 @@
-import { Guild, MessageEmbed } from 'discord.js'
 import BaseStructure from './base'
-import Client from '../client/client'
+import type Client from '../client/client'
+import type { Guild } from 'discord.js'
+import { MessageEmbed } from 'discord.js'
+import type { Tag as TagEntity } from '../entities'
 import TagTagNameManager from '../managers/tag-tag-name'
 
 export default class Tag extends BaseStructure {
@@ -10,7 +12,7 @@ export default class Tag extends BaseStructure {
 
   private _content!: string
 
-  public constructor (client: Client, data: any, guild: Guild) {
+  public constructor (client: Client, data: TagEntity, guild: Guild) {
     super(client)
 
     this.guild = guild
@@ -19,7 +21,7 @@ export default class Tag extends BaseStructure {
     this.setup(data)
   }
 
-  public setup (data: any): void {
+  public setup (data: TagEntity): void {
     this.id = data.id
     this._content = data.content
 
@@ -38,7 +40,7 @@ export default class Tag extends BaseStructure {
     }
   }
 
-  public async update (data: any): Promise<this> {
+  public async update (data: Partial<TagEntity>): Promise<this> {
     return await this.guild.tags.update(this, data)
   }
 

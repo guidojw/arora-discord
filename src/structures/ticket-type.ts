@@ -1,17 +1,21 @@
-import { Guild, GuildEmoji } from 'discord.js'
+import type { Guild, GuildEmoji } from 'discord.js'
 import BaseStructure from './base'
-import Client from '../client/client'
-import Panel from './panel'
+import type Client from '../client/client'
+import type Panel from './panel'
 import Postable from './mixins/postable'
+import type { TicketType as TicketTypeEntity } from '../entities'
 
 export default class TicketType extends Postable(BaseStructure) {
   public guild: Guild
   public id!: number
   public name!: string
+  public messageId!: string | null
+  public channelId!: string | null
+
   private _emoji!: string | null
   private _emojiId!: string | null
 
-  public constructor (client: Client, data: any, guild: Guild) {
+  public constructor (client: Client, data: TicketTypeEntity, guild: Guild) {
     super(client)
 
     this.guild = guild
@@ -19,13 +23,13 @@ export default class TicketType extends Postable(BaseStructure) {
     this.setup(data)
   }
 
-  public setup (data: any): void {
-    super.setup(data)
-
+  public setup (data: TicketTypeEntity): void {
     this.id = data.id
     this.name = data.name
-    this._emoji = data.emoji
-    this._emojiId = data.emojiId
+    this.messageId = data.message?.id ?? null
+    this.channelId = data.message?.channelId ?? null
+    this._emoji = data.emoji ?? null
+    this._emojiId = data.emojiId ?? null
   }
 
   public get emoji (): GuildEmoji | string | null {
@@ -38,7 +42,7 @@ export default class TicketType extends Postable(BaseStructure) {
     return (this._emoji ?? this._emojiId) as string
   }
 
-  public async update (data: any): Promise<this> {
+  public async update (data: Partial<TicketTypeEntity>): Promise<this> {
     return this.guild.ticketTypes.update(this, data)
   }
 

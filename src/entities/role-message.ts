@@ -7,7 +7,7 @@ import Message from './message'
 import Role from './role'
 import { Xor } from '../util/util'
 
-@Entity({ name: 'role_messages' })
+@Entity('role_messages')
 export default class RoleMessage {
   @Expose()
   @PrimaryGeneratedColumn()
@@ -41,7 +41,7 @@ export default class RoleMessage {
   @Type(() => Guild)
   @ManyToOne(() => Guild, guild => guild.roleMessages, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'guild_id' })
-  public guild!: Guild
+  public guild?: Guild
 
   // @Expose()
   // @Type(() => Emoji)
@@ -53,7 +53,7 @@ export default class RoleMessage {
   @Type(() => Role)
   @ManyToOne(() => Role, role => role.roleMessages, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'role_id' })
-  public role!: Role
+  public role?: Role
 
   @Expose()
   @Type(() => Message)

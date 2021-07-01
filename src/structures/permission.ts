@@ -1,7 +1,8 @@
 import BaseStructure from './base'
-import Client from '../client/client'
-import { Role } from 'discord.js'
-import RoleGroup from './role-group'
+import type Client from '../client/client'
+import type { Permission as PermissionEntity } from '../entities'
+import type { Role } from 'discord.js'
+import type RoleGroup from './role-group'
 
 export default class Permission extends BaseStructure {
   public readonly permissible: Role | RoleGroup
@@ -9,7 +10,7 @@ export default class Permission extends BaseStructure {
   public allow!: boolean
   public commandId!: number
 
-  public constructor (client: Client, data: any, permissible: Role | RoleGroup) {
+  public constructor (client: Client, data: PermissionEntity, permissible: Role | RoleGroup) {
     super(client)
 
     this.permissible = permissible
@@ -17,13 +18,13 @@ export default class Permission extends BaseStructure {
     this.setup(data)
   }
 
-  public setup (data: any): void {
+  public setup (data: PermissionEntity): void {
     this.id = data.id
     this.allow = data.allow
     this.commandId = data.commandId
   }
 
-  public async update (data: any): Promise<this> {
+  public async update (data: Partial<PermissionEntity>): Promise<this> {
     return await this.permissible.aroraPermissions.update(this, data)
   }
 

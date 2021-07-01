@@ -1,4 +1,5 @@
-import { Structures, TextChannel } from 'discord.js'
+import { Structures } from 'discord.js'
+import type { TextChannel } from 'discord.js'
 import { TextChannelGroupManager } from '../managers'
 
 declare module 'discord.js' {
@@ -10,7 +11,7 @@ declare module 'discord.js' {
 // @ts-expect-error
 const AroraTextChannel: TextChannel = Structures.extend('TextChannel', TextChannel => (
   class AroraTextChannel extends TextChannel {
-    get groups (): TextChannelGroupManager {
+    public override get groups (): TextChannelGroupManager {
       return new TextChannelGroupManager(this)
     }
   }

@@ -7,7 +7,7 @@ import Permission from './permission'
 import RoleBinding from './role-binding'
 import RoleMessage from './role-message'
 
-@Entity({ name: 'roles' })
+@Entity('roles')
 export default class Role {
   @Expose()
   @PrimaryColumn({ type: 'bigint' })
@@ -21,7 +21,7 @@ export default class Role {
   @Type(() => Guild)
   @ManyToOne(() => Guild, guild => guild.roles, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'guild_id' })
-  public guild!: Guild
+  public guild?: Guild
 
   @Expose()
   @Type(() => Group)
@@ -31,25 +31,25 @@ export default class Role {
     joinColumn: { name: 'role_id' },
     inverseJoinColumn: { name: 'group_id' }
   })
-  public groups!: Group[]
+  public groups?: Group[]
 
   @Expose({ name: 'role_messages' })
   @Type(() => RoleMessage)
   @OneToMany(() => RoleMessage, roleMessage => roleMessage.role)
-  public roleMessages!: RoleMessage[]
+  public roleMessages?: RoleMessage[]
 
   @Expose({ name: 'role_bindings' })
   @Type(() => RoleBinding)
   @OneToMany(() => RoleBinding, roleBinding => roleBinding.role)
-  public roleBindings!: RoleBinding[]
+  public roleBindings?: RoleBinding[]
 
   @Expose()
   @Type(() => Member)
   @ManyToMany(() => Member, member => member.roles)
-  public members!: Member[]
+  public members?: Member[]
 
   @Expose()
   @Type(() => Permission)
   @OneToMany(() => Permission, permission => permission.role)
-  public permissions!: Permission[]
+  public permissions?: Permission[]
 }

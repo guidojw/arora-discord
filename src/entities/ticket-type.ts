@@ -7,7 +7,7 @@ import Message from './message'
 import { Nand } from '../util/util'
 import Ticket from './ticket'
 
-@Entity({ name: 'ticket_types' })
+@Entity('ticket_types')
 export default class TicketType {
   @Expose()
   @PrimaryGeneratedColumn()
@@ -42,7 +42,7 @@ export default class TicketType {
   @Type(() => Guild)
   @ManyToOne(() => Guild, guild => guild.ticketTypes, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'guild_id' })
-  public guild!: Guild
+  public guild?: Guild
 
   // @Expose()
   // @Type(() => Emoji)
@@ -59,5 +59,5 @@ export default class TicketType {
   @Expose()
   @Type(() => Ticket)
   @OneToMany(() => Ticket, ticket => ticket.type)
-  public tickets!: Ticket[]
+  public tickets?: Ticket[]
 }

@@ -3,7 +3,7 @@ import { Expose, Type } from 'class-transformer'
 import Guild from './guild'
 import Message from './message'
 
-@Entity({ name: 'panels' })
+@Entity('panels')
 export default class Panel {
   @Expose()
   @PrimaryGeneratedColumn()
@@ -29,7 +29,7 @@ export default class Panel {
   @Type(() => Guild)
   @ManyToOne(() => Guild, guild => guild.panels, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'guild_id' })
-  public guild!: Guild
+  public guild?: Guild
 
   @Expose()
   @Type(() => Message)

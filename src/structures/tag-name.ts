@@ -1,19 +1,20 @@
 import BaseStructure from './base'
-import Client from '../client/client'
-import Tag from './tag'
+import type Client from '../client/client'
+import type Tag from './tag'
+import type { TagName as TagNameEntity } from '../entities'
 
 export default class TagName extends BaseStructure {
   public readonly tag: Tag
   public name!: string
 
-  public constructor (client: Client, data: any, tag: Tag) {
+  public constructor (client: Client, data: TagNameEntity, tag: Tag) {
     super(client)
     this.tag = tag
 
     this.setup(data)
   }
 
-  public setup (data: any): void {
+  public setup (data: TagNameEntity): void {
     this.name = data.name
   }
 

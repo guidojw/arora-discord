@@ -16,7 +16,7 @@ import Ticket from './ticket'
 import TicketType from './ticket-type'
 import { VerificationProvider } from '../util/constants'
 
-@Entity({ name: 'guilds' })
+@Entity('guilds')
 export default class Guild {
   @Expose()
   @PrimaryColumn({ type: 'bigint' })
@@ -76,47 +76,47 @@ export default class Guild {
   @Expose({ name: 'guild_commands' })
   @Type(() => GuildCommand)
   @OneToMany(() => GuildCommand, guildCommand => guildCommand.guild)
-  public guildCommands!: GuildCommand[]
+  public guildCommands?: GuildCommand[]
 
   @Expose()
   @Type(() => Tag)
   @OneToMany(() => Tag, tag => tag.guild)
-  public tags!: Tag[]
+  public tags?: Tag[]
 
   @Expose()
   @Type(() => Ticket)
   @OneToMany(() => Ticket, ticket => ticket.guild)
-  public tickets!: Ticket[]
+  public tickets?: Ticket[]
 
   @Expose({ name: 'role_bindings' })
   @Type(() => RoleBinding)
   @OneToMany(() => RoleBinding, roleBinding => roleBinding.guild)
-  public roleBindings!: RoleBinding[]
+  public roleBindings?: RoleBinding[]
 
   @Expose({ name: 'role_messages' })
   @Type(() => RoleMessage)
   @OneToMany(() => RoleMessage, roleMessage => roleMessage.guild)
-  public roleMessages!: RoleMessage[]
+  public roleMessages?: RoleMessage[]
 
   @Expose()
   @Type(() => Group)
   @OneToMany(() => Group, group => group.guild)
-  public groups!: Group[]
+  public groups?: Group[]
 
   @Expose()
   @Type(() => Role)
   @OneToMany(() => Role, role => role.guild)
-  public roles!: Role[]
+  public roles?: Role[]
 
   @Expose()
   @Type(() => Panel)
   @OneToMany(() => Panel, panel => panel.guild)
-  public panels!: Panel[]
+  public panels?: Panel[]
 
   @Expose()
   @Type(() => Channel)
   @OneToMany(() => Channel, channel => channel.guild)
-  public channels!: Channel[]
+  public channels?: Channel[]
 
   @Expose({ name: 'logs_channel' })
   @Type(() => Channel)
@@ -151,20 +151,20 @@ export default class Guild {
   @Expose({ name: 'ticket_types' })
   @Type(() => TicketType)
   @OneToMany(() => TicketType, ticketType => ticketType.guild)
-  public ticketTypes!: TicketType[]
+  public ticketTypes?: TicketType[]
 
   @Expose()
   @Type(() => Emoji)
   @OneToMany(() => Emoji, emoji => emoji.guild)
-  public emojis!: Emoji[]
+  public emojis?: Emoji[]
 
   @Expose()
   @Type(() => Message)
   @OneToMany(() => Message, message => message.guild)
-  public messages!: Message[]
+  public messages?: Message[]
 
   @Expose()
   @Type(() => Member)
   @OneToMany(() => Member, member => member.guild)
-  public members!: Member[]
+  public members?: Member[]
 }
