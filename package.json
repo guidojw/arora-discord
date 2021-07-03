@@ -1,6 +1,6 @@
 {
   "name": "arora-discord",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "private": true,
   "repository": {
     "type": "git",
@@ -28,10 +28,7 @@
     "lodash": "^4.17.21",
     "node-cron": "^3.0.0",
     "pg": "^8.6.0",
-    "pg-hstore": "^2.3.3",
     "pluralize": "^8.0.0",
-    "sequelize": "^6.3.5",
-    "sequelize-cli": "^6.2.0",
     "typeorm": "^0.2.32",
     "ws": "^7.4.5"
   },
