@@ -15,13 +15,9 @@ module.exports = {
     'max-len': [
       'error',
       120,
-      {
-        ignoreTemplateLiterals: true,
-        ignoreRegExpLiterals: true
-      }
+      { ignoreTemplateLiterals: true, ignoreRegExpLiterals: true }
     ],
     'sort-imports': 'error',
-    '@typescript-eslint/explicit-member-accessibility': 'error',
-    '@typescript-eslint/method-signature-style': ['error', 'method']
+    '@typescript-eslint/explicit-member-accessibility': 'error'
   }
 }

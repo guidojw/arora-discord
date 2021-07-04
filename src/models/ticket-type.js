@@ -1,17 +1,7 @@
 'use strict'
 
 module.exports = (sequelize, DataTypes) => {
-  const TicketType = sequelize.define('TicketType', {
-    name: {
-      type: DataTypes.STRING(16),
-      allowNull: false
-    },
-    emoji: {
-      type: DataTypes.STRING(7),
-      defaultValue: null,
-      validate: { emojiNandEmojiId }
-    }
-  }, {
+  const TicketType = sequelize.define('TicketType', {}, {
     hooks: {
       beforeUpdate: async (ticketType, { channelId }) => {
         if (ticketType.changed('messageId') && ticketType.messageId) {
@@ -36,32 +26,6 @@ module.exports = (sequelize, DataTypes) => {
     tableName: 'ticket_types'
   })
 
-  TicketType.associate = models => {
-    TicketType.belongsTo(models.Guild, {
-      foreignKey: {
-        name: 'guildId',
-        allowNull: false
-      },
-      onDelete: 'CASCADE'
-    })
-    TicketType.belongsTo(models.Emoji, {
-      foreignKey: {
-        name: 'emojiId',
-        defaultValue: null,
-        validate: { emojiNandEmojiId }
-      },
-      onDelete: 'SET NULL'
-    })
-    TicketType.belongsTo(models.Message, {
-      foreignKey: 'messageId',
-      as: 'message',
-      onDelete: 'SET NULL'
-    })
-    TicketType.hasMany(models.Ticket, {
-      foreignKey: 'typeId'
-    })
-  }
-
   TicketType.loadScopes = models => {
     TicketType.addScope('defaultScope', {
       include: [{
@@ -72,10 +36,4 @@ module.exports = (sequelize, DataTypes) => {
   }
 
   return TicketType
-}
-
-function emojiNandEmojiId () {
-  if (this.emoji !== null && this.emojiId !== null) {
-    throw new Error('Only one of emoji and emojiId or none can be set.')
-  }
 }

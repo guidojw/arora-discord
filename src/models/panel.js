@@ -1,16 +1,7 @@
 'use strict'
 
 module.exports = (sequelize, DataTypes) => {
-  const Panel = sequelize.define('Panel', {
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    content: {
-      type: DataTypes.STRING(7000), // 6000 for embed character limit + 1000 margin for JSON characters
-      allowNull: false
-    }
-  }, {
+  const Panel = sequelize.define('Panel', {}, {
     hooks: {
       beforeUpdate: (panel, { channelId }) => {
         if (panel.changed('messageId') && panel.messageId) {
@@ -26,22 +17,6 @@ module.exports = (sequelize, DataTypes) => {
     },
     tableName: 'panels'
   })
-
-  Panel.associate = models => {
-    Panel.belongsTo(models.Guild, {
-      foreignKey: {
-        name: 'guildId',
-        allowNull: false
-      },
-      onDelete: 'CASCADE'
-    })
-    Panel.belongsTo(models.Message, {
-      foreignKey: 'messageId',
-      unique: true,
-      as: 'message',
-      onDelete: 'SET NULL'
-    })
-  }
 
   Panel.loadScopes = models => {
     Panel.addScope('defaultScope', {

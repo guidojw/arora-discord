@@ -27,36 +27,6 @@ module.exports = sequelize => {
     tableName: 'tickets'
   })
 
-  Ticket.associate = models => {
-    Ticket.belongsTo(models.Guild, {
-      foreignKey: {
-        name: 'guildId',
-        allowNull: false
-      },
-      onDelete: 'CASCADE'
-    })
-    Ticket.belongsToMany(models.Member, {
-      through: 'tickets_moderators',
-      as: 'moderators'
-    })
-    Ticket.belongsTo(models.Member, {
-      foreignKey: {
-        name: 'authorId',
-        allowNull: false
-      },
-      as: 'author',
-      onDelete: 'CASCADE'
-    })
-    Ticket.belongsTo(models.Channel, {
-      foreignKey: 'channelId',
-      onDelete: 'SET NULL'
-    })
-    Ticket.belongsTo(models.TicketType, {
-      foreignKey: 'typeId',
-      onDelete: 'SET NULL'
-    })
-  }
-
   Ticket.loadScopes = models => {
     Ticket.addScope('defaultScope', {
       include: [{

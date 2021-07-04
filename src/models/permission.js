@@ -1,12 +1,7 @@
 'use strict'
 
 module.exports = (sequelize, DataTypes) => {
-  const Permission = sequelize.define('Permission', {
-    allow: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false
-    }
-  }, {
+  const Permission = sequelize.define('Permission', {}, {
     hooks: {
       beforeCreate: (permission, { guildId }) => {
         if (permission.roleId) {
@@ -21,30 +16,6 @@ module.exports = (sequelize, DataTypes) => {
     },
     tableName: 'permissions'
   })
-
-  Permission.associate = models => {
-    Permission.belongsTo(models.Role, {
-      foreignKey: {
-        name: 'roleId',
-        validate: { roleXorGroup }
-      },
-      onDelete: 'CASCADE'
-    })
-    Permission.belongsTo(models.Group, {
-      foreignKey: {
-        name: 'groupId',
-        validate: { roleXorGroup }
-      },
-      onDelete: 'CASCADE'
-    })
-    Permission.belongsTo(models.Command, {
-      foreignKey: {
-        name: 'commandId',
-        allowNull: false
-      },
-      onDelete: 'CASCADE'
-    })
-  }
 
   return Permission
 }
