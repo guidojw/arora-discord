@@ -53,4 +53,8 @@ export default class TicketType extends Postable(BaseStructure) {
   public async link (panel: Panel, emoji: GuildEmoji): Promise<this> {
     return this.guild.ticketTypes.link(this, panel, emoji)
   }
+
+  public override toString (): string {
+    return this.name
+  }
 }

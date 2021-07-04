@@ -1,8 +1,9 @@
-import { Argument, ArgumentType, CommandoClient, CommandoMessage } from 'discord.js-commando'
-import { GuildMember } from 'discord.js'
+import type { Argument, CommandoClient, CommandoMessage } from 'discord.js-commando'
+import { ArgumentType } from 'discord.js-commando'
+import type { GuildMember } from 'discord.js'
 import { userService } from '../services'
 
-export interface RobloxUser { id: number, username?: string }
+export interface RobloxUser { id: number, username: string | null }
 
 export default class RobloxUserArgumentType extends ArgumentType {
   protected readonly cache: Map<string, RobloxUser>
@@ -19,8 +20,11 @@ export default class RobloxUserArgumentType extends ArgumentType {
     // val is undefined when the argument's default is set to "self" and no argument input is given (see isEmpty).
     // This patch was done in order to allow validation of the default value; the message member's Roblox user.
     if (typeof val === 'undefined') {
-      const verificationData = await msg.member.fetchVerificationData()
-      return this.validateAndSet(arg, key, verificationData.robloxId, verificationData.robloxUsername)
+      const verificationData = await (msg.member as GuildMember).fetchVerificationData()
+      if (verificationData !== null) {
+        return this.validateAndSet(arg, key, verificationData.robloxId, verificationData.robloxUsername)
+      }
+      return false
     }
 
     const match = val.match(/^(?:<@!?)?([0-9]+)>?$/)
@@ -74,11 +78,11 @@ export default class RobloxUserArgumentType extends ArgumentType {
     return result ?? null
   }
 
-  isEmpty (val: string, msg: CommandoMessage, arg: Argument): boolean {
+  public override isEmpty (val: string, msg: CommandoMessage, arg: Argument): boolean {
     return arg.default === 'self' ? false : super.isEmpty(val, msg, arg)
   }
 
-  private validateAndSet (arg: Argument, key: string, id: number, username?: string): boolean {
+  private validateAndSet (arg: Argument, key: string, id: number, username: string | null): boolean {
     if (arg.oneOf?.includes(String(id)) ?? true) {
       this.cache.set(key, { id, username })
       return true

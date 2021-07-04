@@ -1,27 +1,27 @@
 import {
   GuildEmoji,
-  GuildMemberResolvable,
   Message,
   MessageEmbed,
   MessageReaction,
   ReactionEmoji,
-  User
+  User,
+  UserResolvable
 } from 'discord.js'
 
 const REACTION_COLLECTOR_TIME = 60000
 
 export async function prompt (
-  author: GuildMemberResolvable,
+  user: UserResolvable,
   message: Message,
   options: Array<GuildEmoji | string>
 ): Promise<GuildEmoji | ReactionEmoji | null> {
-  const memberResolvable = message.guild?.members.resolve(author) ?? null
-  if (memberResolvable === null) {
-    throw new Error('Could not resolve member.')
+  const userId = message.client.users.resolveID(user)
+  if (userId === null) {
+    throw new Error('Invalid user.')
   }
 
   const filter = (reaction: MessageReaction, user: User): boolean => (
-    options.includes(reaction.emoji.name) && user.id === memberResolvable.id
+    options.includes(reaction.emoji.name) && user.id === userId
   )
   const collector = message.createReactionCollector(filter, { time: REACTION_COLLECTOR_TIME })
   const promise: Promise<GuildEmoji | ReactionEmoji | null> = new Promise(resolve => {

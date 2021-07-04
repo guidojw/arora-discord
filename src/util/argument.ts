@@ -1,4 +1,4 @@
-import { Argument, ArgumentType, CommandoMessage } from 'discord.js-commando'
+import type { Argument, ArgumentType, CommandoMessage } from 'discord.js-commando'
 import { MessageMentions } from 'discord.js'
 import { getDateInfo } from './time'
 
@@ -18,7 +18,7 @@ export function validators (
 ): ((val: string, msg: CommandoMessage) => Promise<boolean | string>) {
   return async function (this: Argument, val, msg) {
     const valid = await this.type.validate(val, msg, this)
-    if (valid === false || typeof valid === 'string') {
+    if (valid !== true) {
       return valid
     }
 
@@ -42,7 +42,7 @@ export function validators (
         throw (results.find(result => result.status === 'rejected') as PromiseRejectedResult).reason
       } else {
         const valid = await step.call(this.type, val, msg, this)
-        if (valid === false || typeof valid === 'string') {
+        if (valid !== true) {
           return valid
         }
       }
@@ -55,7 +55,12 @@ function makeValidator (
   test: ValidatorTest,
   message: string
 ): Validator {
-  return async function (this: ArgumentType, val, msg, arg) {
+  return async function (
+    this: ArgumentType,
+    val,
+    msg,
+    arg
+  ) {
     return !(await test.call(this, val, msg, arg)) || `\`${arg.label ?? msg}\` ${message}.`
   }
 }
@@ -84,15 +89,20 @@ export const isObject = makeValidator(
 
 export const noTags = makeValidator(
   (val: string) => (
-    MessageMentions.EVERYONE_PATTERN.test(val) || MessageMentions.USERS_PATTERN.test(val) || MessageMentions
-      .ROLES_PATTERN.test(val)
+    MessageMentions.EVERYONE_PATTERN.test(val) || MessageMentions.USERS_PATTERN.test(val) ||
+    MessageMentions.ROLES_PATTERN.test(val)
   ),
   'cannot contain tags'
 )
 
 export function typeOf (type: string): Validator {
   return makeValidator(
-    async function (this: ArgumentType, val: string, msg: CommandoMessage, arg: Argument) {
+    async function (
+      this: ArgumentType,
+      val: string,
+      msg: CommandoMessage,
+      arg: Argument
+    ) {
       return typeof await this.parse(val, msg, arg) === type // eslint-disable-line valid-typeof
     },
     `must be a ${type}`
@@ -127,6 +137,11 @@ export function validateNoneOrType (
   return val === 'none' || this.type.validate(val, msg, arg)
 }
 
-export function parseNoneOrType (this: Argument, val: string, msg: CommandoMessage, arg: Argument): any | Promise<any> {
+export function parseNoneOrType (
+  this: Argument,
+  val: string,
+  msg: CommandoMessage,
+  arg: Argument
+): any | Promise<any> {
   return val === 'none' ? undefined : this.type.parse(val, msg, arg)
 }

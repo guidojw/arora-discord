@@ -1,5 +1,5 @@
 import BaseArgumentType from './base'
-import { CommandoClient } from 'discord.js-commando'
+import type { CommandoClient } from 'discord.js-commando'
 import { Group } from '../structures'
 
 export default class GroupArgumentType extends BaseArgumentType<Group> {

@@ -5,7 +5,7 @@ import { bloxlinkAdapter, roVerAdapter } from '../adapters'
 import { Structures } from 'discord.js'
 import { VerificationProvider } from '../util/constants'
 
-export type VerificationData = {
+export interface VerificationData {
   provider: VerificationProvider
   robloxId: number
   robloxUsername: string | null
@@ -17,11 +17,11 @@ declare module 'discord.js' {
     readonly robloxId: number | null
     readonly robloxUsername: string | null
 
-    canRunCommand (command: Command | CommandGroup): boolean
-    fetchPersistentRoles (): Promise<Collection<string, Role>>
-    persistRole (role: Role): Promise<this>
-    unpersistRole (role: Role): Promise<this>
-    fetchVerificationData (verificationPreference?: VerificationProvider): Promise<VerificationData | null>
+    canRunCommand: (command: Command | CommandGroup) => boolean
+    fetchPersistentRoles: () => Promise<Collection<string, Role>>
+    persistRole: (role: Role) => Promise<this>
+    unpersistRole: (role: Role) => Promise<this>
+    fetchVerificationData: (verificationPreference?: VerificationProvider) => Promise<VerificationData | null>
   }
 }
 
@@ -43,6 +43,7 @@ const AroraGuildMember: GuildMember = Structures.extend('GuildMember', GuildMemb
       return this.verificationData?.robloxUsername ?? null
     }
 
+    // @ts-expect-error
     public override canRunCommand (command: Command | CommandGroup): boolean {
       let result = null
       const groupsChecked: string[] = []
@@ -65,6 +66,7 @@ const AroraGuildMember: GuildMember = Structures.extend('GuildMember', GuildMemb
       return result === true
     }
 
+    // @ts-expect-error
     public override async fetchPersistentRoles (): Promise<Collection<string, Role>> {
       const data = await getData(this)
 
@@ -73,6 +75,7 @@ const AroraGuildMember: GuildMember = Structures.extend('GuildMember', GuildMemb
       ))
     }
 
+    // @ts-expect-error
     public override async persistRole (role: Role): Promise<this> {
       await this.roles.add(role)
       const [data] = await Member.findOrCreate({ where: { userId: this.id, guildId: this.guild.id } })
@@ -86,6 +89,7 @@ const AroraGuildMember: GuildMember = Structures.extend('GuildMember', GuildMemb
       }
     }
 
+    // @ts-expect-error
     public override async unpersistRole (role: Role): Promise<this> {
       const data = await getData(this)
       const removed = await data?.removeRole(role.id) === 1
@@ -98,6 +102,7 @@ const AroraGuildMember: GuildMember = Structures.extend('GuildMember', GuildMemb
       }
     }
 
+    // @ts-expect-error
     public override async fetchVerificationData (
       verificationPreference = this.guild.verificationPreference
     ): Promise<VerificationData | null> {

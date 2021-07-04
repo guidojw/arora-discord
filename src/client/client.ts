@@ -3,9 +3,11 @@ import {
   Constants,
   DiscordAPIError,
   Guild,
+  GuildMember,
   Intents,
   Message,
   MessageOptions,
+  PartialGuildMember,
   Presence,
   User
 } from 'discord.js'
@@ -32,7 +34,7 @@ require('../extensions') // Extend Discord.js structures before the client's col
 export default class AroraClient extends CommandoClient {
   public mainGuild: Guild | null
 
-  private readonly aroraWs: WebSocketManager
+  private readonly aroraWs: WebSocketManager | null
   private currentActivity: number
   private activityCarouselInterval: NodeJS.Timeout | null
 
@@ -117,9 +119,7 @@ export default class AroraClient extends CommandoClient {
     this.dispatcher.addInhibitor(requiresRobloxGroupInhibitor)
     this.dispatcher.addInhibitor(requiresSingleGuildInhibitor)
 
-    if (applicationConfig.apiEnabled === true) {
-      this.aroraWs = new WebSocketManager(this)
-    }
+    this.aroraWs = applicationConfig.apiEnabled === true ? new WebSocketManager(this) : null
 
     this.once('ready', () => this.ready.bind(this))
   }
@@ -156,22 +156,22 @@ export default class AroraClient extends CommandoClient {
     console.log(`Ready to serve on ${this.guilds.cache.size} servers, for ${this.users.cache.size} users.`)
   }
 
-  public async startActivityCarousel (): Promise<Presence | null> {
-    if (typeof this.activityCarouselInterval === 'undefined') {
+  public override async startActivityCarousel (): Promise<Presence | null> {
+    if (this.activityCarouselInterval == null) {
       this.activityCarouselInterval = this.setInterval(() => this.nextActivity.bind(this), ACTIVITY_CAROUSEL_INTERVAL)
       return await this.nextActivity(0)
     }
     return null
   }
 
-  public stopActivityCarousel (): void {
-    if (typeof this.activityCarouselInterval !== 'undefined') {
+  public override stopActivityCarousel (): void {
+    if (this.activityCarouselInterval !== null) {
       this.clearInterval(this.activityCarouselInterval)
-      this.activityCarouselInterval = undefined
+      this.activityCarouselInterval = null
     }
   }
 
-  public async nextActivity (activity?: number): Promise<Presence> {
+  public override async nextActivity (activity?: number): Promise<Presence> {
     if (this.user === null) {
       throw new Error('Can\'t set activity when the client is not logged in.')
     }
@@ -190,18 +190,21 @@ export default class AroraClient extends CommandoClient {
     }
   }
 
-  public async send (user: User, content: string | APIMessage | MessageOptions): Promise<Message | Message[]> {
+  public override async send (
+    user: GuildMember | PartialGuildMember | User,
+    content: string | APIMessage | MessageOptions
+  ): Promise<Message | Message[] | null> {
     return await failSilently(user.send.bind(user, content), [50007])
     // 50007: Cannot send messages to this user, user probably has DMs closed.
   }
 
-  public async deleteMessage (message: Message): Promise<void> {
+  public override async deleteMessage (message: Message): Promise<void> {
     return await failSilently(message.delete.bind(message), [10008, ...(message.channel.type === 'dm' ? [50003] : [])])
     // 10008: Unknown message, the message was probably already deleted.
     // 50003: Cannot execute action on a DM channel, the bot cannot delete user messages in DMs.
   }
 
-  public async login (token = this.token): Promise<string> {
+  public override async login (token = this.token): Promise<string> {
     const usedToken = await super.login(token ?? undefined)
     this.aroraWs?.connect()
     return usedToken
@@ -256,5 +259,6 @@ async function failSilently (
     if (!(err instanceof DiscordAPIError) || !codes.includes(err.code)) {
       throw err
     }
+    return null
   }
 }

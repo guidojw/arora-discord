@@ -1,5 +1,5 @@
 import BaseArgumentType from './base'
-import { CommandoClient } from 'discord.js-commando'
+import type { CommandoClient } from 'discord.js-commando'
 import { Panel } from '../structures'
 
 export default class PanelArgumentType extends BaseArgumentType<Panel> {

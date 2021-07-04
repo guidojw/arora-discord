@@ -1,6 +1,7 @@
 import type { AbstractConstructor, Constructor } from '../../util/util'
-import type { Command, CommandGroup } from 'discord.js-commando'
 import type BaseStructure from '../base'
+import { Command } from 'discord.js-commando'
+import type { CommandGroup } from 'discord.js-commando'
 import type { Base as DiscordBaseStructure } from 'discord.js'
 import PermissionManager from '../../managers/permission'
 

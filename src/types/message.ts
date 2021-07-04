@@ -1,5 +1,6 @@
-import { ArgumentType, CommandoClient, CommandoMessage } from 'discord.js-commando'
-import { Message } from 'discord.js'
+import type { CommandoClient, CommandoMessage } from 'discord.js-commando'
+import { ArgumentType } from 'discord.js-commando'
+import type { Message } from 'discord.js'
 
 const messageUrlRegex = /^https:\/\/discord.com\/channels\/([0-9]+|@me)\/[0-9]+\/[0-9]+$/
 const endpointUrl = 'https://discord.com/channels/'
@@ -26,7 +27,7 @@ export default class MessageArgumentType extends ArgumentType {
       return false
     }
     try {
-      return Boolean(channel.isText() && await channel.messages.fetch(messageId))
+      return channel.isText() && typeof await channel.messages.fetch(messageId) !== 'undefined'
     } catch {
       return false
     }

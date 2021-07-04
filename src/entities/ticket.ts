@@ -13,11 +13,11 @@ export default class Ticket {
 
   @Expose({ name: 'author_id' })
   @Column('bigint', { name: 'author_id' })
-  public authorId!: string
+  public authorId?: string | null
 
   @Expose({ name: 'channel_id' })
   @Column('bigint', { name: 'channel_id', nullable: true })
-  public channelId?: string | null
+  public channelId!: string
 
   @Expose({ name: 'type_id' })
   @Column('int', { name: 'type_id', nullable: true })
@@ -40,15 +40,15 @@ export default class Ticket {
 
   @Expose()
   @Type(() => Member)
-  @ManyToOne(() => Member, member => member.tickets, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Member, member => member.tickets, { onDelete: 'CASCADE' }) // TODO: change to SET NULL
   @JoinColumn({ name: 'author_id' })
-  public author?: Member
+  public author?: Member | null
 
   @Expose()
   @Type(() => Channel)
-  @OneToOne(() => Channel, channel => channel.ticket, { onDelete: 'SET NULL' })
+  @OneToOne(() => Channel, channel => channel.ticket, { onDelete: 'SET NULL' }) // TODO: change to CASCADE
   @JoinColumn({ name: 'channel_id' })
-  public channel?: Channel | null
+  public channel?: Channel
 
   @Expose()
   @Type(() => TicketType)

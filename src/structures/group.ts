@@ -24,10 +24,6 @@ export default class Group extends BaseStructure {
     this.guarded = data.guarded
   }
 
-  public override toString (): string {
-    return this.name
-  }
-
   public async update (data: Partial<GroupEntity>): Promise<this> {
     return await this.guild.groups.update(this, data)
   }
@@ -53,5 +49,9 @@ export default class Group extends BaseStructure {
       }
     }
     return group
+  }
+
+  public override toString (): string {
+    return this.name
   }
 }

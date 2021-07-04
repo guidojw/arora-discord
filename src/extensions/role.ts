@@ -9,17 +9,17 @@ import { Structures } from 'discord.js'
 declare module 'discord.js' {
   interface Role {
     groups: RoleGroupManager
-
-    setup (data: RoleEntity): void
-
     readonly aroraPermissions: PermissionManager
-    permissionFor (commandOrGroup: Command | CommandGroup): boolean | null
+
+    setup: (data: RoleEntity) => void
+    permissionFor: (commandOrGroup: Command | CommandGroup) => boolean | null
   }
 }
 
 // @ts-expect-error
 const AroraRole: Role = Structures.extend('Role', Role => (
   class AroraRole extends Permissible(Role) implements Omit<BaseStructure, 'client'> {
+    // @ts-expect-error
     public override setup (data: RoleEntity): void {
       if (typeof data.permissions !== 'undefined') {
         for (const rawPermission of data.permissions) {

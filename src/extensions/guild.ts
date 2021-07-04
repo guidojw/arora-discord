@@ -57,12 +57,15 @@ declare module 'discord.js' {
     readonly ticketArchivesChannel: TextChannel | null
     readonly ticketsCategory: CategoryChannel | null
 
-    setup (data: GuildEntity): void
-
-    init (): Promise<void>
-    handleRoleMessage (type: 'add' | 'remove', reaction: MessageReaction, user: User): Promise<void>
-    log (author: User, content: string, options?: { color?: ColorResolvable, footer?: string }): Promise<Message | null>
-    update (data: Partial<GuildEntity>): Promise<this>
+    setup: (data: GuildEntity) => void
+    init: () => Promise<void>
+    handleRoleMessage: (type: 'add' | 'remove', reaction: MessageReaction, user: User) => Promise<void>
+    log: (
+      author: User,
+      content: string,
+      options?: { color?: ColorResolvable, footer?: string }
+    ) => Promise<Message | null>
+    update: (data: Partial<GuildEntity>) => Promise<this>
   }
 }
 
@@ -82,6 +85,7 @@ const AroraGuild: Guild = Structures.extend('Guild', Guild => (
       this.ticketTypes = new GuildTicketTypeManager(this)
     }
 
+    // @ts-expect-error
     public override setup (data: GuildEntity): void {
       this.logsChannelId = data.logsChannelId ?? null
       this.primaryColor = data.primaryColor ?? null
@@ -165,6 +169,7 @@ const AroraGuild: Guild = Structures.extend('Guild', Guild => (
       }
     }
 
+    // @ts-expect-error
     public override async init (): Promise<void> {
       if (applicationConfig.apiEnabled === true) {
         const announceTrainingsJobConfig = cronConfig.announceTrainingsJob
@@ -211,7 +216,12 @@ const AroraGuild: Guild = Structures.extend('Guild', Guild => (
         : null
     }
 
-    public override async handleRoleMessage (type: 'add' | 'remove', reaction: MessageReaction, user: User): Promise<void> {
+    // @ts-expect-error
+    public override async handleRoleMessage (
+      type: 'add' | 'remove',
+      reaction: MessageReaction,
+      user: User
+    ): Promise<void> {
       const member = await this.members.fetch(user)
       for (const roleMessage of this.roleMessages.cache.values()) {
         if (reaction.message.id === roleMessage.messageId && (reaction.emoji instanceof GuildEmoji
@@ -222,6 +232,7 @@ const AroraGuild: Guild = Structures.extend('Guild', Guild => (
       }
     }
 
+    // @ts-expect-error
     public override async log (
       author: User,
       content: string,
@@ -248,6 +259,7 @@ const AroraGuild: Guild = Structures.extend('Guild', Guild => (
       return null
     }
 
+    // @ts-expect-error
     public override async update (data: Partial<GuildEntity>): Promise<this> {
       const [, [newData]] = await GuildModel.update({
         commandPrefix: data.commandPrefix,

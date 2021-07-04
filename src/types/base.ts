@@ -1,7 +1,8 @@
-import { Argument, ArgumentType, CommandoClient, CommandoMessage, util } from 'discord.js-commando'
+import type { Argument, CommandoMessage } from 'discord.js-commando'
+import { ArgumentType, CommandoClient, util } from 'discord.js-commando'
 import { Collection, Util } from 'discord.js'
 import { BaseStructure } from '../structures'
-import { Constructor } from '../util/util'
+import type { Constructor } from '../util/util'
 import lodash from 'lodash'
 import pluralize from 'pluralize'
 
@@ -10,7 +11,6 @@ const { escapeMarkdown } = Util
 
 export interface IdentifiableStructure extends BaseStructure {
   id: number
-  name: string
 }
 
 export abstract class FilterableArgumentType<T> {
@@ -21,6 +21,7 @@ export abstract class FilterableArgumentType<T> {
 export default class BaseArgumentType<T extends IdentifiableStructure> extends ArgumentType implements
 FilterableArgumentType<T> {
   protected readonly holds: Constructor<T>
+
   private readonly managerName: string
   private readonly label: string
 
@@ -70,7 +71,7 @@ FilterableArgumentType<T> {
       structures = exactStructures
     }
     return structures.size <= 15
-      ? `${disambiguation(structures.map(structure => escapeMarkdown(structure.name)), pluralize(this.label), undefined)}\n`
+      ? `${disambiguation(structures.map(structure => escapeMarkdown(structure.toString())), pluralize(this.label), undefined)}\n`
       : `Multiple ${pluralize(this.label)} found. Please be more specific.`
   }
 
@@ -100,10 +101,10 @@ FilterableArgumentType<T> {
   }
 
   public filterExact (search: string): (structure: T) => boolean {
-    return structure => structure instanceof this.holds && structure.name.toLowerCase() === search
+    return structure => structure instanceof this.holds && structure.toString().toLowerCase() === search
   }
 
   public filterInexact (search: string): (structure: T) => boolean {
-    return structure => structure instanceof this.holds && structure.name.toLowerCase().includes(search)
+    return structure => structure instanceof this.holds && structure.toString().toLowerCase().includes(search)
   }
 }

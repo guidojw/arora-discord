@@ -10,6 +10,7 @@ import pluralize from 'pluralize'
 const { getDate, getTime, getTimeZoneAbbreviation } = timeUtil
 const { getAbbreviation } = util
 
+/// Move below API types to own package?
 export interface BanExtension {
   readonly id: number
   readonly authorId: number

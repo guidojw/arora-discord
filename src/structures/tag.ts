@@ -47,4 +47,8 @@ export default class Tag extends BaseStructure {
   public async delete (): Promise<void> {
     return await this.guild.tags.delete(this)
   }
+
+  public override toString (): string {
+    return this.names[0]
+  }
 }

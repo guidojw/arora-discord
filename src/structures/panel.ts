@@ -33,10 +33,6 @@ export default class Panel extends Postable(BaseStructure) {
     return new MessageEmbed(JSON.parse(this.content))
   }
 
-  public override toString (): string {
-    return this.name
-  }
-
   public async update (data: Partial<PanelEntity>): Promise<this> {
     return await this.guild.panels.update(this, data)
   }
@@ -47,5 +43,9 @@ export default class Panel extends Postable(BaseStructure) {
 
   public async post (channel: TextChannel): Promise<this> {
     return await this.guild.panels.post(this, channel)
+  }
+
+  public override toString (): string {
+    return this.name
   }
 }

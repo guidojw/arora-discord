@@ -21,7 +21,7 @@ export default function Postable<T extends AbstractConstructor<BaseStructure> | 
     }
 
     public get message (): Message | null {
-      return this.messageId !== null && this.channel !== null && this.channel.isText()
+      return this.messageId !== null && this.channel !== null
         ? this.channel.messages.cache.get(this.messageId) ??
         (super.client.options.partials?.includes(PartialTypes.MESSAGE) === true
           ? this.channel.messages.add({ id: this.messageId })
