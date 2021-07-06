@@ -1,30 +1,35 @@
-'use strict'
+import { groupService, userService } from '../services'
+import type { GetUsers } from '../services/user'
+import type { Guild } from 'discord.js'
+import { MessageEmbed } from 'discord.js'
+import type { Training } from '../services/group'
+import { applicationAdapter } from '../adapters'
+import lodash from 'lodash'
+import pluralize from 'pluralize'
+import { timeUtil } from '../util'
 
-const lodash = require('lodash')
-const pluralize = require('pluralize')
+const { getDate, getTime, getTimeZoneAbbreviation } = timeUtil
 
-const { MessageEmbed } = require('discord.js')
-const { applicationAdapter } = require('../adapters')
-const { groupService, userService } = require('../services')
-const { getDate, getTime, getTimeZoneAbbreviation } = require('../util').timeUtil
-
-async function announceTrainingsJob (guild) {
+export default async function announceTrainingsJob (guild: Guild): Promise<void> {
   if (guild.robloxGroupId === null) {
     return
   }
   const trainingsInfoPanel = guild.panels.resolve('trainingsInfoPanel')
   const trainingsPanel = guild.panels.resolve('trainingsPanel')
-  if (!trainingsInfoPanel?.message && !trainingsPanel?.message) {
+  if (trainingsInfoPanel?.message == null && trainingsPanel?.message == null) {
     return
   }
 
-  const trainings = (await applicationAdapter('GET', `v1/groups/${guild.robloxGroupId}/trainings?sort=date`)).data
+  const trainings: Training[] = (await applicationAdapter(
+    'GET',
+    `v1/groups/${guild.robloxGroupId}/trainings?sort=date`
+  )).data
   const authorIds = [...new Set(trainings.map(training => training.authorId))]
   const authors = await userService.getUsers(authorIds)
 
   // Trainings Info Panel
-  if (trainingsInfoPanel?.message) {
-    const embed = trainingsInfoPanel.embed.setColor(guild.primaryColor)
+  if (trainingsInfoPanel?.message != null) {
+    const embed = trainingsInfoPanel.embed.setColor(guild.primaryColor ?? 0xffffff)
     const now = new Date()
 
     embed.setDescription(embed.description.replace(/{timezone}/g, getTimeZoneAbbreviation(now)))
@@ -32,7 +37,7 @@ async function announceTrainingsJob (guild) {
     const nextTraining = trainings.find(training => new Date(training.date) > now)
     embed.addField(
       ':pushpin: Next training',
-      nextTraining
+      typeof nextTraining !== 'undefined'
         ? getNextTrainingMessage(nextTraining, authors)
         : ':x: There are currently no scheduled trainings.'
     )
@@ -41,19 +46,22 @@ async function announceTrainingsJob (guild) {
   }
 
   // Trainings Panel
-  if (trainingsPanel?.message) {
+  if (trainingsPanel?.message != null) {
     const embed = await getTrainingsEmbed(guild.robloxGroupId, trainings, authors)
 
-    embed.setColor(guild.primaryColor)
+    embed.setColor(guild.primaryColor ?? 0xffffff)
 
     await trainingsPanel.message.edit(embed)
   }
 }
 
-async function getTrainingsEmbed (groupId, trainings, authors) {
+async function getTrainingsEmbed (groupId: number, trainings: Training[], authors: GetUsers): Promise<MessageEmbed> {
   const trainingTypes = (await groupService.getTrainingTypes(groupId))
     .map(trainingType => trainingType.name)
-    .reduce((result, item) => (result[item] = []) && result, {})
+    .reduce((result: Record<string, Training[]>, item) => {
+      result[item] = []
+      return result
+    }, {})
   const groupedTrainings = lodash.assign({}, trainingTypes, groupService.groupTrainingsByType(trainings))
 
   const types = Object.keys(groupedTrainings)
@@ -70,7 +78,9 @@ async function getTrainingsEmbed (groupId, trainings, authors) {
       for (let j = 0; j < typeTrainings.length; j++) {
         const training = typeTrainings[j]
         result += getTrainingMessage(training, authors)
-        if (j < typeTrainings.length) result += '\n'
+        if (j < typeTrainings.length) {
+          result += '\n'
+        }
       }
     } else {
       result += ':x: No scheduled trainings'
@@ -81,7 +91,7 @@ async function getTrainingsEmbed (groupId, trainings, authors) {
   return embed
 }
 
-function getTrainingMessage (training, authors) {
+function getTrainingMessage (training: Training, authors: GetUsers): string {
   const now = new Date()
   const today = now.getDate()
   const date = new Date(training.date)
@@ -91,7 +101,7 @@ function getTrainingMessage (training, authors) {
   const author = authors.find(author => author.id === training.authorId)
   const hourDifference = date.getHours() - now.getHours()
 
-  let result = `:calendar_spiral: **${dateString}** at **${timeString}** hosted by ${author.name}`
+  let result = `:calendar_spiral: **${dateString}** at **${timeString}** hosted by ${author?.name ?? 'unknown'}`
 
   if (trainingDay === today && hourDifference <= 5) {
     if (hourDifference <= 1) {
@@ -106,13 +116,13 @@ function getTrainingMessage (training, authors) {
     }
   }
 
-  if (training.notes) {
+  if (training.notes !== null) {
     result += `\n> :notepad_spiral: ${training.notes}`
   }
   return result
 }
 
-function getNextTrainingMessage (training, authors) {
+function getNextTrainingMessage (training: Training, authors: GetUsers): string {
   const now = new Date()
   const today = now.getDate()
   const date = new Date(training.date)
@@ -121,12 +131,10 @@ function getNextTrainingMessage (training, authors) {
   const dateString = trainingDay === today ? 'today' : trainingDay === today + 1 ? 'tomorrow' : getDate(date)
   const author = authors.find(author => author.id === training.authorId)
 
-  let result = `${training.type.abbreviation} **${dateString}** at **${timeString}** hosted by ${author.name}`
+  let result = `${training.type?.abbreviation ?? '(Deleted)'} **${dateString}** at **${timeString}** hosted by ${author?.name ?? 'unknown'}`
 
-  if (training.notes) {
+  if (training.notes !== null) {
     result += `\n${training.notes}`
   }
   return result
 }
-
-module.exports = announceTrainingsJob

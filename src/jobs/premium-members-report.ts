@@ -1,21 +1,25 @@
-'use strict'
+import type { Guild, GuildMember } from 'discord.js'
+import { MessageEmbed } from 'discord.js'
+import pluralize from 'pluralize'
+import { timeUtil } from '../util'
 
-const pluralize = require('pluralize')
+const { diffDays } = timeUtil
 
-const { MessageEmbed } = require('discord.js')
-const { diffDays } = require('../util').timeUtil
+interface PremiumGuildMember extends GuildMember {
+  premiumSince: Date
+}
 
-async function premiumMembersReportJob (guild) {
+export default async function premiumMembersReportJob (guild: Guild): Promise<void> {
   const serverBoosterReportChannelsGroup = guild.groups.resolve('serverBoosterReportChannels')
   if ((serverBoosterReportChannelsGroup?.channels?.cache.size ?? 0) === 0) {
     return
   }
 
   const members = await guild.members.fetch()
-  const premiumMembers = []
+  const premiumMembers: PremiumGuildMember[] = []
   for (const member of members.values()) {
-    if (member.premiumSince) {
-      premiumMembers.push(member)
+    if (member.premiumSince !== null) {
+      premiumMembers.push(member as PremiumGuildMember)
     }
   }
 
@@ -39,7 +43,7 @@ async function premiumMembersReportJob (guild) {
     const emoji = guild.emojis.cache.find(emoji => emoji.name.toLowerCase() === 'boost')
 
     for (const { member, months } of monthlyPremiumMembers) {
-      embed.addField(`${member.user.tag} ${emoji || ''}`, `Has been boosting this server for **${pluralize('month', months, true)}**!`)
+      embed.addField(`${member.user.tag} ${emoji?.toString() ?? ''}`, `Has been boosting this server for **${pluralize('month', months, true)}**!`)
     }
 
     for (const channel of serverBoosterReportChannelsGroup.channels.cache.values()) {
@@ -47,5 +51,3 @@ async function premiumMembersReportJob (guild) {
     }
   }
 }
-
-module.exports = premiumMembersReportJob
