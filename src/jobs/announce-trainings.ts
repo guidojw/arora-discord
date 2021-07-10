@@ -1,4 +1,5 @@
 import { groupService, userService } from '../services'
+import type BaseJob from './base'
 import type { GetUsers } from '../services/user'
 import type { Guild } from 'discord.js'
 import { MessageEmbed } from 'discord.js'
@@ -10,48 +11,50 @@ import { timeUtil } from '../util'
 
 const { getDate, getTime, getTimeZoneAbbreviation } = timeUtil
 
-export default async function announceTrainingsJob (guild: Guild): Promise<void> {
-  if (guild.robloxGroupId === null) {
-    return
-  }
-  const trainingsInfoPanel = guild.panels.resolve('trainingsInfoPanel')
-  const trainingsPanel = guild.panels.resolve('trainingsPanel')
-  if (trainingsInfoPanel?.message == null && trainingsPanel?.message == null) {
-    return
-  }
+export default class AnnounceTrainingsJob implements BaseJob {
+  public async run (guild: Guild): Promise<void> {
+    if (guild.robloxGroupId === null) {
+      return
+    }
+    const trainingsInfoPanel = guild.panels.resolve('trainingsInfoPanel')
+    const trainingsPanel = guild.panels.resolve('trainingsPanel')
+    if (trainingsInfoPanel?.message == null && trainingsPanel?.message == null) {
+      return
+    }
 
-  const trainings: Training[] = (await applicationAdapter(
-    'GET',
-    `v1/groups/${guild.robloxGroupId}/trainings?sort=date`
-  )).data
-  const authorIds = [...new Set(trainings.map(training => training.authorId))]
-  const authors = await userService.getUsers(authorIds)
+    const trainings: Training[] = (await applicationAdapter(
+      'GET',
+      `v1/groups/${guild.robloxGroupId}/trainings?sort=date`
+    )).data
+    const authorIds = [...new Set(trainings.map(training => training.authorId))]
+    const authors = await userService.getUsers(authorIds)
 
-  // Trainings Info Panel
-  if (trainingsInfoPanel?.message != null) {
-    const embed = trainingsInfoPanel.embed.setColor(guild.primaryColor ?? 0xffffff)
-    const now = new Date()
+    // Trainings Info Panel
+    if (trainingsInfoPanel?.message != null) {
+      const embed = trainingsInfoPanel.embed.setColor(guild.primaryColor ?? 0xffffff)
+      const now = new Date()
 
-    embed.setDescription(embed.description.replace(/{timezone}/g, getTimeZoneAbbreviation(now)))
+      embed.setDescription(embed.description.replace(/{timezone}/g, getTimeZoneAbbreviation(now)))
 
-    const nextTraining = trainings.find(training => new Date(training.date) > now)
-    embed.addField(
-      ':pushpin: Next training',
-      typeof nextTraining !== 'undefined'
-        ? getNextTrainingMessage(nextTraining, authors)
-        : ':x: There are currently no scheduled trainings.'
-    )
+      const nextTraining = trainings.find(training => new Date(training.date) > now)
+      embed.addField(
+        ':pushpin: Next training',
+        typeof nextTraining !== 'undefined'
+          ? getNextTrainingMessage(nextTraining, authors)
+          : ':x: There are currently no scheduled trainings.'
+      )
 
-    await trainingsInfoPanel.message.edit(embed)
-  }
+      await trainingsInfoPanel.message.edit(embed)
+    }
 
-  // Trainings Panel
-  if (trainingsPanel?.message != null) {
-    const embed = await getTrainingsEmbed(guild.robloxGroupId, trainings, authors)
+    // Trainings Panel
+    if (trainingsPanel?.message != null) {
+      const embed = await getTrainingsEmbed(guild.robloxGroupId, trainings, authors)
 
-    embed.setColor(guild.primaryColor ?? 0xffffff)
+      embed.setColor(guild.primaryColor ?? 0xffffff)
 
-    await trainingsPanel.message.edit(embed)
+      await trainingsPanel.message.edit(embed)
+    }
   }
 }
 
@@ -101,7 +104,7 @@ function getTrainingMessage (training: Training, authors: GetUsers): string {
   const author = authors.find(author => author.id === training.authorId)
   const hourDifference = date.getHours() - now.getHours()
 
-  let result = `:calendar_spiral: **${dateString}** at **${timeString}** hosted by ${author?.name ?? 'unknown'}`
+  let result = `:calendar_spiral: **${dateString}** at **${timeString}** hosted by ${author?.name ?? training.authorId}`
 
   if (trainingDay === today && hourDifference <= 5) {
     if (hourDifference <= 1) {
@@ -131,7 +134,7 @@ function getNextTrainingMessage (training: Training, authors: GetUsers): string 
   const dateString = trainingDay === today ? 'today' : trainingDay === today + 1 ? 'tomorrow' : getDate(date)
   const author = authors.find(author => author.id === training.authorId)
 
-  let result = `${training.type?.abbreviation ?? '(Deleted)'} **${dateString}** at **${timeString}** hosted by ${author?.name ?? 'unknown'}`
+  let result = `${training.type?.abbreviation ?? '(Deleted)'} **${dateString}** at **${timeString}** hosted by ${author?.name ?? training.authorId}`
 
   if (training.notes !== null) {
     result += `\n${training.notes}`
