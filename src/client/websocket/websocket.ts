@@ -1,6 +1,6 @@
+import * as packetHandlers from './handlers'
 import WebSocket, { ErrorEvent } from 'ws'
 import type Client from '../client'
-import packetHandlers from './handlers'
 
 export interface Packet {
   event: string
