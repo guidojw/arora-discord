@@ -1,6 +1,7 @@
 import type { Collection, GuildMember } from 'discord.js'
-import type BaseHandler from './base'
+import type BaseHandler from '../../base'
 import type Client from '../../client'
+import { injectable } from 'inversify'
 import { userService } from '../../../services'
 
 interface RankChangePacket {
@@ -9,7 +10,8 @@ interface RankChangePacket {
   rank: number
 }
 
-export default class RankChangeHandler implements BaseHandler {
+@injectable()
+export default class RankChangePacketHandler implements BaseHandler {
   public async handle (client: Client, { data }: { data: RankChangePacket }): Promise<void> {
     const { groupId, userId, rank } = data
     const username = (await userService.getUser(userId)).name
@@ -22,9 +24,9 @@ export default class RankChangeHandler implements BaseHandler {
             for (const roleBinding of roleBindings.values()) {
               if (rank === roleBinding.min ||
                 (roleBinding.max !== null && rank >= roleBinding.min && rank <= roleBinding.max)) {
-                await Promise.all([members.map(async member => await member.roles.add(roleBinding.roleId))])
+                await Promise.all(members.map(async member => await member.roles.add(roleBinding.roleId)))
               } else {
-                await Promise.all([members.map(async member => await member.roles.remove(roleBinding.roleId))])
+                await Promise.all(members.map(async member => await member.roles.remove(roleBinding.roleId)))
               }
             }
           }

@@ -1,6 +1,7 @@
-import type BaseHandler from './base'
+import type BaseHandler from '../../base'
 import type Client from '../../client'
 import { MessageEmbed } from 'discord.js'
+import { injectable } from 'inversify'
 import pluralize from 'pluralize'
 import { userService } from '../../../services'
 
@@ -21,7 +22,8 @@ interface TrainDeveloperPayoutReportPacket {
   }>
 }
 
-export default class TrainDeveloperPayoutReportHandler implements BaseHandler {
+@injectable()
+export default class TrainDeveloperPayoutReportPacketHandler implements BaseHandler {
   public async handle (client: Client, { data }: { data: TrainDeveloperPayoutReportPacket }): Promise<void> {
     const { developersSales } = data
     const developerIds = Object.keys(developersSales).map(parseInt)

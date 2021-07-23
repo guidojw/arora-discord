@@ -1,2 +1,2 @@
-export { default as RankChangeHandler } from './rank-change'
-export { default as TrainDeveloperPayoutReport } from './rank-change'
+export { default as RankChangePacketHandler } from './rank-change'
+export { default as TrainDeveloperPayoutReportPacketHandler } from './rank-change'

@@ -1,16 +1,24 @@
-import * as packetHandlers from './handlers'
-import WebSocket, { ErrorEvent } from 'ws'
+import { inject, injectable } from 'inversify'
+import type BaseHandler from '../base'
 import type Client from '../client'
+import type { ErrorEvent } from 'ws'
+import WebSocket from 'ws'
+import { constants } from '../../util'
 
 export interface Packet {
   event: string
   data?: any
 }
 
+const { TYPES } = constants
+
 const RECONNECT_TIMEOUT = 30 * 1000
 const PING_TIMEOUT = 30 * 1000 + 1000
 
+@injectable()
 export default class WebSocketManager {
+  @inject(TYPES.PacketHandlerFactory) private readonly packetHandlerFactory!: (eventName: string) => BaseHandler
+
   public readonly client: Client
   private readonly host: string
   private connection: WebSocket | null
@@ -75,6 +83,7 @@ export default class WebSocketManager {
   }
 
   private handlePacket (packet: Packet): void {
-    packetHandlers[packet.event]?.(this.client, packet)
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    this.packetHandlerFactory(packet.event).handle(this.client, packet)
   }
 }

@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm'
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm'
 import { Expose, Type } from 'class-transformer'
 import Command from './command'
 import Guild from './guild'
@@ -20,10 +20,12 @@ export default class GuildCommand {
   @Expose()
   @Type(() => Guild)
   @ManyToOne(() => Guild, guild => guild.guildCommands, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'guild_id' })
   public guild?: Guild
 
   @Expose()
   @Type(() => Command)
   @ManyToOne(() => Command, command => command.guildCommands, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'command_id' })
   public command?: Command
 }

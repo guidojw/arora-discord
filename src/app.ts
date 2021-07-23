@@ -1,3 +1,4 @@
+import 'reflect-metadata'
 import * as Sentry from '@sentry/node'
 import AroraClient from './client/client'
 import cron from 'node-cron'
