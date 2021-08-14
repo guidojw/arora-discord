@@ -28,7 +28,7 @@ export default class Ticket extends BaseStructure {
   public guildId!: string
   public typeId!: number | null
   public authorId!: string | null
-  public _moderators: String[]
+  public _moderators: string[]
 
   private timeout: NodeJS.Timeout | null
 

@@ -34,8 +34,8 @@ export default class RoleMessage {
   public roleId!: string
 
   @Expose({ name: 'message_id' })
-  @Column('bigint', { name: 'message_id', nullable: true })
-  public messageId?: string | null
+  @Column('bigint', { name: 'message_id' })
+  public messageId!: string
 
   @Expose()
   @Type(() => Guild)
