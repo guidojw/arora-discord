@@ -8,11 +8,20 @@ interface AroraCommandInfo extends CommandInfo {
   requiresSingleGuild?: boolean
 }
 
-export default abstract class BaseCommand extends Command {
-  public requiresApi: boolean
-  public requiresRobloxGroup: boolean
-  public requiresSingleGuild: boolean
+declare module 'discord.js-commando' {
+  interface Command {
+    aroraId?: number
+    requiresApi: boolean
+    requiresRobloxGroup: boolean
+    requiresSingleGuild: boolean
+  }
 
+  interface CommandGroup {
+    aroraId?: number
+  }
+}
+
+export default abstract class BaseCommand extends Command {
   protected constructor (client: CommandoClient, info: AroraCommandInfo) {
     info.memberName = info.name
     info.argsPromptLimit = info.argsPromptLimit ?? ((info.group === 'admin' || info.group === 'settings') ? 3 : 1)
