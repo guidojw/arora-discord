@@ -50,7 +50,7 @@ export default class TicketGuildMemberManager {
 
     const memberFields = { userId: member.id, guildId: this.guild.id }
     const memberData = await this.memberRepository.findOne(memberFields, { relations: ['moderatingTickets'] }) ??
-      await this.memberRepository.save(memberFields)
+      await this.memberRepository.save(this.memberRepository.create(memberFields))
     const ticket = await this.ticketRepository.findOne(this.ticket.id) as TicketEntity
     if (typeof memberData.moderatingTickets === 'undefined') {
       memberData.moderatingTickets = []

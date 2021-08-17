@@ -42,7 +42,7 @@ export default class TagTagNameManager extends DiscordBaseManager<string, TagNam
       throw new Error('Not allowed, name is reserved.')
     }
 
-    const tagNameData = await this.tagNameRepository.save({ name, tagId: this.tag.id })
+    const tagNameData = await this.tagNameRepository.save(this.tagNameRepository.create({ name, tagId: this.tag.id }))
     const tagData = await this.tagRepository.findOne(this.tag.id, { relations: ['names'] }) as TagEntity
     if (typeof tagData.names === 'undefined') {
       tagData.names = []
