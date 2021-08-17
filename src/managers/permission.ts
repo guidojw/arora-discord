@@ -94,12 +94,15 @@ export default class PermissionManager extends BaseManager<Permission, Permissio
       throw new Error('Permission not found.')
     }
 
-    const changes: Partial<Permission> = {}
+    const changes: Partial<PermissionEntity> = {}
     if (typeof data.allow !== 'undefined') {
       changes.allow = data.allow
     }
 
-    const newData = await this.permissionRepository.save({ id, ...changes })
+    const newData = await this.permissionRepository.save(this.permissionRepository.create({
+      id,
+      ...changes
+    }))
 
     const _permission = this.cache.get(id)
     _permission?.setup(newData)

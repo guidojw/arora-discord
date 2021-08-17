@@ -1,5 +1,5 @@
 import { AsyncContainerModule, Container } from 'inversify'
-import { Member, Tag, TagName, Ticket } from '../entities'
+import { Member, Permission, Tag, TagName, Ticket, TicketType } from '../entities'
 import { createConnection, getRepository } from 'typeorm'
 import { eventHandlers, packetHandlers } from '../client'
 import type { BaseHandler } from '../client'
@@ -81,6 +81,9 @@ export default async function init (): Promise<Container> {
     bind<Repository<Member>>(TYPES.MemberRepository).toDynamicValue(() => {
       return getRepository(Member)
     })
+    bind<Repository<Permission>>(TYPES.PermissionRepository).toDynamicValue(() => {
+      return getRepository(Permission)
+    })
     bind<Repository<Tag>>(TYPES.TagRepository).toDynamicValue(() => {
       return getRepository(Tag)
     })
@@ -89,6 +92,9 @@ export default async function init (): Promise<Container> {
     })
     bind<Repository<Ticket>>(TYPES.TicketRepository).toDynamicValue(() => {
       return getRepository(Ticket)
+    })
+    bind<Repository<TicketType>>(TYPES.TicketTypeRepository).toDynamicValue(() => {
+      return getRepository(TicketType)
     })
   })
   await container.loadAsync(bindings)
