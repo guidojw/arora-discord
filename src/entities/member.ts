@@ -35,7 +35,7 @@ export default class Member {
 
   @Expose()
   @Type(() => Ticket)
-  @OneToMany(() => Ticket, ticket => ticket.author)
+  @OneToMany(() => Ticket, ticket => ticket.author, { cascade: true })
   public tickets?: Ticket[]
 
   @Expose({ name: 'moderating_tickets' })

@@ -27,6 +27,6 @@ export default class Tag {
 
   @Expose()
   @Type(() => TagName)
-  @OneToMany(() => TagName, tagName => tagName.tag)
+  @OneToMany(() => TagName, tagName => tagName.tag, { cascade: true })
   public names?: TagName[]
 }

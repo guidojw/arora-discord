@@ -1,8 +1,10 @@
 import BaseStructure from './base'
+import type ChannelGroup from './channel-group'
 import type Client from '../client/client'
 import type { Group as GroupEntity } from '../entities'
 import { GroupType } from '../util/constants'
 import type { Guild } from 'discord.js'
+import type RoleGroup from './role-group'
 
 export default class Group extends BaseStructure {
   public readonly type: GroupType
@@ -49,6 +51,14 @@ export default class Group extends BaseStructure {
       }
     }
     return group
+  }
+
+  public isChannelGroup (): this is ChannelGroup {
+    return this.type === 'channel'
+  }
+
+  public isRoleGroup (): this is RoleGroup {
+    return this.type === 'role'
   }
 
   public override toString (): string {
