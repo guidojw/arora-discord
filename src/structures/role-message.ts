@@ -1,6 +1,5 @@
-import type { Guild, GuildEmoji, Role } from 'discord.js'
+import type { Client, Guild, GuildEmoji, Role } from 'discord.js'
 import BaseStructure from './base'
-import type Client from '../client/client'
 import Postable from './mixins/postable'
 import type { RoleMessage as RoleMessageEntity } from '../entities'
 

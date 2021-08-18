@@ -22,7 +22,7 @@ export default class PermissionManager extends BaseManager<Permission, Permissio
   public permissible: Role | RoleGroup
   public guild: Guild
 
-  public constructor (permissible: Role | RoleGroup, iterable: Iterable<PermissionEntity>) {
+  public constructor (permissible: Role | RoleGroup, iterable?: Iterable<PermissionEntity>) {
     // @ts-expect-error
     super(permissible.client, iterable, Permission)
 
@@ -85,7 +85,7 @@ export default class PermissionManager extends BaseManager<Permission, Permissio
     this.cache.delete(id)
   }
 
-  public async update (permission: PermissionResolvable, data: Partial<Permission>): Promise<Permission> {
+  public async update (permission: PermissionResolvable, data: Partial<PermissionEntity>): Promise<Permission> {
     const id = this.resolveID(permission)
     if (id === null) {
       throw new Error('Invalid permission.')

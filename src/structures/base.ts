@@ -1,4 +1,4 @@
-import type Client from '../client/client'
+import type { Client } from 'discord.js'
 
 export default abstract class BaseStructure {
   public readonly client: Client

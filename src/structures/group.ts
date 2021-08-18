@@ -1,9 +1,8 @@
+import type { Client, Guild } from 'discord.js'
 import BaseStructure from './base'
 import type ChannelGroup from './channel-group'
-import type Client from '../client/client'
 import type { Group as GroupEntity } from '../entities'
 import { GroupType } from '../util/constants'
-import type { Guild } from 'discord.js'
 import type RoleGroup from './role-group'
 
 export default class Group extends BaseStructure {

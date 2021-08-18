@@ -20,7 +20,7 @@ export default class TagTagNameManager extends DiscordBaseManager<string, TagNam
   public tag: Tag
   public guild: Guild
 
-  public constructor (tag: Tag, iterable: Iterable<TagNameEntity>) {
+  public constructor (tag: Tag, iterable?: Iterable<TagNameEntity>) {
     // @ts-expect-error
     super(tag.guild.client, iterable, TagName)
 

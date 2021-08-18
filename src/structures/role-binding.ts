@@ -1,6 +1,5 @@
-import type { Guild, Role } from 'discord.js'
+import type { Client, Guild, Role } from 'discord.js'
 import BaseStructure from './base'
-import type Client from '../client/client'
 import type { RoleBinding as RoleBindingEntity } from '../entities'
 
 export default class RoleBinding extends BaseStructure {

@@ -1,5 +1,5 @@
 import BaseStructure from './base'
-import type Client from '../client/client'
+import type { Client } from 'discord.js'
 import type Tag from './tag'
 import type { TagName as TagNameEntity } from '../entities'
 

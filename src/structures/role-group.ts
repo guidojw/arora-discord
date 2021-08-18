@@ -1,8 +1,7 @@
-import type Client from '../client/client'
+import type { Client, Guild } from 'discord.js'
 import Group from './group'
 import type { Group as GroupEntity } from '../entities'
 import GroupRoleManager from '../managers/group-role'
-import type { Guild } from 'discord.js'
 import Permissible from './mixins/permissible'
 
 export default class RoleGroup extends Permissible(Group) {

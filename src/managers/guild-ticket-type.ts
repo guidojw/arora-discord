@@ -18,7 +18,7 @@ export default class GuildTicketTypeManager extends BaseManager<TicketType, Tick
 
   public guild: Guild
 
-  public constructor (guild: Guild, iterable: Iterable<TicketType>) {
+  public constructor (guild: Guild, iterable?: Iterable<TicketType>) {
     // @ts-expect-error
     super(guild.client, iterable, TicketType)
 

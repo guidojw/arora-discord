@@ -1,6 +1,5 @@
-import type { Guild, GuildEmoji } from 'discord.js'
+import type { Client, Guild, GuildEmoji } from 'discord.js'
 import BaseStructure from './base'
-import type Client from '../client/client'
 import type Panel from './panel'
 import Postable from './mixins/postable'
 import type { TicketType as TicketTypeEntity } from '../entities'

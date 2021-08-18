@@ -1,7 +1,6 @@
+import type { Client, Role } from 'discord.js'
 import BaseStructure from './base'
-import type Client from '../client/client'
 import type { Permission as PermissionEntity } from '../entities'
-import type { Role } from 'discord.js'
 import type RoleGroup from './role-group'
 
 export default class Permission extends BaseStructure {

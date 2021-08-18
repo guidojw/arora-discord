@@ -1,9 +1,8 @@
+import type { Client, Guild, GuildMember, Message, PartialGuildMember, TextChannel } from 'discord.js'
 import { Collection, Constants, MessageAttachment, MessageEmbed } from 'discord.js'
-import type { Guild, GuildMember, Message, PartialGuildMember, TextChannel } from 'discord.js'
 import { discordService, userService } from '../services'
 import { timeUtil, util } from '../util'
 import BaseStructure from './base'
-import type Client from '../client/client'
 import type { Ticket as TicketEntity } from '../entities'
 import TicketGuildMemberManager from '../managers/ticket-guild-member'
 import TicketType from './ticket-type'
@@ -29,8 +28,7 @@ export default class Ticket extends BaseStructure {
   public typeId!: number | null
   public authorId!: string | null
   public _moderators: string[]
-
-  private timeout: NodeJS.Timeout | null
+  public timeout: NodeJS.Timeout | null
 
   public constructor (client: Client, data: TicketEntity, guild: Guild) {
     super(client)
@@ -69,7 +67,7 @@ export default class Ticket extends BaseStructure {
   }
 
   public get type (): TicketType | null {
-    return this.guild.ticketTypes.cache.get(this.typeId) ?? null
+    return this.typeId !== null ? this.guild.ticketTypes.cache.get(this.typeId) ?? null : null
   }
 
   public get moderators (): TicketGuildMemberManager {
@@ -105,7 +103,7 @@ export default class Ticket extends BaseStructure {
     await this.channel?.send(modInfoEmbed)
   }
 
-  public async close (message: Message, success: boolean, color?: number): Promise<void> {
+  public async close (message: string, success: boolean, color?: number): Promise<void> {
     if (this.guild.ticketArchivesChannel !== null) {
       await this.guild.ticketArchivesChannel.send(await this.fetchArchiveAttachment())
     }
@@ -265,7 +263,7 @@ export default class Ticket extends BaseStructure {
     return result
   }
 
-  public async update (data: Partial<TicketEntity>): Promise<this> {
+  public async update (data: Partial<TicketEntity>): Promise<Ticket> {
     return await this.guild.tickets.update(this, data)
   }
 
