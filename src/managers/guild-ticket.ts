@@ -90,7 +90,10 @@ export default class GuildTicketManager extends BaseManager<Ticket, TicketResolv
     this.cache.delete(id)
   }
 
-  public async update (ticket: TicketResolvable, data: Partial<TicketEntity>): Promise<Ticket> {
+  public async update (
+    ticket: TicketResolvable,
+    data: Partial<TicketEntity & { channel: TextChannelResolvable }>
+  ): Promise<Ticket> {
     const id = this.resolveID(ticket)
     if (id === null) {
       throw new Error('Invalid ticket.')
@@ -100,8 +103,8 @@ export default class GuildTicketManager extends BaseManager<Ticket, TicketResolv
     }
 
     const changes: Partial<TicketEntity> = {}
-    if (typeof data.channelId !== 'undefined') {
-      const channel = this.guild.channels.resolve(data.channelId)
+    if (typeof data.channel !== 'undefined') {
+      const channel = this.guild.channels.resolve(data.channel)
       if (channel === null || !(channel instanceof TextChannel)) {
         throw new Error('Invalid channel.')
       }
