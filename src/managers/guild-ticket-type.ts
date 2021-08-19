@@ -63,7 +63,10 @@ export default class GuildTicketTypeManager extends BaseManager<TicketType, Tick
     this.cache.delete(ticketType.id)
   }
 
-  public async update (ticketTypeResolvable: TicketTypeResolvable, data: Partial<TicketType>): Promise<TicketType> {
+  public async update (
+    ticketTypeResolvable: TicketTypeResolvable,
+    data: { name?: string }
+  ): Promise<TicketType> {
     const id = this.resolveID(ticketTypeResolvable)
     if (id === null) {
       throw new Error('Invalid ticket type.')

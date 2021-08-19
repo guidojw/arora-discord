@@ -85,7 +85,10 @@ export default class PermissionManager extends BaseManager<Permission, Permissio
     this.cache.delete(id)
   }
 
-  public async update (permission: PermissionResolvable, data: Partial<PermissionEntity>): Promise<Permission> {
+  public async update (
+    permission: PermissionResolvable,
+    data: { allow?: boolean }
+  ): Promise<Permission> {
     const id = this.resolveID(permission)
     if (id === null) {
       throw new Error('Invalid permission.')

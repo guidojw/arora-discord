@@ -92,7 +92,7 @@ export default class GuildTicketManager extends BaseManager<Ticket, TicketResolv
 
   public async update (
     ticket: TicketResolvable,
-    data: Partial<TicketEntity & { channel: TextChannelResolvable }>
+    data: { channel?: TextChannelResolvable }
   ): Promise<Ticket> {
     const id = this.resolveID(ticket)
     if (id === null) {

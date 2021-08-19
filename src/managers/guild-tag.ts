@@ -81,7 +81,7 @@ export default class GuildTagManager extends BaseManager<Tag, TagResolvable> {
 
   public async update (
     tag: TagResolvable,
-    data: Partial<TagEntity & { content: string | MessageEmbedOptions }>
+    data: { content?: string | MessageEmbedOptions }
   ): Promise<Tag> {
     const id = this.resolveID(tag)
     if (id === null) {
