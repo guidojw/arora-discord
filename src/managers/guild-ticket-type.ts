@@ -5,7 +5,7 @@ import type { CommandoClient } from 'discord.js-commando'
 import { GuildEmoji } from 'discord.js'
 import type { Repository } from 'typeorm'
 import { TicketType } from '../structures'
-import { TicketType as TicketTypeEntity } from '../entities'
+import type { TicketType as TicketTypeEntity } from '../entities'
 import { constants } from '../util'
 
 export type TicketTypeResolvable = TicketType | string

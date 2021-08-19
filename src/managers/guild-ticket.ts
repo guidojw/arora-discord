@@ -4,8 +4,8 @@ import { inject, injectable } from 'inversify'
 import BaseManager from './base'
 import type { Repository } from 'typeorm'
 import { Ticket } from '../structures'
-import { Ticket as TicketEntity } from '../entities'
-import { TicketTypeResolvable } from './guild-ticket-type'
+import type { Ticket as TicketEntity } from '../entities'
+import type { TicketTypeResolvable } from './guild-ticket-type'
 import { constants } from '../util'
 
 export type TextChannelResolvable = TextChannel | Snowflake

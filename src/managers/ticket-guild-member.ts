@@ -1,5 +1,5 @@
-import { Collection, Constants } from 'discord.js'
 import type { Client, Guild, GuildMember, GuildMemberResolvable, Snowflake } from 'discord.js'
+import { Collection, Constants } from 'discord.js'
 import type { Member as MemberEntity, Ticket as TicketEntity } from '../entities'
 import { inject, injectable } from 'inversify'
 import type { Repository } from 'typeorm'
