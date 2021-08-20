@@ -73,7 +73,7 @@ export default class GuildRoleMessageManager extends BaseManager<RoleMessage, Ro
       emoji: !(emoji instanceof GuildEmoji) ? emoji : null,
       guildId: this.guild.id
     }), {
-      data: { channelId: message.channel.id}
+      data: { channelId: message.channel.id }
     })
 
     return this.add(newData)
