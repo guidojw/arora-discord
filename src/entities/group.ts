@@ -8,7 +8,6 @@ import {
   OneToMany,
   PrimaryGeneratedColumn
 } from 'typeorm'
-import { Expose, Type } from 'class-transformer'
 import Channel from './channel'
 import { GroupType } from '../util/constants'
 import Guild from './guild'
@@ -18,35 +17,26 @@ import Role from './role'
 
 @Entity('groups')
 export default class Group {
-  @Expose()
   @PrimaryGeneratedColumn()
   public readonly id!: number
 
-  @Expose()
   @Column({ length: 255 })
   @IsNotEmpty()
   public name!: string
 
-  @Expose()
   @Column({ type: 'enum', enum: GroupType })
   public type!: GroupType
 
-  @Expose()
   @Column({ default: false })
   public guarded!: boolean
 
-  @Expose({ name: 'guild_id' })
   @Column('bigint', { name: 'guild_id' })
   public guildId!: string
 
-  @Expose()
-  @Type(() => Guild)
   @ManyToOne(() => Guild, guild => guild.groups, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'guild_id' })
   public guild?: Guild
 
-  @Expose()
-  @Type(() => Channel)
   @ManyToMany(() => Channel, channel => channel.groups, { cascade: true })
   @JoinTable({
     name: 'channels_groups',
@@ -55,8 +45,6 @@ export default class Group {
   })
   public channels?: Channel[]
 
-  @Expose()
-  @Type(() => Role)
   @ManyToMany(() => Role, role => role.groups, { cascade: true })
   @JoinTable({
     name: 'roles_groups',
@@ -65,8 +53,6 @@ export default class Group {
   })
   public roles?: Role[]
 
-  @Expose()
-  @Type(() => Permission)
   @OneToMany(() => Permission, permission => permission.group)
   public permissions?: Permission[]
 }
