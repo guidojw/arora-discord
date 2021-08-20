@@ -47,12 +47,17 @@ export default class Group {
 
   @Expose()
   @Type(() => Channel)
-  @ManyToMany(() => Channel, channel => channel.groups)
+  @ManyToMany(() => Channel, channel => channel.groups, { cascade: true })
+  @JoinTable({
+    name: 'channels_groups',
+    joinColumn: { name: 'group_id' },
+    inverseJoinColumn: { name: 'channel_id' }
+  })
   public channels?: Channel[]
 
   @Expose()
   @Type(() => Role)
-  @ManyToMany(() => Role, role => role.groups)
+  @ManyToMany(() => Role, role => role.groups, { cascade: true })
   @JoinTable({
     name: 'roles_groups',
     joinColumn: { name: 'group_id' },

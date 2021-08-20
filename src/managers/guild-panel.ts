@@ -141,7 +141,7 @@ export default class GuildPanelManager extends BaseManager<Panel, PanelResolvabl
     let channel
     if (typeof channelResolvable !== 'undefined') {
       channel = this.guild.channels.resolve(channelResolvable)
-      if (channel === null) {
+      if (channel === null || !channel.isText()) {
         throw new Error('Invalid channel.')
       }
     }
@@ -149,7 +149,7 @@ export default class GuildPanelManager extends BaseManager<Panel, PanelResolvabl
     const data: { messageId: null | string } = {
       messageId: null
     }
-    if (typeof channel !== 'undefined' && channel.isText()) {
+    if (typeof channel !== 'undefined') {
       const message = await channel.send(panel.embed)
       data.messageId = message.id
     }

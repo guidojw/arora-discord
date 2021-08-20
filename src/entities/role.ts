@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryColumn } from 'typeorm'
+import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, PrimaryColumn } from 'typeorm'
 import { Expose, Type } from 'class-transformer'
 import Group from './group'
 import Guild from './guild'
@@ -26,11 +26,6 @@ export default class Role {
   @Expose()
   @Type(() => Group)
   @ManyToMany(() => Group, group => group.roles)
-  @JoinTable({
-    name: 'roles_groups',
-    joinColumn: { name: 'role_id' },
-    inverseJoinColumn: { name: 'group_id' }
-  })
   public groups?: Group[]
 
   @Expose({ name: 'role_messages' })

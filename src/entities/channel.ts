@@ -34,11 +34,6 @@ export default class Channel {
   @Expose()
   @Type(() => Group)
   @ManyToMany(() => Group, group => group.channels)
-  @JoinTable({
-    name: 'channels_groups',
-    joinColumn: { name: 'channel_id' },
-    inverseJoinColumn: { name: 'group_id' }
-  })
   public groups?: Group[]
 
   @Expose({ name: 'from_links' })
