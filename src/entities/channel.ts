@@ -29,16 +29,16 @@ export default class Channel {
   @ManyToMany(() => Group, group => group.channels)
   public groups?: Group[]
 
-  @ManyToMany(() => Channel, channel => channel.toLinks)
+  @ManyToMany(() => Channel, channel => channel.toLinks, { cascade: true })
   @JoinTable({
     name: 'channels_channels',
     joinColumn: { name: 'from_channel_id' },
     inverseJoinColumn: { name: 'to_channel_id' }
   })
-  public fromLinks?: Channel[]
+  public toLinks?: Channel[]
 
   @ManyToMany(() => Channel, channel => channel.fromLinks)
-  public toLinks?: Channel[]
+  public fromLinks?: Channel[]
 
   @OneToMany(() => Message, message => message.channel)
   public messages?: Message[]

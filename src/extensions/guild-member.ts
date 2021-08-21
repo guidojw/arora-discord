@@ -78,7 +78,7 @@ const AroraGuildMember: GuildMember = Structures.extend('GuildMember', GuildMemb
       const data = await this.getData(this)
 
       return this.guild.roles.cache.filter(role => (
-        data?.roles.some(persistentRole => persistentRole.id === role.id) ?? false
+        data?.roles.some(persistentRole => persistentRole.id === role.id) === true
       ))
     }
 

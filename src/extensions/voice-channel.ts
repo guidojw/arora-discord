@@ -1,6 +1,11 @@
 import type { Collection, GuildChannel, TextChannel, VoiceChannel } from 'discord.js'
-import { Channel } from '../models'
+import type { Channel as ChannelEntity } from '../entities'
+import type { Repository } from 'typeorm'
 import { Structures } from 'discord.js'
+import { constants } from '../util'
+import { inject } from 'inversify'
+
+const { TYPES } = constants
 
 declare module 'discord.js' {
   interface VoiceChannel {
@@ -11,52 +16,60 @@ declare module 'discord.js' {
 }
 
 // @ts-expect-error
-const AroraVoiceChannel: VoiceChannel = Structures.extend('VoiceChannel', VoiceChannel => (
+const AroraVoiceChannel: VoiceChannel = Structures.extend('VoiceChannel', VoiceChannel => {
   class AroraVoiceChannel extends VoiceChannel {
+    @inject(TYPES.ChannelRepository) private readonly channelRepository!: Repository<ChannelEntity>
+
     // @ts-expect-error
     public override async fetchToLinks (): Promise<Collection<string, TextChannel>> {
-      const data = await getData(this)
-      const toLinks = await data?.getToLinks() ?? []
+      const data = await this.getData(this)
 
       return this.guild.channels.cache.filter(channel => (
-        channel.isText() && toLinks.some((link: { id: string }) => link.id === channel.id))
+        channel.isText() && data?.toLinks.some(link => link.id === channel.id)) === true
       ) as Collection<string, TextChannel>
     }
 
     // @ts-expect-error
     public override async linkChannel (channel: TextChannel): Promise<this> {
-      const [data] = await Channel.findOrCreate({ where: { id: this.id, guildId: this.guild.id } })
-      await Channel.findOrCreate({ where: { id: channel.id, guildId: this.guild.id } })
-      const added = typeof await data.addToLink(channel.id) !== 'undefined'
+      const data = await this.getData(this) ?? await this.channelRepository.save(this.channelRepository.create({
+        id: this.id,
+        guildId: this.guild.id
+      }))
+      if (typeof data.toLinks === 'undefined') {
+        data.toLinks = []
+      }
 
-      if (!added) {
+      if (data.toLinks.some(link => link.id === channel.id)) {
         throw new Error('Voice channel does already have linked text channel.')
       } else {
+        data.toLinks.push({ id: channel.id, guildId: this.guild.id })
+        await this.channelRepository.save(data)
         return this
       }
     }
 
     // @ts-expect-error
     public override async unlinkChannel (channel: TextChannel): Promise<this> {
-      const data = await getData(this)
-      const removed = await data?.removeToLink(channel.id) === 1
+      const data = await this.getData(this)
 
-      if (!removed) {
+      if (typeof data === 'undefined' || !data?.toLinks.some(link => link.id === channel.id)) {
         throw new Error('Voice channel does not have linked text channel.')
       } else {
+        data.toLinks = data.toLinks.filter(link => link.id !== channel.id)
+        await this.channelRepository.save(data)
         return this
       }
     }
+
+    private async getData (channel: GuildChannel): Promise<(ChannelEntity & { toLinks: ChannelEntity[] }) | undefined> {
+      return await this.channelRepository.findOne(
+        { id: channel.id, guildId: channel.guild.id },
+        { relations: ['toLinks'] }
+      ) as (ChannelEntity & { toLinks: ChannelEntity[] }) | undefined
+    }
   }
-))
+
+  return AroraVoiceChannel
+})
 
 export default AroraVoiceChannel
-
-async function getData (channel: GuildChannel): Promise<Channel> {
-  return Channel.findOne({
-    where: {
-      id: channel.id,
-      guildId: channel.guild.id
-    }
-  })
-}
