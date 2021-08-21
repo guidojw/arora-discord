@@ -21,7 +21,9 @@ export const TYPES = {
   // Other
   Handler: Symbol.for('Handler'),
   EventHandlerFactory: Symbol.for('EventHandlerFactory'),
-  PacketHandlerFactory: Symbol.for('PacketHandlerFactory')
+  PacketHandlerFactory: Symbol.for('PacketHandlerFactory'),
+  Job: Symbol.for('Job'),
+  JobFactory: Symbol.for('JobFactory')
 }
 
 export enum CommandType {

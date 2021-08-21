@@ -5,12 +5,14 @@ import type { Guild } from 'discord.js'
 import { MessageEmbed } from 'discord.js'
 import type { Training } from '../services/group'
 import { applicationAdapter } from '../adapters'
+import { injectable } from 'inversify'
 import lodash from 'lodash'
 import pluralize from 'pluralize'
 import { timeUtil } from '../util'
 
 const { getDate, getTime, getTimeZoneAbbreviation } = timeUtil
 
+@injectable()
 export default class AnnounceTrainingsJob implements BaseJob {
   public async run (guild: Guild): Promise<void> {
     if (guild.robloxGroupId === null) {
@@ -34,7 +36,9 @@ export default class AnnounceTrainingsJob implements BaseJob {
       const embed = trainingsInfoPanel.embed.setColor(guild.primaryColor ?? 0xffffff)
       const now = new Date()
 
-      embed.setDescription(embed.description.replace(/{timezone}/g, getTimeZoneAbbreviation(now)))
+      if (embed.description !== null) {
+        embed.setDescription(embed.description.replace(/{timezone}/g, getTimeZoneAbbreviation(now)))
+      }
 
       const nextTraining = trainings.find(training => new Date(training.date) > now)
       embed.addField(

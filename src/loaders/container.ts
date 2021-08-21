@@ -1,3 +1,4 @@
+import { AnnounceTrainingsJob, HealthCheckJob, PremiumMembersReportJob } from '../jobs'
 import { AsyncContainerModule, Container } from 'inversify'
 import {
   Channel,
@@ -21,6 +22,7 @@ import {
 import { createConnection, getRepository } from 'typeorm'
 import { eventHandlers, packetHandlers } from '../client'
 import type { BaseHandler } from '../client'
+import type { BaseJob } from '../jobs'
 import type { Repository } from 'typeorm'
 import { constants } from '../util'
 import type { interfaces } from 'inversify'
@@ -77,6 +79,19 @@ export default async function init (): Promise<Container> {
       (context: interfaces.Context) => {
         return (eventName: string) => {
           return context.container.getTagged<BaseHandler>(TYPES.Handler, 'eventHandler', eventName)
+        }
+      }
+    )
+
+    // Jobs
+    bind<BaseJob>(TYPES.Job).to(AnnounceTrainingsJob).whenTargetTagged('job', 'announceTrainings')
+    bind<BaseJob>(TYPES.Job).to(HealthCheckJob).whenTargetTagged('job', 'healthCheck')
+    bind<BaseJob>(TYPES.Job).to(PremiumMembersReportJob).whenTargetTagged('job', 'premiumMembersReport')
+
+    bind<interfaces.Factory<BaseJob>>(TYPES.JobFactory).toFactory<BaseJob>(
+      (context: interfaces.Context) => {
+        return (jobName: string) => {
+          return context.container.getTagged<BaseJob>(TYPES.Job, 'job', jobName)
         }
       }
     )

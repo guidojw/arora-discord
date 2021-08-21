@@ -1,5 +1,5 @@
 import type { Channel as ChannelEntity, Group as GroupEntity } from '../entities'
-import type { Collection, Guild, GuildChannel, Snowflake } from 'discord.js'
+import type { Collection, Guild, Snowflake, TextChannel } from 'discord.js'
 import { inject, injectable } from 'inversify'
 import type { ChannelGroup } from '../structures'
 import type { Repository } from 'typeorm'
@@ -20,8 +20,9 @@ export default class GroupTextChannelManager {
     this.guild = group.guild
   }
 
-  public get cache (): Collection<Snowflake, GuildChannel> {
-    return this.guild.channels.cache.filter(channel => this.group._channels.includes(channel.id))
+  public get cache (): Collection<Snowflake, TextChannel> {
+    return this.guild.channels.cache.filter(channel => this.group._channels.includes(channel.id)) as
+      Collection<Snowflake, TextChannel>
   }
 
   public async add (channelResolvable: TextChannelResolvable): Promise<ChannelGroup> {

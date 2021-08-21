@@ -1,19 +1,17 @@
-import { BaseJob, announceTrainingsJob, healthCheckJob, premiumMembersReportJob } from '../jobs'
-
-export interface CronConfig { expression: string, job: BaseJob }
+export interface CronConfig { name: string, expression: string }
 
 const cronConfig: { [key: string]: CronConfig } = {
   announceTrainingsJob: {
-    expression: '*/5 * * * *', // https://crontab.guru/#*/5_*_*_*_*
-    job: announceTrainingsJob
+    name: 'announceTrainings',
+    expression: '*/5 * * * *' // https://crontab.guru/#*/5_*_*_*_*
   },
   healthCheckJob: {
-    expression: '*/5 * * * *', // https://crontab.guru/#*/5_*_*_*_*
-    job: healthCheckJob
+    name: 'healthCheck',
+    expression: '*/5 * * * *' // https://crontab.guru/#*/5_*_*_*_*
   },
   premiumMembersReportJob: {
-    expression: '0 12 */1 * *', // https://crontab.guru/#0_12_*/1_*_*
-    job: premiumMembersReportJob
+    name: 'premiumMembersReport',
+    expression: '0 12 */1 * *' // https://crontab.guru/#0_12_*/1_*_*
   }
 }
 

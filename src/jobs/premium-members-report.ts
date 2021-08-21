@@ -1,6 +1,7 @@
 import type { Guild, GuildMember } from 'discord.js'
 import type BaseJob from './base'
 import { MessageEmbed } from 'discord.js'
+import { injectable } from 'inversify'
 import pluralize from 'pluralize'
 import { timeUtil } from '../util'
 
@@ -10,10 +11,12 @@ interface PremiumGuildMember extends GuildMember {
   premiumSince: Date
 }
 
+@injectable()
 export default class PremiumMembersReportJob implements BaseJob {
   public async run (guild: Guild): Promise<void> {
     const serverBoosterReportChannelsGroup = guild.groups.resolve('serverBoosterReportChannels')
-    if ((serverBoosterReportChannelsGroup?.channels?.cache.size ?? 0) === 0) {
+    if (serverBoosterReportChannelsGroup === null || !serverBoosterReportChannelsGroup.isChannelGroup() ||
+        (serverBoosterReportChannelsGroup.channels.cache.size ?? 0) === 0) {
       return
     }
 
@@ -48,9 +51,7 @@ export default class PremiumMembersReportJob implements BaseJob {
         embed.addField(`${member.user.tag} ${emoji?.toString() ?? ''}`, `Has been boosting this server for **${pluralize('month', months, true)}**!`)
       }
 
-      for (const channel of serverBoosterReportChannelsGroup.channels.cache.values()) {
-        channel.send(embed)
-      }
+      await Promise.all(serverBoosterReportChannelsGroup.channels.cache.map(async channel => await channel.send(embed)))
     }
   }
 }

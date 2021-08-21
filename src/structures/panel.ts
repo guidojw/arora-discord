@@ -32,7 +32,7 @@ export default class Panel extends Postable(BaseStructure) {
     return new MessageEmbed(JSON.parse(this.content))
   }
 
-  public async update (data: Partial<PanelEntity>): Promise<this> {
+  public async update (data: Partial<PanelEntity>): Promise<Panel> {
     return await this.guild.panels.update(this, data)
   }
 
@@ -40,7 +40,7 @@ export default class Panel extends Postable(BaseStructure) {
     return await this.guild.panels.delete(this)
   }
 
-  public async post (channel: TextChannel): Promise<this> {
+  public async post (channel: TextChannel): Promise<Panel> {
     return await this.guild.panels.post(this, channel)
   }
 

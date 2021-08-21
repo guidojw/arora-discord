@@ -20,6 +20,7 @@ import {
   GuildTicketManager,
   GuildTicketTypeManager
 } from '../managers'
+import type { BaseJob } from '../jobs'
 import type { BaseStructure } from '../structures'
 import type { Guild as GuildEntity } from '../entities'
 import type { Repository } from 'typeorm'
@@ -92,6 +93,7 @@ declare module 'discord.js' {
 const AroraGuild: Guild = Structures.extend('Guild', Guild => {
   class AroraGuild extends Guild implements Omit<BaseStructure, 'client'> {
     @inject(TYPES.GuildRepository) private readonly guildRepository!: Repository<GuildEntity>
+    @inject(TYPES.JobFactory) private readonly jobFactory!: (jobName: string) => BaseJob
 
     public constructor (client: Client, data: object) {
       super(client, data)
@@ -194,16 +196,18 @@ const AroraGuild: Guild = Structures.extend('Guild', Guild => {
     public override async init (): Promise<void> {
       if (applicationConfig.apiEnabled === true) {
         const announceTrainingsJobConfig = cronConfig.announceTrainingsJob
+        const announceTrainingsJob = this.jobFactory(announceTrainingsJobConfig.name)
         cron.schedule(
           announceTrainingsJobConfig.expression,
-          announceTrainingsJobConfig.job.bind(announceTrainingsJobConfig.job, this)
+          announceTrainingsJob.run.bind(announceTrainingsJob, this)
         )
       }
 
       const premiumMembersReportJobConfig = cronConfig.premiumMembersReportJob
+      const premiumMembersReportJob = this.jobFactory(premiumMembersReportJobConfig.name)
       cron.schedule(
         premiumMembersReportJobConfig.expression,
-        premiumMembersReportJobConfig.job.bind(premiumMembersReportJobConfig.job, this)
+        premiumMembersReportJob.run.bind(premiumMembersReportJob, this)
       )
     }
 
