@@ -1,6 +1,6 @@
 import * as discordService from './discord'
 import * as userService from '../services/user'
-import type { GetGroup, GetGroupRoles } from 'bloxy/src/client/apis/GroupsAPI'
+import type { GetGroup, GetGroupRoles } from 'bloxy/dist/client/apis/GroupsAPI'
 import { applicationAdapter, robloxAdapter } from '../adapters'
 import { timeUtil, util } from '../util'
 import type { GetUsers } from './user'
