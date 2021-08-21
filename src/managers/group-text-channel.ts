@@ -10,7 +10,6 @@ const { TYPES } = constants
 
 @injectable()
 export default class GroupTextChannelManager {
-  @inject(TYPES.ChannelRepository) private readonly channelRepository!: Repository<ChannelEntity>
   @inject(TYPES.GroupRepository) private readonly groupRepository!: Repository<GroupEntity>
 
   public group: ChannelGroup
@@ -34,14 +33,11 @@ export default class GroupTextChannelManager {
       throw new Error('Group already contains channel.')
     }
 
-    const channelFields = { id: channel.id, guildId: this.guild.id }
-    const channelData = await this.channelRepository.findOne(channelFields) ??
-      await this.channelRepository.save(this.channelRepository.create(channelFields))
     const group = await this.groupRepository.findOne(
       this.group.id,
       { relations: ['channels', 'roles'] }
     ) as GroupEntity & { channels: ChannelEntity[] }
-    group.channels.push(channelData)
+    group.channels.push({ id: channel.id, guildId: this.guild.id })
     await this.groupRepository.save(group)
     this.group._channels.push(channel.id)
 

@@ -10,7 +10,6 @@ const { TYPES } = constants
 @injectable()
 export default class GroupRoleManager {
   @inject(TYPES.GroupRepository) private readonly groupRepository!: Repository<GroupEntity>
-  @inject(TYPES.RoleRepository) private readonly roleRepository!: Repository<RoleEntity>
 
   public group: RoleGroup
   public guild: Guild
@@ -33,14 +32,11 @@ export default class GroupRoleManager {
       throw new Error('Role not found.')
     }
 
-    const roleFields = { id: role.id, guildId: this.guild.id }
-    const roleData = await this.roleRepository.findOne(roleFields) ??
-      await this.roleRepository.save(this.roleRepository.create(roleFields))
     const group = await this.groupRepository.findOne(
       this.group.id,
       { relations: ['channels', 'roles'] }
     ) as GroupEntity & { roles: RoleEntity[] }
-    group.roles.push(roleData)
+    group.roles.push({ id: role.id, guildId: this.guild.id })
     await this.groupRepository.save(group)
     this.group._roles.push(role.id)
 

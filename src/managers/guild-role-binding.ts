@@ -66,7 +66,7 @@ export default class GuildRoleBindingManager extends BaseManager<RoleBinding, Ro
     if (id === null) {
       throw new Error('Invalid role binding.')
     }
-    // await this.fetch()
+    // await this.fetch() // TODO: remove
     if (!this.cache.has(id)) {
       throw new Error('Role binding not found.')
     }
@@ -75,7 +75,7 @@ export default class GuildRoleBindingManager extends BaseManager<RoleBinding, Ro
     this.cache.delete(id)
   }
 
-  // async fetch () {
+  // async fetch () { // TODO: remove
   //   const data = await Guild.scope('withRoleBindings').findOne({ where: { id: this.guild.id } })
   //   this.cache.clear()
   //   for (const rawRoleBinding of data.roleBindings) {

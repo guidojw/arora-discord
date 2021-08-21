@@ -38,7 +38,7 @@ export default class Member {
   })
   public moderatingTickets?: Ticket[]
 
-  @ManyToMany(() => Role, role => role.members)
+  @ManyToMany(() => Role, role => role.members, { cascade: true })
   @JoinTable({
     name: 'members_roles',
     joinColumn: { name: 'member_id' },

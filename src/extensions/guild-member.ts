@@ -1,15 +1,20 @@
 import type { Collection, GuildMember } from 'discord.js'
 import type { Command, CommandGroup } from 'discord.js-commando'
-import { Member, Role } from '../models'
+import type { Member as MemberEntity, Role as RoleEntity } from '../entities'
 import { bloxlinkAdapter, roVerAdapter } from '../adapters'
+import type { Repository } from 'typeorm'
 import { Structures } from 'discord.js'
 import { VerificationProvider } from '../util/constants'
+import { constants } from '../util'
+import { inject } from 'inversify'
 
 export interface VerificationData {
   provider: VerificationProvider
   robloxId: number
   robloxUsername: string | null
 }
+
+const { TYPES } = constants
 
 declare module 'discord.js' {
   interface GuildMember {
@@ -26,8 +31,10 @@ declare module 'discord.js' {
 }
 
 // @ts-expect-error
-const AroraGuildMember: GuildMember = Structures.extend('GuildMember', GuildMember => (
+const AroraGuildMember: GuildMember = Structures.extend('GuildMember', GuildMember => {
   class AroraGuildMember extends GuildMember {
+    @inject(TYPES.MemberRepository) private readonly memberRepository!: Repository<MemberEntity>
+
     public constructor (...args: any[]) {
       // @ts-expect-error
       super(...args)
@@ -46,7 +53,7 @@ const AroraGuildMember: GuildMember = Structures.extend('GuildMember', GuildMemb
     // @ts-expect-error
     public override canRunCommand (command: Command | CommandGroup): boolean {
       let result = null
-      const groupsChecked: string[] = []
+      const groupsChecked: number[] = []
       for (const role of this.roles.cache.values()) {
         for (const group of role.groups.cache.values()) {
           if (groupsChecked.includes(group.id)) {
@@ -68,35 +75,42 @@ const AroraGuildMember: GuildMember = Structures.extend('GuildMember', GuildMemb
 
     // @ts-expect-error
     public override async fetchPersistentRoles (): Promise<Collection<string, Role>> {
-      const data = await getData(this)
+      const data = await this.getData(this)
 
       return this.guild.roles.cache.filter(role => (
-        data?.roles.some((persistentRole: { id: string }) => persistentRole.id === role.id) ?? false
+        data?.roles.some(persistentRole => persistentRole.id === role.id) ?? false
       ))
     }
 
     // @ts-expect-error
     public override async persistRole (role: Role): Promise<this> {
       await this.roles.add(role)
-      const [data] = await Member.findOrCreate({ where: { userId: this.id, guildId: this.guild.id } })
-      await Role.findOrCreate({ where: { id: role.id, guildId: this.guild.id } })
-      const added = typeof await data.addRole(role.id) !== 'undefined'
+      const data = await this.getData(this) ?? await this.memberRepository.save(this.memberRepository.create({
+        userId: this.id,
+        guildId: this.guild.id
+      }))
+      if (typeof data.roles === 'undefined') {
+        data.roles = []
+      }
 
-      if (!added) {
+      if (data.roles.some(otherRole => otherRole.id === role.id)) {
         throw new Error('Member does already have role.')
       } else {
+        data.roles.push({ id: role.id, guildId: this.guild.id })
+        await this.memberRepository.save(data)
         return this
       }
     }
 
     // @ts-expect-error
     public override async unpersistRole (role: Role): Promise<this> {
-      const data = await getData(this)
-      const removed = await data?.removeRole(role.id) === 1
+      const data = await this.getData(this)
 
-      if (!removed) {
+      if (typeof data === 'undefined' || !data?.roles.some(otherRole => otherRole.id === role.id)) {
         throw new Error('Member does not have role.')
       } else {
+        data.roles = data.roles.filter(otherRole => otherRole.id !== role.id)
+        await this.memberRepository.save(data)
         await this.roles.remove(role)
         return this
       }
@@ -144,19 +158,19 @@ const AroraGuildMember: GuildMember = Structures.extend('GuildMember', GuildMemb
       }
       return data
     }
+
+    private async getData (member: GuildMember): Promise<(MemberEntity & { roles: RoleEntity[] }) | undefined> {
+      return await this.memberRepository.findOne(
+        { userId: member.id, guildId: member.guild.id },
+        { relations: ['moderatingTickets', 'roles'] }
+      ) as (MemberEntity & { roles: RoleEntity[] }) | undefined
+    }
   }
-))
+
+  return AroraGuildMember
+})
 
 export default AroraGuildMember
-
-async function getData (member: GuildMember): Promise<Member> {
-  return Member.scope('withRoles').findOne({
-    where: {
-      userId: member.id,
-      guildId: member.guild.id
-    }
-  })
-}
 
 async function fetchRoVerData (userId: string): Promise<{ robloxUsername: string, robloxId: number } | null> {
   let response
