@@ -1,6 +1,6 @@
 import 'reflect-metadata'
-import dotenv from 'dotenv'
 import * as loaders from './loaders'
+import dotenv from 'dotenv'
 
 dotenv.config()
 
