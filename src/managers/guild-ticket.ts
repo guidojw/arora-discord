@@ -60,11 +60,12 @@ export default class GuildTicketManager extends BaseManager<Ticket, TicketResolv
     }
 
     const newData = await this.ticketRepository.save(this.ticketRepository.create({
-      authorId: author.id,
       guildId: this.guild.id,
       channelId: channel.id,
       typeId: ticketType.id
-    }))
+    }), {
+      data: { userId: author.id }
+    })
     const ticket = this.add(newData)
 
     await this.guild.log(

@@ -7,13 +7,17 @@ import { inject } from 'inversify'
 const { TYPES } = constants
 
 @EventSubscriber()
-export class ValidationSubscriber implements EntitySubscriberInterface<RoleMessage> {
+export class RoleMessageSubscriber implements EntitySubscriberInterface<RoleMessage> {
   @inject(TYPES.EmojiRepository) private readonly emojiRepository!: Repository<Emoji>
   @inject(TYPES.MessageRepository) private readonly messageRepository!: Repository<Message>
   @inject(TYPES.RoleRepository) private readonly roleRepository!: Repository<Role>
 
   public async beforeInsert (event: InsertEvent<RoleMessage>): Promise<void> {
-    const messageEntity = this.messageRepository.create({ id: event.entity.messageId, guildId: event.entity.guildId })
+    const messageEntity = this.messageRepository.create({
+      id: event.entity.messageId,
+      guildId: event.entity.guildId,
+      channelId: event.queryRunner.data.channelId
+    })
     if (typeof await this.messageRepository.findOne(messageEntity) === 'undefined') {
       await this.messageRepository.save(messageEntity)
     }

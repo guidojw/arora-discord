@@ -10,7 +10,7 @@ export default class Ticket {
   public readonly id!: number
 
   @Column('bigint', { name: 'author_id' })
-  public authorId?: string | null
+  public authorId?: number | null
 
   @Column('bigint', { name: 'channel_id', nullable: true })
   public channelId!: string
