@@ -14,18 +14,8 @@ module.exports = (sequelize, DataTypes) => {
           })
         }
       }
-    },
-    tableName: 'panels'
+    }
   })
-
-  Panel.loadScopes = models => {
-    Panel.addScope('defaultScope', {
-      include: [{
-        model: models.Message,
-        as: 'message'
-      }]
-    })
-  }
 
   return Panel
 }

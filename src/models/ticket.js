@@ -23,21 +23,8 @@ module.exports = sequelize => {
           }
         })
       }
-    },
-    tableName: 'tickets'
+    }
   })
-
-  Ticket.loadScopes = models => {
-    Ticket.addScope('defaultScope', {
-      include: [{
-        model: models.Member,
-        as: 'moderators'
-      }, {
-        model: models.Member,
-        as: 'author'
-      }]
-    })
-  }
 
   return Ticket
 }

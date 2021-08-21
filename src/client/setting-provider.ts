@@ -68,7 +68,31 @@ export default class AroraProvider extends SettingProvider {
     const guild = this.client.guilds.resolve(guildId) as CommandoGuild | null
     const data = await this.guildRepository.findOne(
       guildId,
-      { relations: ['guildCommands', 'guildCommands.commands'] }
+      {
+        relations: [
+          'channels',
+          'groups',
+          'groups.channels',
+          'groups.permissions',
+          'groups.roles',
+          'guildCommands',
+          'guildCommands.commands',
+          'panels',
+          'panels.message',
+          'roleBindings',
+          'roleMessages',
+          'roleMessages.message',
+          'roles',
+          'roles.permissions',
+          'tags',
+          'tags.names',
+          'tickets',
+          'tickets.moderators',
+          'tickets.author',
+          'ticketTypes',
+          'ticketTypes.message'
+        ]
+      }
     ) ?? await this.guildRepository.save(this.guildRepository.create({ id: guildId }))
     if (typeof data.guildCommands === 'undefined') {
       data.guildCommands = []

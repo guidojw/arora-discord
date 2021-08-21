@@ -22,18 +22,8 @@ module.exports = (sequelize, DataTypes) => {
           })
         }
       }
-    },
-    tableName: 'ticket_types'
+    }
   })
-
-  TicketType.loadScopes = models => {
-    TicketType.addScope('defaultScope', {
-      include: [{
-        model: models.Message,
-        as: 'message'
-      }]
-    })
-  }
 
   return TicketType
 }
