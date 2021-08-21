@@ -1,5 +1,23 @@
 import { AsyncContainerModule, Container } from 'inversify'
-import { Member, Permission, Tag, TagName, Ticket, TicketType } from '../entities'
+import {
+  Channel,
+  Command,
+  Emoji,
+  Group,
+  Guild,
+  GuildCommand,
+  Member,
+  Message,
+  Panel,
+  Permission,
+  Role,
+  RoleBinding,
+  RoleMessage,
+  Tag,
+  TagName,
+  Ticket,
+  TicketType
+} from '../entities'
 import { createConnection, getRepository } from 'typeorm'
 import { eventHandlers, packetHandlers } from '../client'
 import type { BaseHandler } from '../client'
@@ -78,11 +96,44 @@ export default async function init (): Promise<Container> {
     )
 
     // Repositories
+    bind<Repository<Channel>>(TYPES.ChannelRepository).toDynamicValue(() => {
+      return getRepository(Channel)
+    })
+    bind<Repository<Command>>(TYPES.CommandRepository).toDynamicValue(() => {
+      return getRepository(Command)
+    })
+    bind<Repository<Emoji>>(TYPES.EmojiRepository).toDynamicValue(() => {
+      return getRepository(Emoji)
+    })
+    bind<Repository<Group>>(TYPES.GroupRepository).toDynamicValue(() => {
+      return getRepository(Group)
+    })
+    bind<Repository<Guild>>(TYPES.GuildRepository).toDynamicValue(() => {
+      return getRepository(Guild)
+    })
+    bind<Repository<GuildCommand>>(TYPES.GuildCommandRepository).toDynamicValue(() => {
+      return getRepository(GuildCommand)
+    })
     bind<Repository<Member>>(TYPES.MemberRepository).toDynamicValue(() => {
       return getRepository(Member)
     })
+    bind<Repository<Message>>(TYPES.MessageRepository).toDynamicValue(() => {
+      return getRepository(Message)
+    })
+    bind<Repository<Panel>>(TYPES.PanelRepository).toDynamicValue(() => {
+      return getRepository(Panel)
+    })
     bind<Repository<Permission>>(TYPES.PermissionRepository).toDynamicValue(() => {
       return getRepository(Permission)
+    })
+    bind<Repository<Role>>(TYPES.RoleRepository).toDynamicValue(() => {
+      return getRepository(Role)
+    })
+    bind<Repository<RoleBinding>>(TYPES.RoleBindingRepository).toDynamicValue(() => {
+      return getRepository(RoleBinding)
+    })
+    bind<Repository<RoleMessage>>(TYPES.RoleMessageRepository).toDynamicValue(() => {
+      return getRepository(RoleMessage)
     })
     bind<Repository<Tag>>(TYPES.TagRepository).toDynamicValue(() => {
       return getRepository(Tag)
