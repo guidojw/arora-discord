@@ -1,6 +1,6 @@
-import { GetUserById, GetUsersByUserIds, GetUsersByUsernames } from 'bloxy/src/client/apis/UsersAPI'
-import { GetUserOutfits as BloxyGetUserOutfits } from 'bloxy/src/client/apis/AvatarAPI'
-import { GetUserGroups } from 'bloxy/src/client/apis/GroupsAPI'
+import type { GetUserById, GetUsersByUserIds, GetUsersByUsernames } from 'bloxy/src/client/apis/UsersAPI'
+import type { GetUserOutfits as BloxyGetUserOutfits } from 'bloxy/src/client/apis/AvatarAPI'
+import type { GetUserGroups } from 'bloxy/src/client/apis/GroupsAPI'
 import { robloxAdapter } from '../adapters'
 import { util } from '../util'
 

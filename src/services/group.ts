@@ -1,10 +1,10 @@
 import * as discordService from './discord'
 import * as userService from '../services/user'
-import { GetGroup, GetGroupRoles } from 'bloxy/src/client/apis/GroupsAPI'
+import type { GetGroup, GetGroupRoles } from 'bloxy/src/client/apis/GroupsAPI'
 import { applicationAdapter, robloxAdapter } from '../adapters'
 import { timeUtil, util } from '../util'
-import { GetUsers } from './user'
-import { MessageEmbed } from 'discord.js'
+import type { GetUsers } from './user'
+import type { MessageEmbed } from 'discord.js'
 import pluralize from 'pluralize'
 
 const { getDate, getTime, getTimeZoneAbbreviation } = timeUtil

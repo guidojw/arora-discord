@@ -1,5 +1,3 @@
-import * as discordService from './discord'
-import * as groupService from './group'
-import * as userService from './user'
-
-export { discordService, groupService, userService }
+export * as discordService from './discord'
+export * as groupService from './group'
+export * as userService from './user'

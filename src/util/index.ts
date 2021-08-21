@@ -1,6 +1,4 @@
-import * as argumentUtil from './argument'
-import * as constants from './constants'
-import * as timeUtil from './time'
-import * as util from './util'
-
-export { argumentUtil, constants, timeUtil, util }
+export * as argumentUtil from './argument'
+export * as constants from './constants'
+export * as timeUtil from './time'
+export * as util from './util'
