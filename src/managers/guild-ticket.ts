@@ -6,6 +6,7 @@ import type { Repository } from 'typeorm'
 import { Ticket } from '../structures'
 import type { Ticket as TicketEntity } from '../entities'
 import type { TicketTypeResolvable } from './guild-ticket-type'
+import type { TicketUpdateOptions } from '../structures'
 import { constants } from '../util'
 
 export type TextChannelResolvable = TextChannel | Snowflake
@@ -93,7 +94,7 @@ export default class GuildTicketManager extends BaseManager<Ticket, TicketResolv
 
   public async update (
     ticket: TicketResolvable,
-    data: { channel?: TextChannelResolvable }
+    data: TicketUpdateOptions
   ): Promise<Ticket> {
     const id = this.resolveID(ticket)
     if (id === null) {

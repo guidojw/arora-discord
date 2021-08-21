@@ -3,6 +3,8 @@ import BaseStructure from './base'
 import Postable from './mixins/postable'
 import type { TicketType as TicketTypeEntity } from '../entities'
 
+export interface TicketTypeUpdateOptions { name?: string }
+
 export default class TicketType extends Postable(BaseStructure) {
   public guild: Guild
   public id!: number
@@ -40,7 +42,7 @@ export default class TicketType extends Postable(BaseStructure) {
     return (this._emoji ?? this._emojiId) as string
   }
 
-  public async update (data: Partial<TicketTypeEntity>): Promise<TicketType> {
+  public async update (data: TicketTypeUpdateOptions): Promise<TicketType> {
     return await this.guild.ticketTypes.update(this, data)
   }
 

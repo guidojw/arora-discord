@@ -5,6 +5,8 @@ import type { Group as GroupEntity } from '../entities'
 import { GroupType } from '../util/constants'
 import type RoleGroup from './role-group'
 
+export interface GroupUpdateOptions { name?: string }
+
 export default class Group extends BaseStructure {
   public readonly type: GroupType
   public readonly guild: Guild
@@ -25,7 +27,7 @@ export default class Group extends BaseStructure {
     this.guarded = data.guarded
   }
 
-  public async update (data: Partial<GroupEntity>): Promise<this> {
+  public async update (data: GroupUpdateOptions): Promise<Group> {
     return await this.guild.groups.update(this, data)
   }
 

@@ -1,9 +1,10 @@
-import type { Guild, Message, MessageEmbedOptions } from 'discord.js'
+import type { Guild, MessageEmbedOptions } from 'discord.js'
 import { inject, injectable } from 'inversify'
 import BaseManager from './base'
 import { MessageEmbed } from 'discord.js'
 import { Panel } from '../structures'
 import type { Panel as PanelEntity } from '../entities'
+import type { PanelUpdateOptions } from '../structures'
 import type { Repository } from 'typeorm'
 import type { TextChannelResolvable } from './guild-ticket'
 import { constants } from '../util'
@@ -64,7 +65,7 @@ export default class GuildPanelManager extends BaseManager<Panel, PanelResolvabl
 
   public async update (
     panelResolvable: PanelResolvable,
-    data: { name?: string, content?: MessageEmbedOptions, message?: Message }
+    data: PanelUpdateOptions
   ): Promise<Panel> {
     const panel = this.resolve(panelResolvable)
     if (panel === null) {

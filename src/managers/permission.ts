@@ -1,4 +1,5 @@
 import { Command, CommandGroup } from 'discord.js-commando'
+import type { PermissionUpdateOptions, RoleGroup } from '../structures'
 import { inject, injectable } from 'inversify'
 import BaseManager from './base'
 import type { CommandoClient } from 'discord.js-commando'
@@ -7,7 +8,6 @@ import Permission from '../structures/permission'
 import type { Permission as PermissionEntity } from '../entities'
 import type { Repository } from 'typeorm'
 import { Role } from 'discord.js'
-import type { RoleGroup } from '../structures'
 import { constants } from '../util'
 
 export type CommandOrCommandGroupResolvable = Command | CommandGroup | string
@@ -87,7 +87,7 @@ export default class PermissionManager extends BaseManager<Permission, Permissio
 
   public async update (
     permission: PermissionResolvable,
-    data: { allow?: boolean }
+    data: PermissionUpdateOptions
   ): Promise<Permission> {
     const id = this.resolveID(permission)
     if (id === null) {

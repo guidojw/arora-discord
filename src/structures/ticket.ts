@@ -3,6 +3,7 @@ import { Collection, Constants, MessageAttachment, MessageEmbed } from 'discord.
 import { discordService, userService } from '../services'
 import { timeUtil, util } from '../util'
 import BaseStructure from './base'
+import type { TextChannelResolvable } from '../managers'
 import type { Ticket as TicketEntity } from '../entities'
 import TicketGuildMemberManager from '../managers/ticket-guild-member'
 import TicketType from './ticket-type'
@@ -19,6 +20,8 @@ export interface NewTicket extends Ticket {
   author: GuildMember
   type: TicketType
 }
+
+export interface TicketUpdateOptions { channel?: TextChannelResolvable }
 
 export default class Ticket extends BaseStructure {
   public readonly guild: Guild
@@ -263,7 +266,7 @@ export default class Ticket extends BaseStructure {
     return result
   }
 
-  public async update (data: Partial<TicketEntity>): Promise<Ticket> {
+  public async update (data: TicketUpdateOptions): Promise<Ticket> {
     return await this.guild.tickets.update(this, data)
   }
 

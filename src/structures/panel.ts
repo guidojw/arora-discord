@@ -1,8 +1,10 @@
-import type { Client, Guild, TextChannel } from 'discord.js'
+import type { Client, Guild, Message, MessageEmbedOptions, TextChannel } from 'discord.js'
 import BaseStructure from './base'
 import { MessageEmbed } from 'discord.js'
 import type { Panel as PanelEntity } from '../entities'
 import Postable from './mixins/postable'
+
+export interface PanelUpdateOptions { name?: string, content?: MessageEmbedOptions, message?: Message }
 
 export default class Panel extends Postable(BaseStructure) {
   public readonly guild: Guild
@@ -32,7 +34,7 @@ export default class Panel extends Postable(BaseStructure) {
     return new MessageEmbed(JSON.parse(this.content))
   }
 
-  public async update (data: Partial<PanelEntity>): Promise<Panel> {
+  public async update (data: PanelUpdateOptions): Promise<Panel> {
     return await this.guild.panels.update(this, data)
   }
 

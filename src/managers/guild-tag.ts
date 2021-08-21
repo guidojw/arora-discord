@@ -7,6 +7,7 @@ import type { Repository } from 'typeorm'
 import { Tag } from '../structures'
 import type { Tag as TagEntity } from '../entities'
 import type { TagNameResolvable } from './tag-tag-name'
+import type { TagUpdateOptions } from '../structures'
 import { constants } from '../util'
 import { discordService } from '../services'
 
@@ -81,7 +82,7 @@ export default class GuildTagManager extends BaseManager<Tag, TagResolvable> {
 
   public async update (
     tag: TagResolvable,
-    data: { content?: string | MessageEmbedOptions }
+    data: TagUpdateOptions
   ): Promise<Tag> {
     const id = this.resolveID(tag)
     if (id === null) {

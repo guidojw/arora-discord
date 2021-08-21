@@ -1,8 +1,10 @@
-import type { Client, Guild } from 'discord.js'
+import type { Client, Guild, MessageEmbedOptions } from 'discord.js'
 import BaseStructure from './base'
 import { MessageEmbed } from 'discord.js'
 import type { Tag as TagEntity } from '../entities'
 import TagTagNameManager from '../managers/tag-tag-name'
+
+export interface TagUpdateOptions { content?: string | MessageEmbedOptions }
 
 export default class Tag extends BaseStructure {
   public readonly guild: Guild
@@ -39,7 +41,7 @@ export default class Tag extends BaseStructure {
     }
   }
 
-  public async update (data: Partial<TagEntity>): Promise<this> {
+  public async update (data: TagUpdateOptions): Promise<Tag> {
     return await this.guild.tags.update(this, data)
   }
 
@@ -48,6 +50,6 @@ export default class Tag extends BaseStructure {
   }
 
   public override toString (): string {
-    return this.names[0]
+    return this.names.cache.first()?.name ?? 'unknown'
   }
 }

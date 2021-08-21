@@ -3,6 +3,7 @@ import BaseManager from './base'
 import { Group } from '../structures'
 import type { Group as GroupEntity } from '../entities'
 import type { GroupType } from '../util/constants'
+import type { GroupUpdateOptions } from '../structures'
 import type { Guild } from 'discord.js'
 import type { Repository } from 'typeorm'
 import { constants } from '../util'
@@ -69,7 +70,7 @@ export default class GuildGroupManager extends BaseManager<Group, GroupResolvabl
 
   public async update (
     group: GroupResolvable,
-    data: { name?: string }
+    data: GroupUpdateOptions
   ): Promise<Group> {
     const id = this.resolveID(group)
     if (id === null) {

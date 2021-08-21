@@ -6,6 +6,7 @@ import { GuildEmoji } from 'discord.js'
 import type { Repository } from 'typeorm'
 import { TicketType } from '../structures'
 import type { TicketType as TicketTypeEntity } from '../entities'
+import type { TicketTypeUpdateOptions } from '../structures'
 import { constants } from '../util'
 
 export type TicketTypeResolvable = TicketType | string
@@ -65,7 +66,7 @@ export default class GuildTicketTypeManager extends BaseManager<TicketType, Tick
 
   public async update (
     ticketTypeResolvable: TicketTypeResolvable,
-    data: { name?: string }
+    data: TicketTypeUpdateOptions
   ): Promise<TicketType> {
     const id = this.resolveID(ticketTypeResolvable)
     if (id === null) {

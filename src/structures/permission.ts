@@ -3,6 +3,8 @@ import BaseStructure from './base'
 import type { Permission as PermissionEntity } from '../entities'
 import type RoleGroup from './role-group'
 
+export interface PermissionUpdateOptions { allow?: boolean }
+
 export default class Permission extends BaseStructure {
   public readonly permissible: Role | RoleGroup
   public id!: number
@@ -23,7 +25,7 @@ export default class Permission extends BaseStructure {
     this.commandId = data.commandId
   }
 
-  public async update (data: Partial<PermissionEntity>): Promise<this> {
+  public async update (data: PermissionUpdateOptions): Promise<Permission> {
     return await this.permissible.aroraPermissions.update(this, data)
   }
 
