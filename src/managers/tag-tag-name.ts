@@ -1,5 +1,4 @@
 import type { Tag as TagEntity, TagName as TagNameEntity } from '../entities'
-import { inject, injectable } from 'inversify'
 import type { CommandoClient } from 'discord.js-commando'
 import { BaseManager as DiscordBaseManager } from 'discord.js'
 import type { Guild } from 'discord.js'
@@ -7,18 +6,17 @@ import type { Repository } from 'typeorm'
 import type { Tag } from '../structures'
 import TagName from '../structures/tag-name'
 import { constants } from '../util'
+import { inject } from 'inversify'
 
 export type TagNameResolvable = TagName | string
 
 const { TYPES } = constants
-
-@injectable()
 export default class TagTagNameManager extends DiscordBaseManager<string, TagName, TagNameResolvable> {
   @inject(TYPES.TagRepository) private readonly tagRepository!: Repository<TagEntity>
   @inject(TYPES.TagNameRepository) private readonly tagNameRepository!: Repository<TagNameEntity>
 
-  public tag: Tag
-  public guild: Guild
+  private readonly tag: Tag
+  private readonly guild: Guild
 
   public constructor (tag: Tag, iterable?: Iterable<TagNameEntity>) {
     // @ts-expect-error

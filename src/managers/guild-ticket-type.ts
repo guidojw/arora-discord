@@ -1,5 +1,4 @@
 import type { EmojiResolvable, Guild, Message } from 'discord.js'
-import { inject, injectable } from 'inversify'
 import BaseManager from './base'
 import type { CommandoClient } from 'discord.js-commando'
 import { GuildEmoji } from 'discord.js'
@@ -8,16 +7,16 @@ import { TicketType } from '../structures'
 import type { TicketType as TicketTypeEntity } from '../entities'
 import type { TicketTypeUpdateOptions } from '../structures'
 import { constants } from '../util'
+import { inject } from 'inversify'
 
 export type TicketTypeResolvable = TicketType | string
 
 const { TYPES } = constants
 
-@injectable()
 export default class GuildTicketTypeManager extends BaseManager<TicketType, TicketTypeResolvable> {
   @inject(TYPES.TicketTypeRepository) private readonly ticketTypeRepository!: Repository<TicketTypeEntity>
 
-  public guild: Guild
+  private readonly guild: Guild
 
   public constructor (guild: Guild, iterable?: Iterable<TicketType>) {
     // @ts-expect-error

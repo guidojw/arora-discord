@@ -1,4 +1,3 @@
-import { inject, injectable } from 'inversify'
 import BaseManager from './base'
 import { Group } from '../structures'
 import type { Group as GroupEntity } from '../entities'
@@ -7,16 +6,16 @@ import type { GroupUpdateOptions } from '../structures'
 import type { Guild } from 'discord.js'
 import type { Repository } from 'typeorm'
 import { constants } from '../util'
+import { inject } from 'inversify'
 
 export type GroupResolvable = string | Group | number
 
 const { TYPES } = constants
 
-@injectable()
 export default class GuildGroupManager extends BaseManager<Group, GroupResolvable> {
   @inject(TYPES.GroupRepository) private readonly groupRepository!: Repository<GroupEntity>
 
-  public guild: Guild
+  private readonly guild: Guild
 
   public constructor (guild: Guild, iterable?: Iterable<GroupEntity>) {
     // @ts-expect-error

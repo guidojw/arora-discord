@@ -1,18 +1,17 @@
 import type { Collection, Guild, Role, RoleResolvable, Snowflake } from 'discord.js'
 import type { Group as GroupEntity, Role as RoleEntity } from '../entities'
-import { inject, injectable } from 'inversify'
 import type { Repository } from 'typeorm'
 import type { RoleGroup } from '../structures'
 import { constants } from '../util'
+import { inject } from 'inversify'
 
 const { TYPES } = constants
 
-@injectable()
 export default class GroupRoleManager {
   @inject(TYPES.GroupRepository) private readonly groupRepository!: Repository<GroupEntity>
 
-  public group: RoleGroup
-  public guild: Guild
+  private readonly group: RoleGroup
+  private readonly guild: Guild
 
   public constructor (group: RoleGroup) {
     this.group = group

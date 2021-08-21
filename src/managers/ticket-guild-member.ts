@@ -1,22 +1,21 @@
 import type { Client, Guild, GuildMember, GuildMemberResolvable, Snowflake } from 'discord.js'
 import { Collection, Constants } from 'discord.js'
 import type { Member as MemberEntity, Ticket as TicketEntity } from '../entities'
-import { inject, injectable } from 'inversify'
 import type { Repository } from 'typeorm'
 import { Ticket } from '../structures'
 import { constants } from '../util'
+import { inject } from 'inversify'
 
 const { PartialTypes } = Constants
 const { TYPES } = constants
 
-@injectable()
 export default class TicketGuildMemberManager {
   @inject(TYPES.MemberRepository) private readonly memberRepository!: Repository<MemberEntity>
   @inject(TYPES.TicketRepository) private readonly ticketRepository!: Repository<TicketEntity>
 
-  public ticket: Ticket
-  public client: Client
-  public guild: Guild
+  private readonly ticket: Ticket
+  private readonly client: Client
+  private readonly guild: Guild
 
   public constructor (ticket: Ticket) {
     this.ticket = ticket

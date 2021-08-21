@@ -2,8 +2,8 @@ import type { Collection, Guild, TextChannel } from 'discord.js'
 import type { ChannelGroup } from '../structures'
 
 export default class TextChannelGroupManager {
-  public channel: TextChannel
-  public guild: Guild
+  private readonly channel: TextChannel
+  private readonly guild: Guild
 
   public constructor (channel: TextChannel) {
     this.channel = channel

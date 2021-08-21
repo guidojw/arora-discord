@@ -1,13 +1,12 @@
 import type { Command, CommandGroup, CommandoClient, CommandoGuild } from 'discord.js-commando'
 import type { Command as CommandEntity, GuildCommand as GuildCommandEntity, Guild as GuildEntity } from '../entities'
 import { inject, injectable } from 'inversify'
-import { CommandType } from '../util/constants'
 import type { Repository } from 'typeorm'
 import { SettingProvider } from 'discord.js-commando'
 import type { Snowflake } from 'discord.js'
 import { constants } from '../util'
 
-const { TYPES } = constants
+const { CommandType, TYPES } = constants
 
 declare module 'discord.js-commando' {
   interface SettingProvider {

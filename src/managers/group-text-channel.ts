@@ -1,19 +1,18 @@
 import type { Channel as ChannelEntity, Group as GroupEntity } from '../entities'
 import type { Collection, Guild, Snowflake, TextChannel } from 'discord.js'
-import { inject, injectable } from 'inversify'
 import type { ChannelGroup } from '../structures'
 import type { Repository } from 'typeorm'
 import type { TextChannelResolvable } from './guild-ticket'
 import { constants } from '../util'
+import { inject } from 'inversify'
 
 const { TYPES } = constants
 
-@injectable()
 export default class GroupTextChannelManager {
   @inject(TYPES.GroupRepository) private readonly groupRepository!: Repository<GroupEntity>
 
-  public group: ChannelGroup
-  public guild: Guild
+  private readonly group: ChannelGroup
+  private readonly guild: Guild
 
   public constructor (group: ChannelGroup) {
     this.group = group

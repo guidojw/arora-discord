@@ -1,5 +1,4 @@
 import type { Guild, MessageEmbedOptions } from 'discord.js'
-import { inject, injectable } from 'inversify'
 import BaseManager from './base'
 import type { CommandoClient } from 'discord.js-commando'
 import { MessageEmbed } from 'discord.js'
@@ -10,16 +9,16 @@ import type { TagNameResolvable } from './tag-tag-name'
 import type { TagUpdateOptions } from '../structures'
 import { constants } from '../util'
 import { discordService } from '../services'
+import { inject } from 'inversify'
 
 export type TagResolvable = TagNameResolvable | Tag | number
 
 const { TYPES } = constants
 
-@injectable()
 export default class GuildTagManager extends BaseManager<Tag, TagResolvable> {
   @inject(TYPES.TagRepository) private readonly tagRepository!: Repository<TagEntity>
 
-  public guild: Guild
+  private readonly guild: Guild
 
   public constructor (guild: Guild, iterable?: Iterable<TagEntity>) {
     // @ts-expect-error

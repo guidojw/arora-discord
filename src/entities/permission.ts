@@ -2,7 +2,9 @@ import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 't
 import Command from './command'
 import Group from './group'
 import Role from './role'
-import { Xor } from '../util/util'
+import { util } from '../util'
+
+const { Xor } = util
 
 @Entity('permissions')
 export default class Permission {

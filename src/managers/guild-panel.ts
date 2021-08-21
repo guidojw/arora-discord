@@ -1,5 +1,4 @@
 import type { Guild, MessageEmbedOptions } from 'discord.js'
-import { inject, injectable } from 'inversify'
 import BaseManager from './base'
 import { MessageEmbed } from 'discord.js'
 import { Panel } from '../structures'
@@ -9,16 +8,16 @@ import type { Repository } from 'typeorm'
 import type { TextChannelResolvable } from './guild-ticket'
 import { constants } from '../util'
 import { discordService } from '../services'
+import { inject } from 'inversify'
 
 export type PanelResolvable = string | Panel | number
 
 const { TYPES } = constants
 
-@injectable()
 export default class GuildPanelManager extends BaseManager<Panel, PanelResolvable> {
   @inject(TYPES.PanelRepository) private readonly panelRepository!: Repository<PanelEntity>
 
-  public guild: Guild
+  private readonly guild: Guild
 
   public constructor (guild: Guild, iterable?: Iterable<PanelEntity>) {
     // @ts-expect-error

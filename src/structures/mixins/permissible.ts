@@ -14,7 +14,7 @@ export default function Permissible<T extends Constructor<Group> | Constructor<R
   class Permissible extends base {
     public readonly aroraPermissions: PermissionManager
 
-    public constructor (...args: any[]) {
+    private constructor (...args: any[]) {
       super(...args)
 
       this.aroraPermissions = new PermissionManager(this as unknown as PermissibleType)

@@ -1,6 +1,5 @@
 import type { Guild, GuildMemberResolvable, MessageReaction, Snowflake, User } from 'discord.js'
 import { GuildEmoji, MessageEmbed, TextChannel } from 'discord.js'
-import { inject, injectable } from 'inversify'
 import BaseManager from './base'
 import type { Repository } from 'typeorm'
 import { Ticket } from '../structures'
@@ -8,6 +7,7 @@ import type { Ticket as TicketEntity } from '../entities'
 import type { TicketTypeResolvable } from './guild-ticket-type'
 import type { TicketUpdateOptions } from '../structures'
 import { constants } from '../util'
+import { inject } from 'inversify'
 
 export type TextChannelResolvable = TextChannel | Snowflake
 export type TicketResolvable = TextChannelResolvable | GuildMemberResolvable | Ticket | number
@@ -17,12 +17,11 @@ const { TYPES } = constants
 const TICKETS_INTERVAL = 60 * 1000
 const SUBMISSION_TIME = 30 * 60 * 1000
 
-@injectable()
 export default class GuildTicketManager extends BaseManager<Ticket, TicketResolvable> {
   @inject(TYPES.TicketRepository) private readonly ticketRepository!: Repository<TicketEntity>
 
-  public guild: Guild
-  public debounces: Map<string, true>
+  private readonly guild: Guild
+  private readonly debounces: Map<string, true>
 
   public constructor (guild: Guild, iterable?: Iterable<TicketEntity>) {
     // @ts-expect-error

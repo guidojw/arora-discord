@@ -1,20 +1,19 @@
 import type { Guild, RoleResolvable } from 'discord.js'
-import { inject, injectable } from 'inversify'
 import BaseManager from './base'
 import type { Repository } from 'typeorm'
 import { RoleBinding } from '../structures'
 import type { RoleBinding as RoleBindingEntity } from '../entities'
 import { constants } from '../util'
+import { inject } from 'inversify'
 
 export type RoleBindingResolvable = RoleBinding | number
 
 const { TYPES } = constants
 
-@injectable()
 export default class GuildRoleBindingManager extends BaseManager<RoleBinding, RoleBindingResolvable> {
   @inject(TYPES.RoleBindingRepository) private readonly roleBindingRepository!: Repository<RoleBindingEntity>
 
-  public guild: Guild
+  private readonly guild: Guild
 
   public constructor (guild: Guild, iterable?: Iterable<RoleBindingEntity>) {
     // @ts-expect-error

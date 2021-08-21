@@ -1,5 +1,4 @@
 import type { EmojiResolvable, Guild, Message, RoleResolvable } from 'discord.js'
-import { inject, injectable } from 'inversify'
 import BaseManager from './base'
 import type { CommandoClient } from 'discord.js-commando'
 import { GuildEmoji } from 'discord.js'
@@ -7,16 +6,16 @@ import type { Repository } from 'typeorm'
 import { RoleMessage } from '../structures'
 import type { RoleMessage as RoleMessageEntity } from '../entities'
 import { constants } from '../util'
+import { inject } from 'inversify'
 
 export type RoleMessageResolvable = RoleMessage | number
 
 const { TYPES } = constants
 
-@injectable()
 export default class GuildRoleMessageManager extends BaseManager<RoleMessage, RoleMessageResolvable> {
   @inject(TYPES.RoleMessageRepository) private readonly roleMessageRepository!: Repository<RoleMessageEntity>
 
-  public guild: Guild
+  private readonly guild: Guild
 
   public constructor (guild: Guild, iterable?: Iterable<RoleMessageEntity>) {
     // @ts-expect-error
