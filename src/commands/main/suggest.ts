@@ -1,12 +1,13 @@
-'use strict'
+import type { CommandoClient, CommandoMessage } from 'discord.js-commando'
+import type { Message, MessageAttachment } from 'discord.js'
+import BaseCommand from '../base'
+import { MessageEmbed } from 'discord.js'
+import { argumentUtil } from '../../util'
 
-const BaseCommand = require('../base')
+const { validators, noTags } = argumentUtil
 
-const { MessageEmbed } = require('discord.js')
-const { validators, noTags } = require('../../util').argumentUtil
-
-class SuggestCommand extends BaseCommand {
-  constructor (client) {
+export default class SuggestCommand extends BaseCommand {
+  public constructor (client: CommandoClient) {
     super(client, {
       group: 'main',
       name: 'suggest',
@@ -27,9 +28,12 @@ class SuggestCommand extends BaseCommand {
     })
   }
 
-  async run (message, { suggestion }) {
-    if (!message.guild.suggestionsChannel) {
-      return message.reply('This server has no suggestionsChannel set yet.')
+  public async run (
+    message: CommandoMessage,
+    { suggestion }: { suggestion: string }
+  ): Promise<Message | Message[] | null> {
+    if (message.guild.suggestionsChannel === null) {
+      return await message.reply('This server has no suggestionsChannel set yet.')
     }
     const authorUrl = `https://discord.com/users/${message.author.id}`
     const embed = new MessageEmbed()
@@ -37,8 +41,8 @@ class SuggestCommand extends BaseCommand {
       .setAuthor(message.author.tag, message.author.displayAvatarURL(), authorUrl)
       .setColor(0x000af43)
     if (message.attachments.size > 0) {
-      const attachment = message.attachments.first()
-      if (attachment.height) {
+      const attachment = message.attachments.first() as MessageAttachment
+      if (attachment.height !== null) {
         embed.setImage(attachment.url)
       }
     }
@@ -47,8 +51,6 @@ class SuggestCommand extends BaseCommand {
     await newMessage.react('⬆️')
     await newMessage.react('⬇️')
 
-    return message.reply('Successfully suggested', { embed })
+    return await message.reply('Successfully suggested', { embed })
   }
 }
-
-module.exports = SuggestCommand

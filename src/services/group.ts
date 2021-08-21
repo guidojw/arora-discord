@@ -7,6 +7,8 @@ import type { GetUsers } from './user'
 import type { MessageEmbed } from 'discord.js'
 import pluralize from 'pluralize'
 
+export type GetGroupStatus = GetGroup['shout']
+
 const { getDate, getTime, getTimeZoneAbbreviation } = timeUtil
 const { getAbbreviation } = util
 

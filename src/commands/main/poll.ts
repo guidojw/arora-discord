@@ -1,12 +1,13 @@
-'use strict'
+import type { CommandoClient, CommandoMessage } from 'discord.js-commando'
+import BaseCommand from '../base'
+import type { Message } from 'discord.js'
+import { MessageEmbed } from 'discord.js'
+import { argumentUtil } from '../../util'
 
-const BaseCommand = require('../base')
+const { validators, noTags } = argumentUtil
 
-const { MessageEmbed } = require('discord.js')
-const { validators, noTags } = require('../../util').argumentUtil
-
-class PollCommand extends BaseCommand {
-  constructor (client) {
+export default class PollCommand extends BaseCommand {
+  public constructor (client: CommandoClient) {
     super(client, {
       group: 'main',
       name: 'poll',
@@ -24,17 +25,20 @@ class PollCommand extends BaseCommand {
     })
   }
 
-  async run (message, { poll }) {
+  public async run (
+    message: CommandoMessage,
+    { poll }: { poll: string }
+  ): Promise<Message | Message[] | null> {
     const options = []
     for (let num = 1; num <= 10; num++) {
-      if (message.content.indexOf(`(${num})`) !== -1) {
+      if (message.content.includes(`(${num})`)) {
         options.push(num)
       }
     }
     const embed = new MessageEmbed()
       .setDescription(poll)
       .setAuthor(message.author.tag, message.author.displayAvatarURL())
-      .setColor(message.guild.primaryColor)
+      .setColor(message.guild.primaryColor ?? 0xffffff)
 
     const newMessage = await message.channel.send(embed)
     if (options.length > 0) {
@@ -45,7 +49,6 @@ class PollCommand extends BaseCommand {
       await newMessage.react('✔')
       await newMessage.react('✖')
     }
+    return null
   }
 }
-
-module.exports = PollCommand
