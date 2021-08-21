@@ -12,7 +12,7 @@ const { TYPES } = constants
 export default class RoleDeleteEventHandler implements BaseHandler {
   @inject(TYPES.RoleRepository) private readonly roleRepository!: Repository<Role>
 
-  public async handle (_client: Client, role: DiscordRole) {
+  public async handle (_client: Client, role: DiscordRole): Promise<void> {
     await this.roleRepository.delete(role.id)
   }
 }

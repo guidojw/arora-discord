@@ -1,6 +1,7 @@
-import type { Emoji, Message, Role, RoleMessage } from '../entities'
+import type { Emoji, Message, Role } from '../entities'
 import type { EntitySubscriberInterface, InsertEvent, Repository } from 'typeorm'
 import { EventSubscriber } from 'typeorm'
+import { RoleMessage } from '../entities'
 import { constants } from '../util'
 import { inject } from 'inversify'
 
@@ -11,6 +12,10 @@ export class RoleMessageSubscriber implements EntitySubscriberInterface<RoleMess
   @inject(TYPES.EmojiRepository) private readonly emojiRepository!: Repository<Emoji>
   @inject(TYPES.MessageRepository) private readonly messageRepository!: Repository<Message>
   @inject(TYPES.RoleRepository) private readonly roleRepository!: Repository<Role>
+
+  public listenTo (): Function {
+    return RoleMessage
+  }
 
   public async beforeInsert (event: InsertEvent<RoleMessage>): Promise<void> {
     const messageEntity = this.messageRepository.create({

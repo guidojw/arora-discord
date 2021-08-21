@@ -95,8 +95,8 @@ export default class GuildTicketTypeManager extends BaseManager<TicketType, Tick
 
   public async link (
     ticketTypeResolvable: TicketTypeResolvable,
-    emojiResolvable: EmojiResolvable,
-    message: Message
+    message: Message,
+    emojiResolvable: EmojiResolvable
   ): Promise<TicketType> {
     const ticketType = this.resolve(ticketTypeResolvable)
     if (ticketType === null) {

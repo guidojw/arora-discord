@@ -11,6 +11,7 @@ const { escapeMarkdown } = Util
 
 export interface IdentifiableStructure extends BaseStructure {
   id: number
+  toString: () => string
 }
 
 export abstract class FilterableArgumentType<T> {

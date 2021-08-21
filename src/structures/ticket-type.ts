@@ -1,6 +1,5 @@
-import type { Client, Guild, GuildEmoji } from 'discord.js'
+import type { Client, Guild, GuildEmoji, Message } from 'discord.js'
 import BaseStructure from './base'
-import type Panel from './panel'
 import Postable from './mixins/postable'
 import type { TicketType as TicketTypeEntity } from '../entities'
 
@@ -41,16 +40,16 @@ export default class TicketType extends Postable(BaseStructure) {
     return (this._emoji ?? this._emojiId) as string
   }
 
-  public async update (data: Partial<TicketTypeEntity>): Promise<this> {
-    return this.guild.ticketTypes.update(this, data)
+  public async update (data: Partial<TicketTypeEntity>): Promise<TicketType> {
+    return await this.guild.ticketTypes.update(this, data)
   }
 
   public async delete (): Promise<void> {
-    return this.guild.ticketTypes.delete(this)
+    return await this.guild.ticketTypes.delete(this)
   }
 
-  public async link (panel: Panel, emoji: GuildEmoji): Promise<this> {
-    return this.guild.ticketTypes.link(this, panel, emoji)
+  public async link (message: Message, emoji: GuildEmoji): Promise<TicketType> {
+    return await this.guild.ticketTypes.link(this, message, emoji)
   }
 
   public override toString (): string {

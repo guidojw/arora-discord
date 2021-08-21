@@ -1,7 +1,7 @@
-import type { Channel, Member, Ticket } from '../entities'
 import type { EntitySubscriberInterface, InsertEvent, Repository } from 'typeorm'
+import { Member, Ticket } from '../entities'
+import type { Channel } from '../entities'
 import { EventSubscriber } from 'typeorm'
-import { Member as MemberEntity } from '../entities'
 import { constants } from '../util'
 import { inject } from 'inversify'
 
@@ -12,13 +12,17 @@ export class TicketSubscriber implements EntitySubscriberInterface<Ticket> {
   @inject(TYPES.ChannelRepository) private readonly channelRepository!: Repository<Channel>
   @inject(TYPES.MemberRepository) private readonly memberRepository!: Repository<Member>
 
+  public listenTo (): Function {
+    return Ticket
+  }
+
   public async beforeInsert (event: InsertEvent<Ticket>): Promise<void> {
     const memberEntity = this.memberRepository.create({
       userId: event.queryRunner.data.userId,
       guildId: event.entity.guildId
     })
     const member = await this.memberRepository.findOne(memberEntity) ?? await this.memberRepository.save(memberEntity)
-    if (!(member instanceof MemberEntity)) {
+    if (!(member instanceof Member)) {
       return
     }
 

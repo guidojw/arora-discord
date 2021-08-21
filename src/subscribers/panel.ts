@@ -1,6 +1,7 @@
 import type { EntitySubscriberInterface, Repository, UpdateEvent } from 'typeorm'
-import type { Message, Panel } from '../entities'
 import { EventSubscriber } from 'typeorm'
+import type { Message } from '../entities'
+import { Panel } from '../entities'
 import { constants } from '../util'
 import { inject } from 'inversify'
 
@@ -9,6 +10,10 @@ const { TYPES } = constants
 @EventSubscriber()
 export class PanelSubscriber implements EntitySubscriberInterface<Panel> {
   @inject(TYPES.MessageRepository) private readonly messageRepository!: Repository<Message>
+
+  public listenTo (): Function {
+    return Panel
+  }
 
   public async beforeUpdate (event: UpdateEvent<Panel>): Promise<void> {
     if (event.updatedColumns.some(column => column.propertyName === 'messageId') && event.entity.messageId != null) {

@@ -1,6 +1,7 @@
-import type { Emoji, Message, TicketType } from '../entities'
+import type { Emoji, Message } from '../entities'
 import type { EntitySubscriberInterface, Repository, UpdateEvent } from 'typeorm'
 import { EventSubscriber } from 'typeorm'
+import { TicketType } from '../entities'
 import { constants } from '../util'
 import { inject } from 'inversify'
 
@@ -10,6 +11,10 @@ const { TYPES } = constants
 export class TicketTypeSubscriber implements EntitySubscriberInterface<TicketType> {
   @inject(TYPES.EmojiRepository) private readonly emojiRepository!: Repository<Emoji>
   @inject(TYPES.MessageRepository) private readonly messageRepository!: Repository<Message>
+
+  public listenTo (): Function {
+    return TicketType
+  }
 
   public async beforeUpdate (event: UpdateEvent<TicketType>): Promise<void> {
     if (event.updatedColumns.some(column => column.propertyName === 'messageId') && event.entity.messageId != null) {

@@ -1,26 +1,24 @@
-import {
+import type {
   APIMessage,
-  Constants,
-  DiscordAPIError,
   GuildMember,
-  Intents,
   Message,
   MessageOptions,
   PartialGuildMember,
   Presence,
   User
 } from 'discord.js'
-import {
-  CommandoClient,
+import type {
   // Commando doesn't export these. PR a fix and uncomment this + fix Client.bindEvent when merged.
   // CommandoClientEvents,
   CommandoClientOptions,
   CommandoMessage,
   Inhibition
 } from 'discord.js-commando'
+import { Constants, DiscordAPIError, Intents } from 'discord.js'
 import { inject, injectable } from 'inversify'
 import AroraProvider from './setting-provider'
 import type BaseHandler from './base'
+import { CommandoClient } from 'discord.js-commando'
 import { WebSocketManager } from './websocket'
 import applicationConfig from '../configs/application'
 import { constants } from '../util'
