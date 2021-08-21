@@ -11,6 +11,6 @@ export default class GroupStatusChangeEventHandler implements BaseHandler {
     group: CommandGroup,
     enabled: boolean
   ): Promise<void> {
-    await client.provider.onCommandStatusChange('group', guild, group, enabled)
+    await client.provider.onCommandStatusChange(guild, group, enabled)
   }
 }

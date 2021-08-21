@@ -31,10 +31,10 @@ export default class Guild {
   @Column('int', { name: 'roblox_group_id', nullable: true })
   public robloxGroupId?: number | null
 
-  @Column({ name: 'roblox_usernames_in_nicknames' })
+  @Column({ name: 'roblox_usernames_in_nicknames', default: false })
   public robloxUsernamesInNicknames!: boolean
 
-  @Column({ name: 'support_enabled' })
+  @Column({ name: 'support_enabled', default: false })
   public supportEnabled!: boolean
 
   @Column({

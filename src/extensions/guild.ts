@@ -5,6 +5,7 @@ import type {
   Guild,
   Message,
   MessageReaction,
+  Snowflake,
   TextChannel,
   User
 } from 'discord.js'
@@ -21,11 +22,29 @@ import {
 } from '../managers'
 import type { BaseStructure } from '../structures'
 import type { Guild as GuildEntity } from '../entities'
-import { Guild as GuildModel } from '../models'
+import type { Repository } from 'typeorm'
 import type { VerificationProvider } from '../util/constants'
 import applicationConfig from '../configs/application'
+import { constants } from '../util'
 import cron from 'node-cron'
 import cronConfig from '../configs/cron'
+import { inject } from 'inversify'
+
+export interface GuildUpdateOptions {
+  commandPrefix?: string | null
+  logsChannelId?: Snowflake | null
+  primaryColor?: number | null
+  ratingsChannelId?: Snowflake | null
+  robloxGroupId?: number | null
+  robloxUsernamesInNicknames?: boolean
+  suggestionsChannelId?: Snowflake | null
+  supportEnabled?: boolean
+  ticketArchivesChannelId?: Snowflake | null
+  ticketsCategoryId?: Snowflake | null
+  verificationPreference?: VerificationProvider
+}
+
+const { TYPES } = constants
 
 declare module 'discord.js' {
   interface Guild {
@@ -65,13 +84,15 @@ declare module 'discord.js' {
       content: string,
       options?: { color?: ColorResolvable, footer?: string }
     ) => Promise<Message | null>
-    update: (data: Partial<GuildEntity>) => Promise<this>
+    update: (data: GuildUpdateOptions) => Promise<this>
   }
 }
 
 // @ts-expect-error
-const AroraGuild: Guild = Structures.extend('Guild', Guild => (
+const AroraGuild: Guild = Structures.extend('Guild', Guild => {
   class AroraGuild extends Guild implements Omit<BaseStructure, 'client'> {
+    @inject(TYPES.GuildRepository) private readonly guildRepository!: Repository<GuildEntity>
+
     public constructor (client: Client, data: object) {
       super(client, data)
 
@@ -260,28 +281,18 @@ const AroraGuild: Guild = Structures.extend('Guild', Guild => (
     }
 
     // @ts-expect-error
-    public override async update (data: Partial<GuildEntity>): Promise<this> {
-      const [, [newData]] = await GuildModel.update({
-        commandPrefix: data.commandPrefix,
-        logsChannelId: data.logsChannelId,
-        primaryColor: data.primaryColor,
-        ratingsChannelId: data.ratingsChannelId,
-        robloxGroupId: data.robloxGroupId,
-        robloxUsernamesInNicknames: data.robloxUsernamesInNicknames,
-        suggestionsChannelId: data.suggestionsChannelId,
-        supportEnabled: data.supportEnabled,
-        ticketArchivesChannelId: data.ticketArchivesChannelId,
-        ticketsCategoryId: data.ticketsCategoryId,
-        verificationPreference: data.verificationPreference?.toLowerCase()
-      }, {
-        where: { id: this.id },
-        returning: true
-      })
+    public override async update (data: GuildUpdateOptions): Promise<this> {
+      const newData = await this.guildRepository.save(this.guildRepository.create({
+        id: this.id,
+        ...data
+      }))
 
       this.setup(newData)
       return this
     }
   }
-))
+
+  return AroraGuild
+})
 
 export default AroraGuild
