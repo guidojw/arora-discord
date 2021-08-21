@@ -2,7 +2,7 @@ import type { ArgumentCollectorResult, CommandInfo, CommandoClient, CommandoMess
 import { Command } from 'discord.js-commando'
 import type { Message } from 'discord.js'
 
-interface AroraCommandInfo extends CommandInfo {
+interface AroraCommandInfo extends Omit<CommandInfo, 'memberName'> {
   requiresApi?: boolean
   requiresRobloxGroup?: boolean
   requiresSingleGuild?: boolean
