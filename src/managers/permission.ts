@@ -1,5 +1,5 @@
 import { Command, CommandGroup } from 'discord.js-commando'
-import type { PermissionUpdateOptions, RoleGroup } from '../structures'
+import type { PermissibleType, PermissionUpdateOptions } from '../structures'
 import { inject, injectable } from 'inversify'
 import BaseManager from './base'
 import type { CommandoClient } from 'discord.js-commando'
@@ -19,10 +19,10 @@ const { TYPES } = constants
 export default class PermissionManager extends BaseManager<Permission, PermissionResolvable> {
   @inject(TYPES.PermissionRepository) private readonly permissionRepository!: Repository<PermissionEntity>
 
-  public permissible: Role | RoleGroup
+  public permissible: PermissibleType
   public guild: Guild
 
-  public constructor (permissible: Role | RoleGroup, iterable?: Iterable<PermissionEntity>) {
+  public constructor (permissible: PermissibleType, iterable?: Iterable<PermissionEntity>) {
     // @ts-expect-error
     super(permissible.client, iterable, Permission)
 

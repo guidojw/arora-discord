@@ -2,6 +2,8 @@ import { ValidationArguments, ValidationOptions, registerDecorator } from 'class
 
 export type Constructor<T = {}> = new (...args: any[]) => T
 export type AbstractConstructor<T = {}> = abstract new (...args: any[]) => T
+export type AnyFunction<T = any> = (...input: any[]) => T
+export type Mixin<T extends AnyFunction> = InstanceType<ReturnType<T>>
 
 export function formatBytes (bytes: number, decimals = 2): string {
   if (bytes === 0) {

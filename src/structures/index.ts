@@ -1,3 +1,4 @@
+export * from './mixins'
 export { default as BaseStructure } from './base'
 export { default as ChannelGroup } from './channel-group'
 export * from './group'

@@ -1,7 +1,7 @@
+import { MessageEmbed, TextChannel } from 'discord.js'
 import type BaseHandler from '../base'
 import type Client from '../client'
 import type { CommandoMessage } from 'discord.js-commando'
-import { MessageEmbed } from 'discord.js'
 import { injectable } from 'inversify'
 import { stripIndents } from 'common-tags'
 
@@ -22,7 +22,7 @@ export default class MessageEventHandler implements BaseHandler {
         const name = message.content.slice(guild.commandPrefix.length)
         const tag = guild.tags.resolve(name)
 
-        if (typeof tag !== 'undefined') {
+        if (tag !== null) {
           await message.reply(tag.content, tag.content instanceof MessageEmbed
             ? {}
             : { allowedMentions: { users: [message.author.id] } })
@@ -31,19 +31,24 @@ export default class MessageEventHandler implements BaseHandler {
     }
 
     const photoContestChannelsGroup = guild.groups.resolve('photoContestChannels')
-    if (photoContestChannelsGroup?.channels?.cache.has(message.channel.id) === true) {
+    // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
+    if (photoContestChannelsGroup !== null && photoContestChannelsGroup.isChannelGroup() &&
+      photoContestChannelsGroup.channels.cache.has(message.channel.id)) {
       if (message.attachments.size > 0 || message.embeds.length > 0) {
         await message.react('👍')
       }
     }
 
     const noTextChannelsGroup = guild.groups.resolve('noTextChannels')
-    if (noTextChannelsGroup?.channels?.cache.has(message.channel.id) === true) {
+    // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
+    if (noTextChannelsGroup !== null && noTextChannelsGroup.isChannelGroup() &&
+      noTextChannelsGroup.channels.cache.has(message.channel.id)) {
       if (message.attachments.size === 0 && message.embeds.length === 0) {
         const canTalkInNoTextChannelsGroup = guild.groups.resolve('canTalkInNoTextChannels')
-        if (message.member?.roles.cache.some(role => (
-          canTalkInNoTextChannelsGroup?.roles?.cache.has(role.id)
-        )) === false) {
+        // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
+        if (canTalkInNoTextChannelsGroup !== null && canTalkInNoTextChannelsGroup.isRoleGroup() &&
+          message.member?.roles.cache.some(role => canTalkInNoTextChannelsGroup.roles.cache.has(role.id)) === false
+        ) {
           await Promise.all([
             message.delete(),
             message.guild.log(
@@ -58,6 +63,8 @@ export default class MessageEventHandler implements BaseHandler {
       }
     }
 
-    await guild.tickets.resolve(message.channel)?.onMessage(message)
+    if (message.channel instanceof TextChannel) {
+      await guild.tickets.resolve(message.channel)?.onMessage(message)
+    }
   }
 }

@@ -11,6 +11,7 @@ const { TYPES } = constants
 
 declare module 'discord.js-commando' {
   interface SettingProvider {
+    setupGuild: (guildId: Snowflake) => Promise<void>
     onCommandPrefixChange: (guild: CommandoGuild | null, prefix: string | null) => Promise<void>
     onCommandStatusChange: (
       guild: CommandoGuild | null,
@@ -46,25 +47,8 @@ export default class AroraProvider extends SettingProvider {
     await this.setupGuild('0') // global settings
   }
 
-  private async setupCommand (command: Command, settings: CommandEntity[]): Promise<void> {
-    const commandSettings = settings.find(cmd => cmd.type === CommandType.Command && cmd.name === command.name) ??
-      await this.commandRepository.save(this.commandRepository.create({
-        name: command.name,
-        type: CommandType.Command
-      }))
-    command.aroraId = commandSettings.id
-  }
-
-  private async setupGroup (group: CommandGroup, settings: CommandEntity[]): Promise<void> {
-    const groupSettings = settings.find(grp => grp.type === CommandType.Group && grp.name === group.id) ??
-      await this.commandRepository.save(this.commandRepository.create({
-        name: group.id,
-        type: CommandType.Group
-      }))
-    group.aroraId = groupSettings.id
-  }
-
-  private async setupGuild (guildId: Snowflake): Promise<void> {
+  // @ts-expect-error
+  public override async setupGuild (guildId: Snowflake): Promise<void> {
     const guild = this.client.guilds.resolve(guildId) as CommandoGuild | null
     const data = await this.guildRepository.findOne(
       guildId,
@@ -122,6 +106,24 @@ export default class AroraProvider extends SettingProvider {
     if (guild !== null) {
       await guild.init()
     }
+  }
+
+  private async setupCommand (command: Command, settings: CommandEntity[]): Promise<void> {
+    const commandSettings = settings.find(cmd => cmd.type === CommandType.Command && cmd.name === command.name) ??
+      await this.commandRepository.save(this.commandRepository.create({
+        name: command.name,
+        type: CommandType.Command
+      }))
+    command.aroraId = commandSettings.id
+  }
+
+  private async setupGroup (group: CommandGroup, settings: CommandEntity[]): Promise<void> {
+    const groupSettings = settings.find(grp => grp.type === CommandType.Group && grp.name === group.id) ??
+      await this.commandRepository.save(this.commandRepository.create({
+        name: group.id,
+        type: CommandType.Group
+      }))
+    group.aroraId = groupSettings.id
   }
 
   private setupGuildCommand (guild: CommandoGuild | null, command: Command, settings: GuildCommandEntity[]): void {
@@ -182,7 +184,7 @@ export default class AroraProvider extends SettingProvider {
     enabled: boolean
   ): Promise<void> {
     // @ts-expect-error
-    const guildId = SettingProvider.getGuildID(guild)
+    const guildId = AroraProvider.getGuildID(guild)
     await this.guildCommandRepository.save(this.guildCommandRepository.create({
       commandId: commandOrGroup.aroraId,
       guildId: guildId !== 'global' ? guildId : '0',

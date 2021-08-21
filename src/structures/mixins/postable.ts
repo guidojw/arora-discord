@@ -1,15 +1,17 @@
-import type { AbstractConstructor, Constructor } from '../../util/util'
+import type { AbstractConstructor, Constructor, Mixin } from '../../util/util'
 import type { Base as DiscordBaseStructure, Guild, Message, TextChannel } from 'discord.js'
 import type BaseStructure from '../base'
 import { Constants } from 'discord.js'
 
 const { PartialTypes } = Constants
 
+export type PostableType = Mixin<typeof Postable>
+
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export default function Postable<T extends AbstractConstructor<BaseStructure> | Constructor<DiscordBaseStructure>> (
-  Base: T
+  base: T
 ) {
-  abstract class Postable extends Base {
+  abstract class Postable extends base {
     public abstract readonly guild: Guild
     public abstract messageId: string | null
     public abstract channelId: string | null

@@ -16,13 +16,15 @@ export default class GuildMemberAddEventHandler implements BaseHandler {
 
     const guild = member.guild
     const welcomeChannelsGroup = guild.groups.resolve('welcomeChannels')
-    if (welcomeChannelsGroup?.channels?.cache.size > 0) {
+    // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
+    if (welcomeChannelsGroup !== null && welcomeChannelsGroup.isChannelGroup() &&
+      welcomeChannelsGroup.channels.cache.size > 0) {
       const embed = new MessageEmbed()
         .setTitle(`Hey ${member.user.tag},`)
         .setDescription(`You're the **${getOrdinalNum(guild.memberCount)}** member on **${guild.name}**!`)
         .setThumbnail(member.user.displayAvatarURL())
         .setColor(guild.primaryColor ?? 0xffffff)
-      await welcomeChannelsGroup.channels.cache.map(channel => channel.send(embed))
+      await Promise.all(welcomeChannelsGroup.channels.cache.map(async channel => await channel.send(embed)))
     }
 
     const persistentRoles = await member.fetchPersistentRoles()
