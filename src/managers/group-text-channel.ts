@@ -11,8 +11,8 @@ const { TYPES } = constants
 export default class GroupTextChannelManager {
   @inject(TYPES.GroupRepository) private readonly groupRepository!: Repository<GroupEntity>
 
-  private readonly group: ChannelGroup
-  private readonly guild: Guild
+  public readonly group: ChannelGroup
+  public readonly guild: Guild
 
   public constructor (group: ChannelGroup) {
     this.group = group
@@ -39,7 +39,7 @@ export default class GroupTextChannelManager {
     ) as GroupEntity & { channels: ChannelEntity[] }
     group.channels.push({ id: channel.id, guildId: this.guild.id })
     await this.groupRepository.save(group)
-    this.group._channels.push(channel.id)
+    this.group.setup(group)
 
     return this.group
   }
@@ -59,7 +59,7 @@ export default class GroupTextChannelManager {
     ) as GroupEntity & { channels: ChannelEntity[] }
     group.channels = group.channels.filter(channel => channel.id !== id)
     await this.groupRepository.save(group)
-    this.group._channels = this.group._channels.filter(channelId => channelId !== id)
+    this.group.setup(group)
 
     return this.group
   }

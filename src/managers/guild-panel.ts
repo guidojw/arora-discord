@@ -17,7 +17,7 @@ const { TYPES } = constants
 export default class GuildPanelManager extends BaseManager<Panel, PanelResolvable> {
   @inject(TYPES.PanelRepository) private readonly panelRepository!: Repository<PanelEntity>
 
-  private readonly guild: Guild
+  public readonly guild: Guild
 
   public constructor (guild: Guild, iterable?: Iterable<PanelEntity>) {
     // @ts-expect-error

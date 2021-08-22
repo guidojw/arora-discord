@@ -25,7 +25,7 @@ export default class RoleGroup extends Permissible(Group) {
     }
 
     if (typeof data.roles !== 'undefined') {
-      this._roles = data.roles.map((role: { id: string }) => role.id)
+      this._roles = data.roles.map(role => role.id)
     }
   }
 

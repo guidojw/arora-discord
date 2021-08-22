@@ -15,7 +15,7 @@ const { TYPES } = constants
 export default class GuildRoleMessageManager extends BaseManager<RoleMessage, RoleMessageResolvable> {
   @inject(TYPES.RoleMessageRepository) private readonly roleMessageRepository!: Repository<RoleMessageEntity>
 
-  private readonly guild: Guild
+  public readonly guild: Guild
 
   public constructor (guild: Guild, iterable?: Iterable<RoleMessageEntity>) {
     // @ts-expect-error

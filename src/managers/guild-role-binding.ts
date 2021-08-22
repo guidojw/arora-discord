@@ -13,7 +13,7 @@ const { TYPES } = constants
 export default class GuildRoleBindingManager extends BaseManager<RoleBinding, RoleBindingResolvable> {
   @inject(TYPES.RoleBindingRepository) private readonly roleBindingRepository!: Repository<RoleBindingEntity>
 
-  private readonly guild: Guild
+  public readonly guild: Guild
 
   public constructor (guild: Guild, iterable?: Iterable<RoleBindingEntity>) {
     // @ts-expect-error
@@ -74,6 +74,7 @@ export default class GuildRoleBindingManager extends BaseManager<RoleBinding, Ro
     this.cache.delete(id)
   }
 
+  /* eslint-disable max-len */
   // async fetch () { // TODO: remove
   //   const data = await Guild.scope('withRoleBindings').findOne({ where: { id: this.guild.id } })
   //   this.cache.clear()
@@ -82,4 +83,5 @@ export default class GuildRoleBindingManager extends BaseManager<RoleBinding, Ro
   //   }
   //   return this.cache
   // }
+  /* eslint-enable max-len */
 }

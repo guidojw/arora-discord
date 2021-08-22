@@ -168,8 +168,10 @@ const AroraGuild: Guild = Structures.extend('Guild', Guild => {
     }
 
     public _patch (data: any): void {
-      // Below patch was done so that Discord.js' Guild._patch method doesn't clear the roles manager which makes it
-      // lose all data. When channels ever get data that needs to be cached, this has to be done on that manager too.
+      // Below patch was done so that Discord.js' Guild._patch method doesn't
+      // clear the roles manager which makes it lose all data. When channels
+      // ever get data that needs to be cached, this has to be done on that
+      // manager too.
       const roles: any[] = data.roles
       delete data.roles
 

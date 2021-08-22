@@ -54,9 +54,9 @@ export default class MessageEventHandler implements BaseHandler {
             message.guild.log(
               message.author,
               stripIndents`
-            **Message sent by ${message.author} deleted in ${message.channel}**
-            ${message.content}
-            `
+              **Message sent by ${message.author} deleted in ${message.channel}**
+              ${message.content}
+              `
             )
           ])
         }

@@ -35,9 +35,11 @@ export default class TicketType {
   @JoinColumn({ name: 'guild_id' })
   public guild?: Guild
 
+  /* eslint-disable max-len */
   // @ManyToOne(() => Emoji, emoji => emoji.ticketTypes, { onDelete: 'SET NULL' })
   // @JoinColumn({ name: 'emoji_id' })
   // public emoji?: Emoji | null
+  /* eslint-enable max-len */
 
   @OneToOne(() => Message, message => message.ticketType, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'message_id' })

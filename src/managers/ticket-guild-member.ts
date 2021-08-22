@@ -13,9 +13,9 @@ export default class TicketGuildMemberManager {
   @inject(TYPES.MemberRepository) private readonly memberRepository!: Repository<MemberEntity>
   @inject(TYPES.TicketRepository) private readonly ticketRepository!: Repository<TicketEntity>
 
-  private readonly ticket: Ticket
-  private readonly client: Client
-  private readonly guild: Guild
+  public readonly ticket: Ticket
+  public readonly client: Client
+  public readonly guild: Guild
 
   public constructor (ticket: Ticket) {
     this.ticket = ticket

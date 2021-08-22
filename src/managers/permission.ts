@@ -18,8 +18,8 @@ const { TYPES } = constants
 export default class PermissionManager extends BaseManager<Permission, PermissionResolvable> {
   @inject(TYPES.PermissionRepository) private readonly permissionRepository!: Repository<PermissionEntity>
 
-  private readonly permissible: PermissibleType
-  private readonly guild: Guild
+  public readonly permissible: PermissibleType
+  public readonly guild: Guild
 
   public constructor (permissible: PermissibleType, iterable?: Iterable<PermissionEntity>) {
     // @ts-expect-error

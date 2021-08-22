@@ -49,7 +49,7 @@ export default async function init (): Promise<Container> {
     bind<BaseHandler>(TYPES.Handler).to(eventHandlers.CommandRunEventHandler)
       .whenTargetTagged('eventHandler', 'commandRun')
     bind<BaseHandler>(TYPES.Handler).to(eventHandlers.CommandStatusChangeEventHandler)
-      .whenTargetTagged('eventHandler', 'commandStatusChane')
+      .whenTargetTagged('eventHandler', 'commandStatusChange')
     bind<BaseHandler>(TYPES.Handler).to(eventHandlers.EmojiDeleteEventHandler)
       .whenTargetTagged('eventHandler', 'emojiDelete')
     bind<BaseHandler>(TYPES.Handler).to(eventHandlers.GroupStatusChangeEventHandler)

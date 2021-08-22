@@ -10,8 +10,8 @@ const { TYPES } = constants
 export default class GroupRoleManager {
   @inject(TYPES.GroupRepository) private readonly groupRepository!: Repository<GroupEntity>
 
-  private readonly group: RoleGroup
-  private readonly guild: Guild
+  public readonly group: RoleGroup
+  public readonly guild: Guild
 
   public constructor (group: RoleGroup) {
     this.group = group
@@ -37,7 +37,7 @@ export default class GroupRoleManager {
     ) as GroupEntity & { roles: RoleEntity[] }
     group.roles.push({ id: role.id, guildId: this.guild.id })
     await this.groupRepository.save(group)
-    this.group._roles.push(role.id)
+    this.group.setup(group)
 
     return this.group
   }
@@ -57,7 +57,7 @@ export default class GroupRoleManager {
     ) as GroupEntity & { roles: RoleEntity[] }
     group.roles = group.roles.filter(role => role.id !== id)
     await this.groupRepository.save(group)
-    this.group._roles = this.group._roles.filter(roleId => roleId !== id)
+    this.group.setup(group)
 
     return this.group
   }

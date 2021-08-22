@@ -2,8 +2,8 @@ import type { Collection, Guild, Role } from 'discord.js'
 import type { RoleGroup } from '../structures'
 
 export default class RoleGroupManager {
-  private readonly role: Role
-  private readonly guild: Guild
+  public readonly role: Role
+  public readonly guild: Guild
 
   public constructor (role: Role) {
     this.role = role

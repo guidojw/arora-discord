@@ -16,7 +16,7 @@ const { TYPES } = constants
 export default class GuildTicketTypeManager extends BaseManager<TicketType, TicketTypeResolvable> {
   @inject(TYPES.TicketTypeRepository) private readonly ticketTypeRepository!: Repository<TicketTypeEntity>
 
-  private readonly guild: Guild
+  public readonly guild: Guild
 
   public constructor (guild: Guild, iterable?: Iterable<TicketType>) {
     // @ts-expect-error

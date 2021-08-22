@@ -15,8 +15,8 @@ export default class TagTagNameManager extends DiscordBaseManager<string, TagNam
   @inject(TYPES.TagRepository) private readonly tagRepository!: Repository<TagEntity>
   @inject(TYPES.TagNameRepository) private readonly tagNameRepository!: Repository<TagNameEntity>
 
-  private readonly tag: Tag
-  private readonly guild: Guild
+  public readonly tag: Tag
+  public readonly guild: Guild
 
   public constructor (tag: Tag, iterable?: Iterable<TagNameEntity>) {
     // @ts-expect-error

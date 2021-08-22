@@ -18,7 +18,7 @@ export default class RankChangePacketHandler implements BaseHandler {
     for (const guild of client.guilds.cache.values()) {
       if (guild.robloxGroupId === groupId) {
         // const roleBindings = await guild.roleBindings.fetch() // TODO: remove
-        const roleBindings = await guild.roleBindings.cache
+        const roleBindings = guild.roleBindings.cache
         if (roleBindings.size > 0) {
           const members = await guild.members.fetch(username) as unknown as Collection<string, GuildMember>
           if (members.size > 0) {

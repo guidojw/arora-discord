@@ -20,8 +20,8 @@ const SUBMISSION_TIME = 30 * 60 * 1000
 export default class GuildTicketManager extends BaseManager<Ticket, TicketResolvable> {
   @inject(TYPES.TicketRepository) private readonly ticketRepository!: Repository<TicketEntity>
 
-  private readonly guild: Guild
-  private readonly debounces: Map<string, true>
+  public readonly guild: Guild
+  public readonly debounces: Map<string, true>
 
   public constructor (guild: Guild, iterable?: Iterable<TicketEntity>) {
     // @ts-expect-error

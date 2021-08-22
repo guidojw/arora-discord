@@ -15,7 +15,7 @@ const { TYPES } = constants
 export default class GuildGroupManager extends BaseManager<Group, GroupResolvable> {
   @inject(TYPES.GroupRepository) private readonly groupRepository!: Repository<GroupEntity>
 
-  private readonly guild: Guild
+  public readonly guild: Guild
 
   public constructor (guild: Guild, iterable?: Iterable<GroupEntity>) {
     // @ts-expect-error

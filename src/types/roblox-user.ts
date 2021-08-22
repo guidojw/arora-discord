@@ -17,8 +17,9 @@ export default class RobloxUserArgumentType extends ArgumentType {
   public async validate (val: string, msg: CommandoMessage, arg: Argument): Promise<boolean> {
     const key = `${msg.guild.id}_${val}`
 
-    // val is undefined when the argument's default is set to "self" and no argument input is given (see isEmpty).
-    // This patch was done in order to allow validation of the default value; the message member's Roblox user.
+    // val is undefined when the argument's default is set to "self" and no
+    // argument input is given (see isEmpty). This patch was done in order to
+    // allow validation of the default value; the message author's Roblox user.
     if (typeof val === 'undefined') {
       const verificationData = await (msg.member as GuildMember).fetchVerificationData()
       if (verificationData !== null) {

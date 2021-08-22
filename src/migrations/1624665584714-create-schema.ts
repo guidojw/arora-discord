@@ -7,9 +7,10 @@ export class createSchema1624665584714 implements MigrationInterface {
 
     const sequelizeMigrationTable = await queryRunner.getTable('sequelize_meta')
     if (typeof sequelizeMigrationTable !== 'undefined') {
-      // The schema is already up-to-date because Sequelize was used before, so delete the Sequelize migrations
-      // table and skip all other migrations.
-      // If the database is migrated from nothing, this if statement will not run.
+      // The schema is already up-to-date because Sequelize was used before,
+      // so delete the Sequelize migration table and skip all other migrations.
+      // If the database is migrated from nothing, this if statement will not
+      // run.
       return await queryRunner.dropTable('sequelize_meta')
     }
 

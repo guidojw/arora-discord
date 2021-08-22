@@ -8,7 +8,8 @@ import type {
   User
 } from 'discord.js'
 import type {
-  // Commando doesn't export these. PR a fix and uncomment this + fix Client.bindEvent when merged.
+  // Commando doesn't export these. PR a fix and uncomment this + fix
+  // Client.bindEvent when merged.
   // CommandoClientEvents,
   CommandoClientOptions,
   CommandoMessage,
@@ -29,7 +30,8 @@ const { TYPES } = constants
 
 const ACTIVITY_CAROUSEL_INTERVAL = 60 * 1000
 
-require('../extensions') // Extend Discord.js structures before the client's collections get instantiated.
+// Extend Discord.js structures before the client collections get instantiated.
+require('../extensions')
 
 declare module 'discord.js' {
   interface Client {
@@ -222,7 +224,8 @@ export default class AroraClient extends CommandoClient {
   public override async deleteMessage (message: Message): Promise<void> {
     return await failSilently(message.delete.bind(message), [10008, ...(message.channel.type === 'dm' ? [50003] : [])])
     // 10008: Unknown message, the message was probably already deleted.
-    // 50003: Cannot execute action on a DM channel, the bot cannot delete user messages in DMs.
+    // 50003: Cannot execute action on a DM channel, the bot cannot delete user
+    // messages in DMs.
   }
 
   public override async login (token = this.token): Promise<string> {

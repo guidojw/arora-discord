@@ -36,9 +36,11 @@ export default class RoleMessage {
   @JoinColumn({ name: 'guild_id' })
   public guild?: Guild
 
+  /* eslint-disable max-len */
   // @ManyToOne(() => Emoji, emoji => emoji.roleMessages, { onDelete: 'CASCADE' })
   // @JoinColumn({ name: 'emoji_id' })
   // public emoji?: Emoji | null
+  /* eslint-enable max-len */
 
   @ManyToOne(() => Role, role => role.roleMessages, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'role_id' })

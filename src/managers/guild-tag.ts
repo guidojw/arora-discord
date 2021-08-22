@@ -18,7 +18,7 @@ const { TYPES } = constants
 export default class GuildTagManager extends BaseManager<Tag, TagResolvable> {
   @inject(TYPES.TagRepository) private readonly tagRepository!: Repository<TagEntity>
 
-  private readonly guild: Guild
+  public readonly guild: Guild
 
   public constructor (guild: Guild, iterable?: Iterable<TagEntity>) {
     // @ts-expect-error
@@ -50,8 +50,9 @@ export default class GuildTagManager extends BaseManager<Tag, TagResolvable> {
       }
       content = JSON.stringify(embed.toJSON())
     } else {
-      // Once a user fetches a tag, the bot replies to them with the tag content.
-      // Tagging a user takes up 23 characters: 21 for tag format (<@snowflake>) + 2 for ", ".
+      // Once a user fetches a tag, the bot replies to them with the tag
+      // content. Tagging a user takes up 23 characters: 21 for tag format
+      // (<@snowflake>) + 2 for ", ".
       if (content.length + 23 > 2000) {
         throw new Error('Tag is too long.')
       }

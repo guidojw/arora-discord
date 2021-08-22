@@ -40,7 +40,7 @@ export default class StatusCommand extends BaseCommand {
       const status = (await applicationAdapter('GET', 'v1/status')).data
       const endTime = Date.now()
       embed
-        .addField('API Latency', (endTime - startTime) + 'ms', true)
+        .addField('API Latency', `${endTime - startTime}ms`, true)
         .addField('API Status', status.state, true)
     }
     return await message.replyEmbed(embed)

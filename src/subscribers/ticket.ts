@@ -22,13 +22,12 @@ export class TicketSubscriber implements EntitySubscriberInterface<Ticket> {
       guildId: event.entity.guildId
     })
     const member = await this.memberRepository.findOne(memberEntity) ?? await this.memberRepository.save(memberEntity)
-    if (!(member instanceof Member)) {
-      return
-    }
 
-    // Map to own IDs instead of Discord's snowflake IDs. This is necessary because the id is the primary key and
-    // since Discord member IDs are Discord user IDs and thus if a user is in two servers, the members table would
-    // have two rows with the same ID row (which of course it can't because the ID is the primary key).
+    // Map to own IDs instead of Discord's snowflake IDs. This is necessary
+    // because the id is the primary key and since Discord member IDs are
+    // Discord user IDs and thus if a user is in two servers, the members table
+    // would have two rows with the same ID row (which of course it can't
+    // because the ID is the primary key).
     event.entity.authorId = member.id
 
     const channelEntity = this.channelRepository.create({ id: event.entity.channelId, guildId: event.entity.guildId })
