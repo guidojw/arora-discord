@@ -31,9 +31,9 @@ export default class CommandRunEventHandler implements BaseHandler {
     await guild.log(
       message.author,
       stripIndents`
-    ${message.author} **used** \`${command.name}\` **command in** ${message.channel} ${message.channel.type !== 'dm' ? `[Jump to Message](${message.url})` : ''}
-    ${message.content}
-    `
+      ${message.author} **used** \`${command.name}\` **command in** ${message.channel} ${message.channel.type !== 'dm' ? `[Jump to Message](${message.url})` : ''}
+      ${message.content}
+      `
     )
   }
 }

@@ -1,7 +1,6 @@
 import { inject, injectable } from 'inversify'
 import type BaseHandler from '../base'
 import type Client from '../client'
-import type { ErrorEvent } from 'ws'
 import WebSocket from 'ws'
 import { constants } from '../../util'
 
@@ -45,7 +44,6 @@ export default class WebSocketManager {
     ws.on('open', this.onOpen.bind(this))
     ws.on('message', this.onMessage.bind(this))
     ws.on('ping', this.onPing.bind(this))
-    ws.on('error', this.onError.bind(this))
     ws.on('close', this.onClose.bind(this))
   }
 
@@ -64,11 +62,6 @@ export default class WebSocketManager {
       this.client.clearTimeout(this.pingTimeout)
     }
     this.client.setTimeout(this.connect.bind(this), RECONNECT_TIMEOUT)
-  }
-
-  private onError (error: ErrorEvent): void {
-    // @ts-expect-error
-    this.client.emit('webSocketError', error)
   }
 
   private onPing (): void {
