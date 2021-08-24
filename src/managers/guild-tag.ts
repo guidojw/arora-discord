@@ -1,6 +1,6 @@
-import type { Guild, MessageEmbedOptions } from 'discord.js'
 import BaseManager from './base'
 import type { CommandoClient } from 'discord.js-commando'
+import type { Guild } from 'discord.js'
 import { MessageEmbed } from 'discord.js'
 import type { Repository } from 'typeorm'
 import { Tag } from '../structures'
@@ -31,7 +31,7 @@ export default class GuildTagManager extends BaseManager<Tag, TagResolvable> {
     return super.add(data, cache, { id: data.id, extras: [this.guild] })
   }
 
-  public async create (name: string, content: string | MessageEmbedOptions): Promise<Tag> {
+  public async create (name: string, content: string | object): Promise<Tag> {
     name = name.toLowerCase()
     if (this.resolve(name) !== null) {
       throw new Error('A tag with that name already exists.')

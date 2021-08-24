@@ -1,9 +1,9 @@
-'use strict'
+import type { CommandoClient, CommandoMessage } from 'discord.js-commando'
+import type { GuildEmoji, Message, Role } from 'discord.js'
+import BaseCommand from '../base'
 
-const BaseCommand = require('../base')
-
-class CreateRoleMessageCommand extends BaseCommand {
-  constructor (client) {
+export default class CreateRoleMessageCommand extends BaseCommand {
+  public constructor (client: CommandoClient) {
     super(client, {
       group: 'settings',
       name: 'createrolemessage',
@@ -26,13 +26,18 @@ class CreateRoleMessageCommand extends BaseCommand {
     })
   }
 
-  async run (message, { role, message: newMessage, emoji }) {
+  public async run (
+    message: CommandoMessage,
+    { role, message: newMessage, emoji }: {
+      role: Role
+      message: Message
+      emoji: GuildEmoji | string
+    }
+  ): Promise<Message | Message[] | null> {
     const roleMessage = await message.guild.roleMessages.create({ role, message: newMessage, emoji })
 
-    return message.reply(`Successfully bound role ${roleMessage.role} to emoji ${roleMessage.emoji} on message \`${roleMessage.messageId}\`.`, {
+    return await message.reply(`Successfully bound role ${roleMessage.role?.toString() ?? 'Unknown'} to emoji ${roleMessage.emoji?.toString() ?? 'Unknown'} on message \`${roleMessage.messageId ?? 'unknown'}\`.`, {
       allowedMentions: { users: [message.author.id] }
     })
   }
 }
-
-module.exports = CreateRoleMessageCommand

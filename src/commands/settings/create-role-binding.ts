@@ -1,11 +1,12 @@
-'use strict'
+import type { CommandoClient, CommandoMessage } from 'discord.js-commando'
+import type { Message, Role } from 'discord.js'
+import BaseCommand from '../base'
+import { argumentUtil } from '../../util'
 
-const BaseCommand = require('../base')
+const { validateNoneOrType, parseNoneOrType } = argumentUtil
 
-const { validateNoneOrType, parseNoneOrType } = require('../../util').argumentUtil
-
-class CreateRoleBindingCommand extends BaseCommand {
-  constructor (client) {
+export default class CreateRoleBindingCommand extends BaseCommand {
+  public constructor (client: CommandoClient) {
     super(client, {
       group: 'settings',
       name: 'createrolebinding',
@@ -35,17 +36,22 @@ class CreateRoleBindingCommand extends BaseCommand {
     })
   }
 
-  async run (message, { role, min, max }) {
+  public async run (
+    message: CommandoMessage,
+    { role, min, max }: {
+      role: Role
+      min: number
+      max?: number
+    }
+  ): Promise<Message | Message[] | null> {
     const roleBinding = await message.guild.roleBindings.create({ role, min, max })
 
-    return message.reply(`Successfully bound group \`${roleBinding.robloxGroupId}\` rank \`${getRangeString(roleBinding.min, roleBinding.max)}\` to role ${roleBinding.role}.`, {
+    return await message.reply(`Successfully bound group \`${roleBinding.robloxGroupId}\` rank \`${getRangeString(roleBinding.min, roleBinding.max)}\` to role ${roleBinding.role?.toString() ?? 'Unknown'}.`, {
       allowedMentions: { users: [message.author.id] }
     })
   }
 }
 
-function getRangeString (min, max) {
-  return `${max ? '[' : ''}${min}${max ? `, ${max}]` : ''}`
+function getRangeString (min: number, max: number | null): string {
+  return `${max !== null ? '[' : ''}${min}${max !== null ? `, ${max}]` : ''}`
 }
-
-module.exports = CreateRoleBindingCommand

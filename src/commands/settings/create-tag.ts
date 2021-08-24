@@ -1,11 +1,12 @@
-'use strict'
+import type { CommandoClient, CommandoMessage } from 'discord.js-commando'
+import BaseCommand from '../base'
+import type { Message } from 'discord.js'
+import { argumentUtil } from '../../util'
 
-const BaseCommand = require('../base')
+const { validators, isObject, noNumber, typeOf } = argumentUtil
 
-const { validators, isObject, noNumber, typeOf } = require('../../util').argumentUtil
-
-class CreateTagCommand extends BaseCommand {
-  constructor (client) {
+export default class CreateTagCommand extends BaseCommand {
+  public constructor (client: CommandoClient) {
     super(client, {
       group: 'settings',
       name: 'createtag',
@@ -28,11 +29,15 @@ class CreateTagCommand extends BaseCommand {
     })
   }
 
-  async run (message, { name, content }) {
+  public async run (
+    message: CommandoMessage,
+    { name, content }: {
+      name: string
+      content: string | object
+    }
+  ): Promise<Message | Message[] | null> {
     const tag = await message.guild.tags.create(name, content)
 
-    return message.reply(`Successfully created tag \`${tag.names.cache.first()?.name ?? 'Unknown'}\`.`)
+    return await message.reply(`Successfully created tag \`${tag.names.cache.first()?.name ?? 'Unknown'}\`.`)
   }
 }
-
-module.exports = CreateTagCommand

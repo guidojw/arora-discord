@@ -1,11 +1,12 @@
-'use strict'
+import type { CommandoClient, CommandoMessage } from 'discord.js-commando'
+import BaseCommand from '../base'
+import type { Message } from 'discord.js'
+import { argumentUtil } from '../../util'
 
-const BaseCommand = require('../base')
+const { validators, isObject, noNumber, noSpaces } = argumentUtil
 
-const { validators, isObject, noNumber, noSpaces } = require('../../util').argumentUtil
-
-class CreatePanelCommand extends BaseCommand {
-  constructor (client) {
+export default class CreatePanelCommand extends BaseCommand {
+  public constructor (client: CommandoClient) {
     super(client, {
       group: 'settings',
       name: 'createpanel',
@@ -29,11 +30,15 @@ class CreatePanelCommand extends BaseCommand {
     })
   }
 
-  async run (message, { name, content }) {
+  public async run (
+    message: CommandoMessage,
+    { name, content }: {
+      name: string
+      content: object
+    }
+  ): Promise<Message | Message[] | null> {
     const panel = await message.guild.panels.create(name, content)
 
-    return message.reply(`Successfully created panel \`${panel.name}\`.`)
+    return await message.reply(`Successfully created panel \`${panel.name}\`.`)
   }
 }
-
-module.exports = CreatePanelCommand

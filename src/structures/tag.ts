@@ -1,10 +1,10 @@
-import type { Client, Guild, MessageEmbedOptions } from 'discord.js'
+import type { Client, Guild } from 'discord.js'
 import BaseStructure from './base'
 import { MessageEmbed } from 'discord.js'
 import type { Tag as TagEntity } from '../entities'
 import TagTagNameManager from '../managers/tag-tag-name'
 
-export interface TagUpdateOptions { content?: string | MessageEmbedOptions }
+export interface TagUpdateOptions { content?: string | object }
 
 export default class Tag extends BaseStructure {
   public readonly guild: Guild

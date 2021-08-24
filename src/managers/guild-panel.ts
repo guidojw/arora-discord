@@ -1,5 +1,5 @@
-import type { Guild, MessageEmbedOptions } from 'discord.js'
 import BaseManager from './base'
+import type { Guild } from 'discord.js'
 import { MessageEmbed } from 'discord.js'
 import { Panel } from '../structures'
 import type { Panel as PanelEntity } from '../entities'
@@ -30,7 +30,7 @@ export default class GuildPanelManager extends BaseManager<Panel, PanelResolvabl
     return super.add(data, cache, { id: data.id, extras: [this.guild] })
   }
 
-  public async create (name: string, content: MessageEmbedOptions): Promise<Panel> {
+  public async create (name: string, content: object): Promise<Panel> {
     if (this.resolve(name) !== null) {
       throw new Error('A panel with that name already exists.')
     }
