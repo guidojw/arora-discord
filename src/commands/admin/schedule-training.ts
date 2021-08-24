@@ -1,22 +1,16 @@
-'use strict'
+import type { CommandoClient, CommandoMessage } from 'discord.js-commando'
+import type { Guild, GuildMember, Message } from 'discord.js'
+import { argumentUtil, timeUtil } from '../../util'
+import BaseCommand from '../base'
+import { MessageEmbed } from 'discord.js'
+import { applicationAdapter } from '../../adapters'
+import { groupService } from '../../services'
 
-const BaseCommand = require('../base')
+const { validators, noChannels, noTags, noUrls, parseNoneOrType, validDate, validTime } = argumentUtil
+const { getDateInfo, getTimeInfo } = timeUtil
 
-const { MessageEmbed } = require('discord.js')
-const { applicationAdapter } = require('../../adapters')
-const { groupService } = require('../../services')
-const {
-  validators,
-  noChannels,
-  noTags, noUrls,
-  parseNoneOrType,
-  validDate,
-  validTime
-} = require('../../util').argumentUtil
-const { getDateInfo, getTimeInfo } = require('../../util').timeUtil
-
-class ScheduleTrainingCommand extends BaseCommand {
-  constructor (client) {
+export default class ScheduleTrainingCommand extends BaseCommand {
+  public constructor (client: CommandoClient) {
     super(client, {
       group: 'admin',
       name: 'scheduletraining',
@@ -32,7 +26,7 @@ class ScheduleTrainingCommand extends BaseCommand {
         key: 'type',
         type: 'string',
         prompt: 'What kind of training is this?',
-        parse: val => val.toLowerCase()
+        parse: (val: string) => val.toLowerCase()
       }, {
         key: 'date',
         type: 'string',
@@ -53,7 +47,15 @@ class ScheduleTrainingCommand extends BaseCommand {
     })
   }
 
-  async run (message, { type, date, time, notes }, guild) {
+  public async run (
+    message: CommandoMessage & { member: GuildMember, guild: Guild & { robloxGroupId: number } },
+    { type, date, time, notes }: {
+      type: string
+      date: string
+      time: string
+      notes?: string
+    }
+  ): Promise<Message | Message[] | null> {
     const dateInfo = getDateInfo(date)
     const timeInfo = getTimeInfo(time)
     const dateUnix = Math.floor(new Date(
@@ -65,16 +67,16 @@ class ScheduleTrainingCommand extends BaseCommand {
     ).getTime())
     const afterNow = dateUnix - Date.now() > 0
     if (!afterNow) {
-      return message.reply('Please give a date and time that are after now.')
+      return await message.reply('Please give a date and time that are after now.')
     }
     const trainingTypes = await groupService.getTrainingTypes(message.guild.robloxGroupId)
     const trainingType = trainingTypes.find(trainingType => trainingType.abbreviation.toLowerCase() === type)
-    if (!trainingType) {
-      return message.reply('Type not found.')
+    if (typeof trainingType === 'undefined') {
+      return await message.reply('Type not found.')
     }
-    const authorId = message.member.robloxId ?? (await message.member.fetchVerificationData()).robloxId
+    const authorId = message.member.robloxId ?? (await message.member.fetchVerificationData())?.robloxId
     if (typeof authorId === 'undefined') {
-      return message.reply('This command requires you to be verified with a verification provider.')
+      return await message.reply('This command requires you to be verified with a verification provider.')
     }
 
     const training = (await applicationAdapter('POST', `v1/groups/${message.guild.robloxGroupId}/trainings`, {
@@ -87,9 +89,7 @@ class ScheduleTrainingCommand extends BaseCommand {
     const embed = new MessageEmbed()
       .addField('Successfully scheduled', `**${trainingType.name}** training on **${date}** at **${time}**.`)
       .addField('Training ID', training.id.toString())
-      .setColor(message.guild.primaryColor)
-    return message.replyEmbed(embed)
+      .setColor(message.guild.primaryColor ?? 0xffffff)
+    return await message.replyEmbed(embed)
   }
 }
-
-module.exports = ScheduleTrainingCommand

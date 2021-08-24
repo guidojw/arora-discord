@@ -1,7 +1,7 @@
 import type { CommandoClient, CommandoMessage } from 'discord.js-commando'
+import type { Guild, Message } from 'discord.js'
 import BaseCommand from '../base'
 import type { GetGroupStatus } from '../../services/group'
-import type { Message } from 'discord.js'
 import { MessageEmbed } from 'discord.js'
 import { applicationAdapter } from '../../adapters'
 
@@ -17,8 +17,10 @@ export default class GetShoutCommand extends BaseCommand {
     })
   }
 
-  public async run (message: CommandoMessage): Promise<Message | Message[] | null> {
-    const shout: GetGroupStatus = (await applicationAdapter('GET', `v1/groups/${message.guild.robloxGroupId as number}/status`)).data
+  public async run (
+    message: CommandoMessage & { guild: Guild & { robloxGroupId: number } }
+  ): Promise<Message | Message[] | null> {
+    const shout: GetGroupStatus = (await applicationAdapter('GET', `v1/groups/${message.guild.robloxGroupId}/status`)).data
 
     if (shout.body !== '') {
       const embed = new MessageEmbed()

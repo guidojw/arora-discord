@@ -1,7 +1,7 @@
 import type { CommandoClient, CommandoMessage } from 'discord.js-commando'
+import type { Guild, Message } from 'discord.js'
 import { groupService, userService } from '../../services'
 import BaseCommand from '../base'
-import type { Message } from 'discord.js'
 import { MessageEmbed } from 'discord.js'
 import { Training } from '../../services/group'
 import { applicationAdapter } from '../../adapters'
@@ -30,11 +30,11 @@ export default class TrainingsCommand extends BaseCommand {
   }
 
   public async run (
-    message: CommandoMessage,
+    message: CommandoMessage & { guild: Guild & { robloxGroupId: number } },
     { trainingId }: { trainingId: number | '' }
   ): Promise<Message | Message[] | null> {
     if (trainingId !== '') {
-      const training: Training = (await applicationAdapter('GET', `v1/groups/${message.guild.robloxGroupId as number}/trainings/${trainingId}`))
+      const training: Training = (await applicationAdapter('GET', `v1/groups/${message.guild.robloxGroupId}/trainings/${trainingId}`))
         .data
       const username = (await userService.getUser(training.authorId)).name
       const date = new Date(training.date)
@@ -48,7 +48,7 @@ export default class TrainingsCommand extends BaseCommand {
         .setColor(message.guild.primaryColor ?? 0xffffff)
       return await message.replyEmbed(embed)
     } else {
-      const trainings: Training[] = (await applicationAdapter('GET', `v1/groups/${message.guild.robloxGroupId as number}/trainings?sort=date`))
+      const trainings: Training[] = (await applicationAdapter('GET', `v1/groups/${message.guild.robloxGroupId}/trainings?sort=date`))
         .data
       if (trainings.length === 0) {
         return await message.reply('There are currently no hosted trainings.')

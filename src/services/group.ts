@@ -8,6 +8,8 @@ import type { MessageEmbed } from 'discord.js'
 import pluralize from 'pluralize'
 
 export type GetGroupStatus = GetGroup['shout']
+export type GetGroupRole = GetGroupRoles['roles'][0]
+export interface ChangeMemberRole { oldRole: GetGroupRole, newRole: GetGroupRole }
 
 const { getDate, getTime, getTimeZoneAbbreviation } = timeUtil
 const { getAbbreviation } = util

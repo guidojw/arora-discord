@@ -9,7 +9,7 @@ export default class Ticket {
   @PrimaryGeneratedColumn()
   public readonly id!: number
 
-  @Column('bigint', { name: 'author_id' })
+  @Column('int', { name: 'author_id' })
   public authorId?: number | null
 
   @Column('bigint', { name: 'channel_id', nullable: true })

@@ -1,9 +1,9 @@
-'use strict'
+import type { CommandoClient, CommandoMessage } from 'discord.js-commando'
+import type { GuildMember, Message, Role } from 'discord.js'
+import BaseCommand from '../base'
 
-const BaseCommand = require('../base')
-
-class PersistRoleCommand extends BaseCommand {
-  constructor (client) {
+export default class PersistRoleCommand extends BaseCommand {
+  public constructor (client: CommandoClient) {
     super(client, {
       group: 'admin',
       name: 'persistrole',
@@ -22,13 +22,17 @@ class PersistRoleCommand extends BaseCommand {
     })
   }
 
-  async run (message, { member, role }) {
+  public async run (
+    message: CommandoMessage,
+    { member, role }: {
+      member: GuildMember
+      role: Role
+    }
+  ): Promise<Message | Message[] | null> {
     await member.persistRole(role)
 
-    return message.reply(`Successfully persisted role **${role}** on member **${member}**.`, {
+    return await message.reply(`Successfully persisted role **${role.toString()}** on member **${member.toString()}**.`, {
       allowedMentions: { users: [message.author.id] }
     })
   }
 }
-
-module.exports = PersistRoleCommand

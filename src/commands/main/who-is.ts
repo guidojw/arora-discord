@@ -2,6 +2,7 @@ import type { CommandoClient, CommandoMessage } from 'discord.js-commando'
 import BaseCommand from '../base'
 import type { Message } from 'discord.js'
 import { MessageEmbed } from 'discord.js'
+import type { RobloxUser } from '../../types/roblox-user'
 import pluralize from 'pluralize'
 import { timeUtil } from '../../util'
 import { userService } from '../../services'
@@ -28,18 +29,18 @@ export default class WhoIsCommand extends BaseCommand {
 
   public async run (
     message: CommandoMessage,
-    { verificationData }: { verificationData: { id: number, username: string | null } }
+    { user }: { user: RobloxUser }
   ): Promise<Message | Message[] | null> {
-    const user = await userService.getUser(verificationData.id)
-    const age = Math.floor((Date.now() - new Date(user.created).getTime()) / (24 * 60 * 60 * 1000))
+    const userInfo = await userService.getUser(user.id)
+    const age = Math.floor((Date.now() - new Date(userInfo.created).getTime()) / (24 * 60 * 60 * 1000))
     const outfits = await userService.getUserOutfits(user.id)
 
     const embed = new MessageEmbed()
-      .setAuthor(user.name ?? 'Unknown', `https://www.roblox.com/headshot-thumbnail/image?width=150&height=150&format=png&userId=${user.id}`)
+      .setAuthor(userInfo.name ?? 'Unknown', `https://www.roblox.com/headshot-thumbnail/image?width=150&height=150&format=png&userId=${user.id}`)
       .setThumbnail(`https://www.roblox.com/outfit-thumbnail/image?width=150&height=150&format=png&userOutfitId=${outfits[0]?.id ?? 0}`)
       .setColor(message.guild.primaryColor ?? 0xffffff)
-      .addField('Blurb', user.description !== '' ? user.description : 'No blurb')
-      .addField('Join Date', getDate(new Date(user.created)), true)
+      .addField('Blurb', userInfo.description !== '' ? userInfo.description : 'No blurb')
+      .addField('Join Date', getDate(new Date(userInfo.created)), true)
       .addField('Account Age', pluralize('day', age, true), true)
       .addField('\u200b', '\u200b', true)
       .setFooter(`User ID: ${user.id}`)

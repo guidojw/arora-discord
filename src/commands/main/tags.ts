@@ -27,9 +27,9 @@ export class TagsCommand extends BaseCommand {
 
   public async run (
     message: CommandoMessage,
-    { tag }: { tag?: Tag }
+    { tag }: { tag: Tag | '' }
   ): Promise<Message | Message[] | null> {
-    if (typeof tag !== 'undefined') {
+    if (tag !== '') {
       return await message.reply(
         tag.content,
         { allowedMentions: { users: [message.author.id] } }

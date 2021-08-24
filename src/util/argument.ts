@@ -61,7 +61,7 @@ function makeValidator (
     msg,
     arg
   ) {
-    return !(await test.call(this, val, msg, arg)) || `\`${arg.label ?? msg}\` ${message}.`
+    return !(await test.call(this, val, msg, arg)) || `\`${arg.label}\` ${message}.`
   }
 }
 

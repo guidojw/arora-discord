@@ -1,15 +1,17 @@
-'use strict'
+import type { CommandoClient, CommandoMessage } from 'discord.js-commando'
+import type { Guild, Message } from 'discord.js'
+import BaseCommand from '../base'
+import { MessageEmbed } from 'discord.js'
+import type { RobloxUser } from '../../types/roblox-user'
+import { applicationAdapter } from '../../adapters'
+import { groupService } from '../../services'
+import pluralize from 'pluralize'
+import { timeUtil } from '../../util'
 
-const pluralize = require('pluralize')
-const BaseCommand = require('../base')
+const { getDate, getTime } = timeUtil
 
-const { MessageEmbed } = require('discord.js')
-const { applicationAdapter } = require('../../adapters')
-const { groupService } = require('../../services')
-const { getDate, getTime } = require('../../util').timeUtil
-
-class BansCommand extends BaseCommand {
-  constructor (client) {
+export default class BansCommand extends BaseCommand {
+  public constructor (client: CommandoClient) {
     super(client, {
       group: 'admin',
       name: 'bans',
@@ -27,8 +29,11 @@ class BansCommand extends BaseCommand {
     })
   }
 
-  async run (message, { user }) {
-    if (user) {
+  public async run (
+    message: CommandoMessage & { guild: Guild & { robloxGroupId: number } },
+    { user }: { user: RobloxUser | '' }
+  ): Promise<Message | Message[] | null> {
+    if (user !== '') {
       const ban = (await applicationAdapter('GET', `v1/groups/${message.guild.robloxGroupId}/bans/${user.id}`)).data
 
       const days = ban.duration / (24 * 60 * 60 * 1000)
@@ -42,17 +47,17 @@ class BansCommand extends BaseCommand {
         : ''
       const embed = new MessageEmbed()
         .setTitle(`${user.username ?? user.id}'s ban`)
-        .setColor(message.guild.primaryColor)
+        .setColor(message.guild.primaryColor ?? 0xffffff)
         .addField('Start date', getDate(date), true)
         .addField('Start time', getTime(date), true)
         .addField('Duration', `${days}${extensionString} ${pluralize('day', days + extensionDays)}`, true)
         .addField('Reason', ban.reason)
 
-      return message.replyEmbed(embed)
+      return await message.replyEmbed(embed)
     } else {
       const bans = (await applicationAdapter('GET', `v1/groups/${message.guild.robloxGroupId}/bans?sort=date`)).data
       if (bans.length === 0) {
-        return message.reply('There are currently no bans.')
+        return await message.reply('There are currently no bans.')
       }
 
       const embeds = await groupService.getBanEmbeds(message.guild.robloxGroupId, bans)
@@ -60,9 +65,7 @@ class BansCommand extends BaseCommand {
         await message.author.send(embed)
       }
 
-      return message.reply('Sent you a DM with the banlist.')
+      return await message.reply('Sent you a DM with the banlist.')
     }
   }
 }
-
-module.exports = BansCommand

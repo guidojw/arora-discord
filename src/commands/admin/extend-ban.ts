@@ -1,12 +1,14 @@
-'use strict'
+import type { CommandoClient, CommandoMessage } from 'discord.js-commando'
+import type { Guild, GuildMember, Message } from 'discord.js'
+import BaseCommand from '../base'
+import type { RobloxUser } from '../../types/roblox-user'
+import { applicationAdapter } from '../../adapters'
+import { argumentUtil } from '../../util'
 
-const BaseCommand = require('../base')
+const { validators, noChannels, noTags, noUrls } = argumentUtil
 
-const { applicationAdapter } = require('../../adapters')
-const { validators, noChannels, noTags, noUrls } = require('../../util').argumentUtil
-
-class ExtendBanCommand extends BaseCommand {
-  constructor (client) {
+export default class ExtendBanCommand extends BaseCommand {
+  public constructor (client: CommandoClient) {
     super(client, {
       group: 'admin',
       name: 'extendban',
@@ -36,10 +38,17 @@ class ExtendBanCommand extends BaseCommand {
     })
   }
 
-  async run (message, { user, days, reason }) {
-    const authorId = message.member.robloxId ?? (await message.member.fetchVerificationData()).robloxId
+  public async run (
+    message: CommandoMessage & { member: GuildMember, guild: Guild & { robloxGroupId: number } },
+    { user, days, reason }: {
+      user: RobloxUser
+      days: number
+      reason: string
+    }
+  ): Promise<Message | Message[] | null> {
+    const authorId = message.member.robloxId ?? (await message.member.fetchVerificationData())?.robloxId
     if (typeof authorId === 'undefined') {
-      return message.reply('This command requires you to be verified with a verification provider.')
+      return await message.reply('This command requires you to be verified with a verification provider.')
     }
 
     await applicationAdapter('POST', `v1/groups/${message.guild.robloxGroupId}/bans/${user.id}/extend`, {
@@ -48,8 +57,6 @@ class ExtendBanCommand extends BaseCommand {
       reason
     })
 
-    return message.reply(`Successfully extended **${user.username ?? user.id}**'s ban.`)
+    return await message.reply(`Successfully extended **${user.username ?? user.id}**'s ban.`)
   }
 }
-
-module.exports = ExtendBanCommand

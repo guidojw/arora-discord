@@ -1,14 +1,15 @@
-'use strict'
+import type { CommandoClient, CommandoMessage } from 'discord.js-commando'
+import type { Guild, GuildMember, Message } from 'discord.js'
+import { argumentUtil, timeUtil } from '../../util'
+import { groupService, userService } from '../../services'
+import BaseCommand from '../base'
+import { applicationAdapter } from '../../adapters'
 
-const BaseCommand = require('../base')
+const { validators, noChannels, noTags, noUrls, validDate, validTime } = argumentUtil
+const { getDate, getDateInfo, getTime, getTimeInfo } = timeUtil
 
-const { applicationAdapter } = require('../../adapters')
-const { groupService, userService } = require('../../services')
-const { noChannels, noTags, noUrls, validDate, validTime } = require('../../util').argumentUtil
-const { getDate, getDateInfo, getTime, getTimeInfo } = require('../../util').timeUtil
-
-class EditTrainingCommand extends BaseCommand {
-  constructor (client) {
+export default class EditTrainingCommand extends BaseCommand {
+  public constructor (client: CommandoClient) {
     super(client, {
       group: 'admin',
       name: 'edittraining',
@@ -28,33 +29,35 @@ class EditTrainingCommand extends BaseCommand {
         type: 'string',
         prompt: 'What key would you like to edit?',
         oneOf: ['author', 'type', 'date', 'time', 'notes'],
-        parse: val => val.toLowerCase()
+        parse: (val: string) => val.toLowerCase()
       }, {
         key: 'data',
         type: 'string',
-        prompt: 'What would you like to edit this key\'s data to?'
+        prompt: 'What would you like to edit this key\'s data to?',
+        validate: validators([noChannels, noTags, noUrls]) // for when key = 'notes'
       }]
     })
   }
 
-  async run (message, { trainingId, key, data }) {
-    const changes = {}
+  public async run (
+    message: CommandoMessage & { member: GuildMember, guild: Guild & { robloxGroupId: number } },
+    { trainingId, key, data }: {
+      trainingId: number
+      key: string
+      data: string
+    }
+  ): Promise<Message | Message[] | null> {
+    const changes: { authorId?: number, notes?: string, typeId?: number, date?: number } = {}
     if (key === 'author') {
       changes.authorId = await userService.getIdFromUsername(data)
     } else if (key === 'notes') {
-      const results = [noChannels(data, key), noTags(data, key), noUrls(data, key)]
-      if (!results.every(result => result && typeof result !== 'string')) {
-        const errors = results.filter(result => typeof result === 'string')
-        return message.reply(errors.join('\n'))
-      }
-
       changes.notes = data
     } else if (key === 'type') {
       const type = data.toUpperCase()
       const trainingTypes = await groupService.getTrainingTypes(message.guild.robloxGroupId)
       const trainingType = trainingTypes.find(trainingType => trainingType.abbreviation.toLowerCase() === type)
-      if (!trainingType) {
-        return message.reply('Type not found.')
+      if (typeof trainingType === 'undefined') {
+        return await message.reply('Type not found.')
       }
 
       changes.typeId = trainingType.id
@@ -67,13 +70,13 @@ class EditTrainingCommand extends BaseCommand {
       let timeInfo
       if (key === 'date') {
         if (!validDate(data)) {
-          return message.reply('Please enter a valid date.')
+          return await message.reply('Please enter a valid date.')
         }
         dateInfo = getDateInfo(data)
         timeInfo = getTimeInfo(getTime(date))
       } else {
         if (!validTime(data)) {
-          return message.reply('Please enter a valid time.')
+          return await message.reply('Please enter a valid time.')
         }
         dateInfo = getDateInfo(getDate(date))
         timeInfo = getTimeInfo(data)
@@ -82,9 +85,9 @@ class EditTrainingCommand extends BaseCommand {
       changes.date = Math.floor(new Date(dateInfo.year, dateInfo.month, dateInfo.day, timeInfo.hours, timeInfo.minutes)
         .getTime())
     }
-    const editorId = message.member.robloxId ?? (await message.member.fetchVerificationData()).robloxId
+    const editorId = message.member.robloxId ?? (await message.member.fetchVerificationData())?.robloxId
     if (typeof editorId === 'undefined') {
-      return message.reply('This command requires you to be verified with a verification provider.')
+      return await message.reply('This command requires you to be verified with a verification provider.')
     }
 
     await applicationAdapter('PUT', `v1/groups/${message.guild.robloxGroupId}/trainings/${trainingId}`, {
@@ -92,8 +95,6 @@ class EditTrainingCommand extends BaseCommand {
       editorId
     })
 
-    return message.reply(`Successfully edited training with ID **${trainingId}**.`)
+    return await message.reply(`Successfully edited training with ID **${trainingId}**.`)
   }
 }
-
-module.exports = EditTrainingCommand
