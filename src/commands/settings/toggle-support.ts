@@ -1,11 +1,10 @@
-'use strict'
+import type { CommandoClient, CommandoMessage } from 'discord.js-commando'
+import BaseCommand from '../base'
+import type { Message } from 'discord.js'
+import { MessageEmbed } from 'discord.js'
 
-const BaseCommand = require('../base')
-
-const { MessageEmbed } = require('discord.js')
-
-class ToggleSupportCommand extends BaseCommand {
-  constructor (client) {
+export default class ToggleSupportCommand extends BaseCommand {
+  public constructor (client: CommandoClient) {
     super(client, {
       group: 'settings',
       name: 'togglesupport',
@@ -15,15 +14,13 @@ class ToggleSupportCommand extends BaseCommand {
     })
   }
 
-  async run (message) {
+  public async run (message: CommandoMessage): Promise<Message | Message[] | null> {
     await message.guild.update({ supportEnabled: !message.guild.supportEnabled })
 
     const embed = new MessageEmbed()
       .setColor(message.guild.supportEnabled ? 0x00ff00 : 0xff0000)
       .setTitle('Successfully toggled support')
       .setDescription(`Tickets System: **${message.guild.supportEnabled ? 'online' : 'offline'}**`)
-    return message.replyEmbed(embed)
+    return await message.replyEmbed(embed)
   }
 }
-
-module.exports = ToggleSupportCommand

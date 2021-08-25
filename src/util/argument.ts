@@ -1,6 +1,8 @@
 import type { Argument, ArgumentType, CommandoMessage } from 'discord.js-commando'
+import type { Enum } from './util'
 import { MessageMentions } from 'discord.js'
 import { getDateInfo } from './time'
+import { getEnumKeys } from './util'
 
 type Validator =
 (this: ArgumentType, val: string, msg: CommandoMessage, arg: Argument) => boolean | string | Promise<boolean | string>
@@ -11,7 +13,8 @@ type ValidatorTest =
 
 const dateRegex = /(([0-2]?[0-9]|3[0-1])[-](0?[1-9]|1[0-2])[-][0-9]{4})/
 const timeRegex = /^(2[0-3]|[0-1]?[\d]):[0-5][\d]$/
-const urlRegex = /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/gi
+
+export const urlRegex = /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/gi
 
 export function validators (
   steps: Array<Validator | Validator[]> = []
@@ -131,17 +134,31 @@ export function validTime (timeString: string): boolean {
 export function validateNoneOrType (
   this: Argument,
   val: string,
-  msg: CommandoMessage,
-  arg: Argument
+  msg: CommandoMessage
 ): boolean | string | Promise<boolean | string> {
-  return val === 'none' || this.type.validate(val, msg, arg)
+  return val === 'none' || this.type.validate(val, msg, this)
 }
 
 export function parseNoneOrType (
   this: Argument,
   val: string,
-  msg: CommandoMessage,
-  arg: Argument
+  msg: CommandoMessage
 ): any | Promise<any> {
-  return val === 'none' ? undefined : this.type.parse(val, msg, arg)
+  return val === 'none' ? undefined : this.type.parse(val, msg, this)
+}
+
+export function parseEnum<T extends Enum> (
+  enumLike: T,
+  transformer?: (attribute: string) => string
+): ((this: Argument, val: string, msg: CommandoMessage) => Promise<any>) {
+  return async function (this: Argument, val: string, msg: CommandoMessage): Promise<any> {
+    const lowerCaseVal = val.toLowerCase()
+    return getEnumKeys(enumLike)
+      .find(key => (transformer?.(key) ?? key).toLowerCase() === lowerCaseVal) ??
+      await this.type.parse(val, msg, this)
+  }
+}
+
+export function guildSettingTransformer (value: string): string {
+  return value.endsWith('Id') ? value.slice(0, -2) : value
 }

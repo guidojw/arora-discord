@@ -1,12 +1,15 @@
-'use strict'
+import type { CommandGroup, CommandoClient, CommandoMessage } from 'discord.js-commando'
+import BaseCommand from '../base'
+import { Command } from 'discord.js-commando'
+import type { Message } from 'discord.js'
+import { Role } from 'discord.js'
+import type { RoleGroup } from '../../structures'
+import { argumentUtil } from '../../util'
 
-const BaseCommand = require('../base')
+const { validateNoneOrType, parseNoneOrType } = argumentUtil
 
-const { AroraRole: Role } = require('../../extensions')
-const { validateNoneOrType, parseNoneOrType } = require('../../util').argumentUtil
-
-class PermitCommand extends BaseCommand {
-  constructor (client) {
+export default class PermitCommand extends BaseCommand {
+  public constructor (client: CommandoClient) {
     super(client, {
       group: 'settings',
       name: 'permit',
@@ -45,31 +48,37 @@ class PermitCommand extends BaseCommand {
     })
   }
 
-  async run (message, { roleOrGroup, commandOrGroup, allow }) {
-    const commandType = commandOrGroup.group ? 'command' : 'group'
+  public async run (
+    message: CommandoMessage,
+    { roleOrGroup, commandOrGroup, allow }: {
+      roleOrGroup: Role | RoleGroup
+      commandOrGroup: Command | CommandGroup
+      allow: boolean
+    }
+  ): Promise<Message | Message[] | null> {
+    const commandType = commandOrGroup instanceof Command ? 'command' : 'group'
     const permissibleType = roleOrGroup instanceof Role ? 'role' : 'group'
-    const subject = `${permissibleType} ${permissibleType === 'role' ? roleOrGroup : `\`${roleOrGroup}\``}`
+    // eslint-disable-next-line @typescript-eslint/no-base-to-string
+    const subject = `${permissibleType} ${roleOrGroup instanceof Role ? roleOrGroup.toString() : `\`${roleOrGroup.toString()}\``}`
 
     if (typeof allow === 'undefined') {
       await roleOrGroup.aroraPermissions.delete(commandOrGroup)
-      return message.reply(`Successfully deleted \`${commandOrGroup.name}\` ${commandType} permission from ${subject}.`, {
+      return await message.reply(`Successfully deleted \`${commandOrGroup.name}\` ${commandType} permission from ${subject}.`, {
         allowedMentions: { users: [message.author.id] }
       })
     } else {
       const permission = roleOrGroup.aroraPermissions.resolve(commandOrGroup)
-      if (permission) {
+      if (permission !== null) {
         await permission.update({ allow })
-        return message.reply(`Successfully edited \`${commandOrGroup.name}\` ${commandType} permission for ${subject} to allow: \`${allow}\`.`, {
+        return await message.reply(`Successfully edited \`${commandOrGroup.name}\` ${commandType} permission for ${subject} to allow: \`${String(allow)}\`.`, {
           allowedMentions: { users: [message.author.id] }
         })
       } else {
         await roleOrGroup.aroraPermissions.create(commandOrGroup, allow)
-        return message.reply(`Successfully created \`${commandOrGroup.name}\` ${commandType} permission for ${subject} with allow: \`${allow}\`.`, {
+        return await message.reply(`Successfully created \`${commandOrGroup.name}\` ${commandType} permission for ${subject} with allow: \`${String(allow)}\`.`, {
           allowedMentions: { users: [message.author.id] }
         })
       }
     }
   }
 }
-
-module.exports = PermitCommand

@@ -275,11 +275,11 @@ function requiresSingleGuildInhibitor (msg: CommandoMessage): false | Inhibition
 }
 
 async function failSilently (
-  fn: ((...args: any[]) => Promise<any>) | ((...args: any[]) => Exclude<any, Promise<any>>),
+  fn: ((...args: any[]) => any | Promise<any>),
   codes: number[]
 ): Promise<any> {
   try {
-    return fn.constructor.name === 'AsyncFunction' ? await (fn as (...args: any[]) => Promise<any>)() : fn()
+    return await Promise.resolve(fn())
   } catch (err) {
     if (!(err instanceof DiscordAPIError) || !codes.includes(err.code)) {
       throw err

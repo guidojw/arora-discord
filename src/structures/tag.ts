@@ -10,8 +10,7 @@ export default class Tag extends BaseStructure {
   public readonly guild: Guild
   public readonly names: TagTagNameManager
   public id!: number
-
-  private _content!: string
+  public _content!: string
 
   public constructor (client: Client, data: TagEntity, guild: Guild) {
     super(client)

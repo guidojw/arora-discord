@@ -34,7 +34,6 @@ export default class GuildRoleBindingManager extends BaseManager<RoleBinding, Ro
     if (this.guild.robloxGroupId === null) {
       throw new Error('This server is not bound to a Roblox group yet.')
     }
-    // await this.fetch()
     const role = this.guild.roles.resolve(roleResolvable)
     if (role === null) {
       throw new Error('Invalid role.')
@@ -65,7 +64,6 @@ export default class GuildRoleBindingManager extends BaseManager<RoleBinding, Ro
     if (id === null) {
       throw new Error('Invalid role binding.')
     }
-    // await this.fetch() // TODO: remove
     if (!this.cache.has(id)) {
       throw new Error('Role binding not found.')
     }
@@ -73,15 +71,4 @@ export default class GuildRoleBindingManager extends BaseManager<RoleBinding, Ro
     await this.roleBindingRepository.delete(id)
     this.cache.delete(id)
   }
-
-  /* eslint-disable max-len */
-  // async fetch () { // TODO: remove
-  //   const data = await Guild.scope('withRoleBindings').findOne({ where: { id: this.guild.id } })
-  //   this.cache.clear()
-  //   for (const rawRoleBinding of data.roleBindings) {
-  //     this.add(rawRoleBinding)
-  //   }
-  //   return this.cache
-  // }
-  /* eslint-enable max-len */
 }

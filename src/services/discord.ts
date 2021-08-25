@@ -39,16 +39,10 @@ export async function prompt (
 
 export function getListEmbeds (
   title: string,
-  values: Map<any, any> | Iterable<any>,
+  values: Iterable<any>,
   getRow: (...args: any[]) => string,
-  data: any
+  data?: any
 ): MessageEmbed[] {
-  if (values instanceof Map) {
-    values = values.entries()
-  } else {
-    values = Object.entries(values)
-  }
-
   const embeds = []
   let embed = new MessageEmbed()
     .setTitle(title)

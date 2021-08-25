@@ -1,9 +1,20 @@
-import { ValidationArguments, ValidationOptions, registerDecorator } from 'class-validator'
-
 export type Constructor<T = {}> = new (...args: any[]) => T
 export type AbstractConstructor<T = {}> = abstract new (...args: any[]) => T
-export type AnyFunction<T = any> = (...input: any[]) => T
 export type Mixin<T extends AnyFunction> = InstanceType<ReturnType<T>>
+export type Enum = Record<string, number | string>
+
+type AnyFunction<T = any> = (...input: any[]) => T
+type EnumKeys<T extends Enum> = Exclude<keyof T, number>
+
+function getEnumObject<T extends Enum> (
+  enumLike: T
+): { [K in EnumKeys<T>]: T[K] } {
+  const copy = { ...enumLike }
+  Object.values(enumLike)
+    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+    .forEach(value => typeof value === 'number' && delete copy[value])
+  return copy
+}
 
 export function formatBytes (bytes: number, decimals = 2): string {
   if (bytes === 0) {
@@ -56,56 +67,10 @@ export function split<T> (array: T[], length: number): T[][] {
   }, [])
 }
 
-/**
- * Used to mark a XOR relation between given and specified properties.
- */
-export function Xor (
-  property: string,
-  validationOptions?: ValidationOptions
-): (object: Object, propertyName: string) => void {
-  return function (object: Object, propertyName: string) {
-    registerDecorator({
-      name: 'xor',
-      target: object.constructor,
-      propertyName,
-      constraints: [property],
-      options: validationOptions,
-      validator: {
-        validate (value: any, args: ValidationArguments): boolean {
-          const relatedValue = (args.object as any)[args.constraints[0]]
-          return (value != null && relatedValue == null) || (value == null && relatedValue != null)
-        },
-        defaultMessage (args: ValidationArguments): string {
-          return `Failed XOR relation between "${args.property}" and "${args.constraints[0] as string}".`
-        }
-      }
-    })
-  }
+export function getEnumKeys<T extends Enum> (enumLike: T): string[] {
+  return Object.keys(getEnumObject(enumLike))
 }
 
-/**
- * Used to mark a NAND relation between given and specified properties.
- */
-export function Nand (
-  property: string,
-  validationOptions?: ValidationOptions
-): (object: Object, propertyName: string) => void {
-  return function (object: Object, propertyName: string) {
-    registerDecorator({
-      name: 'nand',
-      target: object.constructor,
-      propertyName,
-      constraints: [property],
-      options: validationOptions,
-      validator: {
-        validate (value: any, args: ValidationArguments): boolean {
-          const relatedValue = (args.object as any)[args.constraints[0]]
-          return !(value != null && relatedValue != null)
-        },
-        defaultMessage (args: ValidationArguments): string {
-          return `Failed NAND relation between "${args.property}" and "${args.constraints[0] as string}".`
-        }
-      }
-    })
-  }
+export function getEnumValues<T extends Enum> (enumLike: T): Array<string | number> {
+  return [...new Set(Object.values(getEnumObject(enumLike)))]
 }

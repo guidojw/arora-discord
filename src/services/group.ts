@@ -86,7 +86,7 @@ export async function getBanEmbeds (groupId: number, bans: Ban[]): Promise<Messa
   )
 }
 
-export function getBanRow ([, ban]: [any, Ban], { users, roles }: { users: GetUsers, roles: GetGroupRoles }): string {
+export function getBanRow (ban: Ban, { users, roles }: { users: GetUsers, roles: GetGroupRoles }): string {
   const username = users.find(user => user.id === ban.userId)?.name ?? ban.userId
   const authorName = users.find(user => user.id === ban.authorId)?.name ?? ban.authorId
   const role = roles.roles.find(role => role.id === ban.roleId)
@@ -122,7 +122,7 @@ export async function getExileEmbeds (exiles: Exile[]): Promise<MessageEmbed[]> 
   )
 }
 
-export function getExileRow ([, exile]: [any, Exile], { users }: { users: GetUsers }): string {
+export function getExileRow (exile: Exile, { users }: { users: GetUsers }): string {
   const username = users.find(user => user.id === exile.userId)?.name ?? exile.userId
   const authorName = users.find(user => user.id === exile.authorId)?.name ?? exile.authorId
   const dateString = getDate(new Date(exile.date))
@@ -144,7 +144,7 @@ export async function getTrainingEmbeds (trainings: Training[]): Promise<Message
   )
 }
 
-export function getTrainingRow ([, training]: [any, Training], { users }: { users: GetUsers }): string {
+export function getTrainingRow (training: Training, { users }: { users: GetUsers }): string {
   const username = users.find(user => user.id === training.authorId)?.name ?? training.authorId
   const date = new Date(training.date)
   const readableDate = getDate(date)

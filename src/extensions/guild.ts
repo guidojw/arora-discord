@@ -31,6 +31,18 @@ import cron from 'node-cron'
 import cronConfig from '../configs/cron'
 import { inject } from 'inversify'
 
+export enum GuildSetting {
+  primaryColor,
+  robloxGroupId,
+  robloxUsernamesInNicknames,
+  verificationPreference,
+  logsChannelId,
+  suggestionsChannelId,
+  ratingsChannelId,
+  ticketArchivesChannelId,
+  ticketsCategoryId
+}
+
 export interface GuildUpdateOptions {
   commandPrefix?: string | null
   logsChannelId?: Snowflake | null

@@ -1,12 +1,11 @@
-'use strict'
+import type { Collection, Message, Role } from 'discord.js'
+import type { Command, CommandGroup, CommandoClient, CommandoMessage } from 'discord.js-commando'
+import { GuildMember, MessageEmbed } from 'discord.js'
+import BaseCommand from '../base'
+import type { RoleGroup } from '../../structures'
 
-const BaseCommand = require('../base')
-
-const { MessageEmbed } = require('discord.js')
-const { AroraGuildMember: GuildMember } = require('../../extensions')
-
-class PermissionsCommand extends BaseCommand {
-  constructor (client) {
+export default class PermissionsCommand extends BaseCommand {
+  public constructor (client: CommandoClient) {
     super(client, {
       group: 'settings',
       name: 'permissions',
@@ -21,9 +20,12 @@ class PermissionsCommand extends BaseCommand {
     })
   }
 
-  async run (message, { memberOrRoleOrGroup }) {
+  public async run (
+    message: CommandoMessage,
+    { memberOrRoleOrGroup }: { memberOrRoleOrGroup: GuildMember | Role | RoleGroup }
+  ): Promise<Message | Message[] | null> {
     const embed = new MessageEmbed()
-      .setColor(message.guild.primaryColor)
+      .setColor(message.guild.primaryColor ?? 0xffffff)
     if (memberOrRoleOrGroup instanceof GuildMember) {
       embed
         .setTitle(`${memberOrRoleOrGroup.user.tag}'s Permissions`)
@@ -38,7 +40,7 @@ class PermissionsCommand extends BaseCommand {
 
     const fn = memberOrRoleOrGroup instanceof GuildMember
       ? memberOrRoleOrGroup.canRunCommand.bind(memberOrRoleOrGroup)
-      : command => memberOrRoleOrGroup.permissionFor(command, true)
+      : (command: Command | CommandGroup) => memberOrRoleOrGroup.permissionFor(command, true)
     const groups = this.client.registry.groups
       .filter(group => !group.guarded && group.id !== 'util' && group.isEnabledIn(message.guild))
       .sort((groupA, groupB) => groupB.commands.size - groupA.commands.size)
@@ -46,20 +48,21 @@ class PermissionsCommand extends BaseCommand {
       const commands = group.commands.filter(command => !command.guarded && command.isEnabledIn(message.guild))
       const commandsPermissions = getCommandsPermissions(commands, fn)
       if (commandsPermissions !== '') {
-        embed.addField(`${group.name}: ${fn(group)}`, commandsPermissions, true)
+        embed.addField(`${group.name}: ${String(fn(group))}`, commandsPermissions, true)
       }
     }
 
-    return message.replyEmbed(embed)
+    return await message.replyEmbed(embed)
   }
 }
 
-function getCommandsPermissions (commands, fn) {
+function getCommandsPermissions (
+  commands: Collection<string, Command>,
+  fn: (command: Command) => boolean | null
+): string {
   let field = ''
   for (const command of commands.values()) {
-    field += `${command.name}: \`${fn(command)}\`\n`
+    field += `${command.name}: \`${String(fn(command))}\`\n`
   }
   return field
 }
-
-module.exports = PermissionsCommand

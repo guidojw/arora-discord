@@ -3,8 +3,10 @@ import { IsNotEmpty, ValidateIf } from 'class-validator'
 // import Emoji from './emoji'
 import Guild from './guild'
 import Message from './message'
-import { Nand } from '../util/util'
 import Ticket from './ticket'
+import { decorators } from '../util'
+
+const { Nand } = decorators
 
 @Entity('ticket_types')
 export default class TicketType {

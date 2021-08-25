@@ -4,9 +4,9 @@ import { IsNotEmpty, ValidateIf } from 'class-validator'
 import Guild from './guild'
 import Message from './message'
 import Role from './role'
-import { util } from '../util'
+import { decorators } from '../util'
 
-const { Xor } = util
+const { Xor } = decorators
 
 @Entity('role_messages')
 export default class RoleMessage {
