@@ -38,14 +38,14 @@ export default class RobloxUserArgumentType extends ArgumentType {
             return this.validateAndSet(arg, key, verificationData.robloxId, verificationData.robloxUsername)
           }
         }
-      } catch {} // eslint-disable-line no-empty
+      } catch {}
 
       const id = parseInt(match[0].match(/^(\d+)$/)?.[1] ?? '')
       if (!isNaN(id)) {
         try {
           const username = (await userService.getUser(id)).name
           return this.validateAndSet(arg, key, id, username)
-        } catch {} // eslint-disable-line no-empty
+        } catch {}
       } else {
         return false
       }
@@ -67,7 +67,7 @@ export default class RobloxUserArgumentType extends ArgumentType {
       try {
         const id = await userService.getIdFromUsername(search)
         return this.validateAndSet(arg, key, id, search)
-      } catch {} // eslint-disable-line no-empty
+      } catch {}
     }
     return false
   }

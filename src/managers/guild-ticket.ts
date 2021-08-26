@@ -7,18 +7,21 @@ import type { Ticket as TicketEntity } from '../entities'
 import type { TicketTypeResolvable } from './guild-ticket-type'
 import type { TicketUpdateOptions } from '../structures'
 import { constants } from '../util'
-import { inject } from 'inversify'
+import container from '../configs/container'
+import getDecorators from 'inversify-inject-decorators'
 
 export type TextChannelResolvable = TextChannel | Snowflake
 export type TicketResolvable = TextChannelResolvable | GuildMemberResolvable | Ticket | number
 
 const { TYPES } = constants
+const { lazyInject } = getDecorators(container)
 
 const TICKETS_INTERVAL = 60 * 1000
 const SUBMISSION_TIME = 30 * 60 * 1000
 
 export default class GuildTicketManager extends BaseManager<Ticket, TicketResolvable> {
-  @inject(TYPES.TicketRepository) private readonly ticketRepository!: Repository<TicketEntity>
+  @lazyInject(TYPES.TicketRepository)
+  private readonly ticketRepository!: Repository<TicketEntity>
 
   public readonly guild: Guild
   public readonly debounces: Map<string, true>

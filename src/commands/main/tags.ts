@@ -7,7 +7,7 @@ import { util } from '../../util'
 
 const { makeCommaSeparatedString } = util
 
-export class TagsCommand extends BaseCommand {
+export default class TagsCommand extends BaseCommand {
   public constructor (client: CommandoClient) {
     super(client, {
       group: 'main',

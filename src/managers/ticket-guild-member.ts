@@ -4,14 +4,19 @@ import type { Member as MemberEntity, Ticket as TicketEntity } from '../entities
 import type { Repository } from 'typeorm'
 import { Ticket } from '../structures'
 import { constants } from '../util'
-import { inject } from 'inversify'
+import container from '../configs/container'
+import getDecorators from 'inversify-inject-decorators'
 
 const { PartialTypes } = Constants
 const { TYPES } = constants
+const { lazyInject } = getDecorators(container)
 
 export default class TicketGuildMemberManager {
-  @inject(TYPES.MemberRepository) private readonly memberRepository!: Repository<MemberEntity>
-  @inject(TYPES.TicketRepository) private readonly ticketRepository!: Repository<TicketEntity>
+  @lazyInject(TYPES.MemberRepository)
+  private readonly memberRepository!: Repository<MemberEntity>
+
+  @lazyInject(TYPES.TicketRepository)
+  private readonly ticketRepository!: Repository<TicketEntity>
 
   public readonly ticket: Ticket
   public readonly client: Client

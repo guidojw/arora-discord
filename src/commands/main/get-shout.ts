@@ -20,9 +20,9 @@ export default class GetShoutCommand extends BaseCommand {
   public async run (
     message: CommandoMessage & { guild: Guild & { robloxGroupId: number } }
   ): Promise<Message | Message[] | null> {
-    const shout: GetGroupStatus = (await applicationAdapter('GET', `v1/groups/${message.guild.robloxGroupId}/status`)).data
+    const shout: GetGroupStatus | '' = (await applicationAdapter('GET', `v1/groups/${message.guild.robloxGroupId}/status`)).data
 
-    if (shout.body !== '') {
+    if (shout !== '' && shout.body !== '') {
       const embed = new MessageEmbed()
         .addField(`Current shout by ${shout.poster.username}`, shout.body)
         .setTimestamp(new Date(shout.updated))

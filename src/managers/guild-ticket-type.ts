@@ -7,14 +7,17 @@ import { TicketType } from '../structures'
 import type { TicketType as TicketTypeEntity } from '../entities'
 import type { TicketTypeUpdateOptions } from '../structures'
 import { constants } from '../util'
-import { inject } from 'inversify'
+import container from '../configs/container'
+import getDecorators from 'inversify-inject-decorators'
 
 export type TicketTypeResolvable = TicketType | string
 
 const { TYPES } = constants
+const { lazyInject } = getDecorators(container)
 
 export default class GuildTicketTypeManager extends BaseManager<TicketType, TicketTypeResolvable> {
-  @inject(TYPES.TicketTypeRepository) private readonly ticketTypeRepository!: Repository<TicketTypeEntity>
+  @lazyInject(TYPES.TicketTypeRepository)
+  private readonly ticketTypeRepository!: Repository<TicketTypeEntity>
 
   public readonly guild: Guild
 

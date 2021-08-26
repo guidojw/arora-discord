@@ -10,7 +10,8 @@ const { TYPES } = constants
 
 @injectable()
 export default class RoleDeleteEventHandler implements BaseHandler {
-  @inject(TYPES.RoleRepository) private readonly roleRepository!: Repository<Role>
+  @inject(TYPES.RoleRepository)
+  private readonly roleRepository!: Repository<Role>
 
   public async handle (_client: Client, role: DiscordRole): Promise<void> {
     await this.roleRepository.delete(role.id)

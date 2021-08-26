@@ -6,14 +6,17 @@ import type { Repository } from 'typeorm'
 import { RoleMessage } from '../structures'
 import type { RoleMessage as RoleMessageEntity } from '../entities'
 import { constants } from '../util'
-import { inject } from 'inversify'
+import container from '../configs/container'
+import getDecorators from 'inversify-inject-decorators'
 
 export type RoleMessageResolvable = RoleMessage | number
 
 const { TYPES } = constants
+const { lazyInject } = getDecorators(container)
 
 export default class GuildRoleMessageManager extends BaseManager<RoleMessage, RoleMessageResolvable> {
-  @inject(TYPES.RoleMessageRepository) private readonly roleMessageRepository!: Repository<RoleMessageEntity>
+  @lazyInject(TYPES.RoleMessageRepository)
+  private readonly roleMessageRepository!: Repository<RoleMessageEntity>
 
   public readonly guild: Guild
 

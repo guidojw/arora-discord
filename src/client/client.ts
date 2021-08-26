@@ -1,3 +1,4 @@
+import '../extensions' // Extend Discord.js structures before the client collections get instantiated.
 import type {
   APIMessage,
   GuildMember,
@@ -16,22 +17,21 @@ import type {
   Inhibition
 } from 'discord.js-commando'
 import { Constants, DiscordAPIError, Intents } from 'discord.js'
-import { inject, injectable } from 'inversify'
 import AroraProvider from './setting-provider'
 import type BaseHandler from './base'
 import { CommandoClient } from 'discord.js-commando'
 import { WebSocketManager } from './websocket'
 import applicationConfig from '../configs/application'
 import { constants } from '../util'
+import container from '../configs/container'
+import getDecorators from 'inversify-inject-decorators'
 import path from 'path'
 
 const { PartialTypes } = Constants
 const { TYPES } = constants
+const { lazyInject } = getDecorators(container)
 
 const ACTIVITY_CAROUSEL_INTERVAL = 60 * 1000
-
-// Extend Discord.js structures before the client collections get instantiated.
-require('../extensions')
 
 declare module 'discord.js' {
   interface Client {
@@ -44,13 +44,15 @@ declare module 'discord.js' {
       user: GuildMember | PartialGuildMember | User,
       content: string | APIMessage | MessageOptions
     ) => Promise<Message | Message[] | null>
-    deleteMessage: (message: Message) => Promise<void>
   }
 }
 
-@injectable()
 export default class AroraClient extends CommandoClient {
-  @inject(TYPES.EventHandlerFactory) private readonly eventHandlerFactory!: (eventName: string) => BaseHandler
+  @lazyInject(TYPES.PacketHandlerFactory)
+  public readonly packetHandlerFactory!: (eventName: string) => BaseHandler
+
+  @lazyInject(TYPES.EventHandlerFactory)
+  private readonly eventHandlerFactory!: (eventName: string) => BaseHandler
 
   private readonly aroraWs: WebSocketManager | null
   private currentActivity: number
@@ -130,8 +132,8 @@ export default class AroraClient extends CommandoClient {
       .registerGroup('bot', 'Bot')
       .registerGroup('main', 'Main')
       .registerGroup('settings', 'Settings')
-      .registerTypesIn({ dirname: path.join(__dirname, '../types'), filter: /^(?!base.js).+$/ })
-      .registerCommandsIn(path.join(__dirname, '../commands'))
+      .registerTypesIn({ dirname: path.join(__dirname, '../types'), filter: /^(?!base\.js|.*\.d\.).*/ })
+      .registerCommandsIn({ dirname: path.join(__dirname, '../commands'), filter: /^(?!base\.js|.*\.d\.).*/ })
 
     this.dispatcher.addInhibitor(requiresApiInhibitor)
     this.dispatcher.addInhibitor(requiresRobloxGroupInhibitor)
@@ -139,7 +141,8 @@ export default class AroraClient extends CommandoClient {
 
     this.aroraWs = applicationConfig.apiEnabled === true ? new WebSocketManager(this) : null
 
-    this.once('ready', () => this.ready.bind(this))
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    this.once('ready', this.ready.bind(this))
   }
 
   private async ready (): Promise<void> {
@@ -220,14 +223,6 @@ export default class AroraClient extends CommandoClient {
     // 50007: Cannot send messages to this user, user probably has DMs closed.
   }
 
-  // @ts-expect-error
-  public override async deleteMessage (message: Message): Promise<void> {
-    return await failSilently(message.delete.bind(message), [10008, ...(message.channel.type === 'dm' ? [50003] : [])])
-    // 10008: Unknown message, the message was probably already deleted.
-    // 50003: Cannot execute action on a DM channel, the bot cannot delete user
-    // messages in DMs.
-  }
-
   public override async login (token = this.token): Promise<string> {
     const usedToken = await super.login(token ?? undefined)
     this.aroraWs?.connect()
@@ -240,7 +235,7 @@ export default class AroraClient extends CommandoClient {
     const handler = this.eventHandlerFactory(eventName)
     // @ts-expect-error FIXME: eventName keyof ClientEvents & async listener
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    this.on(eventName, async (...args) => await handler.handle(this, ...args))
+    this.on(eventName, handler.handle.bind(handler, this))
   }
 }
 

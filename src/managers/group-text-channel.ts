@@ -4,12 +4,15 @@ import type { ChannelGroup } from '../structures'
 import type { Repository } from 'typeorm'
 import type { TextChannelResolvable } from './guild-ticket'
 import { constants } from '../util'
-import { inject } from 'inversify'
+import container from '../configs/container'
+import getDecorators from 'inversify-inject-decorators'
 
 const { TYPES } = constants
+const { lazyInject } = getDecorators(container)
 
 export default class GroupTextChannelManager {
-  @inject(TYPES.GroupRepository) private readonly groupRepository!: Repository<GroupEntity>
+  @lazyInject(TYPES.GroupRepository)
+  private readonly groupRepository!: Repository<GroupEntity>
 
   public readonly group: ChannelGroup
   public readonly guild: Guild

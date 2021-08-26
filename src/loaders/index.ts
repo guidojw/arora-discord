@@ -1,8 +1,9 @@
 import * as Sentry from '@sentry/node'
-import AroraClient from '../client/client'
+import { AroraClient } from '../client'
 import type { BaseJob } from '../jobs'
 import { constants } from '../util'
-import containerLoader from './container'
+import container from '../configs/container'
+import { createConnection } from 'typeorm'
 import cron from 'node-cron'
 import cronConfig from '../configs/cron'
 
@@ -17,10 +18,10 @@ export async function init (): Promise<AroraClient> {
     })
   }
 
-  const container = await containerLoader()
+  await createConnection()
 
   const jobFactory = container.get<(jobName: string) => BaseJob>(TYPES.JobFactory)
-  const healthCheckJobConfig = cronConfig.healthCheckJobConfig
+  const healthCheckJobConfig = cronConfig.healthCheckJob
   const healthCheckJob = jobFactory(healthCheckJobConfig.name)
   cron.schedule(
     healthCheckJobConfig.expression,

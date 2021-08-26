@@ -6,14 +6,17 @@ import type { GroupUpdateOptions } from '../structures'
 import type { Guild } from 'discord.js'
 import type { Repository } from 'typeorm'
 import { constants } from '../util'
-import { inject } from 'inversify'
+import container from '../configs/container'
+import getDecorators from 'inversify-inject-decorators'
 
 export type GroupResolvable = string | Group | number
 
 const { TYPES } = constants
+const { lazyInject } = getDecorators(container)
 
 export default class GuildGroupManager extends BaseManager<Group, GroupResolvable> {
-  @inject(TYPES.GroupRepository) private readonly groupRepository!: Repository<GroupEntity>
+  @lazyInject(TYPES.GroupRepository)
+  private readonly groupRepository!: Repository<GroupEntity>
 
   public readonly guild: Guild
 

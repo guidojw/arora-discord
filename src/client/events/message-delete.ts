@@ -10,7 +10,8 @@ const { TYPES } = constants
 
 @injectable()
 export default class MessageDeleteEventHandler implements BaseHandler {
-  @inject(TYPES.MessageRepository) private readonly messageRepository!: Repository<Message>
+  @inject(TYPES.MessageRepository)
+  private readonly messageRepository!: Repository<Message>
 
   public async handle (_client: Client, message: CommandoMessage): Promise<void> {
     await this.messageRepository.delete(message.id)

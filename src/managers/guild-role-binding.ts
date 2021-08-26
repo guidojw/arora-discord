@@ -4,14 +4,17 @@ import type { Repository } from 'typeorm'
 import { RoleBinding } from '../structures'
 import type { RoleBinding as RoleBindingEntity } from '../entities'
 import { constants } from '../util'
-import { inject } from 'inversify'
+import container from '../configs/container'
+import getDecorators from 'inversify-inject-decorators'
 
 export type RoleBindingResolvable = RoleBinding | number
 
 const { TYPES } = constants
+const { lazyInject } = getDecorators(container)
 
 export default class GuildRoleBindingManager extends BaseManager<RoleBinding, RoleBindingResolvable> {
-  @inject(TYPES.RoleBindingRepository) private readonly roleBindingRepository!: Repository<RoleBindingEntity>
+  @lazyInject(TYPES.RoleBindingRepository)
+  private readonly roleBindingRepository!: Repository<RoleBindingEntity>
 
   public readonly guild: Guild
 

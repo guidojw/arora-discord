@@ -27,9 +27,10 @@ import type { Repository } from 'typeorm'
 import type { VerificationProvider } from '../util/constants'
 import applicationConfig from '../configs/application'
 import { constants } from '../util'
+import container from '../configs/container'
 import cron from 'node-cron'
 import cronConfig from '../configs/cron'
-import { inject } from 'inversify'
+import getDecorators from 'inversify-inject-decorators'
 
 export enum GuildSetting {
   primaryColor,
@@ -58,6 +59,7 @@ export interface GuildUpdateOptions {
 }
 
 const { TYPES } = constants
+const { lazyInject } = getDecorators(container)
 
 declare module 'discord.js' {
   interface Guild {
@@ -104,8 +106,11 @@ declare module 'discord.js' {
 // @ts-expect-error
 const AroraGuild: Guild = Structures.extend('Guild', Guild => {
   class AroraGuild extends Guild implements Omit<BaseStructure, 'client'> {
-    @inject(TYPES.GuildRepository) private readonly guildRepository!: Repository<GuildEntity>
-    @inject(TYPES.JobFactory) private readonly jobFactory!: (jobName: string) => BaseJob
+    @lazyInject(TYPES.GuildRepository)
+    private readonly guildRepository!: Repository<GuildEntity>
+
+    @lazyInject(TYPES.JobFactory)
+    private readonly jobFactory!: (jobName: string) => BaseJob
 
     public constructor (client: Client, data: object) {
       super(client, data)

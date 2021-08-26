@@ -3,9 +3,11 @@ import type { Channel as ChannelEntity } from '../entities'
 import type { Repository } from 'typeorm'
 import { Structures } from 'discord.js'
 import { constants } from '../util'
-import { inject } from 'inversify'
+import container from '../configs/container'
+import getDecorators from 'inversify-inject-decorators'
 
 const { TYPES } = constants
+const { lazyInject } = getDecorators(container)
 
 declare module 'discord.js' {
   interface VoiceChannel {
@@ -18,7 +20,8 @@ declare module 'discord.js' {
 // @ts-expect-error
 const AroraVoiceChannel: VoiceChannel = Structures.extend('VoiceChannel', VoiceChannel => {
   class AroraVoiceChannel extends VoiceChannel {
-    @inject(TYPES.ChannelRepository) private readonly channelRepository!: Repository<ChannelEntity>
+    @lazyInject(TYPES.ChannelRepository)
+    private readonly channelRepository!: Repository<ChannelEntity>
 
     // @ts-expect-error
     public override async fetchToLinks (): Promise<Collection<string, TextChannel>> {

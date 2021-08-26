@@ -10,7 +10,8 @@ const { TYPES } = constants
 
 @injectable()
 export default class EmojiDeleteEventHandler implements BaseHandler {
-  @inject(TYPES.EmojiRepository) private readonly emojiRepository!: Repository<Emoji>
+  @inject(TYPES.EmojiRepository)
+  private readonly emojiRepository!: Repository<Emoji>
 
   public async handle (_client: Client, emoji: GuildEmoji): Promise<void> {
     await this.emojiRepository.delete(emoji.id)

@@ -1,12 +1,14 @@
 import type { Command, CommandGroup, CommandoClient, CommandoGuild } from 'discord.js-commando'
 import type { Command as CommandEntity, GuildCommand as GuildCommandEntity, Guild as GuildEntity } from '../entities'
-import { inject, injectable } from 'inversify'
 import type { Repository } from 'typeorm'
 import { SettingProvider } from 'discord.js-commando'
 import type { Snowflake } from 'discord.js'
 import { constants } from '../util'
+import container from '../configs/container'
+import getDecorators from 'inversify-inject-decorators'
 
 const { CommandType, TYPES } = constants
+const { lazyInject } = getDecorators(container)
 
 declare module 'discord.js-commando' {
   interface SettingProvider {
@@ -20,12 +22,16 @@ declare module 'discord.js-commando' {
   }
 }
 
-@injectable()
 // @ts-expect-error
 export default class AroraProvider extends SettingProvider {
-  @inject(TYPES.CommandRepository) private readonly commandRepository!: Repository<CommandEntity>
-  @inject(TYPES.GuildCommandRepository) private readonly guildCommandRepository!: Repository<GuildCommandEntity>
-  @inject(TYPES.GuildRepository) private readonly guildRepository!: Repository<GuildEntity>
+  @lazyInject(TYPES.CommandRepository)
+  private readonly commandRepository!: Repository<CommandEntity>
+
+  @lazyInject(TYPES.GuildCommandRepository)
+  private readonly guildCommandRepository!: Repository<GuildCommandEntity>
+
+  @lazyInject(TYPES.GuildRepository)
+  private readonly guildRepository!: Repository<GuildEntity>
 
   private client!: CommandoClient
 
@@ -59,7 +65,7 @@ export default class AroraProvider extends SettingProvider {
           'groups.permissions',
           'groups.roles',
           'guildCommands',
-          'guildCommands.commands',
+          'guildCommands.command',
           'panels',
           'panels.message',
           'roleBindings',

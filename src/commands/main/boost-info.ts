@@ -28,7 +28,7 @@ export default class BoostInfoCommand extends BaseCommand {
     { member }: { member: GuildMember }
   ): Promise<Message | Message[] | null> {
     if (member.premiumSince === null) {
-      return await message.reply(`${message.argString !== null ? 'Member is not' : 'You\'re not'} a booster.`)
+      return await message.reply(`${message.argString !== '' ? 'Member is not' : 'You\'re not'} a booster.`)
     }
     const now = new Date()
     const diff = diffDays(member.premiumSince, now)
@@ -45,6 +45,6 @@ export default class BoostInfoCommand extends BaseCommand {
       .setDescription(`Has been boosting this server for **${pluralize('month', months, true)}** and **${pluralize('day', days, true)}**!`)
       .setFooter('* Discord Nitro months are 30 days long.')
       .setColor(0xff73fa)
-    return message.replyEmbed(embed)
+    return await message.replyEmbed(embed)
   }
 }

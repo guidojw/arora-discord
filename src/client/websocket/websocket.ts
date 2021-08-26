@@ -1,31 +1,23 @@
-import { inject, injectable } from 'inversify'
-import type BaseHandler from '../base'
 import type Client from '../client'
 import WebSocket from 'ws'
-import { constants } from '../../util'
 
 export interface Packet {
   event: string
   data?: any
 }
 
-const { TYPES } = constants
-
 const RECONNECT_TIMEOUT = 30 * 1000
 const PING_TIMEOUT = 30 * 1000 + 1000
 
-@injectable()
 export default class WebSocketManager {
-  @inject(TYPES.PacketHandlerFactory) private readonly packetHandlerFactory!: (eventName: string) => BaseHandler
-
   public readonly client: Client
   private readonly host: string
   private connection: WebSocket | null
   private pingTimeout: NodeJS.Timeout | null
 
-  public constructor (client: Client, host = process.env.HOST) {
+  public constructor (client: Client, host = process.env.WS_HOST) {
     this.client = client
-    this.host = host ?? '127.0.0.1'
+    this.host = host ?? 'ws://127.0.0.1'
     this.connection = null
     this.pingTimeout = null
   }
@@ -77,6 +69,6 @@ export default class WebSocketManager {
 
   private handlePacket (packet: Packet): void {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    this.packetHandlerFactory(packet.event).handle(this.client, packet)
+    this.client.packetHandlerFactory(packet.event).handle(this.client, packet)
   }
 }

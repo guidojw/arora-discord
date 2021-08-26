@@ -8,15 +8,18 @@ import type { Tag as TagEntity } from '../entities'
 import type { TagNameResolvable } from './tag-tag-name'
 import type { TagUpdateOptions } from '../structures'
 import { constants } from '../util'
+import container from '../configs/container'
 import { discordService } from '../services'
-import { inject } from 'inversify'
+import getDecorators from 'inversify-inject-decorators'
 
 export type TagResolvable = TagNameResolvable | Tag | number
 
 const { TYPES } = constants
+const { lazyInject } = getDecorators(container)
 
 export default class GuildTagManager extends BaseManager<Tag, TagResolvable> {
-  @inject(TYPES.TagRepository) private readonly tagRepository!: Repository<TagEntity>
+  @lazyInject(TYPES.TagRepository)
+  private readonly tagRepository!: Repository<TagEntity>
 
   public readonly guild: Guild
 

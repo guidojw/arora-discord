@@ -7,15 +7,18 @@ import type { PanelUpdateOptions } from '../structures'
 import type { Repository } from 'typeorm'
 import type { TextChannelResolvable } from './guild-ticket'
 import { constants } from '../util'
+import container from '../configs/container'
 import { discordService } from '../services'
-import { inject } from 'inversify'
+import getDecorators from 'inversify-inject-decorators'
 
 export type PanelResolvable = string | Panel | number
 
 const { TYPES } = constants
+const { lazyInject } = getDecorators(container)
 
 export default class GuildPanelManager extends BaseManager<Panel, PanelResolvable> {
-  @inject(TYPES.PanelRepository) private readonly panelRepository!: Repository<PanelEntity>
+  @lazyInject(TYPES.PanelRepository)
+  private readonly panelRepository!: Repository<PanelEntity>
 
   public readonly guild: Guild
 

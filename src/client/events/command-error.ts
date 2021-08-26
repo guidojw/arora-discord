@@ -1,13 +1,14 @@
 import type { ArgumentCollectorResult, Command, CommandoMessage } from 'discord.js-commando'
 import type BaseHandler from '../base'
 import type Client from '../client'
+import { DMChannel } from 'discord.js'
 import axios from 'axios'
 import { injectable } from 'inversify'
 
 @injectable()
 export default class CommandErrorEventHandler implements BaseHandler {
   public async handle (
-    client: Client,
+    _client: Client,
     _command: Command,
     err: Error,
     message: CommandoMessage,
@@ -21,9 +22,13 @@ export default class CommandErrorEventHandler implements BaseHandler {
       await message.reply(err.message)
     }
 
-    await Promise.all([
-      ...result?.prompts.map(client.deleteMessage.bind(client)),
-      ...result?.answers.map(client.deleteMessage.bind(client))
-    ])
+    if (!(message.channel instanceof DMChannel)) {
+      try {
+        await message.channel.bulkDelete([
+          ...result?.prompts.map(message => message.id),
+          ...result?.answers.map(message => message.id)
+        ])
+      } catch {}
+    }
   }
 }

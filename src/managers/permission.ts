@@ -8,15 +8,18 @@ import type { Permission as PermissionEntity } from '../entities'
 import type { Repository } from 'typeorm'
 import { Role } from 'discord.js'
 import { constants } from '../util'
-import { inject } from 'inversify'
+import container from '../configs/container'
+import getDecorators from 'inversify-inject-decorators'
 
 export type CommandOrCommandGroupResolvable = Command | CommandGroup | string
 export type PermissionResolvable = CommandOrCommandGroupResolvable | Permission | number
 
 const { TYPES } = constants
+const { lazyInject } = getDecorators(container)
 
 export default class PermissionManager extends BaseManager<Permission, PermissionResolvable> {
-  @inject(TYPES.PermissionRepository) private readonly permissionRepository!: Repository<PermissionEntity>
+  @lazyInject(TYPES.PermissionRepository)
+  private readonly permissionRepository!: Repository<PermissionEntity>
 
   public readonly permissible: PermissibleType
   public readonly guild: Guild

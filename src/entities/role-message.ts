@@ -13,7 +13,7 @@ export default class RoleMessage {
   @PrimaryGeneratedColumn()
   public readonly id!: number
 
-  @Column('string', { length: 7, nullable: true })
+  @Column('varchar', { length: 7, nullable: true })
   @ValidateIf(roleMessage => roleMessage.emoji != null)
   @Xor('emojiId')
   @IsNotEmpty()

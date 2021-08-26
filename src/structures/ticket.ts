@@ -203,7 +203,7 @@ export default class Ticket extends BaseStructure {
     if (this.author?.partial === true) {
       try {
         await this.author.fetch()
-      } catch {} // eslint-disable-line no-empty
+      } catch {}
     }
     const { robloxId, robloxUsername } = await this.fetchAuthorData()
     output += 'AUTHOR INFORMATION\n'
@@ -251,7 +251,7 @@ export default class Ticket extends BaseStructure {
       robloxUsername = this.author?.robloxUsername ?? (robloxId !== null
         ? (await userService.getUser(robloxId)).name
         : null)
-    } catch {} // eslint-disable-line no-empty
+    } catch {}
     return { robloxId, robloxUsername }
   }
 

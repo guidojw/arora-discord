@@ -3,12 +3,15 @@ import type { Group as GroupEntity, Role as RoleEntity } from '../entities'
 import type { Repository } from 'typeorm'
 import type { RoleGroup } from '../structures'
 import { constants } from '../util'
-import { inject } from 'inversify'
+import container from '../configs/container'
+import getDecorators from 'inversify-inject-decorators'
 
 const { TYPES } = constants
+const { lazyInject } = getDecorators(container)
 
 export default class GroupRoleManager {
-  @inject(TYPES.GroupRepository) private readonly groupRepository!: Repository<GroupEntity>
+  @lazyInject(TYPES.GroupRepository)
+  private readonly groupRepository!: Repository<GroupEntity>
 
   public readonly group: RoleGroup
   public readonly guild: Guild

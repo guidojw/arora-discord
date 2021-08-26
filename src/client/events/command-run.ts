@@ -1,6 +1,7 @@
 import type { ArgumentCollectorResult, Command, CommandoMessage } from 'discord.js-commando'
 import type BaseHandler from '../base'
 import type Client from '../client'
+import { DMChannel } from 'discord.js'
 import { injectable } from 'inversify'
 import { stripIndents } from 'common-tags'
 
@@ -22,10 +23,14 @@ export default class CommandRunEventHandler implements BaseHandler {
       return
     }
 
-    await Promise.all([
-      ...result?.prompts.map(client.deleteMessage.bind(client)),
-      ...result?.answers.map(client.deleteMessage.bind(client))
-    ])
+    if (!(message.channel instanceof DMChannel)) {
+      try {
+        await message.channel.bulkDelete([
+          ...result?.prompts.map(message => message.id),
+          ...result?.answers.map(message => message.id)
+        ])
+      } catch {}
+    }
 
     const guild = message.guild ?? client.mainGuild
     await guild.log(

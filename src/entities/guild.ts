@@ -104,7 +104,7 @@ export default class Guild {
   public ticketArchivesChannel?: Channel | null
 
   @OneToOne(() => Channel, { onDelete: 'SET NULL' })
-  @JoinColumn({ name: 'ticket_category_id' })
+  @JoinColumn({ name: 'tickets_category_id' })
   public ticketsCategory?: Channel | null
 
   @OneToMany(() => TicketType, ticketType => ticketType.guild)

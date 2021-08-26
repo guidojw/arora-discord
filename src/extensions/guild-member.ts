@@ -6,7 +6,8 @@ import type { Repository } from 'typeorm'
 import { Structures } from 'discord.js'
 import { VerificationProvider } from '../util/constants'
 import { constants } from '../util'
-import { inject } from 'inversify'
+import container from '../configs/container'
+import getDecorators from 'inversify-inject-decorators'
 
 export interface VerificationData {
   provider: VerificationProvider
@@ -15,6 +16,7 @@ export interface VerificationData {
 }
 
 const { TYPES } = constants
+const { lazyInject } = getDecorators(container)
 
 declare module 'discord.js' {
   interface GuildMember {
@@ -33,7 +35,8 @@ declare module 'discord.js' {
 // @ts-expect-error
 const AroraGuildMember: GuildMember = Structures.extend('GuildMember', GuildMember => {
   class AroraGuildMember extends GuildMember {
-    @inject(TYPES.MemberRepository) private readonly memberRepository!: Repository<MemberEntity>
+    @lazyInject(TYPES.MemberRepository)
+    private readonly memberRepository!: Repository<MemberEntity>
 
     public constructor (...args: any[]) {
       // @ts-expect-error
