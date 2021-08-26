@@ -3,6 +3,7 @@ import type { Guild, GuildMember, Message } from 'discord.js'
 import BaseCommand from '../base'
 import { MessageEmbed } from 'discord.js'
 import { applicationAdapter } from '../../adapters'
+import applicationConfig from '../../configs/application'
 import { argumentUtil } from '../../util'
 
 const { validators, noChannels, noTags, noUrls } = argumentUtil
@@ -47,7 +48,7 @@ export default class ShoutCommand extends BaseCommand {
     } else {
       const embed = new MessageEmbed()
         .addField('Successfully shouted', shout.body)
-        .setColor(message.guild.primaryColor ?? 0xffffff)
+        .setColor(message.guild.primaryColor ?? applicationConfig.defaultColor)
       return await message.replyEmbed(embed)
     }
   }

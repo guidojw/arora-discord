@@ -3,6 +3,7 @@ import type { Command, CommandGroup, CommandoClient, CommandoMessage } from 'dis
 import { GuildMember, MessageEmbed } from 'discord.js'
 import BaseCommand from '../base'
 import type { RoleGroup } from '../../structures'
+import applicationConfig from '../../configs/application'
 
 export default class PermissionsCommand extends BaseCommand {
   public constructor (client: CommandoClient) {
@@ -25,7 +26,7 @@ export default class PermissionsCommand extends BaseCommand {
     { memberOrRoleOrGroup }: { memberOrRoleOrGroup: GuildMember | Role | RoleGroup }
   ): Promise<Message | Message[] | null> {
     const embed = new MessageEmbed()
-      .setColor(message.guild.primaryColor ?? 0xffffff)
+      .setColor(message.guild.primaryColor ?? applicationConfig.defaultColor)
     if (memberOrRoleOrGroup instanceof GuildMember) {
       embed
         .setTitle(`${memberOrRoleOrGroup.user.tag}'s Permissions`)

@@ -3,6 +3,7 @@ import BaseCommand from '../base'
 import type { Group } from '../../structures'
 import type { Message } from 'discord.js'
 import { MessageEmbed } from 'discord.js'
+import applicationConfig from '../../configs/application'
 import { discordService } from '../../services'
 
 export default class GroupsCommand extends BaseCommand {
@@ -31,7 +32,7 @@ export default class GroupsCommand extends BaseCommand {
         .addField('Name', group.name, true)
         .addField('Type', group.type, true)
         .addField('Guarded', group.guarded ? 'yes' : 'no', true)
-        .setColor(message.guild.primaryColor ?? 0xffffff)
+        .setColor(message.guild.primaryColor ?? applicationConfig.defaultColor)
       if (group.isChannelGroup()) {
         const channelsString = Array.from(group.channels.cache.values()).join(' ')
         embed.addField('Channels', channelsString !== '' ? channelsString : 'none')

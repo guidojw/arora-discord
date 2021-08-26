@@ -3,6 +3,7 @@ import BaseCommand from '../base'
 import type { Message } from 'discord.js'
 import { MessageEmbed } from 'discord.js'
 import type { RobloxUser } from '../../types/roblox-user'
+import applicationConfig from '../../configs/application'
 import pluralize from 'pluralize'
 import { timeUtil } from '../../util'
 import { userService } from '../../services'
@@ -38,7 +39,7 @@ export default class WhoIsCommand extends BaseCommand {
     const embed = new MessageEmbed()
       .setAuthor(userInfo.name ?? 'Unknown', `https://www.roblox.com/headshot-thumbnail/image?width=150&height=150&format=png&userId=${user.id}`)
       .setThumbnail(`https://www.roblox.com/outfit-thumbnail/image?width=150&height=150&format=png&userOutfitId=${outfits[0]?.id ?? 0}`)
-      .setColor(message.guild.primaryColor ?? 0xffffff)
+      .setColor(message.guild.primaryColor ?? applicationConfig.defaultColor)
       .addField('Blurb', userInfo.description !== '' ? userInfo.description : 'No blurb')
       .addField('Join Date', getDate(new Date(userInfo.created)), true)
       .addField('Account Age', pluralize('day', age, true), true)

@@ -5,6 +5,7 @@ import BaseCommand from '../base'
 import { MessageEmbed } from 'discord.js'
 import { Training } from '../../services/group'
 import { applicationAdapter } from '../../adapters'
+import applicationConfig from '../../configs/application'
 import { timeUtil } from '../../util'
 
 const { getDate, getTime, getTimeZoneAbbreviation } = timeUtil
@@ -45,7 +46,7 @@ export default class TrainingsCommand extends BaseCommand {
         .addField('Date', getDate(date), true)
         .addField('Time', `${getTime(date)} ${getTimeZoneAbbreviation(date)}`, true)
         .addField('Host', username, true)
-        .setColor(message.guild.primaryColor ?? 0xffffff)
+        .setColor(message.guild.primaryColor ?? applicationConfig.defaultColor)
       return await message.replyEmbed(embed)
     } else {
       const trainings: Training[] = (await applicationAdapter('GET', `v1/groups/${message.guild.robloxGroupId}/trainings?sort=date`))

@@ -7,6 +7,7 @@ import type { TextChannelResolvable } from '../managers'
 import type { Ticket as TicketEntity } from '../entities'
 import TicketGuildMemberManager from '../managers/ticket-guild-member'
 import TicketType from './ticket-type'
+import applicationConfig from '../configs/application'
 import pluralize from 'pluralize'
 import { stripIndents } from 'common-tags'
 
@@ -87,7 +88,7 @@ export default class Ticket extends BaseStructure {
     const readableDate = getDate(date)
     const readableTime = getTime(date)
     const ticketInfoEmbed = new MessageEmbed()
-      .setColor(this.guild.primaryColor ?? 0xffffff)
+      .setColor(this.guild.primaryColor ?? applicationConfig.defaultColor)
       .setTitle('Ticket Information')
       .setDescription(stripIndents`
       Username: \`${robloxUsername ?? 'unknown'}\`
@@ -98,7 +99,7 @@ export default class Ticket extends BaseStructure {
     await this.channel?.send(this.author.toString(), ticketInfoEmbed)
 
     const modInfoEmbed = new MessageEmbed()
-      .setColor(this.guild.primaryColor ?? 0xffffff)
+      .setColor(this.guild.primaryColor ?? applicationConfig.defaultColor)
       .setDescription(stripIndents`
       A Ticket Moderator will be with you shortly.
       This may take up to 24 hours. You can still close your ticket by using the \`closeticket\` command.
@@ -125,14 +126,14 @@ export default class Ticket extends BaseStructure {
           await this.logRating(rating)
 
           const embed = new MessageEmbed()
-            .setColor(this.guild.primaryColor ?? 0xffffff)
+            .setColor(this.guild.primaryColor ?? applicationConfig.defaultColor)
             .setAuthor(this.client.user?.username, this.client.user?.displayAvatarURL())
             .setTitle('Rating submitted')
             .setDescription('Thank you!')
           await this.client.send(this.author, embed)
         } else {
           const embed = new MessageEmbed()
-            .setColor(this.guild.primaryColor ?? 0xffffff)
+            .setColor(this.guild.primaryColor ?? applicationConfig.defaultColor)
             .setAuthor(this.client.user?.username, this.client.user?.displayAvatarURL())
             .setTitle('No rating submitted')
           await this.client.send(this.author, embed)
@@ -149,7 +150,7 @@ export default class Ticket extends BaseStructure {
     }
 
     const embed = new MessageEmbed()
-      .setColor(this.guild.primaryColor ?? 0xffffff)
+      .setColor(this.guild.primaryColor ?? applicationConfig.defaultColor)
       .setAuthor(this.client.user?.username, this.client.user?.displayAvatarURL())
       .setTitle('How would you rate the support you got?')
     const message = await this.client.send(this.author, embed) as Message | null
@@ -183,7 +184,7 @@ export default class Ticket extends BaseStructure {
     }
 
     const embed = new MessageEmbed()
-      .setColor(this.guild.primaryColor ?? 0xffffff)
+      .setColor(this.guild.primaryColor ?? applicationConfig.defaultColor)
       .setAuthor(this.author?.user?.tag ?? this.authorId ?? 'unknown', this.author?.user?.displayAvatarURL())
       .setTitle('Ticket Rating')
       .setDescription(stripIndents`

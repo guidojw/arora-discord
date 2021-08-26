@@ -4,6 +4,7 @@ import { argumentUtil, timeUtil } from '../../util'
 import BaseCommand from '../base'
 import { MessageEmbed } from 'discord.js'
 import { applicationAdapter } from '../../adapters'
+import applicationConfig from '../../configs/application'
 import { groupService } from '../../services'
 
 const { validators, noChannels, noTags, noUrls, parseNoneOrType, validDate, validTime } = argumentUtil
@@ -89,7 +90,7 @@ export default class ScheduleTrainingCommand extends BaseCommand {
     const embed = new MessageEmbed()
       .addField('Successfully scheduled', `**${trainingType.name}** training on **${date}** at **${time}**.`)
       .addField('Training ID', training.id.toString())
-      .setColor(message.guild.primaryColor ?? 0xffffff)
+      .setColor(message.guild.primaryColor ?? applicationConfig.defaultColor)
     return await message.replyEmbed(embed)
   }
 }

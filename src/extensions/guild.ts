@@ -289,7 +289,7 @@ const AroraGuild: Guild = Structures.extend('Guild', Guild => {
 
         const embed = new MessageEmbed()
           .setAuthor(author.tag, author.displayAvatarURL())
-          .setColor(this.primaryColor ?? 0xffffff)
+          .setColor(this.primaryColor ?? applicationConfig.defaultColor)
           .setDescription(content)
         if (typeof options.color !== 'undefined') {
           embed.setColor(options.color)

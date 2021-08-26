@@ -3,6 +3,7 @@ import BaseCommand from '../base'
 import type { Message } from 'discord.js'
 import { MessageEmbed } from 'discord.js'
 import type { RoleMessage } from '../../structures'
+import applicationConfig from '../../configs/application'
 import { discordService } from '../../services'
 import lodash from 'lodash'
 
@@ -30,7 +31,7 @@ export default class RoleMessagesCommand extends BaseCommand {
     if (roleMessage !== '') {
       const embed = new MessageEmbed()
         .addField(`Role Message ${roleMessage.id}`, `Message ID: \`${roleMessage.messageId ?? 'unknown'}\`, ${roleMessage.emoji?.toString() ?? 'Unknown'} => ${roleMessage.role?.toString() ?? 'Unknown'}`)
-        .setColor(message.guild.primaryColor ?? 0xffffff)
+        .setColor(message.guild.primaryColor ?? applicationConfig.defaultColor)
       return await message.replyEmbed(embed)
     } else {
       if (message.guild.roleMessages.cache.size === 0) {

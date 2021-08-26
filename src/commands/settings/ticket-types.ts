@@ -3,6 +3,7 @@ import BaseCommand from '../base'
 import type { Message } from 'discord.js'
 import { MessageEmbed } from 'discord.js'
 import type { TicketType } from '../../structures'
+import applicationConfig from '../../configs/application'
 import { discordService } from '../../services'
 
 export default class RoleBindingsCommand extends BaseCommand {
@@ -28,7 +29,7 @@ export default class RoleBindingsCommand extends BaseCommand {
     if (type !== '') {
       const embed = new MessageEmbed()
         .addField(`Ticket Type ${type.id}`, `Name: \`${type.name}\``)
-        .setColor(message.guild.primaryColor ?? 0xffffff)
+        .setColor(message.guild.primaryColor ?? applicationConfig.defaultColor)
       return await message.replyEmbed(embed)
     } else {
       if (message.guild.ticketTypes.cache.size === 0) {

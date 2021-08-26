@@ -3,6 +3,7 @@ import BaseCommand from '../base'
 import type { Message } from 'discord.js'
 import { MessageEmbed } from 'discord.js'
 import type { Tag } from '../../structures'
+import applicationConfig from '../../configs/application'
 import { util } from '../../util'
 
 const { makeCommaSeparatedString } = util
@@ -44,7 +45,7 @@ export default class TagsCommand extends BaseCommand {
         .setTitle('Tags')
         .setDescription(list)
         .setFooter(`Page 1/1 (${message.guild.tags.cache.size} entries)`)
-        .setColor(message.guild.primaryColor ?? 0xffffff)
+        .setColor(message.guild.primaryColor ?? applicationConfig.defaultColor)
       return await message.replyEmbed(embed)
     }
   }

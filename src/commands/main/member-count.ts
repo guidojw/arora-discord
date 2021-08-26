@@ -2,6 +2,7 @@ import type { CommandoClient, CommandoMessage } from 'discord.js-commando'
 import BaseCommand from '../base'
 import type { Message } from 'discord.js'
 import { MessageEmbed } from 'discord.js'
+import applicationConfig from '../../configs/application'
 import { groupService } from '../../services'
 
 export default class MemberCountCommand extends BaseCommand {
@@ -33,7 +34,7 @@ export default class MemberCountCommand extends BaseCommand {
 
     const embed = new MessageEmbed()
       .addField(`${group.name}'s member count`, group.memberCount)
-      .setColor(message.guild.primaryColor ?? 0xffffff)
+      .setColor(message.guild.primaryColor ?? applicationConfig.defaultColor)
     return await message.replyEmbed(embed)
   }
 }

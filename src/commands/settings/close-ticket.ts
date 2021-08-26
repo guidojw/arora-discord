@@ -1,6 +1,7 @@
 import type { CommandoClient, CommandoMessage } from 'discord.js-commando'
 import type { GuildMember, Message, TextChannel } from 'discord.js'
 import BaseCommand from '../base'
+import applicationConfig from '../../configs/application'
 import { discordService } from '../../services'
 import { stripIndents } from 'common-tags'
 
@@ -39,12 +40,12 @@ export default class CloseTicketCommand extends BaseCommand {
           await ticket.close(
             'Ticket successfully closed.',
             false,
-            message.guild.primaryColor ?? 0xffffff)
+            message.guild.primaryColor ?? applicationConfig.defaultColor)
         } else {
           await ticket.close(
             'The moderator has closed your ticket.',
             true,
-            message.guild.primaryColor ?? 0xffffff)
+            message.guild.primaryColor ?? applicationConfig.defaultColor)
         }
       }
     } else if (message.guild.ticketsCategory !== null && message.channel.parentID === message.guild.ticketsCategoryId &&

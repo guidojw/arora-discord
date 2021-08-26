@@ -5,6 +5,7 @@ import type { Guild } from 'discord.js'
 import { MessageEmbed } from 'discord.js'
 import type { Training } from '../services/group'
 import { applicationAdapter } from '../adapters'
+import applicationConfig from '../configs/application'
 import { injectable } from 'inversify'
 import lodash from 'lodash'
 import pluralize from 'pluralize'
@@ -33,7 +34,7 @@ export default class AnnounceTrainingsJob implements BaseJob {
 
     // Trainings Info Panel
     if (trainingsInfoPanel?.message != null) {
-      const embed = trainingsInfoPanel.embed.setColor(guild.primaryColor ?? 0xffffff)
+      const embed = trainingsInfoPanel.embed.setColor(guild.primaryColor ?? applicationConfig.defaultColor)
       const now = new Date()
 
       if (embed.description !== null) {
@@ -55,7 +56,7 @@ export default class AnnounceTrainingsJob implements BaseJob {
     if (trainingsPanel?.message != null) {
       const embed = await getTrainingsEmbed(guild.robloxGroupId, trainings, authors)
 
-      embed.setColor(guild.primaryColor ?? 0xffffff)
+      embed.setColor(guild.primaryColor ?? applicationConfig.defaultColor)
 
       await trainingsPanel.message.edit(embed)
     }

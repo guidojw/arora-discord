@@ -2,6 +2,7 @@ import type { CommandoClient, CommandoMessage } from 'discord.js-commando'
 import type { Message, VoiceChannel } from 'discord.js'
 import BaseCommand from '../base'
 import { MessageEmbed } from 'discord.js'
+import applicationConfig from '../../configs/application'
 
 export default class ChannelLinksCommand extends BaseCommand {
   public constructor (client: CommandoClient) {
@@ -31,7 +32,7 @@ export default class ChannelLinksCommand extends BaseCommand {
       .setTitle(`${channel.name}'s Channel Links`)
       // eslint-disable-next-line @typescript-eslint/no-base-to-string
       .setDescription(links.map(channel => channel.toString()))
-      .setColor(message.guild.primaryColor ?? 0xffffff)
+      .setColor(message.guild.primaryColor ?? applicationConfig.defaultColor)
     return await message.replyEmbed(embed)
   }
 }

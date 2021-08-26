@@ -3,6 +3,7 @@ import BaseCommand from '../base'
 import type { Message } from 'discord.js'
 import { MessageEmbed } from 'discord.js'
 import type { RoleBinding } from '../../structures'
+import applicationConfig from '../../configs/application'
 import { discordService } from '../../services'
 import lodash from 'lodash'
 
@@ -30,7 +31,7 @@ export default class RoleBindingsCommand extends BaseCommand {
     if (roleBinding !== '') {
       const embed = new MessageEmbed()
         .addField(`Role Binding ${roleBinding.id}`, `\`${roleBinding.robloxGroupId}\` \`${getRangeString(roleBinding.min, roleBinding.max)}\` => ${roleBinding.role?.toString() ?? 'Unknown'}`)
-        .setColor(message.guild.primaryColor ?? 0xffffff)
+        .setColor(message.guild.primaryColor ?? applicationConfig.defaultColor)
       return await message.replyEmbed(embed)
     } else {
       if (message.guild.roleBindings.cache.size === 0) {

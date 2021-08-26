@@ -2,6 +2,7 @@ import type { CommandoClient, CommandoMessage } from 'discord.js-commando'
 import BaseCommand from '../base'
 import type { Message } from 'discord.js'
 import { MessageEmbed } from 'discord.js'
+import applicationConfig from '../../configs/application'
 import { argumentUtil } from '../../util'
 
 const { validators, noTags } = argumentUtil
@@ -38,7 +39,7 @@ export default class PollCommand extends BaseCommand {
     const embed = new MessageEmbed()
       .setDescription(poll)
       .setAuthor(message.author.tag, message.author.displayAvatarURL())
-      .setColor(message.guild.primaryColor ?? 0xffffff)
+      .setColor(message.guild.primaryColor ?? applicationConfig.defaultColor)
 
     const newMessage = await message.channel.send(embed)
     if (options.length > 0) {

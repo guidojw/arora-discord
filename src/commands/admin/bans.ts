@@ -4,6 +4,7 @@ import BaseCommand from '../base'
 import { MessageEmbed } from 'discord.js'
 import type { RobloxUser } from '../../types/roblox-user'
 import { applicationAdapter } from '../../adapters'
+import applicationConfig from '../../configs/application'
 import { groupService } from '../../services'
 import pluralize from 'pluralize'
 import { timeUtil } from '../../util'
@@ -47,7 +48,7 @@ export default class BansCommand extends BaseCommand {
         : ''
       const embed = new MessageEmbed()
         .setTitle(`${user.username ?? user.id}'s ban`)
-        .setColor(message.guild.primaryColor ?? 0xffffff)
+        .setColor(message.guild.primaryColor ?? applicationConfig.defaultColor)
         .addField('Start date', getDate(date), true)
         .addField('Start time', getTime(date), true)
         .addField('Duration', `${days}${extensionString} ${pluralize('day', days + extensionDays)}`, true)

@@ -4,6 +4,7 @@ import BaseCommand from '../base'
 import type { GetGroupStatus } from '../../services/group'
 import { MessageEmbed } from 'discord.js'
 import { applicationAdapter } from '../../adapters'
+import applicationConfig from '../../configs/application'
 
 export default class GetShoutCommand extends BaseCommand {
   public constructor (client: CommandoClient) {
@@ -26,7 +27,7 @@ export default class GetShoutCommand extends BaseCommand {
       const embed = new MessageEmbed()
         .addField(`Current shout by ${shout.poster.username}`, shout.body)
         .setTimestamp(new Date(shout.updated))
-        .setColor(message.guild.primaryColor ?? 0xffffff)
+        .setColor(message.guild.primaryColor ?? applicationConfig.defaultColor)
       return await message.replyEmbed(embed)
     } else {
       return await message.reply('There currently is no shout.')

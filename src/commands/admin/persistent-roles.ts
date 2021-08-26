@@ -2,6 +2,7 @@ import type { CommandoClient, CommandoMessage } from 'discord.js-commando'
 import type { GuildMember, Message } from 'discord.js'
 import BaseCommand from '../base'
 import { MessageEmbed } from 'discord.js'
+import applicationConfig from '../../configs/application'
 
 export default class PersistentRolesCommand extends BaseCommand {
   public constructor (client: CommandoClient) {
@@ -31,7 +32,7 @@ export default class PersistentRolesCommand extends BaseCommand {
     const embed = new MessageEmbed()
       .setTitle(`${member.user.tag}'s Persistent Roles`)
       .setDescription(persistentRoles.map(role => role.toString()))
-      .setColor(message.guild.primaryColor ?? 0xffffff)
+      .setColor(message.guild.primaryColor ?? applicationConfig.defaultColor)
     return await message.replyEmbed(embed)
   }
 }

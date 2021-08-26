@@ -2,6 +2,7 @@ import type BaseHandler from '../base'
 import type Client from '../client'
 import type { GuildMember } from 'discord.js'
 import { MessageEmbed } from 'discord.js'
+import applicationConfig from '../../configs/application'
 import { injectable } from 'inversify'
 import { util } from '../../util'
 
@@ -23,7 +24,7 @@ export default class GuildMemberAddEventHandler implements BaseHandler {
         .setTitle(`Hey ${member.user.tag},`)
         .setDescription(`You're the **${getOrdinalNum(guild.memberCount)}** member on **${guild.name}**!`)
         .setThumbnail(member.user.displayAvatarURL())
-        .setColor(guild.primaryColor ?? 0xffffff)
+        .setColor(guild.primaryColor ?? applicationConfig.defaultColor)
       await Promise.all(welcomeChannelsGroup.channels.cache.map(async channel => await channel.send(embed)))
     }
 
