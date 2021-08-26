@@ -13,8 +13,8 @@ export class PanelSubscriber implements EntitySubscriberInterface<Panel> {
     if (event.updatedColumns.some(column => column.propertyName === 'messageId') && event.entity.messageId != null) {
       const entity = messageRepository.create({
         id: event.entity.messageId,
-        guildId: event.entity.guildId,
-        channelId: event.queryRunner.data.channelId
+        channelId: event.queryRunner.data.channelId,
+        guildId: event.queryRunner.data.guildId
       })
       if (typeof await messageRepository.findOne(entity) === 'undefined') {
         await messageRepository.save(entity)

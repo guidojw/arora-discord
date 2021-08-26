@@ -305,10 +305,11 @@ const AroraGuild: Guild = Structures.extend('Guild', Guild => {
 
     // @ts-expect-error
     public override async update (data: GuildUpdateOptions): Promise<this> {
-      const newData = await this.guildRepository.save(this.guildRepository.create({
+      await this.guildRepository.save(this.guildRepository.create({
         id: this.id,
         ...data
       }))
+      const newData = await this.guildRepository.findOne(this.id) as GuildEntity
 
       this.setup(newData)
       return this

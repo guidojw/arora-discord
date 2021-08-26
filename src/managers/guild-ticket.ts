@@ -62,13 +62,17 @@ export default class GuildTicketManager extends BaseManager<Ticket, TicketResolv
       throw err
     }
 
-    const newData = await this.ticketRepository.save(this.ticketRepository.create({
+    const id = (await this.ticketRepository.save(this.ticketRepository.create({
       guildId: this.guild.id,
       channelId: channel.id,
       typeId: ticketType.id
     }), {
       data: { userId: author.id }
-    })
+    })).id
+    const newData = await this.ticketRepository.findOne(
+      id,
+      { relations: ['author'] }
+    ) as TicketEntity
     const ticket = this.add(newData)
 
     await this.guild.log(
@@ -115,10 +119,14 @@ export default class GuildTicketManager extends BaseManager<Ticket, TicketResolv
       changes.channelId = channel.id
     }
 
-    const newData = await this.ticketRepository.save(this.ticketRepository.create({
+    await this.ticketRepository.save(this.ticketRepository.create({
       id,
       ...changes
     }))
+    const newData = await this.ticketRepository.findOne(
+      id,
+      { relations: ['author'] }
+    ) as TicketEntity
 
     const _ticket = this.cache.get(id)
     _ticket?.setup(newData)

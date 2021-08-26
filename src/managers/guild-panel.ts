@@ -78,7 +78,7 @@ export default class GuildPanelManager extends BaseManager<Panel, PanelResolvabl
     }
 
     const changes: Partial<PanelEntity> = {}
-    const options: { channelId?: string } = {}
+    const options: { channelId?: string, guildId?: string } = {}
     if (typeof data.name !== 'undefined') {
       if (this.resolve(data.name) !== null) {
         throw new Error('A panel with that name already exists.')
@@ -117,6 +117,7 @@ export default class GuildPanelManager extends BaseManager<Panel, PanelResolvabl
       }
       changes.messageId = message.id
       options.channelId = message.channel.id
+      options.guildId = this.guild.id
 
       await message.edit('', panel.embed)
     }
@@ -160,7 +161,10 @@ export default class GuildPanelManager extends BaseManager<Panel, PanelResolvabl
       id: panel.id,
       ...data
     }), {
-      data: { channelId: channel?.id ?? null }
+      data: {
+        channelId: channel?.id ?? null,
+        guildId: this.guild.id
+      }
     })
 
     const _panel = this.cache.get(panel.id)

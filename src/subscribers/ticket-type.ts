@@ -14,7 +14,7 @@ export class TicketTypeSubscriber implements EntitySubscriberInterface<TicketTyp
       const messageEntity = messageRepository.create({
         id: event.entity.messageId,
         channelId: event.queryRunner.data.channelId,
-        guildId: event.entity.guildId
+        guildId: event.queryRunner.data.guildId
       })
       if (typeof await messageRepository.findOne(messageEntity) === 'undefined') {
         await messageRepository.save(messageEntity)
@@ -25,7 +25,7 @@ export class TicketTypeSubscriber implements EntitySubscriberInterface<TicketTyp
       const emojiRepository = event.manager.getRepository(Emoji)
       const emojiEntity = emojiRepository.create({
         id: event.entity.emojiId,
-        guildId: event.entity.guildId
+        guildId: event.queryRunner.data.guildId
       })
       if (typeof await emojiRepository.findOne(emojiEntity) === 'undefined') {
         await emojiRepository.save(emojiEntity)

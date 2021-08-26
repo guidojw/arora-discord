@@ -68,7 +68,7 @@ export default class GuildRoleMessageManager extends BaseManager<RoleMessage, Ro
     }
 
     await message.react(emoji)
-    const newData = await this.roleMessageRepository.save(this.roleMessageRepository.create({
+    const id = (await this.roleMessageRepository.save(this.roleMessageRepository.create({
       roleId: role.id,
       messageId: message.id,
       emojiId: emoji instanceof GuildEmoji ? emoji.id : null,
@@ -76,7 +76,11 @@ export default class GuildRoleMessageManager extends BaseManager<RoleMessage, Ro
       guildId: this.guild.id
     }), {
       data: { channelId: message.channel.id }
-    })
+    })).id
+    const newData = await this.roleMessageRepository.findOne(
+      id,
+      { relations: ['message'] }
+    ) as RoleMessageEntity
 
     return this.add(newData)
   }

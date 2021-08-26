@@ -86,10 +86,14 @@ export default class GuildTicketTypeManager extends BaseManager<TicketType, Tick
       changes.name = data.name.toLowerCase()
     }
 
-    const newData = await this.ticketTypeRepository.save(this.ticketTypeRepository.create({
+    await this.ticketTypeRepository.save(this.ticketTypeRepository.create({
       id,
       ...changes
     }))
+    const newData = await this.ticketTypeRepository.findOne(
+      id,
+      { relations: ['message'] }
+    ) as TicketTypeEntity
 
     const _ticketType = this.cache.get(id)
     _ticketType?.setup(newData)
@@ -135,14 +139,21 @@ export default class GuildTicketTypeManager extends BaseManager<TicketType, Tick
       await ticketType.message.reactions.resolve(ticketType.emojiId)?.users.remove(this.client.user ?? undefined)
     }
     await message.react(emoji)
-    const newData = await this.ticketTypeRepository.save(this.ticketTypeRepository.create({
+    await this.ticketTypeRepository.save(this.ticketTypeRepository.create({
       id: ticketType.id,
       messageId: message.id,
       emojiId: emoji instanceof GuildEmoji ? emoji.id : null,
       emoji: !(emoji instanceof GuildEmoji) ? emoji : null
     }), {
-      data: { channelId: message.channel.id }
+      data: {
+        channelId: message.channel.id,
+        guildId: this.guild.id
+      }
     })
+    const newData = await this.ticketTypeRepository.findOne(
+      ticketType.id,
+      { relations: ['message'] }
+    ) as TicketTypeEntity
 
     const _ticketType = this.cache.get(ticketType.id)
     _ticketType?.setup(newData)
@@ -164,12 +175,13 @@ export default class GuildTicketTypeManager extends BaseManager<TicketType, Tick
       }
       await ticketType.message.reactions.resolve(ticketType.emojiId)?.users.remove(this.client.user ?? undefined)
     }
-    const newData = await this.ticketTypeRepository.save(this.ticketTypeRepository.create({
+    await this.ticketTypeRepository.save(this.ticketTypeRepository.create({
       id: ticketType.id,
       messageId: null,
       emojiId: null,
       emoji: null
     }))
+    const newData = await this.ticketTypeRepository.findOne(ticketType.id) as TicketTypeEntity
 
     const _ticketType = this.cache.get(ticketType.id)
     _ticketType?.setup(newData)
