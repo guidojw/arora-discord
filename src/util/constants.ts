@@ -22,6 +22,7 @@ export const TYPES = {
   Handler: Symbol.for('Handler'),
   EventHandlerFactory: Symbol.for('EventHandlerFactory'),
   PacketHandlerFactory: Symbol.for('PacketHandlerFactory'),
+
   Job: Symbol.for('Job'),
   JobFactory: Symbol.for('JobFactory')
 }

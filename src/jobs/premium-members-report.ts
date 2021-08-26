@@ -5,11 +5,11 @@ import { injectable } from 'inversify'
 import pluralize from 'pluralize'
 import { timeUtil } from '../util'
 
-const { diffDays } = timeUtil
-
 interface PremiumGuildMember extends GuildMember {
   premiumSince: Date
 }
+
+const { diffDays } = timeUtil
 
 @injectable()
 export default class PremiumMembersReportJob implements BaseJob {

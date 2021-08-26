@@ -4,11 +4,11 @@ import type { GetUserGroups } from 'bloxy/dist/client/apis/GroupsAPI'
 import { robloxAdapter } from '../adapters'
 import { util } from '../util'
 
-const { split } = util
-
 export type GetUsers = GetUsersByUserIds['data']
 export type GetGroupsRoles = GetUserGroups['data']
 export type GetUserOutfits = BloxyGetUserOutfits['data']
+
+const { split } = util
 
 export async function getGroupsRoles (userId: number): Promise<GetGroupsRoles> {
   return (await robloxAdapter('GET', 'groups', `v1/users/${userId}/groups/roles`)).data.data

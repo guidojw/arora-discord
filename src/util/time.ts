@@ -1,5 +1,5 @@
-declare interface DateInfo { day: number, month: number, year: number }
-declare interface TimeInfo { hours: number, minutes: number }
+interface DateInfo { day: number, month: number, year: number }
+interface TimeInfo { hours: number, minutes: number }
 
 function getReadableDate (opts: DateInfo): string {
   return `${opts.day}-${opts.month}-${opts.year}`

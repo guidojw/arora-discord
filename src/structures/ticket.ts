@@ -10,10 +10,6 @@ import TicketType from './ticket-type'
 import pluralize from 'pluralize'
 import { stripIndents } from 'common-tags'
 
-const { PartialTypes } = Constants
-const { getDate, getTime } = timeUtil
-const { makeCommaSeparatedString } = util
-
 export interface NewTicket extends Ticket {
   authorId: string
   typeId: number
@@ -22,6 +18,10 @@ export interface NewTicket extends Ticket {
 }
 
 export interface TicketUpdateOptions { channel?: TextChannelResolvable }
+
+const { PartialTypes } = Constants
+const { getDate, getTime } = timeUtil
+const { makeCommaSeparatedString } = util
 
 export default class Ticket extends BaseStructure {
   public readonly guild: Guild

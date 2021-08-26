@@ -31,6 +31,8 @@ const { PartialTypes } = Constants
 const { TYPES } = constants
 const { lazyInject } = getDecorators(container)
 
+const registerFilter = /^(?!base\.js|.*\.d\.).*/
+
 const ACTIVITY_CAROUSEL_INTERVAL = 60 * 1000
 
 declare module 'discord.js' {
@@ -132,8 +134,8 @@ export default class AroraClient extends CommandoClient {
       .registerGroup('bot', 'Bot')
       .registerGroup('main', 'Main')
       .registerGroup('settings', 'Settings')
-      .registerTypesIn({ dirname: path.join(__dirname, '../types'), filter: /^(?!base\.js|.*\.d\.).*/ })
-      .registerCommandsIn({ dirname: path.join(__dirname, '../commands'), filter: /^(?!base\.js|.*\.d\.).*/ })
+      .registerTypesIn({ dirname: path.join(__dirname, '../types'), filter: registerFilter })
+      .registerCommandsIn({ dirname: path.join(__dirname, '../commands'), filter: registerFilter })
 
     this.dispatcher.addInhibitor(requiresApiInhibitor)
     this.dispatcher.addInhibitor(requiresRobloxGroupInhibitor)
