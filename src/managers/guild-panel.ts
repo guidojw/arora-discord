@@ -122,12 +122,16 @@ export default class GuildPanelManager extends BaseManager<Panel, PanelResolvabl
       await message.edit('', panel.embed)
     }
 
-    const newData = await this.panelRepository.save(this.panelRepository.create({
+    await this.panelRepository.save(this.panelRepository.create({
       id: panel.id,
       ...changes
     }), {
       data: options
     })
+    const newData = await this.panelRepository.findOne(
+      panel.id,
+      { relations: ['message'] }
+    ) as PanelEntity
 
     const _panel = this.cache.get(panel.id)
     _panel?.setup(newData)
@@ -157,7 +161,7 @@ export default class GuildPanelManager extends BaseManager<Panel, PanelResolvabl
       const message = await channel.send(panel.embed)
       data.messageId = message.id
     }
-    const newData = await this.panelRepository.save(this.panelRepository.create({
+    await this.panelRepository.save(this.panelRepository.create({
       id: panel.id,
       ...data
     }), {
@@ -166,6 +170,10 @@ export default class GuildPanelManager extends BaseManager<Panel, PanelResolvabl
         guildId: this.guild.id
       }
     })
+    const newData = await this.panelRepository.findOne(
+      panel.id,
+      { relations: ['message'] }
+    ) as PanelEntity
 
     const _panel = this.cache.get(panel.id)
     _panel?.setup(newData)
