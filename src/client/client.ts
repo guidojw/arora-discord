@@ -181,8 +181,9 @@ export default class AroraClient extends CommandoClient {
 
   // @ts-expect-error
   public override async startActivityCarousel (): Promise<Presence | null> {
-    if (this.activityCarouselInterval == null) {
-      this.activityCarouselInterval = this.setInterval(() => this.nextActivity.bind(this), ACTIVITY_CAROUSEL_INTERVAL)
+    if (this.activityCarouselInterval === null) {
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
+      this.activityCarouselInterval = this.setInterval(this.nextActivity.bind(this), ACTIVITY_CAROUSEL_INTERVAL)
       return await this.nextActivity(0)
     }
     return null

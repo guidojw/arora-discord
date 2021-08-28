@@ -14,7 +14,7 @@ export default class CommandErrorEventHandler implements BaseHandler {
     message: CommandoMessage,
     _args: Object | string | string[],
     _fromPattern: boolean,
-    result: ArgumentCollectorResult
+    result: ArgumentCollectorResult | null
   ): Promise<void> {
     if (axios.isAxiosError(err) && err.response?.data.errors?.length > 0) {
       await message.reply(err.response?.data.errors[0].message ?? err.response?.data.errors[0].msg)
@@ -24,10 +24,7 @@ export default class CommandErrorEventHandler implements BaseHandler {
 
     if (!(message.channel instanceof DMChannel)) {
       try {
-        await message.channel.bulkDelete([
-          ...result?.prompts.map(message => message.id),
-          ...result?.answers.map(message => message.id)
-        ])
+        await message.channel.bulkDelete([...(result?.prompts ?? []), ...(result?.answers ?? [])])
       } catch {}
     }
   }

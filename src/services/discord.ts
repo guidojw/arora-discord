@@ -37,17 +37,17 @@ export async function prompt (
   return promise
 }
 
-export function getListEmbeds (
+export function getListEmbeds<T, D extends any[]> (
   title: string,
-  values: Iterable<any>,
-  getRow: (...args: any[]) => string,
-  data?: any
+  values: Iterable<T>,
+  getRow: (value: T, ...args: D) => string,
+  ...data: D
 ): MessageEmbed[] {
   const embeds = []
   let embed = new MessageEmbed()
     .setTitle(title)
   for (const value of values) {
-    const row = getRow(value, data)
+    const row = getRow(value, ...data)
     const currentField = embed.fields.length - 1
     if (currentField === -1) {
       embed.addField('\u200b', `${row}\n`)

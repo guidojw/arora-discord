@@ -14,7 +14,7 @@ export default class CommandRunEventHandler implements BaseHandler {
     message: CommandoMessage,
     _args: Object | string | string[],
     _fromPattern: boolean,
-    result: ArgumentCollectorResult
+    result: ArgumentCollectorResult | null
   ): Promise<void> {
     try {
       await promise
@@ -25,10 +25,7 @@ export default class CommandRunEventHandler implements BaseHandler {
 
     if (!(message.channel instanceof DMChannel)) {
       try {
-        await message.channel.bulkDelete([
-          ...result?.prompts.map(message => message.id),
-          ...result?.answers.map(message => message.id)
-        ])
+        await message.channel.bulkDelete([...(result?.prompts ?? []), ...(result?.answers ?? [])])
       } catch {}
     }
 

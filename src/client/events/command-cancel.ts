@@ -11,14 +11,11 @@ export default class CommandCancelEventHandler implements BaseHandler {
     _command: Command,
     _reason: string,
     message: CommandoMessage,
-    result: ArgumentCollectorResult
+    result: ArgumentCollectorResult | null
   ): Promise<void> {
     if (!(message.channel instanceof DMChannel)) {
       try {
-        await message.channel.bulkDelete([
-          ...result?.prompts.map(message => message.id),
-          ...result?.answers.map(message => message.id)
-        ])
+        await message.channel.bulkDelete([...(result?.prompts ?? []), ...(result?.answers ?? [])])
       } catch {}
     }
   }
