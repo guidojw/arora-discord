@@ -1,3 +1,3 @@
 export default interface BaseJob {
-  run: (...args: any[]) => any
+  run: (...args: any[]) => void | Promise<void>
 }
