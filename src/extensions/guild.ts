@@ -224,6 +224,7 @@ const AroraGuild: Guild = Structures.extend('Guild', Guild => {
         const announceTrainingsJob = this.jobFactory(announceTrainingsJobConfig.name)
         cron.schedule(
           announceTrainingsJobConfig.expression,
+          // eslint-disable-next-line @typescript-eslint/no-misused-promises
           announceTrainingsJob.run.bind(announceTrainingsJob, this)
         )
       }
@@ -232,6 +233,7 @@ const AroraGuild: Guild = Structures.extend('Guild', Guild => {
       const premiumMembersReportJob = this.jobFactory(premiumMembersReportJobConfig.name)
       cron.schedule(
         premiumMembersReportJobConfig.expression,
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         premiumMembersReportJob.run.bind(premiumMembersReportJob, this)
       )
     }
