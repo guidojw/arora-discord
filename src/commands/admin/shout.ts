@@ -38,7 +38,7 @@ export default class ShoutCommand extends BaseCommand {
       return await message.reply('This command requires you to be verified with a verification provider.')
     }
 
-    const shout = (await applicationAdapter('POST', `v1/groups/${message.guild.robloxGroupId}/shout`, {
+    const shout = (await applicationAdapter('PUT', `v1/groups/${message.guild.robloxGroupId}/status`, {
       authorId,
       message: body === 'clear' ? '' : body
     })).data

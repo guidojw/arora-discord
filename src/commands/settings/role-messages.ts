@@ -18,7 +18,7 @@ export default class RoleMessagesCommand extends BaseCommand {
       args: [{
         key: 'roleMessage',
         prompt: 'What role message would you like to know the information of?',
-        type: 'integer',
+        type: 'role-message',
         default: ''
       }]
     })
@@ -40,7 +40,7 @@ export default class RoleMessagesCommand extends BaseCommand {
 
       const embeds = discordService.getListEmbeds(
         'Role Messages',
-        Object.values(lodash.groupBy(message.guild.roleMessages.cache.values(), 'messageId')),
+        Object.values(lodash.groupBy(Array.from(message.guild.roleMessages.cache.values()), 'messageId')),
         getGroupedRoleMessageRow
       )
       for (const embed of embeds) {

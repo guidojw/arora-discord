@@ -152,7 +152,7 @@ export default class Ticket extends BaseStructure {
     const embed = new MessageEmbed()
       .setColor(this.guild.primaryColor ?? applicationConfig.defaultColor)
       .setAuthor(this.client.user?.username, this.client.user?.displayAvatarURL())
-      .setTitle('How would you rate the support you got?')
+      .setTitle('How would you rate the support you received?')
     const message = await this.client.send(this.author, embed) as Message | null
 
     if (message !== null) {

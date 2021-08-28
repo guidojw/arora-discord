@@ -28,11 +28,11 @@ export default class Ticket {
   @ManyToMany(() => Member, member => member.moderatingTickets)
   public moderators?: Member[]
 
-  @ManyToOne(() => Member, member => member.tickets, { onDelete: 'CASCADE' }) // TODO: change to SET NULL
+  @ManyToOne(() => Member, member => member.tickets, { onDelete: 'CASCADE' }) // FIXME: should be SET NULL
   @JoinColumn({ name: 'author_id' })
   public author?: Member | null
 
-  @OneToOne(() => Channel, channel => channel.ticket, { onDelete: 'SET NULL' }) // TODO: change to CASCADE
+  @OneToOne(() => Channel, channel => channel.ticket, { onDelete: 'SET NULL' }) // FIXME: should be CASCADE
   @JoinColumn({ name: 'channel_id' })
   public channel?: Channel
 

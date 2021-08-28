@@ -13,6 +13,10 @@ export class ValidationSubscriber implements EntitySubscriberInterface {
   }
 
   private static async validate (entity: any, skipUndefinedProperties = false): Promise<void> {
+    if (typeof entity === 'undefined') {
+      return
+    }
+
     const errors = await validate(entity, { skipUndefinedProperties })
     if (errors.length > 0) {
       throw new Error(errors[0].toString())

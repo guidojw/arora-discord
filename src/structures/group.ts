@@ -40,13 +40,13 @@ export default class Group extends BaseStructure {
     switch (data.type) {
       case GroupType.Channel: {
         // eslint-disable-next-line @typescript-eslint/no-var-requires
-        const ChannelGroup = require('./channel-group')
+        const ChannelGroup = require('./channel-group').default
         group = new ChannelGroup(client, data, guild)
         break
       }
       case GroupType.Role: {
         // eslint-disable-next-line @typescript-eslint/no-var-requires
-        const RoleGroup = require('./role-group')
+        const RoleGroup = require('./role-group').default
         group = new RoleGroup(client, data, guild)
         break
       }

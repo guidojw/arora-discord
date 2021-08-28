@@ -159,6 +159,12 @@ const AroraGuild: Guild = Structures.extend('Guild', Guild => {
         }
       }
 
+      if (typeof data.roleBindings !== 'undefined') {
+        for (const rawRoleBinding of data.roleBindings) {
+          this.roleBindings.add(rawRoleBinding)
+        }
+      }
+
       if (typeof data.roleMessages !== 'undefined') {
         for (const rawRoleMessage of data.roleMessages) {
           this.roleMessages.add(rawRoleMessage)

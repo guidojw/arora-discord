@@ -40,7 +40,7 @@ export default class RoleBindingsCommand extends BaseCommand {
 
       const embeds = discordService.getListEmbeds(
         'Role Bindings',
-        Object.values(lodash.groupBy(message.guild.roleBindings.cache.values(), 'roleId')),
+        Object.values(lodash.groupBy(Array.from(message.guild.roleBindings.cache.values()), 'roleId')),
         getGroupedRoleBindingRow
       )
       for (const embed of embeds) {

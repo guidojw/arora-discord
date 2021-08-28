@@ -27,10 +27,10 @@ export default class Member {
   @JoinColumn({ name: 'guild_id' })
   public guild?: Guild
 
-  @OneToMany(() => Ticket, ticket => ticket.author, { cascade: true })
+  @OneToMany(() => Ticket, ticket => ticket.author)
   public tickets?: Ticket[]
 
-  @ManyToMany(() => Ticket, ticket => ticket.moderators)
+  @ManyToMany(() => Ticket, ticket => ticket.moderators, { cascade: true })
   @JoinTable({
     name: 'tickets_moderators',
     joinColumn: { name: 'member_id' },

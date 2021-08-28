@@ -8,6 +8,7 @@ export default class DeleteSuggestionCommand extends BaseCommand {
     super(client, {
       group: 'main',
       name: 'deletesuggestion',
+      aliases: ['delsuggestion'],
       description: 'Deletes your last suggested suggestion.',
       clientPermissions: ['MANAGE_MESSAGES', 'ADD_REACTIONS', 'SEND_MESSAGES']
     })
