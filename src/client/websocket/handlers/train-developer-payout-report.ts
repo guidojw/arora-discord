@@ -1,13 +1,14 @@
 import type BaseHandler from '../../base'
 import type Client from '../../client'
 import { MessageEmbed } from 'discord.js'
+import type { Snowflake } from 'discord.js'
 import { injectable } from 'inversify'
 import pluralize from 'pluralize'
 import { userService } from '../../../services'
 
 interface TrainDeveloperPayoutReportPacket {
   developersSales: Record<string, {
-    discordId: string
+    discordId: Snowflake
     total: {
       amount: number
       robux: number

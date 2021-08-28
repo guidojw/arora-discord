@@ -33,15 +33,15 @@ import cronConfig from '../configs/cron'
 import getDecorators from 'inversify-inject-decorators'
 
 export enum GuildSetting {
+  logsChannelId,
   primaryColor,
+  ratingsChannelId,
   robloxGroupId,
   robloxUsernamesInNicknames,
-  verificationPreference,
-  logsChannelId,
   suggestionsChannelId,
-  ratingsChannelId,
   ticketArchivesChannelId,
-  ticketsCategoryId
+  ticketsCategoryId,
+  verificationPreference
 }
 
 export interface GuildUpdateOptions {
@@ -63,15 +63,15 @@ const { lazyInject } = getDecorators(container)
 
 declare module 'discord.js' {
   interface Guild {
-    logsChannelId: string | null
+    logsChannelId: Snowflake | null
     primaryColor: number | null
-    ratingsChannelId: string | null
+    ratingsChannelId: Snowflake | null
     robloxGroupId: number | null
     robloxUsernamesInNicknames: boolean
-    suggestionsChannelId: string | null
+    suggestionsChannelId: Snowflake | null
     supportEnabled: boolean
-    ticketArchivesChannelId: string | null
-    ticketsCategoryId: string | null
+    ticketArchivesChannelId: Snowflake | null
+    ticketsCategoryId: Snowflake | null
     trainingsInfoPanelId: number | null
     trainingsPanelId: number | null
     verificationPreference: VerificationProvider
