@@ -48,9 +48,6 @@ export default class CloseTicketCommand extends BaseCommand {
             message.guild.primaryColor ?? applicationConfig.defaultColor)
         }
       }
-    } else if (message.guild.ticketsCategory !== null && message.channel.parentID === message.guild.ticketsCategoryId &&
-      message.channel.id !== message.guild.ratingsChannelId) {
-      await message.channel.delete()
     }
     return null
   }
