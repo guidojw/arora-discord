@@ -2,24 +2,27 @@
 
 module.exports = {
   env: {
-    commonjs: true,
     es6: true,
     node: true
   },
-  extends: [
-    'standard'
-  ],
+  extends: 'standard-with-typescript',
   parserOptions: {
-    ecmaVersion: 2020
+    ecmaVersion: 2020,
+    project: './tsconfig.json',
+    sourceType: 'module'
   },
   rules: {
     'max-len': [
       'error',
       120,
       {
+        comments: 80,
+        ignoreRegExpLiterals: true,
         ignoreTemplateLiterals: true,
-        ignoreRegExpLiterals: true
+        tabWidth: 2
       }
-    ]
+    ],
+    'sort-imports': 'error',
+    '@typescript-eslint/explicit-member-accessibility': 'error'
   }
 }
