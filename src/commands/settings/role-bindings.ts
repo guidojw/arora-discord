@@ -34,6 +34,7 @@ export default class RoleBindingsCommand extends BaseCommand {
         .setColor(message.guild.primaryColor ?? applicationConfig.defaultColor)
       return await message.replyEmbed(embed)
     } else {
+      await message.guild.roleBindings.fetch()
       if (message.guild.roleBindings.cache.size === 0) {
         return await message.reply('No role bindings found.')
       }

@@ -1,4 +1,4 @@
-import type { Guild, RoleResolvable } from 'discord.js'
+import type { Collection, Guild, RoleResolvable } from 'discord.js'
 import BaseManager from './base'
 import type { Repository } from 'typeorm'
 import { RoleBinding } from '../structures'
@@ -44,6 +44,7 @@ export default class GuildRoleBindingManager extends BaseManager<RoleBinding, Ro
     if (typeof max !== 'undefined' && max < min) {
       [min, max] = [max, min]
     }
+    await this.fetch()
     if (this.cache.some(roleBinding => (
       roleBinding.roleId === role.id && roleBinding.robloxGroupId === this.guild.robloxGroupId &&
       roleBinding.min === min && (typeof max === 'undefined' || roleBinding.max === max)
@@ -67,11 +68,21 @@ export default class GuildRoleBindingManager extends BaseManager<RoleBinding, Ro
     if (id === null) {
       throw new Error('Invalid role binding.')
     }
+    await this.fetch()
     if (!this.cache.has(id)) {
       throw new Error('Role binding not found.')
     }
 
     await this.roleBindingRepository.delete(id)
     this.cache.delete(id)
+  }
+
+  public async fetch (): Promise<Collection<number, RoleBinding>> {
+    const data = await this.roleBindingRepository.find({ guildId: this.guild.id })
+    this.cache.clear()
+    for (const rawRoleBinding of data) {
+      this.add(rawRoleBinding)
+    }
+    return this.cache
   }
 }

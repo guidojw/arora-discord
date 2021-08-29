@@ -41,7 +41,7 @@ FilterableArgumentType<T> {
     this.label = this.id.replace(/-/g, ' ')
   }
 
-  public validate (val: string, msg: CommandoMessage, arg: Argument): boolean | string {
+  public validate (val: string, msg: CommandoMessage, arg: Argument): boolean | string | Promise<boolean | string> {
     if (typeof msg.guild === 'undefined') {
       return false
     }

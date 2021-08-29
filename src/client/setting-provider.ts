@@ -1,5 +1,10 @@
 import type { Command, CommandGroup, CommandoClient, CommandoGuild } from 'discord.js-commando'
-import type { Command as CommandEntity, GuildCommand as GuildCommandEntity, Guild as GuildEntity } from '../entities'
+import type {
+  Command as CommandEntity,
+  GuildCommand as GuildCommandEntity,
+  Guild as GuildEntity,
+  Role as RoleEntity
+} from '../entities'
 import type { Repository } from 'typeorm'
 import { SettingProvider } from 'discord.js-commando'
 import type { Snowflake } from 'discord.js'
@@ -33,6 +38,9 @@ export default class AroraProvider extends SettingProvider {
   @lazyInject(TYPES.GuildRepository)
   private readonly guildRepository!: Repository<GuildEntity>
 
+  @lazyInject(TYPES.RoleRepository)
+  private readonly roleRepository!: Repository<RoleEntity>
+
   private client!: CommandoClient
 
   public async init (client: CommandoClient): Promise<void> {
@@ -59,7 +67,6 @@ export default class AroraProvider extends SettingProvider {
       guildId,
       {
         relations: [
-          'channels',
           'groups',
           'groups.channels',
           'groups.permissions',
@@ -68,11 +75,12 @@ export default class AroraProvider extends SettingProvider {
           'guildCommands.command',
           'panels',
           'panels.message',
-          'roleBindings',
+          // See "Band-aid fix" below.
+          // 'roles',
+          // 'roles.permissions',
+          // 'roleBindings', // moved to RoleBindingManager.fetch
           'roleMessages',
           'roleMessages.message',
-          'roles',
-          'roles.permissions',
           'tags',
           'tags.names',
           'tickets',
@@ -85,6 +93,16 @@ export default class AroraProvider extends SettingProvider {
     ) ?? await this.guildRepository.save(this.guildRepository.create({ id: guildId }))
     if (typeof data.guildCommands === 'undefined') {
       data.guildCommands = []
+    }
+
+    // Band-aid fix. idk why, but somehow after merging
+    // https://github.com/guidojw/nsadmin-discord/pull/164 the bot's memory
+    // usage raised rapidly on start up and kept causing numerous out of memory
+    // errors. I tried several things and it seems to be pg related.
+    // Removing includes from the relations somehow fixed the issue.
+    if (guild !== null) {
+      data.roles = await this.roleRepository.find({ where: { guildId: guild.id }, relations: ['permissions'] })
+      // Remove more from the relations and put it here if above error returns..
     }
 
     if (guild !== null) {
