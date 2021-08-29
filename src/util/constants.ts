@@ -41,8 +41,3 @@ export enum VerificationProvider {
   Bloxlink = 'bloxlink',
   RoVer = 'rover'
 }
-
-export enum WSEvent {
-  TrainDeveloperPayoutReport = 'trainDeveloperPayoutReport',
-  RankChange = 'rankChange'
-}
