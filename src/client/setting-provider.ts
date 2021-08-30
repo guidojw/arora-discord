@@ -3,7 +3,9 @@ import type {
   Command as CommandEntity,
   GuildCommand as GuildCommandEntity,
   Guild as GuildEntity,
-  Role as RoleEntity
+  Role as RoleEntity,
+  RoleMessage as RoleMessageEntity,
+  Tag as TagEntity
 } from '../entities'
 import type { Repository } from 'typeorm'
 import { SettingProvider } from 'discord.js-commando'
@@ -40,6 +42,12 @@ export default class AroraProvider extends SettingProvider {
 
   @lazyInject(TYPES.RoleRepository)
   private readonly roleRepository!: Repository<RoleEntity>
+
+  @lazyInject(TYPES.RoleMessageRepository)
+  private readonly roleMessageRepository!: Repository<RoleMessageEntity>
+
+  @lazyInject(TYPES.TagRepository)
+  private readonly tagRepository!: Repository<TagEntity>
 
   private client!: CommandoClient
 
@@ -79,10 +87,10 @@ export default class AroraProvider extends SettingProvider {
           // 'roles',
           // 'roles.permissions',
           // 'roleBindings', // moved to RoleBindingManager.fetch
-          'roleMessages',
-          'roleMessages.message',
-          'tags',
-          'tags.names',
+          // 'roleMessages',
+          // 'roleMessages.message',
+          // 'tags',
+          // 'tags.names',
           'tickets',
           'tickets.moderators',
           'tickets.author',
@@ -102,6 +110,11 @@ export default class AroraProvider extends SettingProvider {
     // Removing includes from the relations somehow fixed the issue.
     if (guild !== null) {
       data.roles = await this.roleRepository.find({ where: { guildId: guild.id }, relations: ['permissions'] })
+      data.roleMessages = await this.roleMessageRepository.find({
+        where: { guildId: guild.id },
+        relations: ['message']
+      })
+      data.tags = await this.tagRepository.find({ where: { guildId: guild.id }, relations: ['names'] })
       // Remove more from the relations and put it here if above error returns..
     }
 
