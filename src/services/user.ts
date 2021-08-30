@@ -1,6 +1,6 @@
-import type { GetUserById, GetUsersByUserIds, GetUsersByUsernames } from 'bloxy/dist/client/apis/UsersAPI'
-import type { GetUserOutfits as BloxyGetUserOutfits } from 'bloxy/dist/client/apis/AvatarAPI'
-import type { GetUserGroups } from 'bloxy/dist/client/apis/GroupsAPI'
+import type { GetUserById, GetUsersByUserIds, GetUsersByUsernames } from '@guidojw/bloxy/dist/client/apis/UsersAPI'
+import type { GetUserOutfits as BloxyGetUserOutfits } from '@guidojw/bloxy/dist/client/apis/AvatarAPI'
+import type { GetUserGroups } from '@guidojw/bloxy/dist/client/apis/GroupsAPI'
 import { robloxAdapter } from '../adapters'
 import { util } from '../util'
 
