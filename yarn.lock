@@ -52,6 +52,16 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
+"@guidojw/bloxy@^5.7.5":
+  version "5.7.5"
+  resolved "https://registry.yarnpkg.com/@guidojw/bloxy/-/bloxy-5.7.5.tgz#fd8da6788b4541786123f95185f2a5c241249217"
+  integrity sha512-Skq/J6P8upl68RJRsuLWyBuFdGbBnxCA7eXnN+mbRzfprvvjDoGkrtzp1UT37PIvNbPTlwiecM1cyHe8UN79hQ==
+  dependencies:
+    debug "^4.3.1"
+    signalr-client "0.0.20"
+    tough-cookie "^4.0.0"
+    tslib "^2.1.0"
+
 "@humanwhocodes/config-array@^0.5.0":
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/@humanwhocodes/config-array/-/config-array-0.5.0.tgz#1407967d4c6eecd7388f83acf1eaf4d0c6e58ef9"
@@ -445,16 +455,6 @@ base64-js@^1.3.1:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/base64-js/-/base64-js-1.5.1.tgz#1b1b440160a5bf7ad40b650f095963481903930a"
   integrity sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==
-
-bloxy@^5.7.3:
-  version "5.7.3"
-  resolved "https://registry.yarnpkg.com/bloxy/-/bloxy-5.7.3.tgz#0413ee8632f0d4ace93300c2fc1e5ce542c9ba55"
-  integrity sha512-uPPUtr4bQhmtftN/x0GUvpw2xjRTjk8XC1R4UMPPt8kJGlubM5dQ6ZUCbo7RHe7iPhbbTcR+hYpwOz2t7VJv9A==
-  dependencies:
-    debug "^4.3.1"
-    signalr-client "0.0.20"
-    tough-cookie "^4.0.0"
-    tslib "^2.1.0"
 
 brace-expansion@^1.1.7:
   version "1.1.11"
