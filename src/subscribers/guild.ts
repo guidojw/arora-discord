@@ -9,6 +9,10 @@ export class GuildSubscriber implements EntitySubscriberInterface<Guild> {
   }
 
   public async beforeUpdate (event: UpdateEvent<Guild>): Promise<void> {
+    if (typeof event.entity === 'undefined') {
+      return
+    }
+
     const channelRepository = event.manager.getRepository(Channel)
     for (const column of event.updatedColumns) {
       if ((column.propertyName.includes('ChannelId') || column.propertyName.includes('CategoryId'))) {
