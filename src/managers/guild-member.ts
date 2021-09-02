@@ -31,6 +31,6 @@ export default class AroraGuildMemberManager extends GuildMemberManager {
       }
     }
     // @ts-expect-error
-    return super.fetch(options)
+    return await super.fetch(options)
   }
 }

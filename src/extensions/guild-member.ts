@@ -176,10 +176,10 @@ const AroraGuildMember: GuildMember = Structures.extend('GuildMember', GuildMemb
 export default AroraGuildMember
 
 async function fetchRoVerData (userId: string): Promise<{ robloxUsername: string, robloxId: number } | null> {
-  let response
+  let response: { robloxUsername: string, robloxId: number }
   try {
     response = (await roVerAdapter('GET', `user/${userId}`)).data
-  } catch (err) {
+  } catch (err: any) {
     if (err.response?.data?.errorCode === 404) {
       return null
     }
