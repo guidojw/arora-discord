@@ -37,7 +37,7 @@ export default class TrainDeveloperPayoutReportPacketHandler implements BaseHand
       .setColor(0xffffff)
     for (const [id, developerSales] of Object.entries(developersSales)) {
       const username = developers.find(developer => developer.id === parseInt(id))?.name ?? id
-      const total = Math.ceil(developerSales.total.robux)
+      const total = Math.round(developerSales.total.robux)
       embed.addField(username, `Has sold **${developerSales.total.amount}** ${pluralize('train', developerSales.total.amount)} and earned ${emojiString(total)}.`)
 
       try {
@@ -47,9 +47,9 @@ export default class TrainDeveloperPayoutReportPacketHandler implements BaseHand
           .setTitle('Weekly Train Payout Report')
           .setColor(0xffffff)
         for (const productSales of Object.values(developerSales.sales)) {
-          userEmbed.addField(productSales.name, `Sold **${productSales.amount}** ${pluralize('time', productSales.amount)} and earned ${emojiString(total)}.`)
+          userEmbed.addField(productSales.name, `Sold **${productSales.amount}** ${pluralize('time', productSales.amount)} and earned ${emojiString(Math.round(productSales.robux * 100) / 100)}.`)
         }
-        userEmbed.addField('Total', `**${developerSales.total.amount}** trains and ${emojiString(Math.floor(developerSales.total.robux))}.`)
+        userEmbed.addField('Total', `**${developerSales.total.amount}** trains and ${emojiString(Math.round(total))}.`)
 
         await user.send(userEmbed)
       } catch (err) {

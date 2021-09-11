@@ -44,7 +44,7 @@ export function getOrdinalNum (number: number): string {
   } else {
     selector = number % 10
   }
-  return `${number} ${['th', 'st', 'nd', 'rd', ''][selector]}`
+  return `${number}${['th', 'st', 'nd', 'rd', ''][selector]}`
 }
 
 export function makeCommaSeparatedString (array: string[]): string {

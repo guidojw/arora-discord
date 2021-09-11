@@ -9,6 +9,10 @@ export class TicketTypeSubscriber implements EntitySubscriberInterface<TicketTyp
   }
 
   public async beforeUpdate (event: UpdateEvent<TicketType>): Promise<void> {
+    if (typeof event.entity === 'undefined') {
+      return
+    }
+
     if (event.updatedColumns.some(column => column.propertyName === 'messageId') && event.entity.messageId != null) {
       const messageRepository = event.manager.getRepository(Message)
       const messageEntity = messageRepository.create({

@@ -34,7 +34,7 @@ export async function prompt (
   for (const option of options) {
     await message.react(option)
   }
-  return promise
+  return await promise
 }
 
 export function getListEmbeds<T, D extends any[]> (

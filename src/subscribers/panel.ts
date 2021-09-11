@@ -9,6 +9,10 @@ export class PanelSubscriber implements EntitySubscriberInterface<Panel> {
   }
 
   public async beforeUpdate (event: UpdateEvent<Panel>): Promise<void> {
+    if (typeof event.entity === 'undefined') {
+      return
+    }
+
     const messageRepository = event.manager.getRepository(Message)
     if (event.updatedColumns.some(column => column.propertyName === 'messageId') && event.entity.messageId != null) {
       const entity = messageRepository.create({
