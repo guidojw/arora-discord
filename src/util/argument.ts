@@ -136,7 +136,7 @@ export function validateNoneOrType (
   val: string,
   msg: CommandoMessage
 ): boolean | string | Promise<boolean | string> {
-  return val === 'none' || this.type.validate(val, msg, this)
+  return val.toLowerCase() === 'none' || this.type.validate(val, msg, this)
 }
 
 export function parseNoneOrType (
@@ -144,7 +144,7 @@ export function parseNoneOrType (
   val: string,
   msg: CommandoMessage
 ): any | Promise<any> {
-  return val === 'none' ? undefined : this.type.parse(val, msg, this)
+  return val.toLowerCase() === 'none' ? undefined : this.type.parse(val, msg, this)
 }
 
 export function parseEnum<T extends Enum> (
