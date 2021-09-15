@@ -39,7 +39,8 @@ export default class GetSettingCommand extends BaseCommand {
       result = `0x${color}${'0'.repeat(6 - color.length)}`
     } else if (setting.includes('Channel') || setting.includes('Category')) {
       settingName = setting.slice(0, -2)
-      result = message.guild[setting]
+      // @ts-expect-error
+      result = message.guild[settingName]
     } else if (setting.includes('Id')) {
       result = message.guild[setting]
       settingName = setting.slice(0, -2)
@@ -47,7 +48,6 @@ export default class GetSettingCommand extends BaseCommand {
       result = message.guild[setting]
     }
 
-    // @ts-expect-error
     return await message.reply(`The ${settingName} is ${result instanceof GuildChannel ? result.toString() : `\`${String(result)}\``}.`)
   }
 }
