@@ -95,6 +95,9 @@ export default class AroraClient extends CommandoClient {
     if (!intentsArray.includes(Intents.FLAGS.DIRECT_MESSAGES)) {
       intentsArray.push(Intents.FLAGS.DIRECT_MESSAGES)
     }
+    if (!intentsArray.includes(Intents.FLAGS.DIRECT_MESSAGE_REACTIONS)) {
+      intentsArray.push(Intents.FLAGS.DIRECT_MESSAGE_REACTIONS)
+    }
     if (typeof options.partials === 'undefined') {
       options.partials = []
     }
