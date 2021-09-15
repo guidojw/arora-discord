@@ -1,6 +1,5 @@
 {
-  "extends": [
-    "config:base"
-  ],
-  "labels": ["dependencies"]
+  "extends": ["config:base"],
+  "labels": ["dependencies"],
+  "rangeStrategy": "replace"
 }
