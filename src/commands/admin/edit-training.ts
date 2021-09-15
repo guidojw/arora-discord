@@ -60,7 +60,8 @@ export default class EditTrainingCommand extends BaseCommand {
     } else if (key === 'type') {
       const type = (data as string).toUpperCase()
       const trainingTypes = await groupService.getTrainingTypes(message.guild.robloxGroupId)
-      const trainingType = trainingTypes.find(trainingType => trainingType.abbreviation.toLowerCase() === type)
+      let trainingType = trainingTypes.find(trainingType => trainingType.abbreviation.toLowerCase() === type)
+      trainingType ??= trainingTypes.find(trainingType => trainingType.name.toLowerCase() === type)
       if (typeof trainingType === 'undefined') {
         return await message.reply('Type not found.')
       }
