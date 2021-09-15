@@ -46,19 +46,20 @@ export default class MessageEventHandler implements BaseHandler {
       if (message.attachments.size === 0 && message.embeds.length === 0) {
         const canTalkInNoTextChannelsGroup = guild.groups.resolve('canTalkInNoTextChannels')
         // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
-        if (canTalkInNoTextChannelsGroup !== null && canTalkInNoTextChannelsGroup.isRoleGroup() &&
-          message.member?.roles.cache.some(role => canTalkInNoTextChannelsGroup.roles.cache.has(role.id)) === false
-        ) {
-          await Promise.all([
-            message.delete(),
-            message.guild.log(
+        if (canTalkInNoTextChannelsGroup === null || (canTalkInNoTextChannelsGroup.isRoleGroup() &&
+          message.member?.roles.cache.some(role => canTalkInNoTextChannelsGroup.roles.cache.has(role.id)) === false)) {
+          try {
+            await message.delete()
+          } catch {}
+          if (message.deleted) {
+            await message.guild.log(
               message.author,
               stripIndents`
               **Message sent by ${message.author} deleted in ${message.channel}**
               ${message.content}
               `
             )
-          ])
+          }
         }
       }
     }
