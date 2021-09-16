@@ -5,7 +5,7 @@ steps:
           server: docker.guidojw.nl
           username: buildkite
           password-env: DOCKER_PASSWORD
-      - docker-compose#v3.7.0:
+      - docker-compose#v3.8.0:
           build: app
           config: docker-compose.buildkite.yml
           image-repository: docker.guidojw.nl/arora/arora-discord
@@ -15,14 +15,14 @@ steps:
     - label: ":yarn: :eslint: Lint"
       command: yarn lint
       plugins:
-        - docker-compose#v3.7.0:
+        - docker-compose#v3.8.0:
             run: app
             config: docker-compose.buildkite.yml
 
   - label: ":yarn: Test"
     command: yarn test
     plugins:
-      - docker-compose#v3.7.0:
+      - docker-compose#v3.8.0:
           run: app
           config: docker-compose.buildkite.yml
 
@@ -35,7 +35,7 @@ steps:
           server: docker.guidojw.nl
           username: buildkite
           password-env: DOCKER_PASSWORD
-      - docker-compose#v3.7.0:
+      - docker-compose#v3.8.0:
           push: app-staging:docker.guidojw.nl/arora/arora-discord:staging
           image-name: docker.guidojw.nl/arora/arora-discord:staging
           config: docker-compose.buildkite.yml
@@ -47,7 +47,7 @@ steps:
           server: docker.guidojw.nl
           username: buildkite
           password-env: DOCKER_PASSWORD
-      - docker-compose#v3.7.0:
+      - docker-compose#v3.8.0:
           push: app-production:docker.guidojw.nl/arora/arora-discord:latest
           image-name: docker.guidojw.nl/arora/arora-discord:latest
           config: docker-compose.buildkite.yml
