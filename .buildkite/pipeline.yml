@@ -1,11 +1,11 @@
 steps:
   - label: ":docker: Build test image"
     plugins:
-      - docker-login#v2.0.1:
+      - docker-login#v2.0.2:
           server: docker.guidojw.nl
           username: buildkite
           password-env: DOCKER_PASSWORD
-      - docker-compose#v3.7.0:
+      - docker-compose#v3.8.0:
           build: app
           config: docker-compose.buildkite.yml
           image-repository: docker.guidojw.nl/arora/arora-discord
@@ -15,14 +15,14 @@ steps:
     - label: ":yarn: :eslint: Lint"
       command: yarn lint
       plugins:
-        - docker-compose#v3.7.0:
+        - docker-compose#v3.8.0:
             run: app
             config: docker-compose.buildkite.yml
 
   - label: ":yarn: Test"
     command: yarn test
     plugins:
-      - docker-compose#v3.7.0:
+      - docker-compose#v3.8.0:
           run: app
           config: docker-compose.buildkite.yml
 
@@ -31,11 +31,11 @@ steps:
   - label: ":docker: Build+Push `:staging` image"
     branches: staging
     plugins:
-      - docker-login#v2.0.1:
+      - docker-login#v2.0.2:
           server: docker.guidojw.nl
           username: buildkite
           password-env: DOCKER_PASSWORD
-      - docker-compose#v3.7.0:
+      - docker-compose#v3.8.0:
           push: app-staging:docker.guidojw.nl/arora/arora-discord:staging
           image-name: docker.guidojw.nl/arora/arora-discord:staging
           config: docker-compose.buildkite.yml
@@ -43,11 +43,11 @@ steps:
   - label: ":docker: Build+Push `:production` image"
     branches: main
     plugins:
-      - docker-login#v2.0.1:
+      - docker-login#v2.0.2:
           server: docker.guidojw.nl
           username: buildkite
           password-env: DOCKER_PASSWORD
-      - docker-compose#v3.7.0:
+      - docker-compose#v3.8.0:
           push: app-production:docker.guidojw.nl/arora/arora-discord:latest
           image-name: docker.guidojw.nl/arora/arora-discord:latest
           config: docker-compose.buildkite.yml
