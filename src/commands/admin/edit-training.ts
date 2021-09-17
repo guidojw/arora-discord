@@ -5,7 +5,7 @@ import { groupService, userService } from '../../services'
 import BaseCommand from '../base'
 import { applicationAdapter } from '../../adapters'
 
-const { validators, noChannels, noTags, noUrls, validDate, validTime } = argumentUtil
+const { validators, noChannels, noTags, noUrls, parseNoneOrType, validDate, validTime } = argumentUtil
 const { getDate, getDateInfo, getTime, getTimeInfo } = timeUtil
 
 export default class EditTrainingCommand extends BaseCommand {
@@ -34,7 +34,8 @@ export default class EditTrainingCommand extends BaseCommand {
         key: 'data',
         type: 'string',
         prompt: 'What would you like to edit this key\'s data to?',
-        validate: validators([noChannels, noTags, noUrls]) // for when key = 'notes'
+        validate: validators([noChannels, noTags, noUrls]), // for when key = 'notes'
+        parse: parseNoneOrType
       }]
     })
   }
@@ -44,18 +45,23 @@ export default class EditTrainingCommand extends BaseCommand {
     { trainingId, key, data }: {
       trainingId: number
       key: string
-      data: string
+      data?: string
     }
   ): Promise<Message | Message[] | null> {
-    const changes: { authorId?: number, notes?: string, typeId?: number, date?: number } = {}
+    if (['author', 'type', 'date', 'time'].includes(key) && typeof data === 'undefined') {
+      return await message.reply(`Invalid ${key}`)
+    }
+
+    const changes: { authorId?: number, notes?: string | null, typeId?: number, date?: number } = {}
     if (key === 'author') {
-      changes.authorId = await userService.getIdFromUsername(data)
+      changes.authorId = await userService.getIdFromUsername(data as string)
     } else if (key === 'notes') {
-      changes.notes = data
+      changes.notes = data ?? null
     } else if (key === 'type') {
-      const type = data.toUpperCase()
+      const type = (data as string).toUpperCase()
       const trainingTypes = await groupService.getTrainingTypes(message.guild.robloxGroupId)
-      const trainingType = trainingTypes.find(trainingType => trainingType.abbreviation.toLowerCase() === type)
+      let trainingType = trainingTypes.find(trainingType => trainingType.abbreviation.toLowerCase() === type)
+      trainingType ??= trainingTypes.find(trainingType => trainingType.name.toLowerCase() === type)
       if (typeof trainingType === 'undefined') {
         return await message.reply('Type not found.')
       }
@@ -69,17 +75,17 @@ export default class EditTrainingCommand extends BaseCommand {
       let dateInfo
       let timeInfo
       if (key === 'date') {
-        if (!validDate(data)) {
+        if (!validDate(data as string)) {
           return await message.reply('Please enter a valid date.')
         }
-        dateInfo = getDateInfo(data)
+        dateInfo = getDateInfo(data as string)
         timeInfo = getTimeInfo(getTime(date))
       } else {
-        if (!validTime(data)) {
+        if (!validTime(data as string)) {
           return await message.reply('Please enter a valid time.')
         }
         dateInfo = getDateInfo(getDate(date))
-        timeInfo = getTimeInfo(data)
+        timeInfo = getTimeInfo(data as string)
       }
 
       changes.date = Math.floor(new Date(dateInfo.year, dateInfo.month, dateInfo.day, timeInfo.hours, timeInfo.minutes)

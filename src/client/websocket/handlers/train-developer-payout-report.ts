@@ -27,7 +27,7 @@ interface TrainDeveloperPayoutReportPacket {
 export default class TrainDeveloperPayoutReportPacketHandler implements BaseHandler {
   public async handle (client: Client, { data }: { data: TrainDeveloperPayoutReportPacket }): Promise<void> {
     const { developersSales } = data
-    const developerIds = Object.keys(developersSales).map(parseInt)
+    const developerIds = Object.keys(developersSales).map(id => parseInt(id))
     const developers = await userService.getUsers(developerIds)
     const emoji = client.mainGuild?.emojis.cache.find(emoji => emoji.name.toLowerCase() === 'robux') ?? null
     const emojiString = (amount: number): string => `${emoji?.toString() ?? ''}${emoji !== null ? ' ' : ''}**${amount}**${emoji === null ? ' Robux' : ''}`
