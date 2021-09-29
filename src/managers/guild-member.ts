@@ -2,7 +2,7 @@ import { Collection, GuildMemberManager } from 'discord.js'
 import type { FetchMemberOptions, FetchMembersOptions, GuildMember, Snowflake, UserResolvable } from 'discord.js'
 import { userService } from '../services'
 
-const memberNameRegex = (name: string) => new RegExp(`(?:^|\\s*[(])(${name})(?:$|[)]\\s*)`)
+const memberNameRegex = (name: string): RegExp => new RegExp(`(?:^|\\s*[(])(${name})(?:$|[)]\\s*)`)
 
 export default class AroraGuildMemberManager extends GuildMemberManager {
   public override fetch (options: number): Promise<Collection<Snowflake, GuildMember>>
