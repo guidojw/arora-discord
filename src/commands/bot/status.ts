@@ -5,7 +5,7 @@ import type { Message } from 'discord.js'
 import { MessageEmbed } from 'discord.js'
 import { applicationAdapter } from '../../adapters'
 import applicationConfig from '../../configs/application'
-import os from 'os'
+import os from 'node:os'
 
 const { formatBytes } = util
 const { getDurationString } = timeUtil

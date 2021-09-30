@@ -35,6 +35,9 @@ export default class SuggestCommand extends BaseCommand {
     if (message.guild.suggestionsChannel === null) {
       return await message.reply('This server has no suggestionsChannel set yet.')
     }
+    if (suggestion === '' || /^\s+$/.test(suggestion)) {
+      return await message.reply('Cannot suggest empty suggestions.')
+    }
     const authorUrl = `https://discord.com/users/${message.author.id}`
     const embed = new MessageEmbed()
       .setDescription(suggestion)
