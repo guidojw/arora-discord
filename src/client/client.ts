@@ -25,7 +25,7 @@ import applicationConfig from '../configs/application'
 import { constants } from '../util'
 import container from '../configs/container'
 import getDecorators from 'inversify-inject-decorators'
-import path from 'path'
+import path from 'node:path'
 
 const { PartialTypes } = Constants
 const { TYPES } = constants
