@@ -98,13 +98,10 @@ export default class Ticket extends BaseStructure {
       .setFooter(`Ticket ID: ${this.id} | ${this.type.name}`)
     await this.channel?.send(this.author.toString(), ticketInfoEmbed)
 
-    const modInfoEmbed = new MessageEmbed()
-      .setColor(this.guild.primaryColor ?? applicationConfig.defaultColor)
-      .setDescription(stripIndents`
-      A Ticket Moderator will be with you shortly.
-      This may take up to 24 hours. You can still close your ticket by using the \`closeticket\` command.
-      `)
-    await this.channel?.send(modInfoEmbed)
+    const additionalInfoPanel = this.guild.panels.resolve('additionalTicketInfoPanel')
+    if (additionalInfoPanel !== null) {
+      await this.channel?.send(additionalInfoPanel.embed)
+    }
   }
 
   public async close (message: string, success: boolean, color?: number): Promise<void> {
