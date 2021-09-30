@@ -8,6 +8,10 @@ const tagCommand = {
     name: 'query',
     description: 'The tag to post',
     type: ApplicationCommandOptionType.String
+  }, {
+    name: 'who',
+    description: 'The member to post this tag for',
+    type: ApplicationCommandOptionType.User
   }]
 }
 
