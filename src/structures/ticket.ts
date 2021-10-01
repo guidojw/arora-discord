@@ -96,17 +96,17 @@ export default class Ticket extends BaseStructure {
       Start time: \`${readableDate} ${readableTime}\`
       `)
       .setFooter(`Ticket ID: ${this.id} | ${this.type.name}`)
-    await this.channel?.send(this.author.toString(), ticketInfoEmbed)
+    await this.channel?.send({ content: this.author.toString(), embeds: [ticketInfoEmbed] })
 
     const additionalInfoPanel = this.guild.panels.resolve('additionalTicketInfoPanel')
     if (additionalInfoPanel !== null) {
-      await this.channel?.send(additionalInfoPanel.embed)
+      await this.channel?.send({ embeds: [additionalInfoPanel.embed] })
     }
   }
 
   public async close (message: string, success: boolean, color?: number): Promise<void> {
     if (this.guild.ticketArchivesChannel !== null) {
-      await this.guild.ticketArchivesChannel.send(await this.fetchArchiveAttachment())
+      await this.guild.ticketArchivesChannel.send({ files: [await this.fetchArchiveAttachment()] })
     }
     await this.channel.delete()
 
@@ -115,7 +115,7 @@ export default class Ticket extends BaseStructure {
         .setColor(color ?? (success ? 0x00ff00 : 0xff0000))
         .setAuthor(this.client.user?.username, this.client.user?.displayAvatarURL())
         .setTitle(message)
-      const sent = await this.client.send(this.author, embed) !== null
+      const sent = await this.client.send(this.author, { embeds: [embed] }) !== null
 
       if (sent && success && this.guild.ratingsChannel !== null) {
         const rating = await this.requestRating()
@@ -127,13 +127,13 @@ export default class Ticket extends BaseStructure {
             .setAuthor(this.client.user?.username, this.client.user?.displayAvatarURL())
             .setTitle('Rating submitted')
             .setDescription('Thank you!')
-          await this.client.send(this.author, embed)
+          await this.client.send(this.author, { embeds: [embed] })
         } else {
           const embed = new MessageEmbed()
             .setColor(this.guild.primaryColor ?? applicationConfig.defaultColor)
             .setAuthor(this.client.user?.username, this.client.user?.displayAvatarURL())
             .setTitle('No rating submitted')
-          await this.client.send(this.author, embed)
+          await this.client.send(this.author, { embeds: [embed] })
         }
       }
     }
@@ -150,7 +150,7 @@ export default class Ticket extends BaseStructure {
       .setColor(this.guild.primaryColor ?? applicationConfig.defaultColor)
       .setAuthor(this.client.user?.username, this.client.user?.displayAvatarURL())
       .setTitle('How would you rate the support you received?')
-    const message = await this.client.send(this.author, embed) as Message | null
+    const message = await this.client.send(this.author, { embeds: [embed] }) as Message | null
 
     if (message !== null) {
       const options = []
@@ -159,7 +159,7 @@ export default class Ticket extends BaseStructure {
       }
 
       const rating = await discordService.prompt(this.author as GuildMember, message, options)
-      return rating?.name.substring(0, 1) ?? null
+      return rating?.name?.substring(0, 1) ?? null
     }
     return null
   }
@@ -189,7 +189,7 @@ export default class Ticket extends BaseStructure {
       Rating: **${rating}**
       `)
       .setFooter(`Ticket ID: ${this.id}`)
-    return await this.guild.ratingsChannel.send(embed)
+    return await this.guild.ratingsChannel.send({ embeds: [embed] })
   }
 
   public async fetchArchiveAttachment (): Promise<MessageAttachment> {
@@ -278,7 +278,7 @@ export default class Ticket extends BaseStructure {
     }
     if (message.member.id === this.authorId) {
       if (this.timeout !== null) {
-        this.client.clearTimeout(this.timeout)
+        clearTimeout(this.timeout)
         this.timeout = null
       }
     } else {

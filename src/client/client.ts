@@ -133,7 +133,7 @@ export default class AroraClient extends Client {
   // @ts-expect-error
   public override startActivityCarousel (): Presence | null {
     if (this.activityCarouselInterval === null) {
-      this.activityCarouselInterval = setInterval(this.nextActivity.bind(this), ACTIVITY_CAROUSEL_INTERVAL)
+      this.activityCarouselInterval = setInterval(this.nextActivity.bind(this), ACTIVITY_CAROUSEL_INTERVAL).unref()
       return this.nextActivity(0)
     }
     return null

@@ -63,7 +63,7 @@ export default class BansCommand extends BaseCommand {
 
       const embeds = await groupService.getBanEmbeds(message.guild.robloxGroupId, bans)
       for (const embed of embeds) {
-        await message.author.send(embed)
+        await message.author.send({ embeds: [embed] })
       }
 
       return await message.reply('Sent you a DM with the banlist.')

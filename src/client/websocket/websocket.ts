@@ -51,9 +51,9 @@ export default class WebSocketManager {
   private onClose (): void {
     console.log('Disconnected!')
     if (this.pingTimeout !== null) {
-      this.client.clearTimeout(this.pingTimeout)
+      clearTimeout(this.pingTimeout)
     }
-    this.client.setTimeout(this.connect.bind(this), RECONNECT_TIMEOUT)
+    setTimeout(this.connect.bind(this), RECONNECT_TIMEOUT).unref()
   }
 
   private onPing (): void {
@@ -62,9 +62,9 @@ export default class WebSocketManager {
 
   private heartbeat (): void {
     if (this.pingTimeout !== null) {
-      this.client.clearTimeout(this.pingTimeout)
+      clearTimeout(this.pingTimeout)
     }
-    this.pingTimeout = this.client.setTimeout(() => this.connection?.terminate(), PING_TIMEOUT)
+    this.pingTimeout = setTimeout(() => this.connection?.terminate(), PING_TIMEOUT).unref()
   }
 
   private handlePacket (packet: Packet): void {

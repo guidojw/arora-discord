@@ -54,7 +54,7 @@ export default class ExilesCommand extends BaseCommand {
 
       const embeds = await groupService.getExileEmbeds(exiles)
       for (const embed of embeds) {
-        await message.author.send(embed)
+        await message.author.send({ embeds: [embed] })
       }
 
       return await message.reply('Sent you a DM with the current exiles.')

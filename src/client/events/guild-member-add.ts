@@ -25,7 +25,9 @@ export default class GuildMemberAddEventHandler implements BaseHandler {
         .setDescription(`You're the **${getOrdinalNum(guild.memberCount)}** member on **${guild.name}**!`)
         .setThumbnail(member.user.displayAvatarURL())
         .setColor(guild.primaryColor ?? applicationConfig.defaultColor)
-      await Promise.all(welcomeChannelsGroup.channels.cache.map(async channel => await channel.send(embed)))
+      await Promise.all(welcomeChannelsGroup.channels.cache.map(async channel => (
+        await channel.send({ embeds: [embed] }))
+      ))
     }
 
     const persistentRoles = await member.fetchPersistentRoles()

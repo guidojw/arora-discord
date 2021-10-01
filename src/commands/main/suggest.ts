@@ -50,7 +50,7 @@ export default class SuggestCommand extends BaseCommand {
       }
     }
 
-    const newMessage = await message.guild.suggestionsChannel.send(embed)
+    const newMessage = await message.guild.suggestionsChannel.send({ embeds: [embed] })
     await newMessage.react('⬆️')
     await newMessage.react('⬇️')
 

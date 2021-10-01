@@ -145,7 +145,7 @@ export default class GuildTicketManager extends BaseManager<Ticket, TicketResolv
 
       if (!this.debounces.has(user.id)) {
         this.debounces.set(user.id, true)
-        this.client.setTimeout(this.debounces.delete.bind(this.debounces, user.id), TICKETS_INTERVAL)
+        setTimeout(this.debounces.delete.bind(this.debounces, user.id), TICKETS_INTERVAL).unref()
 
         if (this.resolve(user) === null) {
           if (!this.guild.supportEnabled) {
@@ -154,20 +154,23 @@ export default class GuildTicketManager extends BaseManager<Ticket, TicketResolv
               .setAuthor(this.client.user?.username ?? 'Arora', this.client.user?.displayAvatarURL())
               .setTitle(`Welcome to ${this.guild.name} Support`)
               .setDescription(`We are currently closed. Check the ${this.guild.name} server for more information.`)
-            await this.client.send(user, embed)
+            await this.client.send(user, { embeds: [embed] })
             return
           }
 
           const ticket = await this.create({ author: user, ticketType })
           await ticket.populateChannel()
           // eslint-disable-next-line @typescript-eslint/no-misused-promises
-          ticket.timeout = this.client.setTimeout(ticket.close.bind(ticket, 'Timeout: ticket closed'), SUBMISSION_TIME)
+          ticket.timeout = setTimeout(async () => (
+            await ticket.close('Timeout: ticket closed', false)
+          ), SUBMISSION_TIME).unref()
+          ticket.timeout.unref()
         } else {
           const embed = new MessageEmbed()
             .setColor(0xff0000)
             .setTitle('Couldn\'t make ticket')
             .setDescription('You already have an open ticket.')
-          await this.client.send(user, embed)
+          await this.client.send(user, { embeds: [embed] })
         }
       }
     }

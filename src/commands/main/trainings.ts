@@ -57,7 +57,7 @@ export default class TrainingsCommand extends BaseCommand {
 
       const embeds = await groupService.getTrainingEmbeds(trainings)
       for (const embed of embeds) {
-        await message.author.send(embed)
+        await message.author.send({ embeds: [embed] })
       }
       return await message.reply('Sent you a DM with the upcoming trainings.')
     }

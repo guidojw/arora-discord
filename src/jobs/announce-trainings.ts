@@ -49,7 +49,7 @@ export default class AnnounceTrainingsJob implements BaseJob {
           : ':x: There are currently no scheduled trainings.'
       )
 
-      await trainingsInfoPanel.message.edit(embed)
+      await trainingsInfoPanel.message.edit({ embeds: [embed] })
     }
 
     // Trainings Panel
@@ -58,7 +58,7 @@ export default class AnnounceTrainingsJob implements BaseJob {
 
       embed.setColor(guild.primaryColor ?? applicationConfig.defaultColor)
 
-      await trainingsPanel.message.edit(embed)
+      await trainingsPanel.message.edit({ embeds: [embed] })
     }
   }
 }

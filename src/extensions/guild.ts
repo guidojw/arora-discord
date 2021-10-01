@@ -306,7 +306,7 @@ const AroraGuild: Guild = Structures.extend('Guild', Guild => {
           embed.setFooter(options.footer)
         }
 
-        return await this.logsChannel.send(embed)
+        return await this.logsChannel.send({ embeds: [embed] })
       }
       return null
     }

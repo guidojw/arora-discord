@@ -45,13 +45,15 @@ export default class PremiumMembersReportJob implements BaseJob {
       const embed = new MessageEmbed()
         .setTitle('Server Booster Report')
         .setColor(0xff73fa)
-      const emoji = guild.emojis.cache.find(emoji => emoji.name.toLowerCase() === 'boost')
+      const emoji = guild.emojis.cache.find(emoji => emoji.name?.toLowerCase() === 'boost')
 
       for (const { member, months } of monthlyPremiumMembers) {
         embed.addField(`${member.user.tag} ${emoji?.toString() ?? ''}`, `Has been boosting this server for **${pluralize('month', months, true)}**!`)
       }
 
-      await Promise.all(serverBoosterReportChannelsGroup.channels.cache.map(async channel => await channel.send(embed)))
+      await Promise.all(serverBoosterReportChannelsGroup.channels.cache.map(async channel => (
+        await channel.send({ embeds: [embed] }))
+      ))
     }
   }
 }

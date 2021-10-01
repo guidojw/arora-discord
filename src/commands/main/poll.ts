@@ -41,7 +41,7 @@ export default class PollCommand extends BaseCommand {
       .setAuthor(message.author.tag, message.author.displayAvatarURL())
       .setColor(message.guild.primaryColor ?? applicationConfig.defaultColor)
 
-    const newMessage = await message.channel.send(embed)
+    const newMessage = await message.channel.send({ embeds: [embed] })
     if (options.length > 0) {
       for (const option of options) {
         await newMessage.react(`${option}⃣`)

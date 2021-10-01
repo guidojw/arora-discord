@@ -158,7 +158,7 @@ export default class GuildPanelManager extends BaseManager<Panel, PanelResolvabl
       messageId: null
     }
     if (typeof channel !== 'undefined') {
-      const message = await channel.send(panel.embed)
+      const message = await channel.send({ embeds: [panel.embed] })
       data.messageId = message.id
     }
     await this.panelRepository.save(this.panelRepository.create({
