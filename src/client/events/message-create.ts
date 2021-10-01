@@ -1,13 +1,14 @@
-import { MessageEmbed, TextChannel } from 'discord.js'
+import * as interactions from '../../interactions'
+import { ApplicationCommandData, TextChannel } from 'discord.js'
 import type BaseHandler from '../base'
 import type Client from '../client'
-import type { CommandoMessage } from 'discord.js-commando'
+import type { Message } from 'discord.js'
 import { injectable } from 'inversify'
 import { stripIndents } from 'common-tags'
 
 @injectable()
 export default class MessageEventHandler implements BaseHandler {
-  public async handle (client: Client, message: CommandoMessage): Promise<void> {
+  public async handle (client: Client, message: Message): Promise<void> {
     if (message.author.bot) {
       return
     }
@@ -16,17 +17,12 @@ export default class MessageEventHandler implements BaseHandler {
       return
     }
 
-    if (message.content.startsWith(guild.commandPrefix)) {
-      const tagsCommand = client.registry.resolveCommand('tags')
-      if (tagsCommand.isEnabledIn(guild) && tagsCommand.hasPermission(message) === true) {
-        const name = message.content.slice(guild.commandPrefix.length)
-        const tag = guild.tags.resolve(name)
-
-        if (tag !== null) {
-          await message.reply(tag.content, tag.content instanceof MessageEmbed
-            ? {}
-            : { allowedMentions: { users: [message.author.id] } })
-        }
+    if (process.env.NODE_ENV === 'development') {
+      if (client.application?.owner === null) {
+        await client.application?.fetch()
+      }
+      if (message.content.toLowerCase() === '!deploy' && message.author.id === client.application?.owner?.id) {
+        await guild.commands.set(Object.values(interactions) as ApplicationCommandData[])
       }
     }
 
@@ -52,7 +48,7 @@ export default class MessageEventHandler implements BaseHandler {
             await message.delete()
           } catch {}
           if (message.deleted) {
-            await message.guild.log(
+            await message.guild?.log(
               message.author,
               stripIndents`
               **Message sent by ${message.author} deleted in ${message.channel}**
