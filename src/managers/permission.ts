@@ -115,21 +115,23 @@ export default class PermissionManager extends BaseManager<Permission, Permissio
     return _permission ?? this._add(newData, false)
   }
 
-  public override resolve (permissionResolvable: PermissionResolvable): Permission | null {
-    const permission = super.resolve(permissionResolvable)
-    if (permission !== null) {
-      return permission
+  public override resolve (permission: Permission): Permission
+  public override resolve (permission: PermissionResolvable): Permission | null
+  public override resolve (permission: PermissionResolvable): Permission | null {
+    const otherPermission = super.resolve(permission)
+    if (otherPermission !== null) {
+      return otherPermission
     }
     let commandId: number | undefined
-    if (permissionResolvable instanceof Command || typeof permissionResolvable === 'string') {
+    if (permission instanceof Command || typeof permission === 'string') {
       try {
-        commandId = (this.client as CommandoClient).registry.resolveCommand(permissionResolvable).aroraId
+        commandId = (this.client as CommandoClient).registry.resolveCommand(permission).aroraId
       } catch {}
     }
     if (typeof commandId === 'undefined' &&
-      (permissionResolvable instanceof CommandGroup || typeof permissionResolvable === 'string')) {
+      (permission instanceof CommandGroup || typeof permission === 'string')) {
       try {
-        commandId = (this.client as CommandoClient).registry.resolveGroup(permissionResolvable).aroraId
+        commandId = (this.client as CommandoClient).registry.resolveGroup(permission).aroraId
       } catch {}
     }
     if (typeof commandId !== 'undefined') {
@@ -138,26 +140,12 @@ export default class PermissionManager extends BaseManager<Permission, Permissio
     return null
   }
 
-  public override resolveId (permissionResolvable: PermissionResolvable): number | null {
-    const permission = super.resolve(permissionResolvable)
-    if (permission !== null) {
-      return permission.id
+  public override resolveId (permission: number): number
+  public override resolveId (permission: PermissionResolvable): number | null
+  public override resolveId (permission: PermissionResolvable): number | null {
+    if (!(typeof permission === 'number' || permission instanceof Permission)) {
+      return this.resolve(permission)?.id ?? null
     }
-    let commandId: number | undefined
-    if (permissionResolvable instanceof Command || typeof permissionResolvable === 'string') {
-      try {
-        commandId = (this.client as CommandoClient).registry.resolveCommand(permissionResolvable).aroraId
-      } catch {}
-    }
-    if (typeof commandId === 'undefined' &&
-      (permissionResolvable instanceof CommandGroup || typeof permissionResolvable === 'string')) {
-      try {
-        commandId = (this.client as CommandoClient).registry.resolveGroup(permissionResolvable).aroraId
-      } catch {}
-    }
-    if (typeof commandId !== 'undefined') {
-      return this.cache.find(otherPermission => otherPermission.commandId === commandId)?.id ?? null
-    }
-    return null
+    return super.resolveId(permission)
   }
 }

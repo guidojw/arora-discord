@@ -123,6 +123,8 @@ export default class GuildTagManager extends BaseManager<Tag, TagResolvable> {
     return _tag ?? this._add(newData, false)
   }
 
+  public override resolve (tag: Tag): Tag
+  public override resolve (tag: TagResolvable): Tag | null
   public override resolve (tag: TagResolvable): Tag | null {
     if (typeof tag === 'string') {
       return this.cache.find(otherTag => otherTag.names.resolve(tag) !== null) ?? null
@@ -130,9 +132,11 @@ export default class GuildTagManager extends BaseManager<Tag, TagResolvable> {
     return super.resolve(tag)
   }
 
+  public override resolveId (tag: number): number
+  public override resolveId (tag: TagResolvable): number | null
   public override resolveId (tag: TagResolvable): number | null {
     if (typeof tag === 'string') {
-      return this.cache.find(otherTag => otherTag.names.resolve(tag) !== null)?.id ?? null
+      return this.resolve(tag)?.id ?? null
     }
     return super.resolveId(tag)
   }

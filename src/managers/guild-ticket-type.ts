@@ -189,23 +189,24 @@ export default class GuildTicketTypeManager extends BaseManager<TicketType, Tick
     return _ticketType ?? this._add(newData, false)
   }
 
-  public override resolve (type: TicketTypeResolvable): TicketType | null {
-    if (typeof type === 'string') {
-      type = type.toLowerCase().replace(/\s/g, '')
+  public override resolve (ticketType: TicketType): TicketType
+  public override resolve (ticketType: TicketTypeResolvable): TicketType | null
+  public override resolve (ticketType: TicketTypeResolvable): TicketType | null {
+    if (typeof ticketType === 'string') {
+      ticketType = ticketType.toLowerCase().replace(/\s/g, '')
       return this.cache.find(otherType => (
-        otherType.name.toLowerCase().replace(/\s/g, '') === type
+        otherType.name.toLowerCase().replace(/\s/g, '') === ticketType
       )) ?? null
     }
-    return super.resolve(type)
+    return super.resolve(ticketType)
   }
 
-  public override resolveId (type: TicketTypeResolvable): number | null {
-    if (typeof type === 'string') {
-      type = type.toLowerCase().replace(/\s/g, '')
-      return this.cache.find(otherType => (
-        otherType.name.toLowerCase().replace(/\s/g, '') === type
-      ))?.id ?? null
+  public override resolveId (ticketType: number): number
+  public override resolveId (ticketType: TicketTypeResolvable): number | null
+  public override resolveId (ticketType: number | TicketTypeResolvable): number | null {
+    if (typeof ticketType === 'string') {
+      return this.resolve(ticketType)?.id ?? null
     }
-    return super.resolveId(type)
+    return super.resolveId(ticketType)
   }
 }

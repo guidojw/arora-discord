@@ -74,22 +74,24 @@ export default class TagTagNameManager extends CachedManager<string, TagName, Ta
     this.cache.delete(id)
   }
 
-  public override resolve (tagNameResolvable: TagNameResolvable): TagName | null {
-    if (typeof tagNameResolvable === 'string') {
-      tagNameResolvable = tagNameResolvable.toLowerCase()
-      return this.cache.find(otherTagName => otherTagName.name.toLowerCase() === tagNameResolvable) ?? null
+  public override resolve (tagName: TagName): TagName
+  public override resolve (tagName: TagNameResolvable): TagName | null
+  public override resolve (tagName: TagNameResolvable): TagName | null {
+    if (typeof tagName === 'string') {
+      tagName = tagName.toLowerCase()
+      return this.cache.find(otherTagName => otherTagName.name.toLowerCase() === tagName) ?? null
     }
-    return super.resolve(tagNameResolvable)
+    return super.resolve(tagName)
   }
 
-  public override resolveId (tagNameResolvable: TagNameResolvable): string | null {
-    if (tagNameResolvable instanceof this.holds) {
-      return tagNameResolvable.name
+  public override resolveId (tagName: string): string
+  public override resolveId (tagName: TagNameResolvable): string | null
+  public override resolveId (tagName: TagNameResolvable): string | null {
+    if (tagName instanceof this.holds) {
+      return tagName.name
     }
-    if (typeof tagNameResolvable === 'string') {
-      tagNameResolvable = tagNameResolvable.toLowerCase()
-      return this.cache.find(otherTagName => otherTagName.name.toLowerCase() === tagNameResolvable)?.name ??
-        tagNameResolvable
+    if (typeof tagName === 'string') {
+      return this.resolve(tagName)?.name ?? tagName
     }
     return null
   }

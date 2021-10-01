@@ -177,43 +177,34 @@ export default class GuildTicketManager extends BaseManager<Ticket, TicketResolv
     }
   }
 
-  public override resolve (ticketResolvable: TicketResolvable): Ticket | null {
-    if (typeof ticketResolvable === 'number' || ticketResolvable instanceof Ticket) {
-      return super.resolve(ticketResolvable)
+  public override resolve (ticket: Ticket): Ticket
+  public override resolve (ticket: TicketResolvable): Ticket | null
+  public override resolve (ticket: TicketResolvable): Ticket | null {
+    if (typeof ticket === 'number' || ticket instanceof Ticket) {
+      return super.resolve(ticket)
     }
-    if (typeof ticketResolvable === 'string' || ticketResolvable instanceof TextChannel) {
-      const channel = this.guild.channels.resolve(ticketResolvable)
+    if (typeof ticket === 'string' || ticket instanceof TextChannel) {
+      const channel = this.guild.channels.resolve(ticket)
       if (channel !== null) {
-        return this.cache.find(ticket => ticket.channelId === channel.id) ?? null
+        return this.cache.find(otherTicket => otherTicket.channelId === channel.id) ?? null
       }
-      if (ticketResolvable instanceof TextChannel) {
+      if (ticket instanceof TextChannel) {
         return null
       }
     }
-    const member = this.guild.members.resolve(ticketResolvable)
+    const member = this.guild.members.resolve(ticket)
     if (member !== null) {
-      return this.cache.find(ticket => ticket.authorId === member.id) ?? null
+      return this.cache.find(otherTicket => otherTicket.authorId === member.id) ?? null
     }
     return null
   }
 
-  public override resolveId (ticketResolvable: TicketResolvable): number | null {
-    if (typeof ticketResolvable === 'number' || ticketResolvable instanceof Ticket) {
-      return super.resolve(ticketResolvable)?.id ?? null
+  public override resolveId (ticket: number): number
+  public override resolveId (ticket: TicketResolvable): number | null
+  public override resolveId (ticket: TicketResolvable): number | null {
+    if (!(typeof ticket === 'number' || ticket instanceof Ticket)) {
+      return this.resolve(ticket)?.id ?? null
     }
-    if (typeof ticketResolvable === 'string' || ticketResolvable instanceof TextChannel) {
-      const channel = this.guild.channels.resolve(ticketResolvable)
-      if (channel !== null) {
-        return this.cache.find(ticket => ticket.channelId === channel.id)?.id ?? null
-      }
-      if (ticketResolvable instanceof TextChannel) {
-        return null
-      }
-    }
-    const member = this.guild.members.resolve(ticketResolvable)
-    if (member !== null) {
-      return this.cache.find(ticket => ticket.authorId === member.id)?.id ?? null
-    }
-    return null
+    return super.resolveId(ticket)
   }
 }

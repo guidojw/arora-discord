@@ -100,6 +100,8 @@ export default class GuildGroupManager extends BaseManager<Group, GroupResolvabl
     return _group ?? this._add(newData, false)
   }
 
+  public override resolve (group: Group): Group
+  public override resolve (group: GroupResolvable): Group | null
   public override resolve (group: GroupResolvable): Group | null {
     if (typeof group === 'string') {
       group = group.toLowerCase()
@@ -108,10 +110,11 @@ export default class GuildGroupManager extends BaseManager<Group, GroupResolvabl
     return super.resolve(group)
   }
 
+  public override resolveId (group: number): number
+  public override resolveId (group: GroupResolvable): number | null
   public override resolveId (group: GroupResolvable): number | null {
     if (typeof group === 'string') {
-      group = group.toLowerCase()
-      return this.cache.find(otherGroup => otherGroup.name.toLowerCase() === group)?.id ?? null
+      return this.resolve(group)?.id ?? null
     }
     return super.resolveId(group)
   }

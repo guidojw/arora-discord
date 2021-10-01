@@ -181,6 +181,8 @@ export default class GuildPanelManager extends BaseManager<Panel, PanelResolvabl
     return _panel ?? this._add(newData, false)
   }
 
+  public override resolve (panel: Panel): Panel
+  public override resolve (panel: PanelResolvable): Panel | null
   public override resolve (panel: PanelResolvable): Panel | null {
     if (typeof panel === 'string') {
       panel = panel.toLowerCase()
@@ -189,10 +191,11 @@ export default class GuildPanelManager extends BaseManager<Panel, PanelResolvabl
     return super.resolve(panel)
   }
 
+  public override resolveId (panel: number): number
+  public override resolveId (panel: PanelResolvable): number | null
   public override resolveId (panel: PanelResolvable): number | null {
     if (typeof panel === 'string') {
-      panel = panel.toLowerCase()
-      return this.cache.find(otherPanel => otherPanel.name.toLowerCase() === panel)?.id ?? null
+      return this.resolve(panel)?.id ?? null
     }
     return super.resolveId(panel)
   }
