@@ -1,42 +1,32 @@
-import '../extensions' // Extend Discord.js structures before the client collections get instantiated.
+import { Client, Constants, DiscordAPIError, Intents } from 'discord.js'
 import type {
-  APIMessage,
+  ClientEvents,
+  ClientOptions,
   GuildMember,
   Message,
   MessageOptions,
+  MessagePayload,
   PartialGuildMember,
   Presence,
   User
 } from 'discord.js'
-import type {
-  // Commando doesn't export these. PR a fix and uncomment this + fix
-  // Client.bindEvent when merged.
-  // CommandoClientEvents,
-  CommandoClientOptions,
-  CommandoMessage,
-  Inhibition
-} from 'discord.js-commando'
-import { Constants, DiscordAPIError, Intents } from 'discord.js'
-import AroraProvider from './setting-provider'
 import type BaseHandler from './base'
-import { CommandoClient } from 'discord.js-commando'
+import SettingProvider from './setting-provider'
 import { WebSocketManager } from './websocket'
 import applicationConfig from '../configs/application'
 import { constants } from '../util'
 import container from '../configs/container'
 import getDecorators from 'inversify-inject-decorators'
-import path from 'node:path'
 
 const { PartialTypes } = Constants
 const { TYPES } = constants
 const { lazyInject } = getDecorators(container)
 
-const registerFilter = /^(?!base\.js|.*\.d\.).*/
-
 const ACTIVITY_CAROUSEL_INTERVAL = 60 * 1000
 
 declare module 'discord.js' {
   interface Client {
+    provider: SettingProvider
     mainGuild: Guild | null
 
     startActivityCarousel: () => Promise<Presence | null>
@@ -44,39 +34,24 @@ declare module 'discord.js' {
     nextActivity: (activity?: number) => Promise<Presence>
     send: (
       user: GuildMember | PartialGuildMember | User,
-      content: string | APIMessage | MessageOptions
+      content: string | MessagePayload | MessageOptions
     ) => Promise<Message | Message[] | null>
   }
 }
 
-export default class AroraClient extends CommandoClient {
-  @lazyInject(TYPES.PacketHandlerFactory)
-  public readonly packetHandlerFactory!: (eventName: string) => BaseHandler
-
+export default class AroraClient extends Client {
   @lazyInject(TYPES.EventHandlerFactory)
   private readonly eventHandlerFactory!: (eventName: string) => BaseHandler
+
+  @lazyInject(TYPES.PacketHandlerFactory)
+  public readonly packetHandlerFactory!: (eventName: string) => BaseHandler
 
   private readonly aroraWs: WebSocketManager | null
   private currentActivity: number
   private activityCarouselInterval: NodeJS.Timeout | null
 
-  public constructor (options: CommandoClientOptions = {}) {
-    if (typeof options.commandPrefix === 'undefined') {
-      options.commandPrefix = applicationConfig.defaultPrefix
-    }
-    if (typeof options.owner === 'undefined') {
-      options.owner = applicationConfig.owner
-    }
-    if (typeof options.invite === 'undefined') {
-      options.invite = applicationConfig.invite
-    }
-    if (typeof options.ws === 'undefined') {
-      options.ws = {}
-    }
-    if (typeof options.ws.intents === 'undefined') {
-      options.ws.intents = []
-    }
-    const intentsArray = options.ws.intents as number[]
+  public constructor (options: ClientOptions = { intents: [] }) {
+    const intentsArray = options.intents as number[]
     if (!intentsArray.includes(Intents.FLAGS.GUILDS)) {
       intentsArray.push(Intents.FLAGS.GUILDS)
     }
@@ -115,34 +90,12 @@ export default class AroraClient extends CommandoClient {
     }
     super(options)
 
+    this.provider = new SettingProvider()
+
     this.mainGuild = null
 
     this.currentActivity = 0
     this.activityCarouselInterval = null
-
-    this.registry
-      .registerDefaultGroups()
-      .registerDefaultTypes({ message: false })
-      .registerDefaultCommands({
-        help: true,
-        prefix: true,
-        eval: true,
-        ping: true,
-        unknownCommand: false,
-        commandState: true
-      })
-      .unregisterCommand(this.registry.resolveCommand('groups')) // returns void..
-    this.registry
-      .registerGroup('admin', 'Admin')
-      .registerGroup('bot', 'Bot')
-      .registerGroup('main', 'Main')
-      .registerGroup('settings', 'Settings')
-      .registerTypesIn({ dirname: path.join(__dirname, '../types'), filter: registerFilter })
-      .registerCommandsIn({ dirname: path.join(__dirname, '../commands'), filter: registerFilter })
-
-    this.dispatcher.addInhibitor(requiresApiInhibitor)
-    this.dispatcher.addInhibitor(requiresRobloxGroupInhibitor)
-    this.dispatcher.addInhibitor(requiresSingleGuildInhibitor)
 
     this.aroraWs = applicationConfig.apiEnabled === true ? new WebSocketManager(this) : null
 
@@ -151,7 +104,7 @@ export default class AroraClient extends CommandoClient {
   }
 
   private async ready (): Promise<void> {
-    await this.setProvider(new AroraProvider())
+    await this.provider.init(this)
 
     const mainGuildId = process.env.NODE_ENV === 'production'
       ? applicationConfig.productionMainGuildId
@@ -159,17 +112,12 @@ export default class AroraClient extends CommandoClient {
     this.mainGuild = this.guilds.cache.get(mainGuildId) ?? null
 
     this.bindEvent('channelDelete')
-    this.bindEvent('commandCancel')
-    this.bindEvent('commandError')
-    this.bindEvent('commandPrefixChange')
-    this.bindEvent('commandRun')
-    this.bindEvent('commandStatusChange')
     this.bindEvent('emojiDelete')
-    this.bindEvent('groupStatusChange')
     this.bindEvent('guildCreate')
     this.bindEvent('guildMemberAdd')
     this.bindEvent('guildMemberUpdate')
-    this.bindEvent('message')
+    this.bindEvent('interactionCreate')
+    this.bindEvent('messageCreate')
     this.bindEvent('messageDelete')
     this.bindEvent('messageDeleteBulk')
     this.bindEvent('messageReactionAdd')
@@ -186,7 +134,7 @@ export default class AroraClient extends CommandoClient {
   public override async startActivityCarousel (): Promise<Presence | null> {
     if (this.activityCarouselInterval === null) {
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
-      this.activityCarouselInterval = this.setInterval(this.nextActivity.bind(this), ACTIVITY_CAROUSEL_INTERVAL)
+      this.activityCarouselInterval = setInterval(this.nextActivity.bind(this), ACTIVITY_CAROUSEL_INTERVAL)
       return await this.nextActivity(0)
     }
     return null
@@ -195,7 +143,7 @@ export default class AroraClient extends CommandoClient {
   // @ts-expect-error
   public override stopActivityCarousel (): void {
     if (this.activityCarouselInterval !== null) {
-      this.clearInterval(this.activityCarouselInterval)
+      clearInterval(this.activityCarouselInterval)
       this.activityCarouselInterval = null
     }
   }
@@ -206,24 +154,22 @@ export default class AroraClient extends CommandoClient {
       throw new Error('Can\'t set activity when the client is not logged in.')
     }
 
-    this.currentActivity = (activity ?? this.currentActivity + 1) % 2
+    this.currentActivity = (activity ?? this.currentActivity + 1) % 1
     switch (this.currentActivity) {
-      case 0: {
+      default: {
         let totalMemberCount = 0
         for (const guild of this.guilds.cache.values()) {
           totalMemberCount += guild.memberCount
         }
         return await this.user.setActivity(`${totalMemberCount} users`, { type: 'WATCHING' })
       }
-      default:
-        return await this.user.setActivity(`${this.commandPrefix}help`, { type: 'LISTENING' })
     }
   }
 
   // @ts-expect-error
   public override async send (
     user: GuildMember | PartialGuildMember | User,
-    content: string | APIMessage | MessageOptions
+    content: string | MessagePayload | MessageOptions
   ): Promise<Message | Message[] | null> {
     return await failSilently(user.send.bind(user, content), [50007])
     // 50007: Cannot send messages to this user, user probably has DMs closed.
@@ -235,44 +181,11 @@ export default class AroraClient extends CommandoClient {
     return usedToken
   }
 
-  // See comment in discord.js-commando imports.
-  // private bindEvent (eventName: CommandoClientEvents): void {
-  private bindEvent (eventName: string): void {
+  private bindEvent (eventName: keyof ClientEvents): void {
     const handler = this.eventHandlerFactory(eventName)
-    // @ts-expect-error FIXME: eventName keyof ClientEvents & async listener
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     this.on(eventName, handler.handle.bind(handler, this))
   }
-}
-
-function requiresApiInhibitor (msg: CommandoMessage): false | Inhibition {
-  if (msg.command?.requiresApi === true && applicationConfig.apiEnabled !== true) {
-    return {
-      reason: 'apiRequired',
-      response: msg.reply('This command requires that the bot has an API connected.')
-    }
-  }
-  return false
-}
-
-function requiresRobloxGroupInhibitor (msg: CommandoMessage): false | Inhibition {
-  if (msg.command?.requiresRobloxGroup === true && (msg.guild === null || msg.guild.robloxGroupId === null)) {
-    return {
-      reason: 'robloxGroupRequired',
-      response: msg.reply('This command requires that the server has its robloxGroup setting set.')
-    }
-  }
-  return false
-}
-
-function requiresSingleGuildInhibitor (msg: CommandoMessage): false | Inhibition {
-  if (msg.command?.requiresSingleGuild === true && msg.client.guilds.cache.size !== 1) {
-    return {
-      reason: 'singleGuildRequired',
-      response: msg.reply('This command requires the bot to be in only one guild.')
-    }
-  }
-  return false
 }
 
 async function failSilently (
