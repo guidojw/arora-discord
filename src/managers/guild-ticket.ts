@@ -86,7 +86,7 @@ export default class GuildTicketManager extends BaseManager<Ticket, TicketResolv
   }
 
   public async delete (ticket: TicketResolvable): Promise<void> {
-    const id = this.resolveID(ticket)
+    const id = this.resolveId(ticket)
     if (id === null) {
       throw new Error('Invalid ticket.')
     }
@@ -102,7 +102,7 @@ export default class GuildTicketManager extends BaseManager<Ticket, TicketResolv
     ticket: TicketResolvable,
     data: TicketUpdateOptions
   ): Promise<Ticket> {
-    const id = this.resolveID(ticket)
+    const id = this.resolveId(ticket)
     if (id === null) {
       throw new Error('Invalid ticket.')
     }
@@ -193,7 +193,7 @@ export default class GuildTicketManager extends BaseManager<Ticket, TicketResolv
     return null
   }
 
-  public override resolveID (ticketResolvable: TicketResolvable): number | null {
+  public override resolveId (ticketResolvable: TicketResolvable): number | null {
     if (typeof ticketResolvable === 'number' || ticketResolvable instanceof Ticket) {
       return super.resolve(ticketResolvable)?.id ?? null
     }

@@ -53,7 +53,7 @@ export default class GuildPanelManager extends BaseManager<Panel, PanelResolvabl
   }
 
   public async delete (panel: PanelResolvable): Promise<void> {
-    const id = this.resolveID(panel)
+    const id = this.resolveId(panel)
     if (id === null) {
       throw new Error('Invalid panel.')
     }
@@ -188,11 +188,11 @@ export default class GuildPanelManager extends BaseManager<Panel, PanelResolvabl
     return super.resolve(panel)
   }
 
-  public override resolveID (panel: PanelResolvable): number | null {
+  public override resolveId (panel: PanelResolvable): number | null {
     if (typeof panel === 'string') {
       panel = panel.toLowerCase()
       return this.cache.find(otherPanel => otherPanel.name.toLowerCase() === panel)?.id ?? null
     }
-    return super.resolveID(panel)
+    return super.resolveId(panel)
   }
 }

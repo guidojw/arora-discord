@@ -1,8 +1,9 @@
-import { BaseManager as DiscordBaseManager } from 'discord.js'
-import type { IdentifiableStructure } from '../types/base'
+import { CachedManager } from 'discord.js'
 
-export default class BaseManager<Holds extends IdentifiableStructure, R> extends DiscordBaseManager<number, Holds, R> {
-  public override resolve (resolvable: R): Holds | null {
+export default class BaseManager<Holds extends { id: number }, R> extends CachedManager<number, Holds, R> {
+  public override resolve (resolvable: Holds): Holds
+  public override resolve (resolvable: R): Holds | null
+  public override resolve (resolvable: Holds | R): Holds | null {
     if (resolvable instanceof this.holds) {
       return resolvable
     }
@@ -12,7 +13,9 @@ export default class BaseManager<Holds extends IdentifiableStructure, R> extends
     return null
   }
 
-  public override resolveID (resolvable: R): number | null {
+  public override resolveId (resolvable: number | Holds): number
+  public override resolveId (resolvable: R): number | null
+  public override resolveId (resolvable: number | Holds | R): number | null {
     if (resolvable instanceof this.holds) {
       return resolvable.id
     }

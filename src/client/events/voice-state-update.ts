@@ -6,7 +6,7 @@ import { injectable } from 'inversify'
 @injectable()
 export default class VoiceStateUpdateEventHandler implements BaseHandler {
   public async handle (_client: Client, oldState: VoiceState, newState: VoiceState): Promise<void> {
-    if (oldState.channelID !== newState.channelID) {
+    if (oldState.channelId !== newState.channelId) {
       const member = newState.member
       if (member === null) {
         return

@@ -48,7 +48,7 @@ export default class GroupTextChannelManager {
   }
 
   public async remove (channel: TextChannelResolvable): Promise<ChannelGroup> {
-    const id = this.guild.channels.resolveID(channel)
+    const id = this.guild.channels.resolveId(channel)
     if (id === null) {
       throw new Error('Invalid channel.')
     }

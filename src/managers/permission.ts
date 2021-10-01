@@ -75,7 +75,7 @@ export default class PermissionManager extends BaseManager<Permission, Permissio
   }
 
   public async delete (permission: PermissionResolvable): Promise<void> {
-    const id = this.resolveID(permission)
+    const id = this.resolveId(permission)
     if (id === null) {
       throw new Error('Invalid permission.')
     }
@@ -91,7 +91,7 @@ export default class PermissionManager extends BaseManager<Permission, Permissio
     permission: PermissionResolvable,
     data: PermissionUpdateOptions
   ): Promise<Permission> {
-    const id = this.resolveID(permission)
+    const id = this.resolveId(permission)
     if (id === null) {
       throw new Error('Invalid permission.')
     }
@@ -137,7 +137,7 @@ export default class PermissionManager extends BaseManager<Permission, Permissio
     return null
   }
 
-  public override resolveID (permissionResolvable: PermissionResolvable): number | null {
+  public override resolveId (permissionResolvable: PermissionResolvable): number | null {
     const permission = super.resolve(permissionResolvable)
     if (permission !== null) {
       return permission.id

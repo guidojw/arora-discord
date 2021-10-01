@@ -64,7 +64,7 @@ export default class GuildRoleBindingManager extends BaseManager<RoleBinding, Ro
   }
 
   public async delete (roleBinding: RoleBindingResolvable): Promise<void> {
-    const id = this.resolveID(roleBinding)
+    const id = this.resolveId(roleBinding)
     if (id === null) {
       throw new Error('Invalid role binding.')
     }

@@ -71,7 +71,7 @@ export default class GuildTagManager extends BaseManager<Tag, TagResolvable> {
   }
 
   public async delete (tag: TagResolvable): Promise<void> {
-    const id = this.resolveID(tag)
+    const id = this.resolveId(tag)
     if (id === null) {
       throw new Error('Invalid tag.')
     }
@@ -87,7 +87,7 @@ export default class GuildTagManager extends BaseManager<Tag, TagResolvable> {
     tag: TagResolvable,
     data: TagUpdateOptions
   ): Promise<Tag> {
-    const id = this.resolveID(tag)
+    const id = this.resolveId(tag)
     if (id === null) {
       throw new Error('Invalid tag.')
     }
@@ -129,10 +129,10 @@ export default class GuildTagManager extends BaseManager<Tag, TagResolvable> {
     return super.resolve(tag)
   }
 
-  public override resolveID (tag: TagResolvable): number | null {
+  public override resolveId (tag: TagResolvable): number | null {
     if (typeof tag === 'string') {
       return this.cache.find(otherTag => otherTag.names.resolve(tag) !== null)?.id ?? null
     }
-    return super.resolveID(tag)
+    return super.resolveId(tag)
   }
 }

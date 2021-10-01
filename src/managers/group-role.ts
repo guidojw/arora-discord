@@ -46,7 +46,7 @@ export default class GroupRoleManager {
   }
 
   public async remove (role: RoleResolvable): Promise<RoleGroup> {
-    const id = this.guild.roles.resolveID(role)
+    const id = this.guild.roles.resolveId(role)
     if (id === null) {
       throw new Error('Invalid role.')
     }

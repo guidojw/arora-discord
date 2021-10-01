@@ -70,7 +70,7 @@ export default class GuildTicketTypeManager extends BaseManager<TicketType, Tick
     ticketTypeResolvable: TicketTypeResolvable,
     data: TicketTypeUpdateOptions
   ): Promise<TicketType> {
-    const id = this.resolveID(ticketTypeResolvable)
+    const id = this.resolveId(ticketTypeResolvable)
     if (id === null) {
       throw new Error('Invalid ticket type.')
     }
@@ -198,13 +198,13 @@ export default class GuildTicketTypeManager extends BaseManager<TicketType, Tick
     return super.resolve(type)
   }
 
-  public override resolveID (type: TicketTypeResolvable): number | null {
+  public override resolveId (type: TicketTypeResolvable): number | null {
     if (typeof type === 'string') {
       type = type.toLowerCase().replace(/\s/g, '')
       return this.cache.find(otherType => (
         otherType.name.toLowerCase().replace(/\s/g, '') === type
       ))?.id ?? null
     }
-    return super.resolveID(type)
+    return super.resolveId(type)
   }
 }

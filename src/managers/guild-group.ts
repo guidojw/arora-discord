@@ -74,7 +74,7 @@ export default class GuildGroupManager extends BaseManager<Group, GroupResolvabl
     group: GroupResolvable,
     data: GroupUpdateOptions
   ): Promise<Group> {
-    const id = this.resolveID(group)
+    const id = this.resolveId(group)
     if (id === null) {
       throw new Error('Invalid group.')
     }
@@ -108,11 +108,11 @@ export default class GuildGroupManager extends BaseManager<Group, GroupResolvabl
     return super.resolve(group)
   }
 
-  public override resolveID (group: GroupResolvable): number | null {
+  public override resolveId (group: GroupResolvable): number | null {
     if (typeof group === 'string') {
       group = group.toLowerCase()
       return this.cache.find(otherGroup => otherGroup.name.toLowerCase() === group)?.id ?? null
     }
-    return super.resolveID(group)
+    return super.resolveId(group)
   }
 }

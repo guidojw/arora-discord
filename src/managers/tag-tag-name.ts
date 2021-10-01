@@ -58,7 +58,7 @@ export default class TagTagNameManager extends DiscordBaseManager<string, TagNam
   }
 
   public async delete (tagNameResolvable: TagNameResolvable): Promise<void> {
-    const id = this.resolveID(tagNameResolvable)
+    const id = this.resolveId(tagNameResolvable)
     if (id === null) {
       throw new Error('Invalid name.')
     }
@@ -81,7 +81,7 @@ export default class TagTagNameManager extends DiscordBaseManager<string, TagNam
     return super.resolve(tagNameResolvable)
   }
 
-  public override resolveID (tagNameResolvable: TagNameResolvable): string | null {
+  public override resolveId (tagNameResolvable: TagNameResolvable): string | null {
     if (tagNameResolvable instanceof this.holds) {
       return tagNameResolvable.name
     }
