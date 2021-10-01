@@ -29,13 +29,13 @@ declare module 'discord.js' {
     provider: SettingProvider
     mainGuild: Guild | null
 
-    startActivityCarousel: () => Promise<Presence | null>
+    startActivityCarousel: () => Presence | null
     stopActivityCarousel: () => void
-    nextActivity: (activity?: number) => Promise<Presence>
+    nextActivity: (activity?: number) => Presence
     send: (
       user: GuildMember | PartialGuildMember | User,
       content: string | MessagePayload | MessageOptions
-    ) => Promise<Message | Message[] | null>
+    ) => Promise<Message>
   }
 }
 
@@ -125,17 +125,16 @@ export default class AroraClient extends Client {
     this.bindEvent('roleDelete')
     this.bindEvent('voiceStateUpdate')
 
-    await this.startActivityCarousel()
+    this.startActivityCarousel()
 
     console.log(`Ready to serve on ${this.guilds.cache.size} servers, for ${this.users.cache.size} users.`)
   }
 
   // @ts-expect-error
-  public override async startActivityCarousel (): Promise<Presence | null> {
+  public override startActivityCarousel (): Presence | null {
     if (this.activityCarouselInterval === null) {
-      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       this.activityCarouselInterval = setInterval(this.nextActivity.bind(this), ACTIVITY_CAROUSEL_INTERVAL)
-      return await this.nextActivity(0)
+      return this.nextActivity(0)
     }
     return null
   }
@@ -149,7 +148,7 @@ export default class AroraClient extends Client {
   }
 
   // @ts-expect-error
-  public override async nextActivity (activity?: number): Promise<Presence> {
+  public override nextActivity (activity?: number): Presence {
     if (this.user === null) {
       throw new Error('Can\'t set activity when the client is not logged in.')
     }
@@ -161,7 +160,7 @@ export default class AroraClient extends Client {
         for (const guild of this.guilds.cache.values()) {
           totalMemberCount += guild.memberCount
         }
-        return await this.user.setActivity(`${totalMemberCount} users`, { type: 'WATCHING' })
+        return this.user.setActivity(`${totalMemberCount} users`, { type: 'WATCHING' })
       }
     }
   }
@@ -170,7 +169,7 @@ export default class AroraClient extends Client {
   public override async send (
     user: GuildMember | PartialGuildMember | User,
     content: string | MessagePayload | MessageOptions
-  ): Promise<Message | Message[] | null> {
+  ): Promise<Message> {
     return await failSilently(user.send.bind(user, content), [50007])
     // 50007: Cannot send messages to this user, user probably has DMs closed.
   }
