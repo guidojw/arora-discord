@@ -17,7 +17,7 @@ export default class MessageEventHandler implements BaseHandler {
       return
     }
 
-    if (process.env.NODE_ENV === 'development') {
+    if ((process.env.NODE_ENV ?? 'development') === 'development') {
       if (client.application?.owner === null) {
         await client.application?.fetch()
       }
