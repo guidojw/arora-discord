@@ -32,8 +32,9 @@ export default class PermissionManager extends BaseManager<Permission, Permissio
     this.guild = permissible.guild
   }
 
-  public override add (data: PermissionEntity, cache = true): Permission {
-    return super.add(data, cache, { id: data.id, extras: [this.permissible] })
+  public override _add (data: PermissionEntity, cache = true): Permission {
+    // @ts-expect-error
+    return super._add(data, cache, { id: data.id, extras: [this.permissible] })
   }
 
   public async create (commandOrCommandGroup: CommandOrCommandGroupResolvable, allow: boolean): Promise<Permission> {
@@ -71,7 +72,7 @@ export default class PermissionManager extends BaseManager<Permission, Permissio
       data: { guildId: this.guild.id }
     })
 
-    return this.add(permission)
+    return this._add(permission)
   }
 
   public async delete (permission: PermissionResolvable): Promise<void> {
@@ -111,7 +112,7 @@ export default class PermissionManager extends BaseManager<Permission, Permissio
 
     const _permission = this.cache.get(id)
     _permission?.setup(newData)
-    return _permission ?? this.add(newData, false)
+    return _permission ?? this._add(newData, false)
   }
 
   public override resolve (permissionResolvable: PermissionResolvable): Permission | null {

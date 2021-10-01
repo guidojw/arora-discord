@@ -35,8 +35,9 @@ export default class GuildTicketManager extends BaseManager<Ticket, TicketResolv
     this.debounces = new Map()
   }
 
-  public override add (data: TicketEntity, cache = true): Ticket {
-    return super.add(data, cache, { id: data.id, extras: [this.guild] })
+  public override _add (data: TicketEntity, cache = true): Ticket {
+    // @ts-expect-error
+    return super._add(data, cache, { id: data.id, extras: [this.guild] })
   }
 
   public async create ({ author: authorResolvable, ticketType: ticketTypeResolvable }: {
@@ -73,7 +74,7 @@ export default class GuildTicketManager extends BaseManager<Ticket, TicketResolv
       id,
       { relations: ['author'] }
     ) as TicketEntity
-    const ticket = this.add(newData)
+    const ticket = this._add(newData)
 
     await this.guild.log(
       author.user,
@@ -130,7 +131,7 @@ export default class GuildTicketManager extends BaseManager<Ticket, TicketResolv
 
     const _ticket = this.cache.get(id)
     _ticket?.setup(newData)
-    return _ticket ?? this.add(newData, false)
+    return _ticket ?? this._add(newData, false)
   }
 
   public async onMessageReactionAdd (reaction: MessageReaction, user: User): Promise<void> {

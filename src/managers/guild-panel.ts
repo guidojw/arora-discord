@@ -29,8 +29,9 @@ export default class GuildPanelManager extends BaseManager<Panel, PanelResolvabl
     this.guild = guild
   }
 
-  public override add (data: PanelEntity, cache = true): Panel {
-    return super.add(data, cache, { id: data.id, extras: [this.guild] })
+  public override _add (data: PanelEntity, cache = true): Panel {
+    // @ts-expect-error
+    return super._add(data, cache, { id: data.id, extras: [this.guild] })
   }
 
   public async create (name: string, content: object): Promise<Panel> {
@@ -49,7 +50,7 @@ export default class GuildPanelManager extends BaseManager<Panel, PanelResolvabl
       name
     }))
 
-    return this.add(newData)
+    return this._add(newData)
   }
 
   public async delete (panel: PanelResolvable): Promise<void> {
@@ -135,7 +136,7 @@ export default class GuildPanelManager extends BaseManager<Panel, PanelResolvabl
 
     const _panel = this.cache.get(panel.id)
     _panel?.setup(newData)
-    return _panel ?? this.add(newData, false)
+    return _panel ?? this._add(newData, false)
   }
 
   public async post (panelResolvable: PanelResolvable, channelResolvable?: TextChannelResolvable): Promise<Panel> {
@@ -177,7 +178,7 @@ export default class GuildPanelManager extends BaseManager<Panel, PanelResolvabl
 
     const _panel = this.cache.get(panel.id)
     _panel?.setup(newData)
-    return _panel ?? this.add(newData, false)
+    return _panel ?? this._add(newData, false)
   }
 
   public override resolve (panel: PanelResolvable): Panel | null {

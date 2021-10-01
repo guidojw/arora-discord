@@ -30,8 +30,9 @@ export default class GuildTagManager extends BaseManager<Tag, TagResolvable> {
     this.guild = guild
   }
 
-  public override add (data: TagEntity, cache = true): Tag {
-    return super.add(data, cache, { id: data.id, extras: [this.guild] })
+  public override _add (data: TagEntity, cache = true): Tag {
+    // @ts-expect-error
+    return super._add(data, cache, { id: data.id, extras: [this.guild] })
   }
 
   public async create (name: string, content: string | object): Promise<Tag> {
@@ -67,7 +68,7 @@ export default class GuildTagManager extends BaseManager<Tag, TagResolvable> {
       names: [{ name }]
     }))
 
-    return this.add(newData)
+    return this._add(newData)
   }
 
   public async delete (tag: TagResolvable): Promise<void> {
@@ -119,7 +120,7 @@ export default class GuildTagManager extends BaseManager<Tag, TagResolvable> {
 
     const _tag = this.cache.get(id)
     _tag?.setup(newData)
-    return _tag ?? this.add(newData, false)
+    return _tag ?? this._add(newData, false)
   }
 
   public override resolve (tag: TagResolvable): Tag | null {

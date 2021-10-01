@@ -1,6 +1,6 @@
 import type { Tag as TagEntity, TagName as TagNameEntity } from '../entities'
+import { CachedManager } from 'discord.js'
 import type { CommandoClient } from 'discord.js-commando'
-import { BaseManager as DiscordBaseManager } from 'discord.js'
 import type { Guild } from 'discord.js'
 import type { Repository } from 'typeorm'
 import type { Tag } from '../structures'
@@ -14,7 +14,7 @@ export type TagNameResolvable = TagName | string
 const { TYPES } = constants
 const { lazyInject } = getDecorators(container)
 
-export default class TagTagNameManager extends DiscordBaseManager<string, TagName, TagNameResolvable> {
+export default class TagTagNameManager extends CachedManager<string, TagName, TagNameResolvable> {
   @lazyInject(TYPES.TagRepository)
   private readonly tagRepository!: Repository<TagEntity>
 
@@ -32,8 +32,9 @@ export default class TagTagNameManager extends DiscordBaseManager<string, TagNam
     this.guild = tag.guild
   }
 
-  public override add (data: TagNameEntity, cache = true): TagName {
-    return super.add(data, cache, { id: data.name, extras: [this.tag] })
+  public override _add (data: TagNameEntity, cache = true): TagName {
+    // @ts-expect-error
+    return super._add(data, cache, { id: data.name, extras: [this.tag] })
   }
 
   public async create (name: string): Promise<TagName> {
@@ -54,7 +55,7 @@ export default class TagTagNameManager extends DiscordBaseManager<string, TagNam
     tagData.names.push(tagNameData)
     await this.tagRepository.save(tagData)
 
-    return this.add(tagNameData)
+    return this._add(tagNameData)
   }
 
   public async delete (tagNameResolvable: TagNameResolvable): Promise<void> {

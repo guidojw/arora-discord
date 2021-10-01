@@ -28,8 +28,9 @@ export default class GuildTicketTypeManager extends BaseManager<TicketType, Tick
     this.guild = guild
   }
 
-  public override add (data: TicketTypeEntity, cache = true): TicketType {
-    return super.add(data, cache, { id: data.id, extras: [this.guild] })
+  public override _add (data: TicketTypeEntity, cache = true): TicketType {
+    // @ts-expect-error
+    return super._add(data, cache, { id: data.id, extras: [this.guild] })
   }
 
   public async create (name: string): Promise<TicketType> {
@@ -43,7 +44,7 @@ export default class GuildTicketTypeManager extends BaseManager<TicketType, Tick
       guildId: this.guild.id
     }))
 
-    return this.add(newData)
+    return this._add(newData)
   }
 
   public async delete (ticketTypeResolvable: TicketTypeResolvable): Promise<void> {
@@ -97,7 +98,7 @@ export default class GuildTicketTypeManager extends BaseManager<TicketType, Tick
 
     const _ticketType = this.cache.get(id)
     _ticketType?.setup(newData)
-    return _ticketType ?? this.add(newData, false)
+    return _ticketType ?? this._add(newData, false)
   }
 
   public async link (
@@ -157,7 +158,7 @@ export default class GuildTicketTypeManager extends BaseManager<TicketType, Tick
 
     const _ticketType = this.cache.get(ticketType.id)
     _ticketType?.setup(newData)
-    return _ticketType ?? this.add(newData, false)
+    return _ticketType ?? this._add(newData, false)
   }
 
   public async unlink (ticketTypeResolvable: TicketTypeResolvable): Promise<TicketType> {
@@ -185,7 +186,7 @@ export default class GuildTicketTypeManager extends BaseManager<TicketType, Tick
 
     const _ticketType = this.cache.get(ticketType.id)
     _ticketType?.setup(newData)
-    return _ticketType ?? this.add(newData, false)
+    return _ticketType ?? this._add(newData, false)
   }
 
   public override resolve (type: TicketTypeResolvable): TicketType | null {

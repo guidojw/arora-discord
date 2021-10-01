@@ -27,7 +27,7 @@ export default class GuildGroupManager extends BaseManager<Group, GroupResolvabl
     this.guild = guild
   }
 
-  public override add (data: GroupEntity, cache = true): Group {
+  public override _add (data: GroupEntity, cache = true): Group {
     const existing = this.cache.get(data.id)
     if (typeof existing !== 'undefined') {
       return existing
@@ -51,7 +51,7 @@ export default class GuildGroupManager extends BaseManager<Group, GroupResolvabl
       type
     }))
 
-    return this.add(group)
+    return this._add(group)
   }
 
   public async delete (groupResolvable: GroupResolvable): Promise<void> {
@@ -97,7 +97,7 @@ export default class GuildGroupManager extends BaseManager<Group, GroupResolvabl
 
     const _group = this.cache.get(id)
     _group?.setup(newData)
-    return _group ?? this.add(newData, false)
+    return _group ?? this._add(newData, false)
   }
 
   public override resolve (group: GroupResolvable): Group | null {

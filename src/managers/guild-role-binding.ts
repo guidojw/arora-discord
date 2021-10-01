@@ -25,8 +25,9 @@ export default class GuildRoleBindingManager extends BaseManager<RoleBinding, Ro
     this.guild = guild
   }
 
-  public override add (data: RoleBindingEntity, cache = true): RoleBinding {
-    return super.add(data, cache, { id: data.id, extras: [this.guild] })
+  public override _add (data: RoleBindingEntity, cache = true): RoleBinding {
+    // @ts-expect-error
+    return super._add(data, cache, { id: data.id, extras: [this.guild] })
   }
 
   public async create ({ role: roleResolvable, min, max }: {
@@ -60,7 +61,7 @@ export default class GuildRoleBindingManager extends BaseManager<RoleBinding, Ro
       min
     }))
 
-    return this.add(newData)
+    return this._add(newData)
   }
 
   public async delete (roleBinding: RoleBindingResolvable): Promise<void> {
@@ -81,7 +82,7 @@ export default class GuildRoleBindingManager extends BaseManager<RoleBinding, Ro
     const data = await this.roleBindingRepository.find({ guildId: this.guild.id })
     this.cache.clear()
     for (const rawRoleBinding of data) {
-      this.add(rawRoleBinding)
+      this._add(rawRoleBinding)
     }
     return this.cache
   }

@@ -27,8 +27,9 @@ export default class GuildRoleMessageManager extends BaseManager<RoleMessage, Ro
     this.guild = guild
   }
 
-  public override add (data: RoleMessageEntity, cache = true): RoleMessage {
-    return super.add(data, cache, { id: data.id, extras: [this.guild] })
+  public override _add (data: RoleMessageEntity, cache = true): RoleMessage {
+    // @ts-expect-error
+    return super._add(data, cache, { id: data.id, extras: [this.guild] })
   }
 
   public async create ({ role: roleResolvable, message, emoji: emojiResolvable }: {
@@ -82,7 +83,7 @@ export default class GuildRoleMessageManager extends BaseManager<RoleMessage, Ro
       { relations: ['message'] }
     ) as RoleMessageEntity
 
-    return this.add(newData)
+    return this._add(newData)
   }
 
   public async delete (roleMessageResolvable: RoleMessageResolvable): Promise<void> {
