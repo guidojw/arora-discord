@@ -1,6 +1,6 @@
 const toggleSupportCommand = {
   name: 'togglesupport',
-  description: 'Disable or enable the Tickets System',
+  description: 'Enable or disable the Tickets System',
   defaultPermission: false
 }
 
