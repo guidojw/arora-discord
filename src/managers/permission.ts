@@ -17,6 +17,7 @@ export type PermissionResolvable = CommandOrCommandGroupResolvable | Permission 
 const { TYPES } = constants
 const { lazyInject } = getDecorators(container)
 
+// @ts-expect-error
 export default class PermissionManager extends BaseManager<Permission, PermissionResolvable> {
   @lazyInject(TYPES.PermissionRepository)
   private readonly permissionRepository!: Repository<PermissionEntity>
@@ -24,9 +25,8 @@ export default class PermissionManager extends BaseManager<Permission, Permissio
   public readonly permissible: PermissibleType
   public readonly guild: Guild
 
-  public constructor (permissible: PermissibleType, iterable?: Iterable<PermissionEntity>) {
-    // @ts-expect-error
-    super(permissible.client, iterable, Permission)
+  public constructor (permissible: PermissibleType) {
+    super(permissible.client, Permission)
 
     this.permissible = permissible
     this.guild = permissible.guild

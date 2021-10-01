@@ -17,15 +17,15 @@ export type TagResolvable = TagNameResolvable | Tag | number
 const { TYPES } = constants
 const { lazyInject } = getDecorators(container)
 
+// @ts-expect-error
 export default class GuildTagManager extends BaseManager<Tag, TagResolvable> {
   @lazyInject(TYPES.TagRepository)
   private readonly tagRepository!: Repository<TagEntity>
 
   public readonly guild: Guild
 
-  public constructor (guild: Guild, iterable?: Iterable<TagEntity>) {
-    // @ts-expect-error
-    super(guild.client, iterable, Tag)
+  public constructor (guild: Guild) {
+    super(guild.client, Tag)
 
     this.guild = guild
   }

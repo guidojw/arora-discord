@@ -12,15 +12,15 @@ export type RoleBindingResolvable = RoleBinding | number
 const { TYPES } = constants
 const { lazyInject } = getDecorators(container)
 
+// @ts-expect-error
 export default class GuildRoleBindingManager extends BaseManager<RoleBinding, RoleBindingResolvable> {
   @lazyInject(TYPES.RoleBindingRepository)
   private readonly roleBindingRepository!: Repository<RoleBindingEntity>
 
   public readonly guild: Guild
 
-  public constructor (guild: Guild, iterable?: Iterable<RoleBindingEntity>) {
-    // @ts-expect-error
-    super(guild.client, iterable, RoleBinding)
+  public constructor (guild: Guild) {
+    super(guild.client, RoleBinding)
 
     this.guild = guild
   }

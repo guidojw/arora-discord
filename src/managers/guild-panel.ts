@@ -16,15 +16,15 @@ export type PanelResolvable = string | Panel | number
 const { TYPES } = constants
 const { lazyInject } = getDecorators(container)
 
+// @ts-expect-error
 export default class GuildPanelManager extends BaseManager<Panel, PanelResolvable> {
   @lazyInject(TYPES.PanelRepository)
   private readonly panelRepository!: Repository<PanelEntity>
 
   public readonly guild: Guild
 
-  public constructor (guild: Guild, iterable?: Iterable<PanelEntity>) {
-    // @ts-expect-error
-    super(guild.client, iterable, Panel)
+  public constructor (guild: Guild) {
+    super(guild.client, Panel)
 
     this.guild = guild
   }
@@ -98,7 +98,7 @@ export default class GuildPanelManager extends BaseManager<Panel, PanelResolvabl
         if (panel.message.partial) {
           await panel.message.fetch()
         }
-        await panel.message.edit(embed)
+        await panel.message.edit({ embeds: [embed] })
       }
     }
     if (typeof data.message !== 'undefined') {
@@ -120,7 +120,7 @@ export default class GuildPanelManager extends BaseManager<Panel, PanelResolvabl
       options.channelId = message.channel.id
       options.guildId = this.guild.id
 
-      await message.edit('', panel.embed)
+      await message.edit({ content: null, embeds: [panel.embed] })
     }
 
     await this.panelRepository.save(this.panelRepository.create({

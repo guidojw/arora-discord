@@ -14,15 +14,15 @@ export type RoleMessageResolvable = RoleMessage | number
 const { TYPES } = constants
 const { lazyInject } = getDecorators(container)
 
+// @ts-expect-error
 export default class GuildRoleMessageManager extends BaseManager<RoleMessage, RoleMessageResolvable> {
   @lazyInject(TYPES.RoleMessageRepository)
   private readonly roleMessageRepository!: Repository<RoleMessageEntity>
 
   public readonly guild: Guild
 
-  public constructor (guild: Guild, iterable?: Iterable<RoleMessageEntity>) {
-    // @ts-expect-error
-    super(guild.client, iterable, RoleMessage)
+  public constructor (guild: Guild) {
+    super(guild.client, RoleMessage)
 
     this.guild = guild
   }

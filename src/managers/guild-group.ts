@@ -14,15 +14,15 @@ export type GroupResolvable = string | Group | number
 const { TYPES } = constants
 const { lazyInject } = getDecorators(container)
 
+// @ts-expect-error
 export default class GuildGroupManager extends BaseManager<Group, GroupResolvable> {
   @lazyInject(TYPES.GroupRepository)
   private readonly groupRepository!: Repository<GroupEntity>
 
   public readonly guild: Guild
 
-  public constructor (guild: Guild, iterable?: Iterable<GroupEntity>) {
-    // @ts-expect-error
-    super(guild.client, iterable, Group)
+  public constructor (guild: Guild) {
+    super(guild.client, Group)
 
     this.guild = guild
   }

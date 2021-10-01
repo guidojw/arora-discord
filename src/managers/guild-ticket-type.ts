@@ -15,15 +15,15 @@ export type TicketTypeResolvable = TicketType | string
 const { TYPES } = constants
 const { lazyInject } = getDecorators(container)
 
+// @ts-expect-error
 export default class GuildTicketTypeManager extends BaseManager<TicketType, TicketTypeResolvable> {
   @lazyInject(TYPES.TicketTypeRepository)
   private readonly ticketTypeRepository!: Repository<TicketTypeEntity>
 
   public readonly guild: Guild
 
-  public constructor (guild: Guild, iterable?: Iterable<TicketType>) {
-    // @ts-expect-error
-    super(guild.client, iterable, TicketType)
+  public constructor (guild: Guild) {
+    super(guild.client, TicketType)
 
     this.guild = guild
   }

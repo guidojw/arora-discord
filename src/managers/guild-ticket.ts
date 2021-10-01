@@ -19,6 +19,7 @@ const { lazyInject } = getDecorators(container)
 const TICKETS_INTERVAL = 60 * 1000
 const SUBMISSION_TIME = 30 * 60 * 1000
 
+// @ts-expect-error
 export default class GuildTicketManager extends BaseManager<Ticket, TicketResolvable> {
   @lazyInject(TYPES.TicketRepository)
   private readonly ticketRepository!: Repository<TicketEntity>
@@ -26,9 +27,8 @@ export default class GuildTicketManager extends BaseManager<Ticket, TicketResolv
   public readonly guild: Guild
   public readonly debounces: Map<string, true>
 
-  public constructor (guild: Guild, iterable?: Iterable<TicketEntity>) {
-    // @ts-expect-error
-    super(guild.client, iterable, Ticket)
+  public constructor (guild: Guild) {
+    super(guild.client, Ticket)
 
     this.guild = guild
 
