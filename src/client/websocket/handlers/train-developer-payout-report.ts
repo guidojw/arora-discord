@@ -1,6 +1,6 @@
+import { MessageEmbed, User } from 'discord.js'
 import type BaseHandler from '../../base'
 import type Client from '../../client'
-import { MessageEmbed } from 'discord.js'
 import type { Snowflake } from 'discord.js'
 import { injectable } from 'inversify'
 import pluralize from 'pluralize'
@@ -29,7 +29,7 @@ export default class TrainDeveloperPayoutReportPacketHandler implements BaseHand
     const { developersSales } = data
     const developerIds = Object.keys(developersSales).map(id => parseInt(id))
     const developers = await userService.getUsers(developerIds)
-    const emoji = client.mainGuild?.emojis.cache.find(emoji => emoji.name.toLowerCase() === 'robux') ?? null
+    const emoji = client.mainGuild?.emojis.cache.find(emoji => emoji.name?.toLowerCase() === 'robux') ?? null
     const emojiString = (amount: number): string => `${emoji?.toString() ?? ''}${emoji !== null ? ' ' : ''}**${amount}**${emoji === null ? ' Robux' : ''}`
 
     const embed = new MessageEmbed()
@@ -51,12 +51,17 @@ export default class TrainDeveloperPayoutReportPacketHandler implements BaseHand
         }
         userEmbed.addField('Total', `**${developerSales.total.amount}** trains and ${emojiString(Math.round(total))}.`)
 
-        await user.send(userEmbed)
+        await user.send({ embeds: [userEmbed] })
       } catch (err) {
         console.error(`Couldn't DM ${developerSales.discordId}!`)
       }
     }
 
-    await Promise.all(client.owners.map(async owner => await owner.send(embed)))
+    if (client.application?.owner === null) {
+      await client.application?.fetch()
+    }
+    if (client.application?.owner instanceof User) {
+      await client.application.owner.send({ embeds: [embed] })
+    }
   }
 }
