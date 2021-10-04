@@ -1,3 +1,4 @@
+import * as commands from '../commands'
 import { AnnounceTrainingsJob, HealthCheckJob, PremiumMembersReportJob } from '../jobs'
 import {
   Channel,
@@ -19,6 +20,7 @@ import {
   TicketType
 } from '../entities'
 import { eventHandlers, packetHandlers } from '../client'
+import type { BaseCommand } from '../commands'
 import type { BaseHandler } from '../client'
 import type { BaseJob } from '../jobs'
 import { Container } from 'inversify'
@@ -31,6 +33,75 @@ const { TYPES } = constants
 
 const container = new Container()
 const bind = container.bind.bind(container)
+
+// Commands
+bind<BaseCommand>(TYPES.Command).to(commands.bansCommand)
+  .whenTargetTagged('command', 'bans')
+bind<BaseCommand>(TYPES.Command).to(commands.demoteCommand)
+  .whenTargetTagged('command', 'demote')
+bind<BaseCommand>(TYPES.Command).to(commands.exilesCommand)
+  .whenTargetTagged('command', 'exiles')
+bind<BaseCommand>(TYPES.Command).to(commands.persistentRolesCommand)
+  .whenTargetTagged('command', 'persistentroles')
+bind<BaseCommand>(TYPES.Command).to(commands.promoteCommand)
+  .whenTargetTagged('command', 'promote')
+bind<BaseCommand>(TYPES.Command).to(commands.shoutCommand)
+  .whenTargetTagged('command', 'shout')
+bind<BaseCommand>(TYPES.Command).to(commands.trainingsCommand)
+  .whenTargetTagged('command', 'trainings')
+
+bind<BaseCommand>(TYPES.Command).to(commands.restartCommand)
+  .whenTargetTagged('command', 'restart')
+bind<BaseCommand>(TYPES.Command).to(commands.statusCommand)
+  .whenTargetTagged('command', 'status')
+
+bind<BaseCommand>(TYPES.Command).to(commands.boostInfoCommand)
+  .whenTargetTagged('command', 'boostinfo')
+bind<BaseCommand>(TYPES.Command).to(commands.deleteSuggestionCommand)
+  .whenTargetTagged('command', 'deletesuggestion')
+bind<BaseCommand>(TYPES.Command).to(commands.getShoutCommand)
+  .whenTargetTagged('command', 'getshout')
+bind<BaseCommand>(TYPES.Command).to(commands.memberCountCommand)
+  .whenTargetTagged('command', 'membercount')
+bind<BaseCommand>(TYPES.Command).to(commands.pollCommand)
+  .whenTargetTagged('command', 'poll')
+bind<BaseCommand>(TYPES.Command).to(commands.suggestCommand)
+  .whenTargetTagged('command', 'suggest')
+bind<BaseCommand>(TYPES.Command).to(commands.tagCommand)
+  .whenTargetTagged('command', 'tag')
+bind<BaseCommand>(TYPES.Command).to(commands.whoIsCommand)
+  .whenTargetTagged('command', 'whois')
+
+bind<BaseCommand>(TYPES.Command).to(commands.channelLinksCommand)
+  .whenTargetTagged('command', 'channellinks')
+bind<BaseCommand>(TYPES.Command).to(commands.closeTicketCommand)
+  .whenTargetTagged('command', 'closeticket')
+bind<BaseCommand>(TYPES.Command).to(commands.groupsCommand)
+  .whenTargetTagged('command', 'groups')
+bind<BaseCommand>(TYPES.Command).to(commands.panelsCommand)
+  .whenTargetTagged('command', 'panels')
+bind<BaseCommand>(TYPES.Command).to(commands.roleBindingsCommand)
+  .whenTargetTagged('command', 'rolebindings')
+bind<BaseCommand>(TYPES.Command).to(commands.roleMessagesCommand)
+  .whenTargetTagged('command', 'rolemessages')
+bind<BaseCommand>(TYPES.Command).to(commands.setActivityCommand)
+  .whenTargetTagged('command', 'setactivity')
+bind<BaseCommand>(TYPES.Command).to(commands.settingsCommand)
+  .whenTargetTagged('command', 'settings')
+bind<BaseCommand>(TYPES.Command).to(commands.tagsCommand)
+  .whenTargetTagged('command', 'tags')
+bind<BaseCommand>(TYPES.Command).to(commands.ticketTypesCommand)
+  .whenTargetTagged('command', 'tickettypes')
+bind<BaseCommand>(TYPES.Command).to(commands.toggleSupportCommand)
+  .whenTargetTagged('command', 'togglesupport')
+
+bind<interfaces.Factory<BaseCommand>>(TYPES.CommandFactory).toFactory<BaseCommand>(
+  (context: interfaces.Context) => {
+    return (commandName: string) => {
+      return context.container.getTagged<BaseCommand>(TYPES.Command, 'command', commandName)
+    }
+  }
+)
 
 // Event Handlers
 bind<BaseHandler>(TYPES.Handler).to(eventHandlers.ChannelDeleteEventHandler)

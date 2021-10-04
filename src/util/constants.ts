@@ -19,6 +19,9 @@ export const TYPES = {
   TicketTypeRepository: Symbol.for('TicketTypeRepository'),
 
   // Other
+  Command: Symbol.for('Command'),
+  CommandFactory: Symbol.for('CommandFactory'),
+
   Handler: Symbol.for('Handler'),
   EventHandlerFactory: Symbol.for('EventHandlerFactory'),
   PacketHandlerFactory: Symbol.for('PacketHandlerFactory'),
