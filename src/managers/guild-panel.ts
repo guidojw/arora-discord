@@ -110,8 +110,8 @@ export default class GuildPanelManager extends BaseManager<Panel, PanelResolvabl
       } catch {
         throw new Error('Invalid message.')
       }
-      if (message.author.id !== this.client.user?.id) {
-        throw new Error(`Can only update message to messages posted by ${this.client.user?.toString() ?? 'Arora'}.`)
+      if (message.author.id !== this.client.user.id) {
+        throw new Error(`Can only update message to messages posted by ${this.client.user.toString()}.`)
       }
       if (this.cache.some(otherPanel => otherPanel.messageId === message.id)) {
         throw new Error('Another panel is already posted in that message.')

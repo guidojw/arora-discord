@@ -14,7 +14,7 @@ export default class Panel extends Postable(BaseStructure) {
   public messageId!: string | null
   public channelId!: string | null
 
-  public constructor (client: Client, data: PanelEntity, guild: Guild) {
+  public constructor (client: Client<true>, data: PanelEntity, guild: Guild) {
     super(client)
 
     this.guild = guild

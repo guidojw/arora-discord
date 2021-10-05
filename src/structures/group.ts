@@ -14,7 +14,7 @@ export default class Group extends BaseStructure {
   public name!: string
   public guarded!: boolean
 
-  public constructor (client: Client, data: GroupEntity, guild: Guild) {
+  public constructor (client: Client<true>, data: GroupEntity, guild: Guild) {
     super(client)
 
     this.type = data.type

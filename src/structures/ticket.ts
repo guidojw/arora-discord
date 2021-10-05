@@ -34,7 +34,7 @@ export default class Ticket extends BaseStructure {
   public _moderators: string[]
   public timeout: NodeJS.Timeout | null
 
-  public constructor (client: Client, data: TicketEntity, guild: Guild) {
+  public constructor (client: Client<true>, data: TicketEntity, guild: Guild) {
     super(client)
 
     this.guild = guild
@@ -113,7 +113,7 @@ export default class Ticket extends BaseStructure {
     if (this.author !== null) {
       const embed = new MessageEmbed()
         .setColor(color ?? (success ? 0x00ff00 : 0xff0000))
-        .setAuthor(this.client.user?.username, this.client.user?.displayAvatarURL())
+        .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
         .setTitle(message)
       const sent = await this.client.send(this.author, { embeds: [embed] }) !== null
 
@@ -124,14 +124,14 @@ export default class Ticket extends BaseStructure {
 
           const embed = new MessageEmbed()
             .setColor(this.guild.primaryColor ?? applicationConfig.defaultColor)
-            .setAuthor(this.client.user?.username, this.client.user?.displayAvatarURL())
+            .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
             .setTitle('Rating submitted')
             .setDescription('Thank you!')
           await this.client.send(this.author, { embeds: [embed] })
         } else {
           const embed = new MessageEmbed()
             .setColor(this.guild.primaryColor ?? applicationConfig.defaultColor)
-            .setAuthor(this.client.user?.username, this.client.user?.displayAvatarURL())
+            .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
             .setTitle('No rating submitted')
           await this.client.send(this.author, { embeds: [embed] })
         }
@@ -148,7 +148,7 @@ export default class Ticket extends BaseStructure {
 
     const embed = new MessageEmbed()
       .setColor(this.guild.primaryColor ?? applicationConfig.defaultColor)
-      .setAuthor(this.client.user?.username, this.client.user?.displayAvatarURL())
+      .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
       .setTitle('How would you rate the support you received?')
     const message = await this.client.send(this.author, { embeds: [embed] }) as Message | null
 
@@ -215,7 +215,7 @@ export default class Ticket extends BaseStructure {
     const messages = await this.fetchMessages()
     const firstMessage = messages.first()
     if (typeof firstMessage !== 'undefined' &&
-      (firstMessage.author.id !== this.client.user?.id || firstMessage.content !== this.author?.toString())) {
+      (firstMessage.author.id !== this.client.user.id || firstMessage.content !== this.author?.toString())) {
       output += '...\n\n'
       output += '='.repeat(100) + '\n\n'
     }

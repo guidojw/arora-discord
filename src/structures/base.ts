@@ -1,9 +1,9 @@
 import type { Client } from 'discord.js'
 
 export default abstract class BaseStructure {
-  public readonly client: Client
+  public readonly client: Client<true>
 
-  public constructor (client: Client) {
+  public constructor (client: Client<true>) {
     this.client = client
   }
 

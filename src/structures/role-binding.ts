@@ -10,7 +10,7 @@ export default class RoleBinding extends BaseStructure {
   public min!: number
   public max!: number | null
 
-  public constructor (client: Client, data: RoleBindingEntity, guild: Guild) {
+  public constructor (client: Client<true>, data: RoleBindingEntity, guild: Guild) {
     super(client)
 
     this.guild = guild

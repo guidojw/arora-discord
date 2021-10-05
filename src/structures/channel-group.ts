@@ -6,7 +6,7 @@ import GroupTextChannelManager from '../managers/group-text-channel'
 export default class ChannelGroup extends Group {
   public _channels: string[]
 
-  public constructor (client: Client, data: GroupEntity, guild: Guild) {
+  public constructor (client: Client<true>, data: GroupEntity, guild: Guild) {
     super(client, data, guild)
 
     this._channels = []

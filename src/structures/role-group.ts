@@ -7,7 +7,7 @@ import Permissible from './mixins/permissible'
 export default class RoleGroup extends Permissible(Group) {
   public _roles: string[]
 
-  public constructor (client: Client, data: GroupEntity, guild: Guild) {
+  public constructor (client: Client<true>, data: GroupEntity, guild: Guild) {
     super(client, data, guild)
 
     this._roles = []

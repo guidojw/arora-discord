@@ -99,7 +99,7 @@ export default class GuildRoleMessageManager extends BaseManager<RoleMessage, Ro
       if (roleMessage.message.partial) {
         await roleMessage.message.fetch()
       }
-      await roleMessage.message.reactions.resolve(roleMessage.emojiId)?.users.remove(this.client.user ?? undefined)
+      await roleMessage.message.reactions.resolve(roleMessage.emojiId)?.users.remove(this.client.user)
     }
 
     await this.roleMessageRepository.delete(roleMessage.id)

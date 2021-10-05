@@ -7,7 +7,7 @@ export default class TagName extends BaseStructure {
   public readonly tag: Tag
   public name!: string
 
-  public constructor (client: Client, data: TagNameEntity, tag: Tag) {
+  public constructor (client: Client<true>, data: TagNameEntity, tag: Tag) {
     super(client)
     this.tag = tag
 

@@ -15,7 +15,7 @@ export default class TicketType extends Postable(BaseStructure) {
   private _emoji!: string | null
   private _emojiId!: string | null
 
-  public constructor (client: Client, data: TicketTypeEntity, guild: Guild) {
+  public constructor (client: Client<true>, data: TicketTypeEntity, guild: Guild) {
     super(client)
 
     this.guild = guild

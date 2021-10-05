@@ -60,7 +60,7 @@ export default class GuildTicketTypeManager extends BaseManager<TicketType, Tick
       if (ticketType.message.partial) {
         await ticketType.message.fetch()
       }
-      await ticketType.message.reactions.resolve(ticketType.emojiId)?.users.remove(this.client.user ?? undefined)
+      await ticketType.message.reactions.resolve(ticketType.emojiId)?.users.remove(this.client.user)
     }
 
     await this.ticketTypeRepository.delete(ticketType.id)
@@ -137,7 +137,7 @@ export default class GuildTicketTypeManager extends BaseManager<TicketType, Tick
       if (ticketType.message.partial) {
         await ticketType.message.fetch()
       }
-      await ticketType.message.reactions.resolve(ticketType.emojiId)?.users.remove(this.client.user ?? undefined)
+      await ticketType.message.reactions.resolve(ticketType.emojiId)?.users.remove(this.client.user)
     }
     await message.react(emoji)
     await this.ticketTypeRepository.save(this.ticketTypeRepository.create({
@@ -174,7 +174,7 @@ export default class GuildTicketTypeManager extends BaseManager<TicketType, Tick
       if (ticketType.message.partial) {
         await ticketType.message.fetch()
       }
-      await ticketType.message.reactions.resolve(ticketType.emojiId)?.users.remove(this.client.user ?? undefined)
+      await ticketType.message.reactions.resolve(ticketType.emojiId)?.users.remove(this.client.user)
     }
     await this.ticketTypeRepository.save(this.ticketTypeRepository.create({
       id: ticketType.id,

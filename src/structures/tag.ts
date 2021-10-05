@@ -12,7 +12,7 @@ export default class Tag extends BaseStructure {
   public id!: number
   public _content!: string
 
-  public constructor (client: Client, data: TagEntity, guild: Guild) {
+  public constructor (client: Client<true>, data: TagEntity, guild: Guild) {
     super(client)
 
     this.guild = guild

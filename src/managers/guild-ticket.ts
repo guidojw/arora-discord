@@ -152,7 +152,7 @@ export default class GuildTicketManager extends BaseManager<Ticket, TicketResolv
           if (!this.guild.supportEnabled) {
             const embed = new MessageEmbed()
               .setColor(0xff0000)
-              .setAuthor(this.client.user?.username ?? 'Arora', this.client.user?.displayAvatarURL())
+              .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
               .setTitle(`Welcome to ${this.guild.name} Support`)
               .setDescription(`We are currently closed. Check the ${this.guild.name} server for more information.`)
             await this.client.send(user, { embeds: [embed] })

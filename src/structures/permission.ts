@@ -11,7 +11,7 @@ export default class Permission extends BaseStructure {
   public allow!: boolean
   public commandId!: number
 
-  public constructor (client: Client, data: PermissionEntity, permissible: Role | RoleGroup) {
+  public constructor (client: Client<true>, data: PermissionEntity, permissible: Role | RoleGroup) {
     super(client)
 
     this.permissible = permissible
