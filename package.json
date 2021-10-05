@@ -33,6 +33,7 @@
     "ws": "^8.2.2"
   },
   "devDependencies": {
+    "@discordjs/rest": "^0.1.0-canary.0",
     "@guidojw/bloxy": "^5.7.5",
     "@types/common-tags": "^1.8.1",
     "@types/lodash": "^4.14.172",
