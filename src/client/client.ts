@@ -11,6 +11,7 @@ import type {
   User
 } from 'discord.js'
 import type BaseHandler from './base'
+import Dispatcher from './dispatcher'
 import SettingProvider from './setting-provider'
 import { WebSocketManager } from './websocket'
 import applicationConfig from '../configs/application'
@@ -26,6 +27,7 @@ const ACTIVITY_CAROUSEL_INTERVAL = 60 * 1000
 
 declare module 'discord.js' {
   interface Client {
+    dispatcher: Dispatcher
     provider: SettingProvider
     mainGuild: Guild | null
 
@@ -90,6 +92,7 @@ export default class AroraClient extends Client {
     }
     super(options)
 
+    this.dispatcher = new Dispatcher(this)
     this.provider = new SettingProvider()
 
     this.mainGuild = null
