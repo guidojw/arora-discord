@@ -41,7 +41,7 @@ declare module 'discord.js' {
   }
 }
 
-export default class AroraClient extends Client {
+export default class AroraClient<Ready extends boolean = boolean> extends Client<Ready> {
   @lazyInject(TYPES.EventHandlerFactory)
   private readonly eventHandlerFactory!: (eventName: string) => BaseHandler
 
