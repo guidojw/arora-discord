@@ -1,3 +1,4 @@
+import * as argumentTypes from '../types'
 import * as commands from '../commands'
 import { AnnounceTrainingsJob, HealthCheckJob, PremiumMembersReportJob } from '../jobs'
 import {
@@ -20,6 +21,7 @@ import {
   TicketType
 } from '../entities'
 import { eventHandlers, packetHandlers } from '../client'
+import type { BaseArgumentType } from '../types'
 import type { BaseCommand } from '../commands'
 import type { BaseHandler } from '../client'
 import type { BaseJob } from '../jobs'
@@ -33,6 +35,19 @@ const { TYPES } = constants
 
 const container = new Container()
 const bind = container.bind.bind(container)
+
+// Argument Types
+bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.RobloxUserArgumentType)
+  .inSingletonScope()
+  .whenTargetTagged('argumentType', 'roblox-user')
+
+bind<interfaces.Factory<BaseArgumentType<any>>>(TYPES.ArgumentTypeFactory).toFactory<BaseArgumentType<any>>(
+  (context: interfaces.Context) => {
+    return (argumentTypeName: string) => {
+      return context.container.getTagged<BaseArgumentType<any>>(TYPES.ArgumentType, 'argumentType', argumentTypeName)
+    }
+  }
+)
 
 // Commands
 bind<BaseCommand>(TYPES.Command).to(commands.bansCommand)

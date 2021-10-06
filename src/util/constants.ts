@@ -19,6 +19,9 @@ export const TYPES = {
   TicketTypeRepository: Symbol.for('TicketTypeRepository'),
 
   // Other
+  ArgumentType: Symbol.for('ArgumentType'),
+  ArgumentTypeFactory: Symbol.for('ArgumentTypeFactory'),
+
   Command: Symbol.for('Command'),
   CommandFactory: Symbol.for('CommandFactory'),
 
