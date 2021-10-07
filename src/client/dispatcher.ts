@@ -1,6 +1,22 @@
+import type {
+  APIInteractionDataResolvedChannel,
+  APIInteractionDataResolvedGuildMember,
+  APIMessage,
+  APIRole
+} from 'discord-api-types'
 import type { ArgumentOptions, BaseCommand } from '../commands'
 import { Command, SubCommandCommand } from '../commands'
-import type { CommandInteraction, Interaction } from 'discord.js'
+import type {
+  CommandInteraction,
+  CommandInteractionOption,
+  GuildChannel,
+  GuildMember,
+  Interaction,
+  Message,
+  Role,
+  ThreadChannel,
+  User
+} from 'discord.js'
 import type { BaseArgumentType } from '../types'
 import type Client from './client'
 import applicationConfig from '../configs/application'
@@ -86,28 +102,62 @@ export default class Dispatcher {
   private async parseArgs (interaction: CommandInteraction, args: ArgumentOptions[]): Promise<Record<string, any>> {
     const result: Record<string, any> = {}
     for (const arg of args) {
-      const option = interaction.options.get(arg.key, arg.required)
+      const key = arg.name ?? arg.key
+      const option = interaction.options.get(arg.key, arg.required ?? true)
       if (option === null) {
-        result[arg.key] = null
+        result[key] = null
         continue
       }
 
-      const val = option.value
-      if (typeof val === 'string' && typeof arg.type !== 'undefined') {
-        const argumentType = this.argumentTypeFactory(arg.type)
-        if (typeof argumentType === 'undefined') {
+      const val = Dispatcher.getCommandInteractionOptionValue(option)
+      if (typeof val !== 'string') {
+        result[key] = val
+        continue
+      }
+
+      let argumentType
+      if (typeof arg.type !== 'undefined') {
+        argumentType = this.argumentTypeFactory(arg.type)
+        if (typeof argumentType === 'undefined' &&
+          (typeof arg.validate === 'undefined' || typeof arg.parse === 'undefined')) {
           throw new Error(`Argument type "${arg.type}" does not exist.`)
         }
-
-        const validationResult = await argumentType.validate(val, interaction, arg)
-        if (validationResult === false) {
-          throw new Error(`Invalid ${arg.key}`)
-        } else if (typeof validationResult === 'string') {
-          throw new Error(validationResult)
-        }
-        result[arg.key] = await argumentType.parse(val, interaction, arg)
       }
+
+      if (typeof arg.validate !== 'undefined' || typeof argumentType !== 'undefined') {
+        const valid = await (arg.validate?.(val, interaction) ?? argumentType?.validate(val, interaction, arg))
+        if (valid === false) {
+          throw new Error(`Invalid ${arg.key}`)
+        } else if (typeof valid === 'string') {
+          throw new Error(valid)
+        }
+      }
+
+      if (typeof arg.parse !== 'undefined' || typeof argumentType !== 'undefined') {
+        const parse = arg.parse ?? argumentType?.parse
+        result[key] = await parse?.(val, interaction, arg)
+      }
+
+      result[key] = val
     }
     return result
+  }
+
+  private static getCommandInteractionOptionValue (
+    option: CommandInteractionOption
+  ): string | number | boolean | User | GuildMember | APIInteractionDataResolvedGuildMember | GuildChannel |
+    ThreadChannel | APIInteractionDataResolvedChannel | Role | APIRole | Message | APIMessage | null {
+    switch (option.type) {
+      case 'SUB_COMMAND':
+      case 'SUB_COMMAND_GROUP':
+      case 'STRING':
+      case 'INTEGER':
+      case 'BOOLEAN': return option.value ?? null
+      case 'USER': return option.user ?? null
+      case 'CHANNEL': return option.channel ?? null
+      case 'ROLE': return option.role ?? null
+      case 'MENTIONABLE': return option.member ?? option.user ?? option.role ?? null
+      default: return null
+    }
   }
 }
