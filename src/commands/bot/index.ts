@@ -1,2 +1,2 @@
-export { default as restartCommand } from './restart'
-export { default as statusCommand } from './status'
+export { default as RestartCommand } from './restart'
+export { default as StatusCommand } from './status'

@@ -2,6 +2,7 @@ export type Constructor<T = {}> = new (...args: any[]) => T
 export type AbstractConstructor<T = {}> = abstract new (...args: any[]) => T
 export type Mixin<T extends AnyFunction> = InstanceType<ReturnType<T>>
 export type Enum = Record<string, number | string>
+export type KeyOfType<T, U> = {[P in keyof T]: T[P] extends U ? P: never}[keyof T]
 
 type AnyFunction<T = any> = (...input: any[]) => T
 type EnumKeys<T extends Enum> = Exclude<keyof T, number>
@@ -73,4 +74,18 @@ export function getEnumKeys<T extends Enum> (enumLike: T): string[] {
 
 export function getEnumValues<T extends Enum> (enumLike: T): Array<string | number> {
   return [...new Set(Object.values(getEnumObject(enumLike)))]
+}
+
+export function createClassDecorator<TFunction extends (...args: any[]) => void> (fn: TFunction): ClassDecorator {
+  return fn
+}
+
+export function createProxy<T extends object> (target: T, handler: Omit<ProxyHandler<T>, 'get'>): T {
+  return new Proxy(target, {
+    ...handler,
+    get: (target, property) => {
+      const value = Reflect.get(target, property)
+      return typeof value === 'function' ? (...args: readonly unknown[]) => value.apply(target, args) : value
+    }
+  })
 }

@@ -1,5 +1,24 @@
 import type { ValidationArguments, ValidationOptions } from 'class-validator'
+import { createClassDecorator, createProxy } from './util'
+import type { Constructor } from './util'
 import { registerDecorator } from 'class-validator'
+
+/**
+ * Applies given options to the class' constructor.
+ */
+export function ApplyOptions<T extends object> (options: T): ClassDecorator {
+  return createClassDecorator((target: Constructor<any>) => (
+    createProxy(target, {
+      construct: (ctor, [client, baseOptions = {}]) => (
+        // eslint-disable-next-line new-cap
+        new ctor(client, {
+          ...baseOptions,
+          ...options
+        })
+      )
+    })
+  ))
+}
 
 /**
  * Used to mark a XOR relation between given and specified properties.

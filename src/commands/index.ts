@@ -1,4 +1,5 @@
 export * from './admin'
+export * from './base'
 export * from './bot'
 export * from './main'
 export * from './settings'
