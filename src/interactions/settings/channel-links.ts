@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionType } from 'discord-api-types/v9'
+import { ApplicationCommandOptionType, ChannelType } from 'discord-api-types/v9'
 
 const channelLinksCommand = {
   name: 'channellinks',
@@ -12,11 +12,13 @@ const channelLinksCommand = {
       name: 'fromChannel',
       description: 'The voice channel to link a text channel to',
       type: ApplicationCommandOptionType.Channel,
+      channel_types: [ChannelType.GuildVoice],
       required: true
     }, {
       name: 'toChannel',
       description: 'The text channel to link to this voice channel',
       type: ApplicationCommandOptionType.Channel,
+      channel_types: [ChannelType.GuildText],
       required: true
     }]
   }, {
@@ -27,11 +29,13 @@ const channelLinksCommand = {
       name: 'fromChannel',
       description: 'The voice channel to unlink a text channel from',
       type: ApplicationCommandOptionType.Channel,
+      channel_types: [ChannelType.GuildVoice],
       required: true
     }, {
       name: 'toChannel',
       description: 'The text channel to unlink from this voice channel',
       type: ApplicationCommandOptionType.Channel,
+      channel_types: [ChannelType.GuildText],
       required: true
     }]
   }, {
@@ -42,6 +46,7 @@ const channelLinksCommand = {
       name: 'channel',
       description: 'The voice channel to list the links of',
       type: ApplicationCommandOptionType.Channel,
+      channel_types: [ChannelType.GuildVoice],
       required: true
     }]
   }]

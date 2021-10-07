@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionType } from 'discord-api-types/v9'
+import { ApplicationCommandOptionType, ChannelType } from 'discord-api-types/v9'
 
 const panelsCommand = {
   name: 'panels',
@@ -66,6 +66,7 @@ const panelsCommand = {
       name: 'channel',
       description: 'The channel to post the panel in',
       type: ApplicationCommandOptionType.Channel,
+      channel_types: [ChannelType.GuildText],
       required: true
     }]
   }, {
