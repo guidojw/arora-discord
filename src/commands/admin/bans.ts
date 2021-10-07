@@ -1,3 +1,4 @@
+import { argumentUtil, timeUtil } from '../../util'
 import { groupService, userService, verificationService } from '../../services'
 import { ApplyOptions } from '../../util/decorators'
 import type { CommandInteraction } from 'discord.js'
@@ -8,9 +9,11 @@ import type { SubCommandCommandOptions } from '../base'
 import { applicationAdapter } from '../../adapters'
 import applicationConfig from '../../configs/application'
 import pluralize from 'pluralize'
-import { timeUtil } from '../../util'
 
 const { getDate, getTime } = timeUtil
+const { validators, noChannels, noTags, noUrls } = argumentUtil
+
+const validateReason = validators([noChannels, noTags, noUrls])
 
 @ApplyOptions<SubCommandCommandOptions<BansCommand>>({
   requiresApi: true,
@@ -25,23 +28,51 @@ const { getDate, getTime } = timeUtil
         key: 'duration',
         required: false
       }, {
-        key: 'reason'
+        key: 'reason',
+        validate: validateReason
       }]
     },
     delete: {
-      args: []
+      args: [{
+        key: 'user',
+        name: 'username',
+        type: 'roblox-user'
+      }, {
+        key: 'reason',
+        validate: validateReason
+      }]
     },
     edit: {
-      args: []
+      args: [{
+        key: 'user',
+        name: 'username',
+        type: 'roblox-user'
+      }, {
+        key: 'key',
+        parse: (val: string) => val.toLowerCase()
+      }, {
+        key: 'data',
+        validate: validateReason
+      }]
     },
     extend: {
-      args: []
+      args: [{
+        key: 'user',
+        name: 'username',
+        type: 'roblox-user'
+      }, {
+        key: 'days'
+      }, {
+        key: 'reason',
+        validate: validateReason
+      }]
     },
     list: {
       args: [{
         key: 'user',
         name: 'username',
-        type: 'roblox-user'
+        type: 'roblox-user',
+        required: false
       }]
     }
   }

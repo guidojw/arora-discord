@@ -2,12 +2,14 @@ import type { AroraClient as Client } from '../client'
 import type { CommandInteraction } from 'discord.js'
 import type { KeyOfType } from '../util/util'
 
-export interface ArgumentOptions {
+export interface ArgumentOptions<T = any> {
   key: string
   name?: string
   type?: string
   required?: boolean
   default?: string
+  validate?: (val: string, interaction: CommandInteraction) => Promise<boolean | string>,
+  parse?: (val: string, interaction: CommandInteraction) => T | null | Promise<T | null>
 }
 
 export type SubCommandOptions = {

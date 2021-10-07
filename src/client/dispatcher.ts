@@ -92,20 +92,20 @@ export default class Dispatcher {
         continue
       }
 
-      const value = option.value
-      if (typeof value === 'string' && typeof arg.type !== 'undefined') {
+      const val = option.value
+      if (typeof val === 'string' && typeof arg.type !== 'undefined') {
         const argumentType = this.argumentTypeFactory(arg.type)
         if (typeof argumentType === 'undefined') {
           throw new Error(`Argument type "${arg.type}" does not exist.`)
         }
 
-        const validationResult = await argumentType.validate(value, interaction, arg)
+        const validationResult = await argumentType.validate(val, interaction, arg)
         if (validationResult === false) {
           throw new Error(`Invalid ${arg.key}`)
         } else if (typeof validationResult === 'string') {
           throw new Error(validationResult)
         }
-        result[arg.key] = await argumentType.parse(value, interaction, arg)
+        result[arg.key] = await argumentType.parse(val, interaction, arg)
       }
     }
     return result
