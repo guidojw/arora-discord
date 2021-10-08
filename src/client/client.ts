@@ -10,6 +10,7 @@ import type {
   Presence,
   User
 } from 'discord.js'
+import type { BaseArgumentType } from '../types'
 import type BaseHandler from './base'
 import Dispatcher from './dispatcher'
 import SettingProvider from './setting-provider'
@@ -42,6 +43,9 @@ declare module 'discord.js' {
 }
 
 export default class AroraClient<Ready extends boolean = boolean> extends Client<Ready> {
+  @lazyInject(TYPES.ArgumentTypeFactory)
+  public readonly argumentTypeFactory!: (argumentTypeName: string) => BaseArgumentType<any> | undefined
+
   @lazyInject(TYPES.EventHandlerFactory)
   private readonly eventHandlerFactory!: (eventName: string) => BaseHandler
 

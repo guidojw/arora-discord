@@ -1,15 +1,12 @@
-import type { Argument, ArgumentType, CommandoMessage } from 'discord.js-commando'
+import type { Argument, ParserFunction, ValidatorFunction } from '../commands'
+import type { CommandInteraction } from 'discord.js'
 import type { Enum } from './util'
 import { MessageMentions } from 'discord.js'
 import { getDateInfo } from './time'
 import { getEnumKeys } from './util'
 
-type Validator =
-(this: ArgumentType, val: string, msg: CommandoMessage, arg: Argument) => boolean | string | Promise<boolean | string>
-// A test returning true means the validation failed.
 type ValidatorTest =
-((this: ArgumentType, val: string, msg: CommandoMessage, arg: Argument) => boolean | Promise<boolean>) |
-((this: ArgumentType, val: string, msg?: CommandoMessage, arg?: Argument) => boolean | Promise<boolean>)
+((val: string, interaction: CommandInteraction, arg: Argument<any>) => boolean | Promise<boolean>)
 
 const dateRegex = /(([0-2]?[0-9]|3[0-1])[-](0?[1-9]|1[0-2])[-][0-9]{4})/
 const timeRegex = /^(2[0-3]|[0-1]?[\d]):[0-5][\d]$/
@@ -17,10 +14,10 @@ const timeRegex = /^(2[0-3]|[0-1]?[\d]):[0-5][\d]$/
 export const urlRegex = /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/gi
 
 export function validators (
-  steps: Array<Validator | Validator[]> = []
-): ((val: string, msg: CommandoMessage) => Promise<boolean | string>) {
-  return async function (this: Argument, val, msg) {
-    const valid = await this.type.validate(val, msg, this)
+  steps: Array<ValidatorFunction<any> | Array<ValidatorFunction<any>>> = []
+): ValidatorFunction<any> {
+  return async function (this: Argument<any>, val, interaction) {
+    const valid = await this.type?.validate(val, interaction, this) ?? true
     if (valid !== true) {
       return valid
     }
@@ -30,7 +27,7 @@ export function validators (
     }
     for (const step of steps) {
       if (step instanceof Array) {
-        const validations = step.map(validator => validator.call(this.type, val, msg, this))
+        const validations = step.map(validator => validator.call(this, val, interaction, this))
         const results = await Promise.allSettled(validations)
         if (results.some(result => result.status === 'fulfilled' && result.value === true)) {
           continue
@@ -44,7 +41,7 @@ export function validators (
         }
         throw (results.find(result => result.status === 'rejected') as PromiseRejectedResult).reason
       } else {
-        const valid = await step.call(this.type, val, msg, this)
+        const valid = await step(val, interaction, this)
         if (valid !== true) {
           return valid
         }
@@ -54,35 +51,27 @@ export function validators (
   }
 }
 
-function makeValidator (
-  test: ValidatorTest,
-  message: string
-): Validator {
-  return async function (
-    this: ArgumentType,
-    val,
-    msg,
-    arg
-  ) {
-    return !(await test.call(this, val, msg, arg)) || `\`${arg.label}\` ${message}.`
+function makeValidator (test: ValidatorTest, message: string): ValidatorFunction<any> {
+  return async function (val, interaction, arg) {
+    return await test(val, interaction, arg) || `\`${arg.name ?? arg.key}\` ${message}.`
   }
 }
 
 export const noChannels = makeValidator(
-  (val: string) => MessageMentions.CHANNELS_PATTERN.test(val),
+  (val: string) => !MessageMentions.CHANNELS_PATTERN.test(val),
   'cannot contain channels'
 )
 
-export const noNumber = makeValidator((val: string) => !isNaN(parseInt(val)), 'cannot be a number')
+export const noNumber = makeValidator((val: string) => isNaN(parseInt(val)), 'cannot be a number')
 
-export const noSpaces = makeValidator((val: string) => val.includes(' '), 'cannot contain spaces')
+export const noSpaces = makeValidator((val: string) => !val.includes(' '), 'cannot contain spaces')
 
-export const noUrls = makeValidator((val: string) => urlRegex.test(val), 'cannot contain URLs')
+export const noUrls = makeValidator((val: string) => !urlRegex.test(val), 'cannot contain URLs')
 
 export const isObject = makeValidator(
   (val: string) => {
     try {
-      return Object.prototype.toString.call(JSON.parse(val)) !== '[object Object]'
+      return Object.prototype.toString.call(JSON.parse(val)) === '[object Object]'
     } catch {
       return false
     }
@@ -92,21 +81,17 @@ export const isObject = makeValidator(
 
 export const noTags = makeValidator(
   (val: string) => (
-    MessageMentions.EVERYONE_PATTERN.test(val) || MessageMentions.USERS_PATTERN.test(val) ||
-    MessageMentions.ROLES_PATTERN.test(val)
+    !MessageMentions.EVERYONE_PATTERN.test(val) && !MessageMentions.USERS_PATTERN.test(val) &&
+    !MessageMentions.ROLES_PATTERN.test(val)
   ),
   'cannot contain tags'
 )
 
-export function typeOf (type: string): Validator {
+export function typeOf (type: string): ValidatorFunction<any> {
   return makeValidator(
-    async function (
-      this: ArgumentType,
-      val: string,
-      msg: CommandoMessage,
-      arg: Argument
-    ) {
-      return typeof await this.parse(val, msg, arg) === type // eslint-disable-line valid-typeof
+    async function (val, interaction, arg) {
+      // eslint-disable-next-line valid-typeof
+      return typeof (await arg.type?.parse(val, interaction, arg) ?? val) === type
     },
     `must be a ${type}`
   )
@@ -131,31 +116,18 @@ export function validTime (timeString: string): boolean {
   return timeRegex.test(timeString)
 }
 
-export function validateNoneOrType (
-  this: Argument,
-  val: string,
-  msg: CommandoMessage
-): boolean | string | Promise<boolean | string> {
-  return val.toLowerCase() === 'none' || this.type.validate(val, msg, this)
-}
-
-export function parseNoneOrType (
-  this: Argument,
-  val: string,
-  msg: CommandoMessage
-): any | Promise<any> {
-  return val.toLowerCase() === 'none' ? undefined : this.type.parse(val, msg, this)
-}
-
 export function parseEnum<T extends Enum> (
   enumLike: T,
   transformer?: (attribute: string) => string
-): ((this: Argument, val: string, msg: CommandoMessage) => Promise<any>) {
-  return async function (this: Argument, val: string, msg: CommandoMessage): Promise<any> {
+): ParserFunction<string> {
+  return function (val) {
     const lowerCaseVal = val.toLowerCase()
-    return getEnumKeys(enumLike)
-      .find(key => (transformer?.(key) ?? key).toLowerCase() === lowerCaseVal) ??
-      await this.type.parse(val, msg, this)
+    const result = getEnumKeys(enumLike)
+      .find(key => (transformer?.(key) ?? key).toLowerCase() === lowerCaseVal)
+    if (typeof result !== 'undefined') {
+      return result
+    }
+    throw new Error('Unknown enum value.')
   }
 }
 

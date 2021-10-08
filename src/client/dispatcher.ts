@@ -4,7 +4,7 @@ import type {
   APIMessage,
   APIRole
 } from 'discord-api-types'
-import type { ArgumentOptions, BaseCommand } from '../commands'
+import type { Argument, BaseCommand } from '../commands'
 import { Command, SubCommandCommand } from '../commands'
 import type {
   CommandInteraction,
@@ -17,7 +17,6 @@ import type {
   ThreadChannel,
   User
 } from 'discord.js'
-import type { BaseArgumentType } from '../types'
 import type Client from './client'
 import applicationConfig from '../configs/application'
 import { constants } from '../util'
@@ -28,9 +27,6 @@ const { TYPES } = constants
 const { lazyInject } = getDecorators(container)
 
 export default class Dispatcher {
-  @lazyInject(TYPES.ArgumentTypeFactory)
-  public readonly argumentTypeFactory!: (argumentTypeName: string) => BaseArgumentType<any> | undefined
-
   @lazyInject(TYPES.CommandFactory)
   public readonly commandFactory!: (commandName: string) => BaseCommand | undefined
 
@@ -49,7 +45,7 @@ export default class Dispatcher {
   private async handleCommandInteraction (interaction: CommandInteraction): Promise<void> {
     const command = this.commandFactory(interaction.commandName)
     if (typeof command === 'undefined') {
-      throw new Error(`Command "${interaction.commandName}" does not exist.`)
+      throw new Error(`Unknown command "${interaction.commandName}".`)
     }
 
     let error
@@ -75,21 +71,19 @@ export default class Dispatcher {
       return await interaction.reply({ content: error, ephemeral: true })
     }
 
-    let subcommandName
-    let subcommandOptions
-    if (command instanceof Command) {
+    let subcommandName = interaction.options.getSubcommand(false)
+    let subcommandArgs
+    if (subcommandName !== null && command instanceof SubCommandCommand) {
+      subcommandArgs = command.args[subcommandName]
+    } else if (command instanceof Command) {
       subcommandName = interaction.commandName
-      subcommandOptions = command.options.command
-    } else if (command instanceof SubCommandCommand) {
-      subcommandName = interaction.options.getSubcommand(true)
-      subcommandOptions = command.options.subcommands[subcommandName]
-    }
-    if (typeof subcommandName === 'undefined' || typeof subcommandOptions === 'undefined') {
-      throw new Error(`Subcommand "${subcommandName ?? 'unknown'}" does not exist.`)
+      subcommandArgs = command.args
+    } else {
+      throw new Error(`Unknown subcommand "${subcommandName ?? 'unknown'}".`)
     }
 
-    const args = subcommandOptions !== true
-      ? await this.parseArgs(interaction, Object.values(subcommandOptions.args))
+    const args = typeof subcommandArgs !== 'undefined'
+      ? await this.parseArgs(interaction, subcommandArgs)
       : {}
 
     if (command instanceof Command) {
@@ -99,10 +93,12 @@ export default class Dispatcher {
     }
   }
 
-  private async parseArgs (interaction: CommandInteraction, args: ArgumentOptions[]): Promise<Record<string, any>> {
+  private async parseArgs (
+    interaction: CommandInteraction,
+    args: Record<string, Argument<any>>
+  ): Promise<Record<string, any>> {
     const result: Record<string, any> = {}
-    for (const arg of args) {
-      const key = arg.name ?? arg.key
+    for (const [key, arg] of Object.entries(args)) {
       const option = interaction.options.get(arg.key, arg.required ?? true)
       if (option === null) {
         result[key] = null
@@ -115,17 +111,8 @@ export default class Dispatcher {
         continue
       }
 
-      let argumentType
-      if (typeof arg.type !== 'undefined') {
-        argumentType = this.argumentTypeFactory(arg.type)
-        if (typeof argumentType === 'undefined' &&
-          (typeof arg.validate === 'undefined' || typeof arg.parse === 'undefined')) {
-          throw new Error(`Argument type "${arg.type}" does not exist.`)
-        }
-      }
-
-      if (typeof arg.validate !== 'undefined' || typeof argumentType !== 'undefined') {
-        const valid = await (arg.validate?.(val, interaction) ?? argumentType?.validate(val, interaction, arg))
+      if (arg.validate !== null) {
+        const valid = await arg.validate(val, interaction, arg)
         if (valid === false) {
           throw new Error(`Invalid ${arg.key}`)
         } else if (typeof valid === 'string') {
@@ -133,9 +120,9 @@ export default class Dispatcher {
         }
       }
 
-      if (typeof arg.parse !== 'undefined' || typeof argumentType !== 'undefined') {
-        const parse = arg.parse ?? argumentType?.parse
-        result[key] = await parse?.(val, interaction, arg)
+      if (arg.parse !== null) {
+        result[key] = await arg.parse(val, interaction, arg)
+        continue
       }
 
       result[key] = val

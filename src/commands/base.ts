@@ -1,19 +1,11 @@
-import type { AroraClient as Client } from '../client'
+import Argument from './argument'
+import type { ArgumentOptions } from './argument'
+import type { AroraClient } from '../client'
 import type { CommandInteraction } from 'discord.js'
 import type { KeyOfType } from '../util/util'
 
-export interface ArgumentOptions<T = any> {
-  key: string
-  name?: string
-  type?: string
-  required?: boolean
-  default?: string
-  validate?: (val: string, interaction: CommandInteraction) => Promise<boolean | string>,
-  parse?: (val: string, interaction: CommandInteraction) => T | null | Promise<T | null>
-}
-
 export type SubCommandOptions = {
-  args: ArgumentOptions[]
+  args: Array<ArgumentOptions<any>>
 } | true
 
 interface BaseCommandOptions {
@@ -32,16 +24,28 @@ export interface SubCommandCommandOptions<T extends SubCommandCommand<any>> exte
 }
 
 export default abstract class BaseCommand<T extends CommandOptions = BaseCommandOptions> {
-  public readonly client: Client
+  public readonly client: AroraClient
   public readonly options: T
 
-  public constructor (client: Client<true>, options: T) {
+  protected constructor (client: AroraClient<true>, options: T) {
     this.client = client
     this.options = options
   }
 }
 
 export abstract class Command extends BaseCommand<CommandOptions> {
+  public readonly args: Record<string, Argument<any>> = {}
+
+  public constructor (client: AroraClient<true>, options: CommandOptions) {
+    super(client, options)
+
+    if (typeof options.command !== 'undefined' && options.command !== true) {
+      for (const argumentOptions of options.command.args) {
+        this.args[argumentOptions.key] = new Argument<any>(client, argumentOptions)
+      }
+    }
+  }
+
   public abstract execute (
     interaction: CommandInteraction,
     args: Record<string, any>
@@ -49,6 +53,24 @@ export abstract class Command extends BaseCommand<CommandOptions> {
 }
 
 export class SubCommandCommand<T extends SubCommandCommand<any>> extends BaseCommand<SubCommandCommandOptions<T>> {
+  public readonly args: Record<string, Record<string, Argument<any>>> = {}
+
+  public constructor (client: AroraClient<true>, options: SubCommandCommandOptions<T>) {
+    super(client, options)
+
+    for (const [subcommandName, subcommand] of Object.entries(options.subcommands as
+      Record<string, SubCommandOptions>)) {
+      if (subcommand === true) {
+        continue
+      }
+
+      this.args[subcommandName] = {}
+      for (const argumentOptions of subcommand.args) {
+        this.args[subcommandName][argumentOptions.key] = new Argument<any>(client, argumentOptions)
+      }
+    }
+  }
+
   public async execute (
     interaction: CommandInteraction,
     subcommand: string,
