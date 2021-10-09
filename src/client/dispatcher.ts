@@ -100,12 +100,14 @@ export default class Dispatcher {
     const result: Record<string, any> = {}
     for (const [key, arg] of Object.entries(args)) {
       const option = interaction.options.get(arg.key, arg.required ?? true)
-      if (option === null) {
+      if (option === null && typeof arg.default === 'undefined') {
         result[key] = null
         continue
       }
 
-      const val = Dispatcher.getCommandInteractionOptionValue(option)
+      const val = option !== null
+        ? Dispatcher.getCommandInteractionOptionValue(option)
+        : arg.default
       if (typeof val !== 'string') {
         result[key] = val
         continue

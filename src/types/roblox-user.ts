@@ -8,10 +8,10 @@ export default class RobloxUserArgumentType extends BaseArgumentType<RobloxUser>
   protected readonly cache: Map<string, RobloxUser> = new Map()
 
   public async validate (
-    value: string | undefined,
+    val: string,
     interaction: CommandInteraction
   ): Promise<boolean> {
-    if (typeof value === 'undefined') {
+    if (val === 'self') {
       const verificationData = await verificationService.fetchVerificationData(
         interaction.user.id,
         interaction.guildId ?? undefined
@@ -23,7 +23,7 @@ export default class RobloxUserArgumentType extends BaseArgumentType<RobloxUser>
       return false
     }
 
-    const match = value.match(/^(?:<@!?)?([0-9]+)>?$/)
+    const match = val.match(/^(?:<@!?)?([0-9]+)>?$/)
     // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     if (match !== null && interaction.inCachedGuild()) {
       try {
@@ -49,7 +49,7 @@ export default class RobloxUserArgumentType extends BaseArgumentType<RobloxUser>
       }
     }
 
-    const search = value.toLowerCase()
+    const search = val.toLowerCase()
     const members = interaction.guild?.members.cache.filter(memberFilterExact(search))
     if (members?.size === 1) {
       const member = members.first()
