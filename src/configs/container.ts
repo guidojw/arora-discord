@@ -37,11 +37,15 @@ const container = new Container()
 const bind = container.bind.bind(container)
 
 // Argument Types
+bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.DateArgumentType)
+  .whenTargetTagged('argumentType', 'date')
 bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.DefaultEmojiArgumentType)
   .whenTargetTagged('argumentType', 'default-emoji')
 bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.RobloxUserArgumentType)
   .inSingletonScope()
   .whenTargetTagged('argumentType', 'roblox-user')
+bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.TimeArgumentType)
+  .whenTargetTagged('argumentType', 'time')
 
 bind<interfaces.Factory<BaseArgumentType<any>>>(TYPES.ArgumentTypeFactory).toFactory<BaseArgumentType<any>>(
   (context: interfaces.Context) => {
