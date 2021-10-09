@@ -37,6 +37,8 @@ const container = new Container()
 const bind = container.bind.bind(container)
 
 // Argument Types
+bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.DefaultEmojiArgumentType)
+  .whenTargetTagged('argumentType', 'default-emoji')
 bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.RobloxUserArgumentType)
   .inSingletonScope()
   .whenTargetTagged('argumentType', 'roblox-user')

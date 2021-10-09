@@ -1,11 +1,13 @@
 import type { CommandInteraction, GuildMember } from 'discord.js'
 import { userService, verificationService } from '../services'
 import BaseArgumentType from './base'
+import { injectable } from 'inversify'
 
 export interface RobloxUser { id: number, username: string | null }
 
-export default class RobloxUserArgumentType extends BaseArgumentType<RobloxUser> {
-  protected readonly cache: Map<string, RobloxUser> = new Map()
+@injectable()
+export default class extends BaseArgumentType<RobloxUser> {
+  private readonly cache: Map<string, RobloxUser> = new Map()
 
   public async validate (
     val: string,
@@ -72,7 +74,7 @@ export default class RobloxUserArgumentType extends BaseArgumentType<RobloxUser>
     return false
   }
 
-  public parse (_value: string, interaction: CommandInteraction): RobloxUser | null {
+  public parse (_val: string, interaction: CommandInteraction): RobloxUser | null {
     const result = this.cache.get(interaction.id)
     this.cache.delete(interaction.id)
     return result ?? null

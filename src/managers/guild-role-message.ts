@@ -1,6 +1,5 @@
 import type { EmojiResolvable, Guild, Message, RoleResolvable } from 'discord.js'
 import BaseManager from './base'
-import type { CommandoClient } from 'discord.js-commando'
 import { GuildEmoji } from 'discord.js'
 import type { Repository } from 'typeorm'
 import { RoleMessage } from '../structures'
@@ -50,7 +49,7 @@ export default class GuildRoleMessageManager extends BaseManager<RoleMessage, Ro
     }
     let emoji: string | GuildEmoji | null
     if (typeof emojiResolvable === 'string') {
-      const valid = await (this.client as CommandoClient).registry.types.get('default-emoji')
+      const valid = this.client.argumentTypeFactory('default-emoji')
         // @ts-expect-error
         ?.validate(emojiResolvable, null, {})
       emoji = valid !== true ? null : emojiResolvable
