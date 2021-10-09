@@ -41,7 +41,7 @@ export abstract class Command extends BaseCommand<CommandOptions> {
 
     if (typeof options.command !== 'undefined' && options.command !== true) {
       for (const argumentOptions of options.command.args) {
-        this.args[argumentOptions.key] = new Argument<any>(client, argumentOptions)
+        this.args[argumentOptions.name ?? argumentOptions.key] = new Argument<any>(client, argumentOptions)
       }
     }
   }
@@ -66,7 +66,8 @@ export class SubCommandCommand<T extends SubCommandCommand<any>> extends BaseCom
 
       this.args[subcommandName] = {}
       for (const argumentOptions of subcommand.args) {
-        this.args[subcommandName][argumentOptions.key] = new Argument<any>(client, argumentOptions)
+        this.args[subcommandName][argumentOptions.name ?? argumentOptions.key] =
+          new Argument<any>(client, argumentOptions)
       }
     }
   }
