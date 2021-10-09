@@ -3,7 +3,7 @@ import BaseCommand from '../base'
 import type { Message } from 'discord.js'
 import { argumentUtil } from '../../util'
 
-const { validators, isObject, noNumber, noSpaces } = argumentUtil
+const { validators, isObject, noNumber, noWhitespace } = argumentUtil
 
 export default class CreatePanelCommand extends BaseCommand {
   public constructor (client: CommandoClient) {
@@ -20,7 +20,7 @@ export default class CreatePanelCommand extends BaseCommand {
         key: 'name',
         prompt: 'What do you want the name of the panel to be?',
         type: 'string',
-        validate: validators([noNumber, noSpaces])
+        validate: validators([noNumber, noWhitespace])
       }, {
         key: 'content',
         prompt: 'What do you want the content of the panel to be?',

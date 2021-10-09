@@ -4,7 +4,7 @@ import { GroupType } from '../../util/constants'
 import type { Message } from 'discord.js'
 import { argumentUtil } from '../../util'
 
-const { validators, noNumber, noSpaces } = argumentUtil
+const { validators, noNumber, noWhitespace } = argumentUtil
 
 export default class CreateGroupCommand extends BaseCommand {
   public constructor (client: CommandoClient) {
@@ -17,7 +17,7 @@ export default class CreateGroupCommand extends BaseCommand {
         key: 'name',
         prompt: 'What do you want the name of the group to be?',
         type: 'string',
-        validate: validators([noNumber, noSpaces])
+        validate: validators([noNumber, noWhitespace])
       }, {
         key: 'type',
         prompt: 'What do you want the type of the group to be?',

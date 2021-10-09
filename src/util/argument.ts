@@ -64,7 +64,7 @@ export const noChannels = makeValidator(
 
 export const noNumber = makeValidator((val: string) => isNaN(parseInt(val)), 'cannot be a number')
 
-export const noSpaces = makeValidator((val: string) => !val.includes(' '), 'cannot contain spaces')
+export const noWhitespace = makeValidator((val: string) => !/\s/.test(val), 'cannot contain whitespace characters')
 
 export const noUrls = makeValidator((val: string) => !urlRegex.test(val), 'cannot contain URLs')
 

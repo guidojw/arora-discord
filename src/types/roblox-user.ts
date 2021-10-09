@@ -64,7 +64,7 @@ export default class extends BaseArgumentType<RobloxUser> {
       }
     }
 
-    if (!search.includes(' ')) {
+    if (!/\s/.test(val)) {
       try {
         const id = await userService.getIdFromUsername(search)
         this.setCache(interaction.id, id, search)
