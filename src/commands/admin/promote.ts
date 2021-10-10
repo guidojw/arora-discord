@@ -1,41 +1,43 @@
-import type { CommandoClient, CommandoMessage } from 'discord.js-commando'
-import type { Guild, GuildMember, Message } from 'discord.js'
-import BaseCommand from '../base'
+import { ApplyOptions } from '../../util/decorators'
 import type { ChangeMemberRole } from '../../services/group'
+import { Command } from '../base'
+import type { CommandInteraction } from 'discord.js'
+import type { CommandOptions } from '../base'
+import type { GuildContext } from '../../structures'
 import type { RobloxUser } from '../../types/roblox-user'
 import { applicationAdapter } from '../../adapters'
+import { verificationService } from '../../services'
 
-export default class PromoteCommand extends BaseCommand {
-  public constructor (client: CommandoClient) {
-    super(client, {
-      group: 'admin',
-      name: 'promote',
-      description: 'Promotes given user in the group.',
-      examples: ['promote Happywalker'],
-      clientPermissions: ['SEND_MESSAGES'],
-      requiresApi: true,
-      requiresRobloxGroup: true,
-      args: [{
-        key: 'user',
-        prompt: 'Who would you like to promote?',
-        type: 'roblox-user'
-      }]
-    })
+@ApplyOptions<CommandOptions>({
+  requiresApi: true,
+  requiresRobloxGroup: true,
+  command: {
+    args: [{
+      key: 'username',
+      name: 'user',
+      type: 'roblox-user'
+    }]
   }
+})
+export default class PromoteCommand extends Command {
+  public async execute (interaction: CommandInteraction, { user }: { user: RobloxUser }): Promise<void> {
+    if (!interaction.inGuild()) {
+      return
+    }
+    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
 
-  public async run (
-    message: CommandoMessage & { member: GuildMember, guild: Guild & { robloxGroupId: number } },
-    { user }: { user: RobloxUser }
-  ): Promise<Message | Message[] | null> {
-    const authorId = message.member.robloxId ?? (await message.member.fetchVerificationData())?.robloxId
+    const authorId = (await verificationService.fetchVerificationData(interaction.user.id))?.robloxId
     if (typeof authorId === 'undefined') {
-      return await message.reply('This command requires you to be verified with a verification provider.')
+      return await interaction.reply({
+        content: 'This command requires you to be verified with a verification provider.',
+        ephemeral: true
+      })
     }
 
-    const roles: ChangeMemberRole = (await applicationAdapter('POST', `v1/groups/${message.guild.robloxGroupId}/users/${user.id}/promote`, {
+    const roles: ChangeMemberRole = (await applicationAdapter('POST', `v1/groups/${context.robloxGroupId}/users/${user.id}/promote`, {
       authorId
     })).data
 
-    return await message.reply(`Successfully promoted **${user.username ?? user.id}** from **${roles.oldRole.name}** to **${roles.newRole.name}**.`)
+    return await interaction.reply(`Successfully promoted **${user.username ?? user.id}** from **${roles.oldRole.name}** to **${roles.newRole.name}**.`)
   }
 }
