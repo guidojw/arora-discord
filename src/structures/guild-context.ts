@@ -67,7 +67,7 @@ const { lazyInject } = getDecorators(container)
 
 const memberNameRegex = (name: string): RegExp => new RegExp(`^(${name})$|\\s*[(](${name})[)]\\s*`)
 
-export default class extends BaseStructure {
+export default class GuildContext extends BaseStructure {
   @lazyInject(TYPES.GuildRepository)
   private readonly guildRepository!: Repository<GuildEntity>
 
@@ -118,8 +118,6 @@ export default class extends BaseStructure {
     this.ticketArchivesChannelId = data.ticketArchivesChannelId ?? null
     this.ticketsCategoryId = data.ticketsCategoryId ?? null
     this.verificationPreference = data.verificationPreference
-
-    this.setup(data)
   }
 
   public setup (data: GuildEntity): void {
@@ -204,6 +202,10 @@ export default class extends BaseStructure {
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
       premiumMembersReportJob.run.bind(premiumMembersReportJob, this)
     )
+  }
+
+  public get id (): string {
+    return this.guild.id
   }
 
   public get logsChannel (): TextChannel | null {

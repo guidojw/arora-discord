@@ -6,6 +6,6 @@ import { injectable } from 'inversify'
 @injectable()
 export default class GuildCreateEventHandler implements BaseHandler {
   public async handle (client: Client, guild: Guild): Promise<void> {
-    await client.provider.setupGuild(guild.id)
+    await client.provider.setupGuild(guild)
   }
 }

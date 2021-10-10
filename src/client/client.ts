@@ -13,6 +13,7 @@ import type {
 import type { BaseArgumentType } from '../types'
 import type BaseHandler from './base'
 import Dispatcher from './dispatcher'
+import { GuildContextManager } from '../managers'
 import SettingProvider from './setting-provider'
 import { WebSocketManager } from './websocket'
 import applicationConfig from '../configs/application'
@@ -51,6 +52,8 @@ export default class AroraClient<Ready extends boolean = boolean> extends Client
 
   @lazyInject(TYPES.PacketHandlerFactory)
   public readonly packetHandlerFactory!: (eventName: string) => BaseHandler
+
+  public readonly guildContexts: GuildContextManager
 
   private readonly aroraWs: WebSocketManager | null
   private currentActivity: number
@@ -95,6 +98,8 @@ export default class AroraClient<Ready extends boolean = boolean> extends Client
       options.partials.push(PartialTypes.USER)
     }
     super(options)
+
+    this.guildContexts = new GuildContextManager(this)
 
     this.dispatcher = new Dispatcher(this)
     this.provider = new SettingProvider()

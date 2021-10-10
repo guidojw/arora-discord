@@ -53,7 +53,7 @@ export default class Dispatcher {
       error = 'This command requires that the bot has an API connected.'
     }
     if (command.options.requiresRobloxGroup === true && (interaction.guild === null ||
-      interaction.guild.robloxGroupId === null)) {
+      this.client.guildContexts.resolve(interaction.guild)?.robloxGroupId === null)) {
       error = 'This command requires that the server has its robloxGroup setting set.'
     }
     if (command.options.requiresSingleGuild === true && this.client.guilds.cache.size !== 1) {

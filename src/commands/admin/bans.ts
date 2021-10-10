@@ -2,6 +2,7 @@ import { argumentUtil, timeUtil } from '../../util'
 import { groupService, userService, verificationService } from '../../services'
 import { ApplyOptions } from '../../util/decorators'
 import type { CommandInteraction } from 'discord.js'
+import type { GuildContext } from '../../structures'
 import { MessageEmbed } from 'discord.js'
 import type { RobloxUser } from '../../types/roblox-user'
 import { SubCommandCommand } from '../base'
@@ -83,6 +84,11 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
     duration: number | null
     reason: string
   }): Promise<void> {
+    if (!interaction.inGuild()) {
+      return
+    }
+    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
+
     const authorId = (await verificationService.fetchVerificationData(interaction.user.id))?.robloxId
     if (typeof authorId === 'undefined') {
       return await interaction.reply({
@@ -91,7 +97,7 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
       })
     }
 
-    await applicationAdapter('POST', `v1/groups/${message.guild.robloxGroupId}/bans`, {
+    await applicationAdapter('POST', `v1/groups/${context.robloxGroupId}/bans`, {
       userId: user.id,
       authorId,
       duration: duration === null ? undefined : duration * 24 * 60 * 60 * 1000,
@@ -105,6 +111,11 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
     user: RobloxUser
     reason: string
   }): Promise<void> {
+    if (!interaction.inGuild()) {
+      return
+    }
+    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
+
     const authorId = (await verificationService.fetchVerificationData(interaction.user.id))?.robloxId
     if (typeof authorId === 'undefined') {
       return await interaction.reply({
@@ -113,7 +124,7 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
       })
     }
 
-    await applicationAdapter('POST', `v1/groups/${message.guild.robloxGroupId}/bans/${user.id}/cancel`, {
+    await applicationAdapter('POST', `v1/groups/${context.robloxGroupId}/bans/${user.id}/cancel`, {
       authorId,
       reason
     })
@@ -126,6 +137,11 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
     key: string
     data: string
   }): Promise<void> {
+    if (!interaction.inGuild()) {
+      return
+    }
+    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
+
     const changes: { authorId?: number, reason?: string } = {}
     if (key === 'author') {
       changes.authorId = await userService.getIdFromUsername(data)
@@ -140,7 +156,7 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
       })
     }
 
-    await applicationAdapter('PUT', `v1/groups/${message.guild.robloxGroupId}/bans/${user.id}`, { changes, editorId })
+    await applicationAdapter('PUT', `v1/groups/${context.robloxGroupId}/bans/${user.id}`, { changes, editorId })
 
     return await interaction.reply(`Successfully edited **${user.username ?? user.id}**'s ban.`)
   }
@@ -150,6 +166,11 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
     days: number
     reason: string
   }): Promise<void> {
+    if (!interaction.inGuild()) {
+      return
+    }
+    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
+
     const authorId = (await verificationService.fetchVerificationData(interaction.user.id))?.robloxId
     if (typeof authorId === 'undefined') {
       return await interaction.reply({
@@ -158,7 +179,7 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
       })
     }
 
-    await applicationAdapter('POST', `v1/groups/${message.guild.robloxGroupId}/bans/${user.id}/extend`, {
+    await applicationAdapter('POST', `v1/groups/${context.robloxGroupId}/bans/${user.id}/extend`, {
       authorId,
       duration: days * 24 * 60 * 60 * 1000,
       reason
@@ -170,8 +191,13 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
   public async list (interaction: CommandInteraction, { user }: {
     user?: RobloxUser
   }): Promise<void> {
+    if (!interaction.inGuild()) {
+      return
+    }
+    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
+
     if (typeof user !== 'undefined') {
-      const ban = (await applicationAdapter('GET', `v1/groups/${message.guild.robloxGroupId}/bans/${user.id}`)).data
+      const ban = (await applicationAdapter('GET', `v1/groups/${context.robloxGroupId}/bans/${user.id}`)).data
 
       const days = ban.duration / (24 * 60 * 60 * 1000)
       const date = new Date(ban.date)
@@ -184,7 +210,7 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
         : ''
       const embed = new MessageEmbed()
         .setTitle(`${user.username ?? user.id}'s ban`)
-        .setColor(message.guild.primaryColor ?? applicationConfig.defaultColor)
+        .setColor(context.primaryColor ?? applicationConfig.defaultColor)
         .addField('Start date', getDate(date), true)
         .addField('Start time', getTime(date), true)
         .addField('Duration', `${days}${extensionString} ${pluralize('day', days + extensionDays)}`, true)
@@ -192,12 +218,12 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
 
       return await interaction.reply({ embeds: [embed] })
     } else {
-      const bans = (await applicationAdapter('GET', `v1/groups/${interaction.guild.robloxGroupId}/bans?sort=date`)).data
+      const bans = (await applicationAdapter('GET', `v1/groups/${context.robloxGroupId}/bans?sort=date`)).data
       if (bans.length === 0) {
         return await interaction.reply('There are currently no bans.')
       }
 
-      const embeds = await groupService.getBanEmbeds(interaction.guild.robloxGroupId, bans)
+      const embeds = await groupService.getBanEmbeds(context.robloxGroupId, bans)
       for (const embed of embeds) {
         await interaction.user.send({ embeds: [embed] })
       }
