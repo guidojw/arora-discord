@@ -144,15 +144,6 @@ export default class GuildContext extends BaseStructure {
       }
     }
 
-    if (typeof data.roles !== 'undefined') {
-      for (const rawRole of data.roles) {
-        const role = this.roles.cache.get(rawRole.id)
-        if (typeof role !== 'undefined') {
-          role.setup(rawRole)
-        }
-      }
-    }
-
     if (typeof data.roleBindings !== 'undefined') {
       for (const rawRoleBinding of data.roleBindings) {
         this.roleBindings._add(rawRoleBinding)
