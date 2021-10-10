@@ -1,11 +1,11 @@
-import type { Guild, GuildMemberResolvable, MessageReaction, Snowflake, User } from 'discord.js'
+import type { GuildContext, TicketUpdateOptions } from '../structures'
 import { GuildEmoji, MessageEmbed, TextChannel } from 'discord.js'
+import type { GuildMemberResolvable, MessageReaction, Snowflake, User } from 'discord.js'
 import BaseManager from './base'
 import type { Repository } from 'typeorm'
 import { Ticket } from '../structures'
 import type { Ticket as TicketEntity } from '../entities'
 import type { TicketTypeResolvable } from './guild-ticket-type'
-import type { TicketUpdateOptions } from '../structures'
 import { constants } from '../util'
 import container from '../configs/container'
 import getDecorators from 'inversify-inject-decorators'
@@ -24,13 +24,13 @@ export default class GuildTicketManager extends BaseManager<Ticket, TicketResolv
   @lazyInject(TYPES.TicketRepository)
   private readonly ticketRepository!: Repository<TicketEntity>
 
-  public readonly guild: Guild
+  public readonly context: GuildContext
   public readonly debounces: Map<string, true>
 
-  public constructor (guild: Guild) {
-    super(guild.client, Ticket)
+  public constructor (context: GuildContext) {
+    super(context.client, Ticket)
 
-    this.guild = guild
+    this.context = context
 
     this.debounces = new Map()
   }
@@ -44,11 +44,11 @@ export default class GuildTicketManager extends BaseManager<Ticket, TicketResolv
     author: GuildMemberResolvable
     ticketType: TicketTypeResolvable
   }): Promise<Ticket> {
-    const author = this.guild.members.resolve(authorResolvable)
+    const author = this.context.guild.members.resolve(authorResolvable)
     if (author === null) {
       throw new Error('Invalid author.')
     }
-    const ticketType = this.guild.ticketTypes.resolve(ticketTypeResolvable)
+    const ticketType = this.context.ticketTypes.resolve(ticketTypeResolvable)
     if (ticketType === null) {
       throw new Error('Invalid ticket type.')
     }
@@ -56,7 +56,10 @@ export default class GuildTicketManager extends BaseManager<Ticket, TicketResolv
     const channelName = `${ticketType.name}-${author.user.tag}`
     let channel
     try {
-      channel = await this.guild.channels.create(channelName, { parent: this.guild.ticketsCategory ?? undefined })
+      channel = await this.context.guild.channels.create(
+        channelName,
+        { parent: this.context.ticketsCategory ?? undefined }
+      )
       await channel.updateOverwrite(author, { VIEW_CHANNEL: true })
     } catch (err) {
       await channel?.delete()
@@ -64,7 +67,7 @@ export default class GuildTicketManager extends BaseManager<Ticket, TicketResolv
     }
 
     const id = (await this.ticketRepository.save(this.ticketRepository.create({
-      guildId: this.guild.id,
+      guildId: this.context.id,
       channelId: channel.id,
       typeId: ticketType.id
     }), {
@@ -76,7 +79,7 @@ export default class GuildTicketManager extends BaseManager<Ticket, TicketResolv
     ) as TicketEntity
     const ticket = this._add(newData)
 
-    await this.guild.log(
+    await this.context.log(
       author.user,
       // eslint-disable-next-line @typescript-eslint/no-base-to-string
       `${ticket.author?.toString() ?? 'Unknown'} **opened ticket** \`${ticket.id}\` **in** ${ticket.channel.toString()}`,
@@ -113,7 +116,7 @@ export default class GuildTicketManager extends BaseManager<Ticket, TicketResolv
 
     const changes: Partial<TicketEntity> = {}
     if (typeof data.channel !== 'undefined') {
-      const channel = this.guild.channels.resolve(data.channel)
+      const channel = this.context.guild.channels.resolve(data.channel)
       if (channel === null || !(channel instanceof TextChannel)) {
         throw new Error('Invalid channel.')
       }
@@ -135,7 +138,7 @@ export default class GuildTicketManager extends BaseManager<Ticket, TicketResolv
   }
 
   public async onMessageReactionAdd (reaction: MessageReaction, user: User): Promise<void> {
-    const ticketType = this.guild.ticketTypes.cache.find(ticketType => (
+    const ticketType = this.context.ticketTypes.cache.find(ticketType => (
       ticketType.message?.id === reaction.message.id && ticketType.emoji !== null &&
       (reaction.emoji instanceof GuildEmoji
         ? ticketType.emoji instanceof GuildEmoji && reaction.emoji.id === ticketType.emojiId
@@ -149,12 +152,12 @@ export default class GuildTicketManager extends BaseManager<Ticket, TicketResolv
         setTimeout(this.debounces.delete.bind(this.debounces, user.id), TICKETS_INTERVAL).unref()
 
         if (this.resolve(user) === null) {
-          if (!this.guild.supportEnabled) {
+          if (!this.context.supportEnabled) {
             const embed = new MessageEmbed()
               .setColor(0xff0000)
               .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
-              .setTitle(`Welcome to ${this.guild.name} Support`)
-              .setDescription(`We are currently closed. Check the ${this.guild.name} server for more information.`)
+              .setTitle(`Welcome to ${this.context.guild.name} Support`)
+              .setDescription(`We are currently closed. Check the ${this.context.guild.name} server for more information.`)
             await this.client.send(user, { embeds: [embed] })
             return
           }
@@ -184,7 +187,7 @@ export default class GuildTicketManager extends BaseManager<Ticket, TicketResolv
       return super.resolve(ticket)
     }
     if (typeof ticket === 'string' || ticket instanceof TextChannel) {
-      const channel = this.guild.channels.resolve(ticket)
+      const channel = this.context.guild.channels.resolve(ticket)
       if (channel !== null) {
         return this.cache.find(otherTicket => otherTicket.channelId === channel.id) ?? null
       }
@@ -192,7 +195,7 @@ export default class GuildTicketManager extends BaseManager<Ticket, TicketResolv
         return null
       }
     }
-    const member = this.guild.members.resolve(ticket)
+    const member = this.context.guild.members.resolve(ticket)
     if (member !== null) {
       return this.cache.find(otherTicket => otherTicket.authorId === member.id) ?? null
     }

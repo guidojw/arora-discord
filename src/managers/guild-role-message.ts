@@ -1,8 +1,8 @@
-import type { EmojiResolvable, Guild, Message, RoleResolvable } from 'discord.js'
+import type { EmojiResolvable, Message, RoleResolvable } from 'discord.js'
+import { GuildContext, RoleMessage } from '../structures'
 import BaseManager from './base'
 import { GuildEmoji } from 'discord.js'
 import type { Repository } from 'typeorm'
-import { RoleMessage } from '../structures'
 import type { RoleMessage as RoleMessageEntity } from '../entities'
 import { constants } from '../util'
 import container from '../configs/container'
@@ -18,12 +18,12 @@ export default class GuildRoleMessageManager extends BaseManager<RoleMessage, Ro
   @lazyInject(TYPES.RoleMessageRepository)
   private readonly roleMessageRepository!: Repository<RoleMessageEntity>
 
-  public readonly guild: Guild
+  public readonly context: GuildContext
 
-  public constructor (guild: Guild) {
-    super(guild.client, RoleMessage)
+  public constructor (context: GuildContext) {
+    super(context.client, RoleMessage)
 
-    this.guild = guild
+    this.context = context
   }
 
   public override _add (data: RoleMessageEntity, cache = true): RoleMessage {
@@ -36,7 +36,7 @@ export default class GuildRoleMessageManager extends BaseManager<RoleMessage, Ro
     message: Message
     emoji: EmojiResolvable
   }): Promise<RoleMessage> {
-    const role = this.guild.roles.resolve(roleResolvable)
+    const role = this.context.guild.roles.resolve(roleResolvable)
     if (role === null) {
       throw new Error('Invalid role.')
     }
@@ -54,7 +54,7 @@ export default class GuildRoleMessageManager extends BaseManager<RoleMessage, Ro
         ?.validate(emojiResolvable, null, {})
       emoji = valid !== true ? null : emojiResolvable
     } else {
-      emoji = this.guild.emojis.resolve(emojiResolvable)
+      emoji = this.context.guild.emojis.resolve(emojiResolvable)
     }
     if (emoji === null) {
       throw new Error('Invalid emoji.')
@@ -73,7 +73,7 @@ export default class GuildRoleMessageManager extends BaseManager<RoleMessage, Ro
       messageId: message.id,
       emojiId: emoji instanceof GuildEmoji ? emoji.id : null,
       emoji: !(emoji instanceof GuildEmoji) ? emoji : null,
-      guildId: this.guild.id
+      guildId: this.context.id
     }), {
       data: { channelId: message.channel.id }
     })).id

@@ -1,14 +1,15 @@
-import type { Client, Guild } from 'discord.js'
+import type { Client } from 'discord.js'
 import Group from './group'
 import type { Group as GroupEntity } from '../entities'
 import GroupRoleManager from '../managers/group-role'
+import type GuildContext from './guild-context'
 import Permissible from './mixins/permissible'
 
 export default class RoleGroup extends Permissible(Group) {
   public _roles: string[]
 
-  public constructor (client: Client<true>, data: GroupEntity, guild: Guild) {
-    super(client, data, guild)
+  public constructor (client: Client<true>, data: GroupEntity, context: GuildContext) {
+    super(client, data, context)
 
     this._roles = []
 
@@ -20,7 +21,7 @@ export default class RoleGroup extends Permissible(Group) {
 
     if (typeof data.permissions !== 'undefined') {
       for (const rawPermission of data.permissions) {
-        this.aroraPermissions.add(rawPermission)
+        this.aroraPermissions._add(rawPermission)
       }
     }
 

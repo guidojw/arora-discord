@@ -1,7 +1,8 @@
 import type { AbstractConstructor, Constructor, Mixin } from '../../util/util'
-import type { Base as DiscordBaseStructure, Guild, Message, TextChannel } from 'discord.js'
+import type { Base as DiscordBaseStructure, Message, TextChannel } from 'discord.js'
 import type BaseStructure from '../base'
 import { Constants } from 'discord.js'
+import type GuildContext from '../guild-context'
 
 const { PartialTypes } = Constants
 
@@ -12,13 +13,13 @@ export default function Postable<T extends AbstractConstructor<BaseStructure> | 
   base: T
 ) {
   abstract class Postable extends base {
-    public abstract readonly guild: Guild
+    public abstract readonly context: GuildContext
     public abstract messageId: string | null
     public abstract channelId: string | null
 
     public get channel (): TextChannel | null {
       return this.channelId !== null
-        ? (this.guild.channels.cache.get(this.channelId) as TextChannel | undefined) ?? null
+        ? (this.context.guild.channels.cache.get(this.channelId) as TextChannel | undefined) ?? null
         : null
     }
 
@@ -27,7 +28,8 @@ export default function Postable<T extends AbstractConstructor<BaseStructure> | 
         ? this.channel.messages.cache.get(this.messageId) ??
         // @ts-expect-error
         (this.client.options.partials?.includes(PartialTypes.MESSAGE) === true
-          ? this.channel.messages.add({ id: this.messageId })
+          // @ts-expect-error
+          ? this.channel.messages._add({ id: this.messageId })
           : null)
         : null
     }

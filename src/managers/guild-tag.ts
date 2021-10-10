@@ -1,9 +1,7 @@
+import { GuildContext, Tag } from '../structures'
 import BaseManager from './base'
-import type { CommandoClient } from 'discord.js-commando'
-import type { Guild } from 'discord.js'
 import { MessageEmbed } from 'discord.js'
 import type { Repository } from 'typeorm'
-import { Tag } from '../structures'
 import type { Tag as TagEntity } from '../entities'
 import type { TagNameResolvable } from './tag-tag-name'
 import type { TagUpdateOptions } from '../structures'
@@ -22,12 +20,12 @@ export default class GuildTagManager extends BaseManager<Tag, TagResolvable> {
   @lazyInject(TYPES.TagRepository)
   private readonly tagRepository!: Repository<TagEntity>
 
-  public readonly guild: Guild
+  public readonly context: GuildContext
 
-  public constructor (guild: Guild) {
-    super(guild.client, Tag)
+  public constructor (context: GuildContext) {
+    super(context.client, Tag)
 
-    this.guild = guild
+    this.context = context
   }
 
   public override _add (data: TagEntity, cache = true): Tag {
@@ -39,12 +37,6 @@ export default class GuildTagManager extends BaseManager<Tag, TagResolvable> {
     name = name.toLowerCase()
     if (this.resolve(name) !== null) {
       throw new Error('A tag with that name already exists.')
-    }
-    const first = name.split(/ +/)[0]
-    if (name === 'all' ||
-      (this.client as CommandoClient).registry.commands.some(command => command.name === first ||
-        command.aliases.includes(first))) {
-      throw new Error('Not allowed, name is reserved.')
     }
     if (typeof content !== 'string') {
       const embed = new MessageEmbed(content)
@@ -63,7 +55,7 @@ export default class GuildTagManager extends BaseManager<Tag, TagResolvable> {
     }
 
     const newData = await this.tagRepository.save(this.tagRepository.create({
-      guildId: this.guild.id,
+      guildId: this.context.id,
       content,
       names: [{ name }]
     }))

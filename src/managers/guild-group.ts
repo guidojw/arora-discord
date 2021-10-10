@@ -1,9 +1,8 @@
+import type { GroupUpdateOptions, GuildContext } from '../structures'
 import BaseManager from './base'
 import { Group } from '../structures'
 import type { Group as GroupEntity } from '../entities'
 import type { GroupType } from '../util/constants'
-import type { GroupUpdateOptions } from '../structures'
-import type { Guild } from 'discord.js'
 import type { Repository } from 'typeorm'
 import { constants } from '../util'
 import container from '../configs/container'
@@ -19,12 +18,12 @@ export default class GuildGroupManager extends BaseManager<Group, GroupResolvabl
   @lazyInject(TYPES.GroupRepository)
   private readonly groupRepository!: Repository<GroupEntity>
 
-  public readonly guild: Guild
+  public readonly context: GuildContext
 
-  public constructor (guild: Guild) {
-    super(guild.client, Group)
+  public constructor (context: GuildContext) {
+    super(context.client, Group)
 
-    this.guild = guild
+    this.context = context
   }
 
   public override _add (data: GroupEntity, cache = true): Group {
@@ -33,7 +32,7 @@ export default class GuildGroupManager extends BaseManager<Group, GroupResolvabl
       return existing
     }
 
-    const group = Group.create(this.client, data, this.guild)
+    const group = Group.create(this.client, data, this.context)
     if (cache) {
       this.cache.set(group.id, group)
     }
@@ -46,7 +45,7 @@ export default class GuildGroupManager extends BaseManager<Group, GroupResolvabl
     }
 
     const group = await this.groupRepository.save(this.groupRepository.create({
-      guildId: this.guild.id,
+      guildId: this.context.id,
       name,
       type
     }))

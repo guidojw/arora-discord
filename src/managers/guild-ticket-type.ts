@@ -1,8 +1,8 @@
-import type { EmojiResolvable, Guild, Message } from 'discord.js'
+import type { EmojiResolvable, Message } from 'discord.js'
+import { GuildContext, TicketType } from '../structures'
 import BaseManager from './base'
 import { GuildEmoji } from 'discord.js'
 import type { Repository } from 'typeorm'
-import { TicketType } from '../structures'
 import type { TicketType as TicketTypeEntity } from '../entities'
 import type { TicketTypeUpdateOptions } from '../structures'
 import { constants } from '../util'
@@ -19,17 +19,17 @@ export default class GuildTicketTypeManager extends BaseManager<TicketType, Tick
   @lazyInject(TYPES.TicketTypeRepository)
   private readonly ticketTypeRepository!: Repository<TicketTypeEntity>
 
-  public readonly guild: Guild
+  public readonly context: GuildContext
 
-  public constructor (guild: Guild) {
-    super(guild.client, TicketType)
+  public constructor (context: GuildContext) {
+    super(context.client, TicketType)
 
-    this.guild = guild
+    this.context = context
   }
 
   public override _add (data: TicketTypeEntity, cache = true): TicketType {
     // @ts-expect-error
-    return super._add(data, cache, { id: data.id, extras: [this.guild] })
+    return super._add(data, cache, { id: data.id, extras: [this.context] })
   }
 
   public async create (name: string): Promise<TicketType> {
@@ -40,7 +40,7 @@ export default class GuildTicketTypeManager extends BaseManager<TicketType, Tick
 
     const newData = await this.ticketTypeRepository.save(this.ticketTypeRepository.create({
       name,
-      guildId: this.guild.id
+      guildId: this.context.id
     }))
 
     return this._add(newData)
@@ -126,7 +126,7 @@ export default class GuildTicketTypeManager extends BaseManager<TicketType, Tick
         ?.validate(emojiResolvable, null, {})
       emoji = valid !== true ? null : emojiResolvable
     } else {
-      emoji = this.guild.emojis.resolve(emojiResolvable)
+      emoji = this.context.guild.emojis.resolve(emojiResolvable)
     }
     if (emoji === null) {
       throw new Error('Invalid emoji.')
@@ -147,7 +147,7 @@ export default class GuildTicketTypeManager extends BaseManager<TicketType, Tick
     }), {
       data: {
         channelId: message.channel.id,
-        guildId: this.guild.id
+        guildId: this.context.id
       }
     })
     const newData = await this.ticketTypeRepository.findOne(

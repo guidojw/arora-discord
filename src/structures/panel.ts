@@ -1,5 +1,6 @@
-import type { Client, Guild, Message, TextChannel } from 'discord.js'
+import type { Client, Message, TextChannel } from 'discord.js'
 import BaseStructure from './base'
+import type GuildContext from './guild-context'
 import { MessageEmbed } from 'discord.js'
 import type { Panel as PanelEntity } from '../entities'
 import Postable from './mixins/postable'
@@ -7,17 +8,17 @@ import Postable from './mixins/postable'
 export interface PanelUpdateOptions { name?: string, content?: object, message?: Message }
 
 export default class Panel extends Postable(BaseStructure) {
-  public readonly guild: Guild
+  public readonly context: GuildContext
   public id!: number
   public name!: string
   public content!: string
   public messageId!: string | null
   public channelId!: string | null
 
-  public constructor (client: Client<true>, data: PanelEntity, guild: Guild) {
+  public constructor (client: Client<true>, data: PanelEntity, context: GuildContext) {
     super(client)
 
-    this.guild = guild
+    this.context = context
 
     this.setup(data)
   }
@@ -35,15 +36,15 @@ export default class Panel extends Postable(BaseStructure) {
   }
 
   public async update (data: PanelUpdateOptions): Promise<Panel> {
-    return await this.guild.panels.update(this, data)
+    return await this.context.panels.update(this, data)
   }
 
   public async delete (): Promise<void> {
-    return await this.guild.panels.delete(this)
+    return await this.context.panels.delete(this)
   }
 
   public async post (channel: TextChannel): Promise<Panel> {
-    return await this.guild.panels.post(this, channel)
+    return await this.context.panels.post(this, channel)
   }
 
   public override toString (): string {

@@ -1,13 +1,14 @@
-import type { Client, Guild } from 'discord.js'
+import type { Client } from 'discord.js'
 import Group from './group'
 import type { Group as GroupEntity } from '../entities'
 import GroupTextChannelManager from '../managers/group-text-channel'
+import type GuildContext from './guild-context'
 
 export default class ChannelGroup extends Group {
   public _channels: string[]
 
-  public constructor (client: Client<true>, data: GroupEntity, guild: Guild) {
-    super(client, data, guild)
+  public constructor (client: Client<true>, data: GroupEntity, context: GuildContext) {
+    super(client, data, context)
 
     this._channels = []
 

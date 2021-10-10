@@ -1,8 +1,8 @@
-import type { Client, Guild, GuildMember, GuildMemberResolvable, Snowflake } from 'discord.js'
+import type { Client, GuildMember, GuildMemberResolvable, Snowflake } from 'discord.js'
 import { Collection, Constants } from 'discord.js'
+import { GuildContext, Ticket } from '../structures'
 import type { Member as MemberEntity, Ticket as TicketEntity } from '../entities'
 import type { Repository } from 'typeorm'
-import { Ticket } from '../structures'
 import { constants } from '../util'
 import container from '../configs/container'
 import getDecorators from 'inversify-inject-decorators'
@@ -20,20 +20,21 @@ export default class TicketGuildMemberManager {
 
   public readonly ticket: Ticket
   public readonly client: Client
-  public readonly guild: Guild
+  public readonly context: GuildContext
 
   public constructor (ticket: Ticket) {
     this.ticket = ticket
     this.client = ticket.client
-    this.guild = ticket.guild
+    this.context = ticket.context
   }
 
   public get cache (): Collection<Snowflake, GuildMember> {
     const cache: Collection<string, GuildMember> = new Collection()
     for (const moderatorId of this.ticket._moderators) {
-      const member = this.guild.members.resolve(moderatorId) ??
+      const member = this.context.guild.members.resolve(moderatorId) ??
         (this.client.options.partials?.includes(PartialTypes.GUILD_MEMBER) === true
-          ? this.guild.members.add({ user: { id: moderatorId } })
+          // @ts-expect-error
+          ? this.context.guild.members._add({ user: { id: moderatorId } })
           : null)
       if (member !== null) {
         cache.set(moderatorId, member)
@@ -43,7 +44,7 @@ export default class TicketGuildMemberManager {
   }
 
   public async add (memberResolvable: GuildMemberResolvable): Promise<Ticket> {
-    const member = this.guild.members.resolve(memberResolvable)
+    const member = this.context.guild.members.resolve(memberResolvable)
     if (member === null) {
       throw new Error('Invalid member.')
     }
@@ -51,7 +52,7 @@ export default class TicketGuildMemberManager {
       throw new Error('Ticket already contains moderator.')
     }
 
-    const memberFields = { userId: member.id, guildId: this.guild.id }
+    const memberFields = { userId: member.id, guildId: this.context.id }
     const memberData = await this.memberRepository.findOne(
       memberFields,
       { relations: ['moderatingTickets', 'roles'] }

@@ -1,9 +1,8 @@
+import type { GuildContext, PanelUpdateOptions } from '../structures'
 import BaseManager from './base'
-import type { Guild } from 'discord.js'
 import { MessageEmbed } from 'discord.js'
 import { Panel } from '../structures'
 import type { Panel as PanelEntity } from '../entities'
-import type { PanelUpdateOptions } from '../structures'
 import type { Repository } from 'typeorm'
 import type { TextChannelResolvable } from './guild-ticket'
 import { constants } from '../util'
@@ -21,17 +20,17 @@ export default class GuildPanelManager extends BaseManager<Panel, PanelResolvabl
   @lazyInject(TYPES.PanelRepository)
   private readonly panelRepository!: Repository<PanelEntity>
 
-  public readonly guild: Guild
+  public readonly context: GuildContext
 
-  public constructor (guild: Guild) {
-    super(guild.client, Panel)
+  public constructor (context: GuildContext) {
+    super(context.client, Panel)
 
-    this.guild = guild
+    this.context = context
   }
 
   public override _add (data: PanelEntity, cache = true): Panel {
     // @ts-expect-error
-    return super._add(data, cache, { id: data.id, extras: [this.guild] })
+    return super._add(data, cache, { id: data.id, extras: [this.context] })
   }
 
   public async create (name: string, content: object): Promise<Panel> {
@@ -46,7 +45,7 @@ export default class GuildPanelManager extends BaseManager<Panel, PanelResolvabl
 
     const newData = await this.panelRepository.save(this.panelRepository.create({
       content: JSON.stringify(embed.toJSON()),
-      guildId: this.guild.id,
+      guildId: this.context.id,
       name
     }))
 
@@ -118,7 +117,7 @@ export default class GuildPanelManager extends BaseManager<Panel, PanelResolvabl
       }
       changes.messageId = message.id
       options.channelId = message.channel.id
-      options.guildId = this.guild.id
+      options.guildId = this.context.id
 
       await message.edit({ content: null, embeds: [panel.embed] })
     }
@@ -149,7 +148,7 @@ export default class GuildPanelManager extends BaseManager<Panel, PanelResolvabl
     }
     let channel
     if (typeof channelResolvable !== 'undefined') {
-      channel = this.guild.channels.resolve(channelResolvable)
+      channel = this.context.guild.channels.resolve(channelResolvable)
       if (channel === null || !channel.isText()) {
         throw new Error('Invalid channel.')
       }
@@ -168,7 +167,7 @@ export default class GuildPanelManager extends BaseManager<Panel, PanelResolvabl
     }), {
       data: {
         channelId: channel?.id ?? null,
-        guildId: this.guild.id
+        guildId: this.context.id
       }
     })
     const newData = await this.panelRepository.findOne(

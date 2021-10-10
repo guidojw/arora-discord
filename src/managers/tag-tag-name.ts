@@ -1,9 +1,7 @@
+import type { GuildContext, Tag } from '../structures'
 import type { Tag as TagEntity, TagName as TagNameEntity } from '../entities'
 import { CachedManager } from 'discord.js'
-import type { CommandoClient } from 'discord.js-commando'
-import type { Guild } from 'discord.js'
 import type { Repository } from 'typeorm'
-import type { Tag } from '../structures'
 import TagName from '../structures/tag-name'
 import { constants } from '../util'
 import container from '../configs/container'
@@ -23,13 +21,13 @@ export default class TagTagNameManager extends CachedManager<string, TagName, Ta
   private readonly tagNameRepository!: Repository<TagNameEntity>
 
   public readonly tag: Tag
-  public readonly guild: Guild
+  public readonly context: GuildContext
 
   public constructor (tag: Tag) {
-    super(tag.guild.client, TagName)
+    super(tag.client, TagName)
 
     this.tag = tag
-    this.guild = tag.guild
+    this.context = tag.context
   }
 
   public override _add (data: TagNameEntity, cache = true): TagName {
@@ -39,12 +37,8 @@ export default class TagTagNameManager extends CachedManager<string, TagName, Ta
 
   public async create (name: string): Promise<TagName> {
     name = name.toLowerCase()
-    if (this.guild.tags.resolve(name) !== null) {
+    if (this.context.tags.resolve(name) !== null) {
       throw new Error('A tag with that name already exists.')
-    }
-    if (name === 'all' || (this.client as CommandoClient).registry.commands.some(command => command.name === name ||
-        command.aliases.includes(name))) {
-      throw new Error('Not allowed, name is reserved.')
     }
 
     const tagNameData = await this.tagNameRepository.save(this.tagNameRepository.create({ name, tagId: this.tag.id }))

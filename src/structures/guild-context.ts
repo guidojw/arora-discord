@@ -100,13 +100,13 @@ export default class GuildContext extends BaseStructure {
 
     this.guild = guild
 
-    this.groups = new GuildGroupManager(guild)
-    this.panels = new GuildPanelManager(guild)
-    this.roleBindings = new GuildRoleBindingManager(guild)
-    this.roleMessages = new GuildRoleMessageManager(guild)
-    this.tags = new GuildTagManager(guild)
-    this.tickets = new GuildTicketManager(guild)
-    this.ticketTypes = new GuildTicketTypeManager(guild)
+    this.groups = new GuildGroupManager(this)
+    this.panels = new GuildPanelManager(this)
+    this.roleBindings = new GuildRoleBindingManager(this)
+    this.roleMessages = new GuildRoleMessageManager(this)
+    this.tags = new GuildTagManager(this)
+    this.tickets = new GuildTicketManager(this)
+    this.ticketTypes = new GuildTicketTypeManager(this)
 
     this.logsChannelId = data.logsChannelId ?? null
     this.primaryColor = data.primaryColor ?? null
