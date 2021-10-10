@@ -52,7 +52,7 @@ const validateReason = validators([noChannels, noTags, noUrls])
         key: 'key',
         parse: (val: string) => val.toLowerCase()
       }, {
-        key: 'data',
+        key: 'value',
         validate: validateReason
       }]
     },
@@ -132,10 +132,10 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
     return await interaction.reply(`Successfully unbanned **${user.username ?? user.id}**.`)
   }
 
-  public async edit (interaction: CommandInteraction, { user, key, data }: {
+  public async edit (interaction: CommandInteraction, { user, key, value }: {
     user: RobloxUser
     key: string
-    data: string
+    value: string
   }): Promise<void> {
     if (!interaction.inGuild()) {
       return
@@ -144,9 +144,9 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
 
     const changes: { authorId?: number, reason?: string } = {}
     if (key === 'author') {
-      changes.authorId = await userService.getIdFromUsername(data)
+      changes.authorId = await userService.getIdFromUsername(value)
     } else if (key === 'reason') {
-      changes.reason = data
+      changes.reason = value
     }
     const editorId = (await verificationService.fetchVerificationData(interaction.user.id))?.robloxId
     if (typeof editorId === 'undefined') {
@@ -188,9 +188,7 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
     return await interaction.reply(`Successfully extended **${user.username ?? user.id}**'s ban.`)
   }
 
-  public async list (interaction: CommandInteraction, { user }: {
-    user?: RobloxUser
-  }): Promise<void> {
+  public async list (interaction: CommandInteraction, { user }: { user: RobloxUser }): Promise<void> {
     if (!interaction.inGuild()) {
       return
     }
