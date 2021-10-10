@@ -188,13 +188,13 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
     return await interaction.reply(`Successfully extended **${user.username ?? user.id}**'s ban.`)
   }
 
-  public async list (interaction: CommandInteraction, { user }: { user: RobloxUser }): Promise<void> {
+  public async list (interaction: CommandInteraction, { user }: { user: RobloxUser | null }): Promise<void> {
     if (!interaction.inGuild()) {
       return
     }
     const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
 
-    if (typeof user !== 'undefined') {
+    if (user !== null) {
       const ban = (await applicationAdapter('GET', `v1/groups/${context.robloxGroupId}/bans/${user.id}`)).data
 
       const days = ban.duration / (24 * 60 * 60 * 1000)

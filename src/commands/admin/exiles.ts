@@ -1,63 +1,128 @@
-import type { CommandoClient, CommandoMessage } from 'discord.js-commando'
-import type { Guild, Message } from 'discord.js'
-import BaseCommand from '../base'
+import { groupService, verificationService } from '../../services'
+import { ApplyOptions } from '../../util/decorators'
+import type { CommandInteraction } from 'discord.js'
 import type { Exile } from '../../services/group'
+import type { GuildContext } from '../../structures'
 import { MessageEmbed } from 'discord.js'
 import type { RobloxUser } from '../../types/roblox-user'
+import { SubCommandCommand } from '../base'
+import type { SubCommandCommandOptions } from '../base'
 import { applicationAdapter } from '../../adapters'
 import applicationConfig from '../../configs/application'
-import { groupService } from '../../services'
 import { timeUtil } from '../../util'
 
 const { getDate, getTime } = timeUtil
 
-export default class ExilesCommand extends BaseCommand {
-  public constructor (client: CommandoClient) {
-    super(client, {
-      group: 'admin',
-      name: 'exiles',
-      aliases: ['exilelist', 'exileinfo'],
-      description: 'Lists info of current exiles/given user\'s exile.',
-      clientPermissions: ['SEND_MESSAGES'],
-      requiresApi: true,
-      requiresRobloxGroup: true,
+@ApplyOptions<SubCommandCommandOptions<ExilesCommand>>({
+  requiresApi: true,
+  requiresRobloxGroup: true,
+  subcommands: {
+    create: {
       args: [{
-        key: 'user',
-        type: 'roblox-user',
-        prompt: 'Of whose exile would you like to know the information?',
-        default: ''
+        key: 'username',
+        name: 'user',
+        type: 'roblox-user'
       }]
+    },
+    delete: {
+      args: [{
+        key: 'username',
+        name: 'user',
+        type: 'roblox-user'
+      }]
+    },
+    list: {
+      args: [{
+        key: 'username',
+        name: 'user',
+        type: 'roblox-user',
+        required: false
+      }]
+    }
+  }
+})
+export default class ExilesCommand extends SubCommandCommand<ExilesCommand> {
+  public async create (interaction: CommandInteraction, { user, reason }: {
+    user: RobloxUser
+    reason: string
+  }): Promise<void> {
+    if (!interaction.inGuild()) {
+      return
+    }
+    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
+
+    const authorId = (await verificationService.fetchVerificationData(interaction.user.id))?.robloxId
+    if (typeof authorId === 'undefined') {
+      return await interaction.reply({
+        content: 'This command requires you to be verified with a verification provider.',
+        ephemeral: true
+      })
+    }
+
+    await applicationAdapter('POST', `v1/groups/${context.robloxGroupId}/exiles`, {
+      userId: user.id,
+      authorId,
+      reason
     })
+
+    return await interaction.reply(`Successfully exiled **${user.username ?? user.id}**.`)
   }
 
-  public async run (
-    message: CommandoMessage & { guild: Guild & { robloxGroupId: number } },
-    { user }: { user: RobloxUser | '' }
-  ): Promise<Message | Message[] | null> {
-    if (user !== '') {
-      const exile: Exile = (await applicationAdapter('GET', `v1/groups/${message.guild.robloxGroupId}/exiles/${user.id}`)).data
+  public async delete (interaction: CommandInteraction, { user, reason }: {
+    user: RobloxUser
+    reason: string
+  }): Promise<void> {
+    if (!interaction.inGuild()) {
+      return
+    }
+    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
+
+    const authorId = (await verificationService.fetchVerificationData(interaction.user.id))?.robloxId
+    if (typeof authorId === 'undefined') {
+      return await interaction.reply({
+        content: 'This command requires you to be verified with a verification provider.',
+        ephemeral: true
+      })
+    }
+
+    await applicationAdapter('DELETE', `v1/groups/${context.robloxGroupId}/exiles/${user.id}`, {
+      authorId,
+      reason
+    })
+
+    return await interaction.reply(`Successfully unexiled **${user.username ?? user.id}**.`)
+  }
+
+  public async list (interaction: CommandInteraction, { user }: { user: RobloxUser | null }): Promise<void> {
+    if (!interaction.inGuild()) {
+      return
+    }
+    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
+
+    if (user !== null) {
+      const exile: Exile = (await applicationAdapter('GET', `v1/groups/${context.robloxGroupId}/exiles/${user.id}`)).data
 
       const date = new Date(exile.date)
       const embed = new MessageEmbed()
         .setTitle(`${user.username ?? user.id}'s exile`)
-        .setColor(message.guild.primaryColor ?? applicationConfig.defaultColor)
+        .setColor(context.primaryColor ?? applicationConfig.defaultColor)
         .addField('Start date', getDate(date), true)
         .addField('Start time', getTime(date), true)
         .addField('Reason', exile.reason)
 
-      return await message.replyEmbed(embed)
+      return await interaction.reply({ embeds: [embed] })
     } else {
-      const exiles = (await applicationAdapter('GET', `v1/groups/${message.guild.robloxGroupId}/exiles?sort=date`)).data
+      const exiles = (await applicationAdapter('GET', `v1/groups/${context.robloxGroupId}/exiles?sort=date`)).data
       if (exiles.length === 0) {
-        return await message.reply('There are currently no exiles.')
+        return await interaction.reply('There are currently no exiles.')
       }
 
       const embeds = await groupService.getExileEmbeds(exiles)
       for (const embed of embeds) {
-        await message.author.send({ embeds: [embed] })
+        await interaction.user.send({ embeds: [embed] })
       }
 
-      return await message.reply('Sent you a DM with the current exiles.')
+      return await interaction.reply('Sent you a DM with the current exiles.')
     }
   }
 }
