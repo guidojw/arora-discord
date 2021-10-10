@@ -9,8 +9,9 @@ import type RoleGroup from './role-group'
 export interface GroupUpdateOptions { name?: string }
 
 export default class Group extends BaseStructure {
-  public readonly type: GroupType
   public readonly context: GuildContext
+  public readonly type: GroupType
+
   public id!: number
   public name!: string
   public guarded!: boolean

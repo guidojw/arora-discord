@@ -6,6 +6,7 @@ import type { RoleMessage as RoleMessageEntity } from '../entities'
 
 export default class RoleMessage extends Postable(BaseStructure) {
   public readonly context: GuildContext
+
   public id!: number
   public roleId!: string
   public messageId!: string | null

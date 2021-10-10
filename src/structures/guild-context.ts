@@ -84,16 +84,16 @@ export default class GuildContext extends BaseStructure {
   public readonly tickets: GuildTicketManager
   public readonly ticketTypes: GuildTicketTypeManager
 
-  public logsChannelId: Snowflake | null
-  public primaryColor: number | null
-  public ratingsChannelId: Snowflake | null
-  public robloxGroupId: number | null
-  public robloxUsernamesInNicknames: boolean
-  public suggestionsChannelId: Snowflake | null
-  public supportEnabled: boolean
-  public ticketArchivesChannelId: Snowflake | null
-  public ticketsCategoryId: Snowflake | null
-  public verificationPreference: VerificationProvider
+  public logsChannelId!: Snowflake | null
+  public primaryColor!: number | null
+  public ratingsChannelId!: Snowflake | null
+  public robloxGroupId!: number | null
+  public robloxUsernamesInNicknames!: boolean
+  public suggestionsChannelId!: Snowflake | null
+  public supportEnabled!: boolean
+  public ticketArchivesChannelId!: Snowflake | null
+  public ticketsCategoryId!: Snowflake | null
+  public verificationPreference!: VerificationProvider
 
   public constructor (client: AroraClient<true>, data: GuildEntity, guild: Guild) {
     super(client)
@@ -108,16 +108,7 @@ export default class GuildContext extends BaseStructure {
     this.tickets = new GuildTicketManager(this)
     this.ticketTypes = new GuildTicketTypeManager(this)
 
-    this.logsChannelId = data.logsChannelId ?? null
-    this.primaryColor = data.primaryColor ?? null
-    this.ratingsChannelId = data.ratingsChannelId ?? null
-    this.robloxGroupId = data.robloxGroupId ?? null
-    this.robloxUsernamesInNicknames = data.robloxUsernamesInNicknames
-    this.suggestionsChannelId = data.suggestionsChannelId ?? null
-    this.supportEnabled = data.supportEnabled
-    this.ticketArchivesChannelId = data.ticketArchivesChannelId ?? null
-    this.ticketsCategoryId = data.ticketsCategoryId ?? null
-    this.verificationPreference = data.verificationPreference
+    this.setup(data)
   }
 
   public setup (data: GuildEntity): void {

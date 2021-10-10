@@ -14,6 +14,7 @@ export default function Postable<T extends AbstractConstructor<BaseStructure> | 
 ) {
   abstract class Postable extends base {
     public abstract readonly context: GuildContext
+
     public abstract messageId: string | null
     public abstract channelId: string | null
 

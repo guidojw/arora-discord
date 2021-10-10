@@ -9,6 +9,7 @@ export interface PanelUpdateOptions { name?: string, content?: object, message?:
 
 export default class Panel extends Postable(BaseStructure) {
   public readonly context: GuildContext
+
   public id!: number
   public name!: string
   public content!: string

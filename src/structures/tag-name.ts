@@ -9,6 +9,7 @@ export default class TagName extends BaseStructure {
 
   public constructor (client: Client<true>, data: TagNameEntity, tag: Tag) {
     super(client)
+
     this.tag = tag
 
     this.setup(data)

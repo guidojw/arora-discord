@@ -5,6 +5,7 @@ import type { RoleBinding as RoleBindingEntity } from '../entities'
 
 export default class RoleBinding extends BaseStructure {
   public readonly context: GuildContext
+
   public id!: number
   public roleId!: string
   public robloxGroupId!: number

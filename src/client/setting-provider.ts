@@ -81,7 +81,6 @@ export default class SettingProvider {
 
     // @ts-expect-error
     const context = this.client.guildContexts._add(data, true, { id: data.id, extras: [guild] })
-    context.setup(data)
     await context.init()
   }
 }

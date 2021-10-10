@@ -10,6 +10,7 @@ export interface TagUpdateOptions { content?: string | object }
 export default class Tag extends BaseStructure {
   public readonly context: GuildContext
   public readonly names: TagTagNameManager
+
   public id!: number
   public _content!: string
 

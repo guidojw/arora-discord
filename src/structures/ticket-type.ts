@@ -8,6 +8,7 @@ export interface TicketTypeUpdateOptions { name?: string }
 
 export default class TicketType extends Postable(BaseStructure) {
   public readonly context: GuildContext
+
   public id!: number
   public name!: string
   public messageId!: string | null

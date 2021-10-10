@@ -7,6 +7,7 @@ export interface PermissionUpdateOptions { allow?: boolean }
 
 export default class Permission extends BaseStructure {
   public readonly permissible: Role | RoleGroup
+
   public id!: number
   public allow!: boolean
   public commandId!: number

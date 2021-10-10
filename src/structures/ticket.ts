@@ -27,6 +27,7 @@ const { makeCommaSeparatedString } = util
 
 export default class Ticket extends BaseStructure {
   public readonly context: GuildContext
+
   public id!: number
   public channelId!: string
   public guildId!: string
