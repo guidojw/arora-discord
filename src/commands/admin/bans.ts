@@ -1,7 +1,7 @@
+import type { BaseGuildCommandInteraction, CommandInteraction } from 'discord.js'
 import { argumentUtil, timeUtil } from '../../util'
 import { groupService, userService, verificationService } from '../../services'
 import { ApplyOptions } from '../../util/decorators'
-import type { CommandInteraction } from 'discord.js'
 import type { GuildContext } from '../../structures'
 import { MessageEmbed } from 'discord.js'
 import type { RobloxUser } from '../../types/roblox-user'
@@ -9,6 +9,7 @@ import { SubCommandCommand } from '../base'
 import type { SubCommandCommandOptions } from '../base'
 import { applicationAdapter } from '../../adapters'
 import applicationConfig from '../../configs/application'
+import { injectable } from 'inversify'
 import pluralize from 'pluralize'
 
 const { getDate, getTime } = timeUtil
@@ -16,77 +17,62 @@ const { validators, noChannels, noTags, noUrls } = argumentUtil
 
 const validateReason = validators([noChannels, noTags, noUrls])
 
+@injectable()
 @ApplyOptions<SubCommandCommandOptions<BansCommand>>({
   requiresApi: true,
   requiresRobloxGroup: true,
   subcommands: {
     create: {
-      args: [{
-        key: 'user',
-        name: 'username',
-        type: 'roblox-user'
-      }, {
-        key: 'duration',
-        required: false
-      }, {
-        key: 'reason',
-        validate: validateReason
-      }]
+      args: [
+        { key: 'user', name: 'username', type: 'roblox-user' },
+        { key: 'duration', required: false },
+        { key: 'reason', validate: validateReason }
+      ]
     },
     delete: {
-      args: [{
-        key: 'user',
-        name: 'username',
-        type: 'roblox-user'
-      }, {
-        key: 'reason',
-        validate: validateReason
-      }]
+      args: [
+        { key: 'user', name: 'username', type: 'roblox-user' },
+        { key: 'reason', validate: validateReason }
+      ]
     },
     edit: {
-      args: [{
-        key: 'user',
-        name: 'username',
-        type: 'roblox-user'
-      }, {
-        key: 'key',
-        parse: (val: string) => val.toLowerCase()
-      }, {
-        key: 'value',
-        validate: validateReason
-      }]
+      args: [
+        { key: 'user', name: 'username', type: 'roblox-user' },
+        {
+          key: 'key',
+          parse: (val: string) => val.toLowerCase()
+        },
+        { key: 'value', validate: validateReason }
+      ]
     },
     extend: {
-      args: [{
-        key: 'user',
-        name: 'username',
-        type: 'roblox-user'
-      }, {
-        key: 'days'
-      }, {
-        key: 'reason',
-        validate: validateReason
-      }]
+      args: [
+        { key: 'user', name: 'username', type: 'roblox-user' },
+        { key: 'days' },
+        { key: 'reason', validate: validateReason }
+      ]
     },
     list: {
-      args: [{
-        key: 'user',
-        name: 'username',
-        type: 'roblox-user',
-        required: false
-      }]
+      args: [
+        {
+          key: 'user',
+          name: 'username',
+          type: 'roblox-user',
+          required: false
+        }
+      ]
     }
   }
 })
 export default class BansCommand extends SubCommandCommand<BansCommand> {
-  public async create (interaction: CommandInteraction, { user, duration, reason }: {
-    user: RobloxUser
-    duration: number | null
-    reason: string
-  }): Promise<void> {
-    if (!interaction.inGuild()) {
-      return
+  public async create (
+    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    { user, duration, reason }: {
+      user: RobloxUser
+      duration: number | null
+      reason: string
     }
+  ): Promise<void> {
     const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
 
     const authorId = (await verificationService.fetchVerificationData(interaction.user.id))?.robloxId
@@ -107,13 +93,10 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
     return await interaction.reply(`Successfully banned **${user.username ?? user.id}**.`)
   }
 
-  public async delete (interaction: CommandInteraction, { user, reason }: {
-    user: RobloxUser
-    reason: string
-  }): Promise<void> {
-    if (!interaction.inGuild()) {
-      return
-    }
+  public async delete (
+    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    { user, reason }: { user: RobloxUser, reason: string }
+  ): Promise<void> {
     const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
 
     const authorId = (await verificationService.fetchVerificationData(interaction.user.id))?.robloxId
@@ -132,14 +115,14 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
     return await interaction.reply(`Successfully unbanned **${user.username ?? user.id}**.`)
   }
 
-  public async edit (interaction: CommandInteraction, { user, key, value }: {
-    user: RobloxUser
-    key: string
-    value: string
-  }): Promise<void> {
-    if (!interaction.inGuild()) {
-      return
+  public async edit (
+    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    { user, key, value }: {
+      user: RobloxUser
+      key: string
+      value: string
     }
+  ): Promise<void> {
     const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
 
     const changes: { authorId?: number, reason?: string } = {}
@@ -161,11 +144,14 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
     return await interaction.reply(`Successfully edited **${user.username ?? user.id}**'s ban.`)
   }
 
-  public async extend (interaction: CommandInteraction, { user, days, reason }: {
-    user: RobloxUser
-    days: number
-    reason: string
-  }): Promise<void> {
+  public async extend (
+    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    { user, days, reason }: {
+      user: RobloxUser
+      days: number
+      reason: string
+    }
+  ): Promise<void> {
     if (!interaction.inGuild()) {
       return
     }
@@ -188,10 +174,10 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
     return await interaction.reply(`Successfully extended **${user.username ?? user.id}**'s ban.`)
   }
 
-  public async list (interaction: CommandInteraction, { user }: { user: RobloxUser | null }): Promise<void> {
-    if (!interaction.inGuild()) {
-      return
-    }
+  public async list (
+    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    { user }: { user: RobloxUser | null }
+  ): Promise<void> {
     const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
 
     if (user !== null) {

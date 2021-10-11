@@ -1,7 +1,7 @@
+import type { BaseGuildCommandInteraction, CommandInteraction } from 'discord.js'
 import { argumentUtil, timeUtil } from '../../util'
 import { groupService, userService, verificationService } from '../../services'
 import { ApplyOptions } from '../../util/decorators'
-import type { CommandInteraction } from 'discord.js'
 import type { GuildContext } from '../../structures'
 import { MessageEmbed } from 'discord.js'
 import { SubCommandCommand } from '../base'
@@ -9,68 +9,59 @@ import type { SubCommandCommandOptions } from '../base'
 import type { Training } from '../../services/group'
 import { applicationAdapter } from '../../adapters'
 import applicationConfig from '../../configs/application'
+import { injectable } from 'inversify'
 
 const { getDate, getDateInfo, getTime, getTimeInfo, getTimeZoneAbbreviation } = timeUtil
 const { noChannels, noTags, noUrls, validDate, validTime, validators } = argumentUtil
 
+const parseKey = (val: string): string => val.toLowerCase()
+const validateReason = validators([noChannels, noTags, noUrls])
+
+@injectable()
 @ApplyOptions<SubCommandCommandOptions<TrainingsCommand>>({
   requiresApi: true,
   requiresRobloxGroup: true,
   subcommands: {
     create: {
-      args: [{
-        key: 'type',
-        parse: (val: string) => val.toLowerCase()
-      }, {
-        key: 'date',
-        type: 'date'
-      }, {
-        key: 'time',
-        type: 'time'
-      }, {
-        key: 'notes',
-        required: false,
-        validate: validators([noChannels, noTags, noUrls])
-      }]
+      args: [
+        { key: 'type', parse: parseKey },
+        { key: 'date', type: 'date' },
+        { key: 'time', type: 'time' },
+        { key: 'notes', required: false, validate: validateReason }
+      ]
     },
     cancel: {
-      args: [{
-        key: 'id'
-      }, {
-        key: 'reason',
-        validate: validators([noChannels, noTags, noUrls])
-      }]
+      args: [
+        { key: 'id' },
+        { key: 'reason', validate: validateReason }
+      ]
     },
     edit: {
-      args: [{
-        key: 'id'
-      }, {
-        key: 'key',
-        parse: (val: string) => val.toLowerCase()
-      }, {
-        key: 'value',
-        validate: validators([noChannels, noTags, noUrls]),
-        parse: (val: string) => val.toLowerCase() === 'none' ? null : val
-      }]
+      args: [
+        { key: 'id' },
+        { key: 'key', parse: parseKey },
+        {
+          key: 'value',
+          validate: validateReason,
+          parse: (val: string) => val.toLowerCase() === 'none' ? null : val
+        }
+      ]
     },
     list: {
-      args: [{
-        key: 'id',
-        required: false
-      }]
+      args: [{ key: 'id', required: false }]
     }
   }
 })
 export default class TrainingsCommand extends SubCommandCommand<TrainingsCommand> {
-  public async create (interaction: CommandInteraction, { type, date, time, notes }: {
-    type: string
-    date: string
-    time: string
-    notes?: string
-  }): Promise<void> {
-    if (!interaction.inGuild()) {
-      return
+  public async create (
+    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    { type, date, time, notes }: {
+      type: string
+      date: string
+      time: string
+      notes?: string
     }
+  ): Promise<void> {
     const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
 
     const dateInfo = getDateInfo(date)
@@ -114,13 +105,10 @@ export default class TrainingsCommand extends SubCommandCommand<TrainingsCommand
     return await interaction.reply({ embeds: [embed] })
   }
 
-  public async cancel (interaction: CommandInteraction, { id, reason }: {
-    id: number
-    reason: string
-  }): Promise<void> {
-    if (!interaction.inGuild()) {
-      return
-    }
+  public async cancel (
+    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    { id, reason }: { id: number, reason: string }
+  ): Promise<void> {
     const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
 
     const authorId = (await verificationService.fetchVerificationData(interaction.user.id))?.robloxId
@@ -139,14 +127,14 @@ export default class TrainingsCommand extends SubCommandCommand<TrainingsCommand
     return await interaction.reply(`Successfully cancelled training with ID **${id}**.`)
   }
 
-  public async edit (interaction: CommandInteraction, { id, key, value }: {
-    id: number
-    key: string
-    value: string | null
-  }): Promise<void> {
-    if (!interaction.inGuild()) {
-      return
+  public async edit (
+    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    { id, key, value }: {
+      id: number
+      key: string
+      value: string | null
     }
+  ): Promise<void> {
     const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
 
     if (['author', 'type', 'date', 'time'].includes(key) && value === null) {
@@ -208,10 +196,10 @@ export default class TrainingsCommand extends SubCommandCommand<TrainingsCommand
     return await interaction.reply(`Successfully edited training with ID **${id}**.`)
   }
 
-  public async list (interaction: CommandInteraction, { id }: { id: number | null }): Promise<void> {
-    if (!interaction.inGuild()) {
-      return
-    }
+  public async list (
+    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    { id }: { id: number | null }
+  ): Promise<void> {
     const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
 
     if (id !== null) {

@@ -1,6 +1,6 @@
+import type { BaseGuildCommandInteraction, CommandInteraction } from 'discord.js'
 import { groupService, verificationService } from '../../services'
 import { ApplyOptions } from '../../util/decorators'
-import type { CommandInteraction } from 'discord.js'
 import type { Exile } from '../../services/group'
 import type { GuildContext } from '../../structures'
 import { MessageEmbed } from 'discord.js'
@@ -9,46 +9,39 @@ import { SubCommandCommand } from '../base'
 import type { SubCommandCommandOptions } from '../base'
 import { applicationAdapter } from '../../adapters'
 import applicationConfig from '../../configs/application'
+import { injectable } from 'inversify'
 import { timeUtil } from '../../util'
 
 const { getDate, getTime } = timeUtil
 
+@injectable()
 @ApplyOptions<SubCommandCommandOptions<ExilesCommand>>({
   requiresApi: true,
   requiresRobloxGroup: true,
   subcommands: {
     create: {
-      args: [{
-        key: 'username',
-        name: 'user',
-        type: 'roblox-user'
-      }]
+      args: [{ key: 'username', name: 'user', type: 'roblox-user' }]
     },
     delete: {
-      args: [{
-        key: 'username',
-        name: 'user',
-        type: 'roblox-user'
-      }]
+      args: [{ key: 'username', name: 'user', type: 'roblox-user' }]
     },
     list: {
-      args: [{
-        key: 'username',
-        name: 'user',
-        type: 'roblox-user',
-        required: false
-      }]
+      args: [
+        {
+          key: 'username',
+          name: 'user',
+          type: 'roblox-user',
+          required: false
+        }
+      ]
     }
   }
 })
 export default class ExilesCommand extends SubCommandCommand<ExilesCommand> {
-  public async create (interaction: CommandInteraction, { user, reason }: {
-    user: RobloxUser
-    reason: string
-  }): Promise<void> {
-    if (!interaction.inGuild()) {
-      return
-    }
+  public async create (
+    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    { user, reason }: { user: RobloxUser, reason: string }
+  ): Promise<void> {
     const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
 
     const authorId = (await verificationService.fetchVerificationData(interaction.user.id))?.robloxId
@@ -68,13 +61,10 @@ export default class ExilesCommand extends SubCommandCommand<ExilesCommand> {
     return await interaction.reply(`Successfully exiled **${user.username ?? user.id}**.`)
   }
 
-  public async delete (interaction: CommandInteraction, { user, reason }: {
-    user: RobloxUser
-    reason: string
-  }): Promise<void> {
-    if (!interaction.inGuild()) {
-      return
-    }
+  public async delete (
+    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    { user, reason }: { user: RobloxUser, reason: string }
+  ): Promise<void> {
     const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
 
     const authorId = (await verificationService.fetchVerificationData(interaction.user.id))?.robloxId
@@ -93,10 +83,10 @@ export default class ExilesCommand extends SubCommandCommand<ExilesCommand> {
     return await interaction.reply(`Successfully unexiled **${user.username ?? user.id}**.`)
   }
 
-  public async list (interaction: CommandInteraction, { user }: { user: RobloxUser | null }): Promise<void> {
-    if (!interaction.inGuild()) {
-      return
-    }
+  public async list (
+    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    { user }: { user: RobloxUser | null }
+  ): Promise<void> {
     const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
 
     if (user !== null) {

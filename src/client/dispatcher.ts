@@ -142,7 +142,11 @@ export default class Dispatcher {
       case 'STRING':
       case 'INTEGER':
       case 'BOOLEAN': return option.value ?? null
-      case 'USER': return option.user ?? null
+      // Discord.js resolves the user to a member too. The dispatcher will
+      // always send the member as option value to the commands since most
+      // commands require the member anyway and it's easier to get the user from
+      // a member than vice versa.
+      case 'USER': return option.member ?? null
       case 'CHANNEL': return option.channel ?? null
       case 'ROLE': return option.role ?? null
       case 'MENTIONABLE': return option.member ?? option.user ?? option.role ?? null
