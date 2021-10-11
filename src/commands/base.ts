@@ -36,10 +36,10 @@ export default abstract class BaseCommand<T extends CommandOptions = BaseCommand
 export abstract class Command extends BaseCommand<CommandOptions> {
   public readonly args: Record<string, Argument<any>> = {}
 
-  public constructor (client: AroraClient<true>, options: CommandOptions) {
-    super(client, options)
+  public constructor (client: AroraClient<true>, options?: CommandOptions) {
+    super(client, options ?? {})
 
-    if (typeof options.command !== 'undefined' && options.command !== true) {
+    if (typeof options?.command !== 'undefined' && options.command !== true) {
       for (const argumentOptions of options.command.args) {
         this.args[argumentOptions.name ?? argumentOptions.key] = new Argument<any>(client, argumentOptions)
       }

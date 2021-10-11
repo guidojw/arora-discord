@@ -1,11 +1,16 @@
-import BaseCommand from '../base'
+import { ApplyOptions } from '../../util/decorators'
+import { Command } from '../base'
 import type { CommandInteraction } from 'discord.js'
+import type { CommandOptions } from '../base'
+import { injectable } from 'inversify'
 
-export default class RestartCommand implements BaseCommand {
-  public ownerOnly = true
-
+@injectable()
+@ApplyOptions<CommandOptions>({
+  ownerOwnly: true
+})
+export default class RestartCommand extends Command {
   public async execute (interaction: CommandInteraction): Promise<void> {
-    await interaction.reply({ content: 'Restarting...', ephemeral: true })
+    await interaction.reply('Restarting...')
     process.exit()
   }
 }
