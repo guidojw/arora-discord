@@ -1,55 +1,52 @@
-import type { CommandoClient, CommandoMessage } from 'discord.js-commando'
-import type { Guild, GuildMember, Message } from 'discord.js'
-import BaseCommand from '../base'
+import type { BaseGuildCommandInteraction, CommandInteraction } from 'discord.js'
+import { ApplyOptions } from '../../util/decorators'
+import { Command } from '../base'
+import type { CommandOptions } from '../base'
+import type { GuildContext } from '../../structures'
 import { MessageEmbed } from 'discord.js'
 import { applicationAdapter } from '../../adapters'
 import applicationConfig from '../../configs/application'
 import { argumentUtil } from '../../util'
+import { injectable } from 'inversify'
+import { verificationService } from '../../services'
 
 const { validators, noChannels, noTags, noUrls } = argumentUtil
 
-export default class ShoutCommand extends BaseCommand {
-  public constructor (client: CommandoClient) {
-    super(client, {
-      group: 'admin',
-      name: 'shout',
-      details: 'Shout can be either a message or "clear". When it\'s clear, the group shout will be cleared.',
-      description: 'Posts shout with given shout to the group.',
-      examples: ['shout Happywalker is awesome', 'shout "Happywalker is awesome"', 'shout clear'],
-      clientPermissions: ['SEND_MESSAGES'],
-      requiresApi: true,
-      requiresRobloxGroup: true,
-      args: [{
-        key: 'body',
-        type: 'string',
-        prompt: 'What would you like to shout?',
-        max: 255,
-        validate: validators([noChannels, noTags, noUrls])
-      }]
-    })
+@injectable()
+@ApplyOptions<CommandOptions>({
+  requiresApi: true,
+  requiresRobloxGroup: true,
+  command: {
+    args: [{ key: 'message', validate: validators([noChannels, noTags, noUrls]) }]
   }
+})
+export default class ShoutCommand extends Command {
+  public async execute (
+    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    { message }: { message: string | null }
+  ): Promise<void> {
+    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
 
-  public async run (
-    message: CommandoMessage & { member: GuildMember, guild: Guild & { robloxGroupId: number } },
-    { body }: { body: string }
-  ): Promise<Message | Message[] | null> {
-    const authorId = message.member.robloxId ?? (await message.member.fetchVerificationData())?.robloxId
+    const authorId = (await verificationService.fetchVerificationData(interaction.user.id))?.robloxId
     if (typeof authorId === 'undefined') {
-      return await message.reply('This command requires you to be verified with a verification provider.')
+      return await interaction.reply({
+        content: 'This command requires you to be verified with a verification provider.',
+        ephemeral: true
+      })
     }
 
-    const shout = (await applicationAdapter('PUT', `v1/groups/${message.guild.robloxGroupId}/status`, {
+    const shout = (await applicationAdapter('PUT', `v1/groups/${context.robloxGroupId}/status`, {
       authorId,
-      message: body === 'clear' ? '' : body
+      message: message ?? ''
     })).data
 
     if (shout.body === '') {
-      return await message.reply('Successfully cleared shout.')
+      return await interaction.reply('Successfully cleared shout.')
     } else {
       const embed = new MessageEmbed()
         .addField('Successfully shouted', shout.body)
-        .setColor(message.guild.primaryColor ?? applicationConfig.defaultColor)
-      return await message.replyEmbed(embed)
+        .setColor(context.primaryColor ?? applicationConfig.defaultColor)
+      return await interaction.reply({ embeds: [embed] })
     }
   }
 }
