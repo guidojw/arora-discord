@@ -1,40 +1,43 @@
-import type { CommandoClient, CommandoMessage } from 'discord.js-commando'
-import BaseCommand from '../base'
-import type { Message } from 'discord.js'
+import { ApplyOptions } from '../../util/decorators'
+import { Command } from '../base'
+import type { CommandInteraction } from 'discord.js'
+import type { CommandOptions } from '../base'
+import type { GuildContext } from '../../structures'
 import { MessageEmbed } from 'discord.js'
 import applicationConfig from '../../configs/application'
 import { groupService } from '../../services'
+import { injectable } from 'inversify'
 
-export default class MemberCountCommand extends BaseCommand {
-  public constructor (client: CommandoClient) {
-    super(client, {
-      group: 'main',
-      name: 'membercount',
-      description: 'Posts the current member count of the group.',
-      clientPermissions: ['SEND_MESSAGES'],
-      args: [
-        {
-          key: 'groupId',
-          type: 'integer',
-          prompt: 'From what group would you like to know the member count?',
-          default: (message: CommandoMessage) => message.guild.robloxGroupId ?? undefined
-        }
-      ]
-    })
+@injectable()
+@ApplyOptions<CommandOptions>({
+  command: {
+    args: [
+      {
+        key: 'id',
+        required: false,
+        default: (interaction: CommandInteraction) => (
+          interaction.inCachedGuild()
+            ? (interaction.client.guildContexts.resolve(interaction.guildId) as GuildContext).robloxGroupId
+            : null
+        )
+      }
+    ]
   }
+})
+export default class MemberCountCommand extends Command {
+  public async execute (interaction: CommandInteraction, { id }: { id: number | null }): Promise<void> {
+    const context = interaction.inCachedGuild()
+      ? this.client.guildContexts.resolve(interaction.guildId) as GuildContext
+      : null
 
-  public async run (
-    message: CommandoMessage,
-    { groupId }: { groupId?: number }
-  ): Promise<Message | Message[] | null> {
-    if (typeof groupId === 'undefined') {
-      return await message.reply('Invalid group ID.')
+    if (id === null) {
+      return await interaction.reply({ content: 'Invalid group ID.', ephemeral: true })
     }
-    const group = await groupService.getGroup(groupId)
+    const group = await groupService.getGroup(id)
 
     const embed = new MessageEmbed()
-      .addField(`${group.name}'s member count`, group.memberCount)
-      .setColor(message.guild.primaryColor ?? applicationConfig.defaultColor)
-    return await message.replyEmbed(embed)
+      .addField(`${group.name}'s member count`, group.memberCount.toString())
+      .setColor(context?.primaryColor ?? applicationConfig.defaultColor)
+    return await interaction.reply({ embeds: [embed] })
   }
 }

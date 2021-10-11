@@ -1,36 +1,33 @@
-import type { CommandoClient, CommandoMessage } from 'discord.js-commando'
-import type { Guild, Message } from 'discord.js'
-import BaseCommand from '../base'
+import type { BaseGuildCommandInteraction, CommandInteraction } from 'discord.js'
+import { ApplyOptions } from '../../util/decorators'
+import { Command } from '../base'
+import type { CommandOptions } from '../base'
 import type { GetGroupStatus } from '../../services/group'
+import type { GuildContext } from '../../structures'
 import { MessageEmbed } from 'discord.js'
 import { applicationAdapter } from '../../adapters'
 import applicationConfig from '../../configs/application'
+import { injectable } from 'inversify'
 
-export default class GetShoutCommand extends BaseCommand {
-  public constructor (client: CommandoClient) {
-    super(client, {
-      group: 'main',
-      name: 'getshout',
-      description: 'Gets the current group shout.',
-      clientPermissions: ['SEND_MESSAGES'],
-      requiresApi: true,
-      requiresRobloxGroup: true
-    })
-  }
+@injectable()
+@ApplyOptions<CommandOptions>({
+  requiresApi: true,
+  requiresRobloxGroup: true
+})
+export default class GetShoutCommand extends Command {
+  public async execute (interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>): Promise<void> {
+    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
 
-  public async run (
-    message: CommandoMessage & { guild: Guild & { robloxGroupId: number } }
-  ): Promise<Message | Message[] | null> {
-    const shout: GetGroupStatus | '' = (await applicationAdapter('GET', `v1/groups/${message.guild.robloxGroupId}/status`)).data
+    const shout: GetGroupStatus | '' = (await applicationAdapter('GET', `v1/groups/${context.robloxGroupId}/status`)).data
 
     if (shout !== '' && shout.body !== '') {
       const embed = new MessageEmbed()
         .addField(`Current shout by ${shout.poster.username}`, shout.body)
         .setTimestamp(new Date(shout.updated))
-        .setColor(message.guild.primaryColor ?? applicationConfig.defaultColor)
-      return await message.replyEmbed(embed)
+        .setColor(context.primaryColor ?? applicationConfig.defaultColor)
+      return await interaction.reply({ embeds: [embed] })
     } else {
-      return await message.reply('There currently is no shout.')
+      return await interaction.reply('There currently is no shout.')
     }
   }
 }

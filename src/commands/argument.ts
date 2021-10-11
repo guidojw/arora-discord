@@ -12,7 +12,7 @@ export interface ArgumentOptions<T> {
   name?: string
   type?: string
   required?: boolean
-  default?: string
+  default?: string | ((interaction: CommandInteraction) => T)
   validate?: ValidatorFunction<T>
   parse?: ParserFunction<T>
 }
@@ -27,7 +27,7 @@ export default class Argument<T> {
   public readonly name?: string
   public readonly type?: BaseArgumentType<T>
   public readonly required?: boolean
-  public readonly default?: string
+  public readonly default?: string | ((interaction: CommandInteraction) => T)
   public readonly validator?: ValidatorFunction<T>
   public readonly parser?: ParserFunction<T>
 

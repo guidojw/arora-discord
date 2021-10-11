@@ -107,7 +107,7 @@ export default class Dispatcher {
 
       const val = option !== null
         ? Dispatcher.getCommandInteractionOptionValue(option)
-        : arg.default
+        : typeof arg.default === 'string' ? arg.default : (arg.default as Function)(interaction)
       if (typeof val !== 'string') {
         result[key] = val
         continue

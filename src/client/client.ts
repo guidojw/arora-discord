@@ -29,6 +29,8 @@ const ACTIVITY_CAROUSEL_INTERVAL = 60 * 1000
 
 declare module 'discord.js' {
   interface Client {
+    guildContexts: GuildContextManager
+
     dispatcher: Dispatcher
     provider: SettingProvider
     mainGuild: Guild | null
@@ -52,8 +54,6 @@ export default class AroraClient<Ready extends boolean = boolean> extends Client
 
   @lazyInject(TYPES.PacketHandlerFactory)
   public readonly packetHandlerFactory!: (eventName: string) => BaseHandler
-
-  public readonly guildContexts: GuildContextManager
 
   private readonly aroraWs: WebSocketManager | null
   private currentActivity: number

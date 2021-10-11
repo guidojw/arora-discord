@@ -1,41 +1,39 @@
-import type { CommandoClient, CommandoMessage } from 'discord.js-commando'
-import BaseCommand from '../base'
-import type { Message } from 'discord.js'
+import type { BaseGuildCommandInteraction, CommandInteraction, Message } from 'discord.js'
+import { Command } from '../base'
+import type { GuildContext } from '../../structures'
 import { discordService } from '../../services'
+import { injectable } from 'inversify'
 
-export default class DeleteSuggestionCommand extends BaseCommand {
-  public constructor (client: CommandoClient) {
-    super(client, {
-      group: 'main',
-      name: 'deletesuggestion',
-      aliases: ['delsuggestion'],
-      description: 'Deletes your last suggested suggestion.',
-      clientPermissions: ['MANAGE_MESSAGES', 'ADD_REACTIONS', 'SEND_MESSAGES']
-    })
-  }
+@injectable()
+export default class DeleteSuggestionCommand extends Command {
+  public async execute (interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>): Promise<void> {
+    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
 
-  public async run (message: CommandoMessage): Promise<Message | Message[] | null> {
-    if (message.guild.suggestionsChannel === null) {
-      return await message.reply('This server has no suggestionsChannel set yet.')
+    if (context.suggestionsChannel === null) {
+      return await interaction.reply({ content: 'This server has no suggestionsChannel set yet.', ephemeral: true })
     }
-    const messages = await message.guild.suggestionsChannel.messages.fetch()
-    const authorUrl = `https://discord.com/users/${message.author.id}`
+    const messages = await context.suggestionsChannel.messages.fetch()
+    const authorUrl = `https://discord.com/users/${interaction.user.id}`
 
     for (const suggestion of messages.values()) {
       if (suggestion.embeds[0]?.author?.url === authorUrl) {
-        const prompt = await message.replyEmbed(suggestion.embeds[0], 'Are you sure you would like to delete this ' +
-          'suggestion?')
-        const choice = (await discordService.prompt(message.author, prompt, ['✅', '🚫']))?.toString() === '✅'
+        const prompt = await interaction.reply({
+          content: 'Are you sure you would like to delete this suggestion?',
+          embeds: [suggestion.embeds[0]],
+          fetchReply: true
+        }) as Message
+        const choice = (await discordService.prompt(interaction.user, prompt, ['✅', '🚫']))?.toString() === '✅'
 
         if (choice) {
           await suggestion.delete()
-          return await message.reply('Successfully deleted your last suggestion.')
+          await interaction.followUp('Successfully deleted your last suggestion.')
         } else {
-          return await message.reply('Didn\'t delete your last suggestion.')
+          await interaction.followUp('Didn\'t delete your last suggestion.')
         }
+        return
       }
     }
 
-    return await message.reply('Could not find a suggestion you made.')
+    return await interaction.reply('Could not find a suggestion you made.')
   }
 }
