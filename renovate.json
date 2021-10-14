@@ -1,7 +1,7 @@
 {
-  "extends": ["config:base", ":preserveSemverRanges"],
+  "extends": ["config:base", ":preserveSemverRanges", ":disableDependencyDashboard"],
   "labels": ["dependencies"],
-  "dependencyDashboard": false,
+  "rangeStrategy": "bump",
   "packageRules": [
     {
       "matchPackagePatterns": ["*"],
