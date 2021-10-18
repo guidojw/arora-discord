@@ -27,17 +27,19 @@ export default class extends BaseArgumentType<RobloxUser> {
 
     const match = val.match(/^(?:<@!?)?([0-9]+)>?$/)
     // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-    if (match !== null && interaction.inCachedGuild()) {
-      try {
-        const member = await interaction.guild.members.fetch(await interaction.client.users.fetch(match[1]))
-        if (!member.user.bot) {
-          const verificationData = await member.fetchVerificationData()
-          if (verificationData !== null) {
-            this.setCache(interaction.id, verificationData.robloxId, verificationData.robloxUsername)
-            return true
+    if (match !== null) {
+      if (interaction.inCachedGuild()) {
+        try {
+          const member = await interaction.guild.members.fetch(await interaction.client.users.fetch(match[1]))
+          if (!member.user.bot) {
+            const verificationData = await verificationService.fetchVerificationData(member.id, interaction.guildId)
+            if (verificationData !== null) {
+              this.setCache(interaction.id, verificationData.robloxId, verificationData.robloxUsername)
+              return true
+            }
           }
-        }
-      } catch {}
+        } catch {}
+      }
 
       const id = parseInt(match[0].match(/^(\d+)$/)?.[1] ?? '')
       if (!isNaN(id)) {
@@ -52,14 +54,16 @@ export default class extends BaseArgumentType<RobloxUser> {
     }
 
     const search = val.toLowerCase()
-    const members = interaction.guild?.members.cache.filter(memberFilterExact(search))
-    if (members?.size === 1) {
-      const member = members.first()
-      if (typeof member !== 'undefined' && !member.user.bot) {
-        const verificationData = await member.fetchVerificationData()
-        if (verificationData !== null) {
-          this.setCache(interaction.id, verificationData.robloxId, verificationData.robloxUsername)
-          return true
+    if (interaction.inCachedGuild()) {
+      const members = interaction.guild.members.cache.filter(memberFilterExact(search))
+      if (members.size === 1) {
+        const member = members.first()
+        if (typeof member !== 'undefined' && !member.user.bot) {
+          const verificationData = await verificationService.fetchVerificationData(member.id, interaction.guildId)
+          if (verificationData !== null) {
+            this.setCache(interaction.id, verificationData.robloxId, verificationData.robloxUsername)
+            return true
+          }
         }
       }
     }
