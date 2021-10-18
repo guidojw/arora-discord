@@ -44,6 +44,8 @@ bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.DefaultEmojiArg
 bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.RobloxUserArgumentType)
   .inSingletonScope()
   .whenTargetTagged('argumentType', 'roblox-user')
+bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.TagArgumentType)
+  .whenTargetTagged('argumentType', 'tag')
 bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.TimeArgumentType)
   .whenTargetTagged('argumentType', 'time')
 
