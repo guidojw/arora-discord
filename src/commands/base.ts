@@ -4,10 +4,6 @@ import type { AroraClient } from '../client'
 import type { CommandInteraction } from 'discord.js'
 import type { KeyOfType } from '../util/util'
 
-export type SubCommandOptions = {
-  args: Array<ArgumentOptions<any>>
-} | true
-
 interface BaseCommandOptions {
   ownerOwnly?: boolean
   requiresApi?: boolean
@@ -15,12 +11,19 @@ interface BaseCommandOptions {
   requiresSingleGuild?: boolean
 }
 
+export type SubCommandOptions = {
+  args: Array<ArgumentOptions<any>>
+} | true
+
 export interface CommandOptions extends BaseCommandOptions {
   command?: SubCommandOptions
 }
 
 export interface SubCommandCommandOptions<T extends SubCommandCommand<any>> extends BaseCommandOptions {
-  subcommands: { [K in Exclude<KeyOfType<T, Function>, 'execute'>]?: SubCommandOptions }
+  subcommands: {
+    [K in Exclude<KeyOfType<T, Function>, 'execute'>]?:
+    SubCommandOptions | Record<string, SubCommandOptions>
+  }
 }
 
 export default abstract class BaseCommand<T extends CommandOptions = BaseCommandOptions> {
@@ -53,35 +56,62 @@ export abstract class Command extends BaseCommand<CommandOptions> {
 }
 
 export class SubCommandCommand<T extends SubCommandCommand<any>> extends BaseCommand<SubCommandCommandOptions<T>> {
-  public readonly args: Record<string, Record<string, Argument<any>>> = {}
+  public readonly args: Record<string, Record<string, Argument<any> | Record<string, Argument<any>>>> = {}
 
   public constructor (client: AroraClient<true>, options: SubCommandCommandOptions<T>) {
     super(client, options)
 
-    for (const [subcommandName, subcommand] of Object.entries(options.subcommands as
-      Record<string, SubCommandOptions>)) {
-      if (subcommand === true) {
+    for (const [subCommandName, subCommand] of
+      Object.entries<SubCommandOptions | Record<string, SubCommandOptions> | undefined>(options.subcommands)) {
+      if (typeof subCommand === 'undefined' || subCommand === true) {
         continue
       }
 
-      this.args[subcommandName] = {}
-      for (const argumentOptions of subcommand.args) {
-        this.args[subcommandName][argumentOptions.name ?? argumentOptions.key] =
-          new Argument<any>(client, argumentOptions)
+      this.args[subCommandName] = {}
+      if (Reflect.has(subCommand, 'args')) {
+        for (const argumentOptions of (subCommand as Exclude<SubCommandOptions, true>).args) {
+          this.args[subCommandName][argumentOptions.name ?? argumentOptions.key] =
+            new Argument<any>(client, argumentOptions)
+        }
+      } else {
+        for (const [subSubCommandName, subSubCommand] of
+          Object.entries<SubCommandOptions>(subCommand as Record<string, SubCommandOptions>)) {
+          if (subSubCommand === true) {
+            continue
+          }
+
+          this.args[subCommandName][subSubCommandName] = {}
+          for (const argumentOptions of subSubCommand.args) {
+            (this.args[subCommandName][subSubCommandName] as Record<string, Argument<any>>)[argumentOptions.name ??
+            argumentOptions.key] = new Argument<any>(client, argumentOptions)
+          }
+        }
       }
     }
   }
 
   public async execute (
     interaction: CommandInteraction,
-    subcommand: string,
+    subCommandName: string,
     args: Record<string, any>
+  ): Promise<void>
+  public async execute (
+    interaction: CommandInteraction,
+    subCommandGroupName: string,
+    subCommandName: string,
+    args: Record<string, any>
+  ): Promise<void>
+  public async execute (
+    interaction: CommandInteraction,
+    subCommandNameOrSubCommandGroupName: string,
+    argsOrSubCommandName: string | Record<string, any>,
+    args?: Record<string, any>
   ): Promise<void> {
-    const fn = this[subcommand as keyof this]
+    const fn = this[subCommandNameOrSubCommandGroupName as keyof this]
     if (typeof fn === 'function') {
-      return await Promise.resolve(fn(interaction, args))
+      return await Promise.resolve(fn(interaction, argsOrSubCommandName, args))
     } else {
-      throw new Error(`Subcommand "${subcommand.toString()}" does not exist.`)
+      throw new Error(`Subcommand "${subCommandNameOrSubCommandGroupName.toString()}" does not exist.`)
     }
   }
 }

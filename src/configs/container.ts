@@ -41,6 +41,8 @@ bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.DateArgumentTyp
   .whenTargetTagged('argumentType', 'date')
 bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.DefaultEmojiArgumentType)
   .whenTargetTagged('argumentType', 'default-emoji')
+bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.GroupArgumentType)
+  .whenTargetTagged('argumentType', 'group')
 bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.RobloxUserArgumentType)
   .inSingletonScope()
   .whenTargetTagged('argumentType', 'roblox-user')

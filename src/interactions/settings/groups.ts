@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionType } from 'discord-api-types/v9'
+import { ApplicationCommandOptionType, ChannelType } from 'discord-api-types/v9'
 
 const groupsCommand = {
   name: 'groups',
@@ -59,6 +59,7 @@ const groupsCommand = {
         name: 'channel',
         description: 'The channel to add to this group',
         type: ApplicationCommandOptionType.Channel,
+        channel_types: [ChannelType.GuildText],
         required: true
       }]
     }, {
@@ -74,6 +75,7 @@ const groupsCommand = {
         name: 'channel',
         description: 'The channel to remove from this group',
         type: ApplicationCommandOptionType.Channel,
+        channel_types: [ChannelType.GuildText],
         required: true
       }]
     }]

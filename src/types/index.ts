@@ -1,6 +1,7 @@
 export { default as BaseArgumentType } from './base'
 export { default as DateArgumentType } from './date'
 export { default as DefaultEmojiArgumentType } from './default-emoji'
+export { default as GroupArgumentType } from './group'
 export { default as RobloxUserArgumentType } from './roblox-user'
 export { default as TagArgumentType } from './tag'
 export { default as TimeArgumentType } from './time'

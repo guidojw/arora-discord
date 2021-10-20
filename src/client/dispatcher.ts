@@ -71,29 +71,38 @@ export default class Dispatcher {
       return await interaction.reply({ content: error, ephemeral: true })
     }
 
-    let subcommandName = interaction.options.getSubcommand(false)
-    let subcommandArgs
-    if (subcommandName !== null && command instanceof SubCommandCommand) {
-      subcommandArgs = command.args[subcommandName]
+    let subCommandGroupName, subCommandName, subCommandArgs
+    if (command instanceof SubCommandCommand) {
+      subCommandGroupName = interaction.options.getSubcommandGroup(false)
+      subCommandName = interaction.options.getSubcommand(false)
+      if (subCommandName != null) {
+        subCommandArgs = subCommandGroupName != null
+          ? command.args[subCommandGroupName][subCommandName]
+          : command.args[subCommandName]
+      } else {
+        throw new Error(`Unknown subcommand "${subCommandName ?? 'unknown'}".`)
+      }
     } else if (command instanceof Command) {
-      subcommandName = interaction.commandName
-      subcommandArgs = command.args
+      subCommandName = interaction.commandName
+      subCommandArgs = command.args
     } else {
-      throw new Error(`Unknown subcommand "${subcommandName ?? 'unknown'}".`)
+      throw new Error('Invalid command.')
     }
 
-    const args = typeof subcommandArgs !== 'undefined'
-      ? await this.parseArgs(interaction, subcommandArgs)
+    const args = typeof subCommandArgs !== 'undefined'
+      ? await Dispatcher.parseArgs(interaction, subCommandArgs as Record<string, Argument<any>>)
       : {}
 
     if (command instanceof Command) {
       return await command.execute(interaction, args)
     } else if (command instanceof SubCommandCommand) {
-      return await command.execute(interaction, subcommandName, args)
+      return subCommandGroupName != null
+        ? await command.execute(interaction, subCommandGroupName, subCommandName, args)
+        : await command.execute(interaction, subCommandName, args)
     }
   }
 
-  private async parseArgs (
+  private static async parseArgs (
     interaction: CommandInteraction,
     args: Record<string, Argument<any>>
   ): Promise<Record<string, any>> {
