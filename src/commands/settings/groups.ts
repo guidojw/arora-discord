@@ -14,7 +14,7 @@ const { validators, noNumber, noWhitespace } = argumentUtil
 
 @injectable()
 @ApplyOptions<SubCommandCommandOptions<GroupsCommand>>({
-  subcommands: {
+  subCommands: {
     create: {
       args: [
         {

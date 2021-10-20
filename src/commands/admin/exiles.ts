@@ -18,7 +18,7 @@ const { getDate, getTime } = timeUtil
 @ApplyOptions<SubCommandCommandOptions<ExilesCommand>>({
   requiresApi: true,
   requiresRobloxGroup: true,
-  subcommands: {
+  subCommands: {
     create: {
       args: [{ key: 'username', name: 'user', type: 'roblox-user' }]
     },

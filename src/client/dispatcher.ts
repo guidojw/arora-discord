@@ -75,9 +75,9 @@ export default class Dispatcher {
     if (command instanceof SubCommandCommand) {
       subCommandGroupName = interaction.options.getSubcommandGroup(false)
       subCommandName = interaction.options.getSubcommand(false)
-      if (subCommandName != null) {
-        subCommandArgs = subCommandGroupName != null
-          ? command.args[subCommandGroupName][subCommandName]
+      if (subCommandName !== null) {
+        subCommandArgs = subCommandGroupName !== null
+          ? command.args[subCommandGroupName]?.[subCommandName]
           : command.args[subCommandName]
       } else {
         throw new Error(`Unknown subcommand "${subCommandName ?? 'unknown'}".`)

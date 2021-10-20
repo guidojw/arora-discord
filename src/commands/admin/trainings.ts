@@ -21,7 +21,7 @@ const validateReason = validators([noChannels, noTags, noUrls])
 @ApplyOptions<SubCommandCommandOptions<TrainingsCommand>>({
   requiresApi: true,
   requiresRobloxGroup: true,
-  subcommands: {
+  subCommands: {
     create: {
       args: [
         { key: 'type', parse: parseKey },

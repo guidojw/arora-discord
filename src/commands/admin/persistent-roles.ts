@@ -14,7 +14,7 @@ const { TYPES } = constants
 
 @injectable()
 @ApplyOptions<SubCommandCommandOptions<PersistentRolesCommand>>({
-  subcommands: {
+  subCommands: {
     persist: {
       args: [{ key: 'member' }, { key: 'role' }]
     },

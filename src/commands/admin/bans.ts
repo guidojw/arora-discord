@@ -21,7 +21,7 @@ const validateReason = validators([noChannels, noTags, noUrls])
 @ApplyOptions<SubCommandCommandOptions<BansCommand>>({
   requiresApi: true,
   requiresRobloxGroup: true,
-  subcommands: {
+  subCommands: {
     create: {
       args: [
         { key: 'user', name: 'username', type: 'roblox-user' },

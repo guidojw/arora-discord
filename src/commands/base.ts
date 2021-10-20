@@ -20,9 +20,10 @@ export interface CommandOptions extends BaseCommandOptions {
 }
 
 export interface SubCommandCommandOptions<T extends SubCommandCommand<any>> extends BaseCommandOptions {
-  subcommands: {
-    [K in Exclude<KeyOfType<T, Function>, 'execute'>]?:
-    SubCommandOptions | Record<string, SubCommandOptions>
+  subCommands: {
+    [K in Exclude<KeyOfType<T, Function>, 'execute'>]?: Parameters<T[K]>[1] extends string
+      ? Record<Parameters<T[K]>[1], SubCommandOptions>
+      : SubCommandOptions
   }
 }
 
@@ -62,7 +63,7 @@ export class SubCommandCommand<T extends SubCommandCommand<any>> extends BaseCom
     super(client, options)
 
     for (const [subCommandName, subCommand] of
-      Object.entries<SubCommandOptions | Record<string, SubCommandOptions> | undefined>(options.subcommands)) {
+      Object.entries<SubCommandOptions | Record<string, SubCommandOptions> | undefined>(options.subCommands)) {
       if (typeof subCommand === 'undefined' || subCommand === true) {
         continue
       }
@@ -80,10 +81,9 @@ export class SubCommandCommand<T extends SubCommandCommand<any>> extends BaseCom
             continue
           }
 
-          this.args[subCommandName][subSubCommandName] = {}
+          const subSubCommandArgs = (this.args[subCommandName][subSubCommandName] = {}) as Record<string, Argument<any>>
           for (const argumentOptions of subSubCommand.args) {
-            (this.args[subCommandName][subSubCommandName] as Record<string, Argument<any>>)[argumentOptions.name ??
-            argumentOptions.key] = new Argument<any>(client, argumentOptions)
+            subSubCommandArgs[argumentOptions.name ?? argumentOptions.key] = new Argument<any>(client, argumentOptions)
           }
         }
       }
