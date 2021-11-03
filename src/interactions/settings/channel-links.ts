@@ -9,13 +9,13 @@ const channelLinksCommand = {
     description: 'Link a voice channel to a text channel',
     type: ApplicationCommandOptionType.Subcommand,
     options: [{
-      name: 'fromChannel',
+      name: 'fromchannel',
       description: 'The voice channel to link a text channel to',
       type: ApplicationCommandOptionType.Channel,
       channel_types: [ChannelType.GuildVoice],
       required: true
     }, {
-      name: 'toChannel',
+      name: 'tochannel',
       description: 'The text channel to link to this voice channel',
       type: ApplicationCommandOptionType.Channel,
       channel_types: [ChannelType.GuildText],
@@ -26,13 +26,13 @@ const channelLinksCommand = {
     description: 'Unlink a text channel from a voice channel',
     type: ApplicationCommandOptionType.Subcommand,
     options: [{
-      name: 'fromChannel',
+      name: 'fromchannel',
       description: 'The voice channel to unlink a text channel from',
       type: ApplicationCommandOptionType.Channel,
       channel_types: [ChannelType.GuildVoice],
       required: true
     }, {
-      name: 'toChannel',
+      name: 'tochannel',
       description: 'The text channel to unlink from this voice channel',
       type: ApplicationCommandOptionType.Channel,
       channel_types: [ChannelType.GuildText],
