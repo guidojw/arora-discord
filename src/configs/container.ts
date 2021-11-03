@@ -47,6 +47,8 @@ bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.JsonObjectArgum
   .whenTargetTagged('argumentType', 'json-object')
 bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.MessageArgumentType)
   .whenTargetTagged('argumentType', 'message')
+bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.PanelArgumentType)
+  .whenTargetTagged('argumentType', 'panel')
 bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.RobloxUserArgumentType)
   .inSingletonScope()
   .whenTargetTagged('argumentType', 'roblox-user')
