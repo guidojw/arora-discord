@@ -66,8 +66,7 @@ const panelsCommand = {
       name: 'channel',
       description: 'The channel to post the panel in',
       type: ApplicationCommandOptionType.Channel,
-      channel_types: [ChannelType.GuildText],
-      required: true
+      channel_types: [ChannelType.GuildText]
     }]
   }, {
     name: 'list',

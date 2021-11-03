@@ -1,47 +1,164 @@
-import type { CommandoClient, CommandoMessage } from 'discord.js-commando'
-import BaseCommand from '../base'
-import type { Message } from 'discord.js'
-import type { Panel } from '../../structures'
+import type { BaseGuildCommandInteraction, CommandInteraction, TextChannel } from 'discord.js'
+import { Formatters, Message } from 'discord.js'
+import type { GuildContext, Panel, PanelUpdateOptions } from '../../structures'
+import { ApplyOptions } from '../../util/decorators'
+import { SubCommandCommand } from '../base'
+import type { SubCommandCommandOptions } from '../base'
+import { argumentUtil } from '../../util'
 import { discordService } from '../../services'
+import { injectable } from 'inversify'
 
-export default class PanelsCommand extends BaseCommand {
-  public constructor (client: CommandoClient) {
-    super(client, {
-      group: 'settings',
-      name: 'panels',
-      aliases: ['pnls'],
-      description: 'Lists all panels.',
-      clientPermissions: ['SEND_MESSAGES'],
-      args: [{
-        key: 'panel',
-        prompt: 'What panel would you like to know the information of?',
-        type: 'panel',
-        default: ''
-      }]
-    })
+const { validators, isObject, noNumber, noWhitespace } = argumentUtil
+
+@injectable()
+@ApplyOptions<SubCommandCommandOptions<PanelsCommand>>({
+  subCommands: {
+    create: {
+      args: [
+        { key: 'name', validate: validators([noNumber, noWhitespace]) },
+        { key: 'content', validate: validators([isObject]) }
+      ]
+    },
+    delete: {
+      args: [{ key: 'id', name: 'panel', type: 'panel' }]
+    },
+    edit: {
+      args: [
+        { key: 'id', name: 'panel', type: 'panel' },
+        {
+          key: 'key',
+          parse: (val: string) => val.toLowerCase()
+        },
+        { key: 'data', type: 'json-object|message' }
+      ]
+    },
+    post: {
+      args: [
+        { key: 'id', name: 'panel', type: 'panel' },
+        { key: 'channel', required: false }
+      ]
+    },
+    list: {
+      args: [
+        {
+          key: 'id',
+          name: 'panel',
+          type: 'panel',
+          required: false
+        }
+      ]
+    },
+    raw: {
+      args: [{ key: 'id', name: 'panel', type: 'panel' }]
+    }
+  }
+})
+export default class PanelsCommand extends SubCommandCommand<PanelsCommand> {
+  public async create (
+    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    { name, content }: {
+      name: string
+      content: object
+    }
+  ): Promise<void> {
+    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
+
+    const panel = await context.panels.create(name, content)
+
+    return await interaction.reply(`Successfully created panel \`${panel.name}\`.`)
   }
 
-  public async run (
-    message: CommandoMessage,
-    { panel }: { panel: Panel | '' }
-  ): Promise<Message | Message[] | null> {
-    if (panel !== '') {
-      return await message.replyEmbed(panel.embed)
+  public async delete (
+    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    { panel }: { panel: Panel }
+  ): Promise<void> {
+    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
+
+    await context.panels.delete(panel)
+
+    return await interaction.reply('Successfully deleted panel.')
+  }
+
+  public async edit (
+    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    { panel, key, data }: {
+      panel: Panel
+      key: string
+      data: object | Message
+    }
+  ): Promise<void> {
+    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
+
+    const changes: PanelUpdateOptions = {}
+    if (key === 'content') {
+      if (data instanceof Message) {
+        return await interaction.reply({ content: '`data` must be an object.', ephemeral: true })
+      }
+
+      changes.content = data
+    } else if (key === 'message') {
+      if (!(data instanceof Message)) {
+        return await interaction.reply({ content: '`data` must be a message URL.', ephemeral: true })
+      }
+
+      changes.message = data
+    }
+
+    panel = await context.panels.update(panel, changes)
+
+    return await interaction.reply(`Successfully edited panel \`${panel.name}\`.`)
+  }
+
+  public async post (
+    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    { panel, channel }: {
+      panel: Panel
+      channel: TextChannel | null
+    }
+  ): Promise<void> {
+    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
+
+    panel = await context.panels.post(panel, channel ?? undefined)
+
+    return await interaction.reply(channel !== null
+      // eslint-disable-next-line @typescript-eslint/no-base-to-string
+      ? `Successfully posted panel \`${panel.name}\` in ${channel.toString()}.`
+      : `Successfully removed panel \`${panel.name}\` from channel.`
+    )
+  }
+
+  public async list (
+    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    { panel }: { panel: Panel | null }
+  ): Promise<void> {
+    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
+
+    if (panel !== null) {
+      return await interaction.reply({ embeds: [panel.embed] })
     } else {
-      if (message.guild.panels.cache.size === 0) {
-        return await message.reply('No panels found.')
+      if (context.panels.cache.size === 0) {
+        return await interaction.reply('No panels found.')
       }
 
       const embeds = discordService.getListEmbeds(
         'Panels',
-        message.guild.panels.cache.values(),
+        context.panels.cache.values(),
         getPanelRow
       )
       for (const embed of embeds) {
-        await message.replyEmbed(embed)
+        await interaction.reply({ embeds: [embed] })
       }
-      return null
     }
+  }
+
+  public async raw (
+    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    { panel }: { panel: Panel }
+  ): Promise<void> {
+    await interaction.reply({
+      content: Formatters.codeBlock(panel.content),
+      allowedMentions: { users: [interaction.user.id] }
+    })
   }
 }
 
