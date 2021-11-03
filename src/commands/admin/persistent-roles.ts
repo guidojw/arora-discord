@@ -34,7 +34,7 @@ export default class PersistentRolesCommand extends SubCommandCommand<Persistent
     interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
     { member, role }: { member: GuildMember, role: Role }
   ): Promise<void> {
-    await this.persistRole(interaction, member, role)
+    await this.persistRole(member, role)
 
     return await interaction.reply({
       content: `Successfully persisted role **${role.toString()}** on member **${member.toString()}**.`,
@@ -60,7 +60,7 @@ export default class PersistentRolesCommand extends SubCommandCommand<Persistent
   ): Promise<void> {
     const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
 
-    const persistentRoles = await this.fetchPersistentRoles(interaction, member)
+    const persistentRoles = await this.fetchPersistentRoles(member)
     if (persistentRoles.size === 0) {
       return await interaction.reply('No persistent roles found.')
     }
@@ -72,22 +72,15 @@ export default class PersistentRolesCommand extends SubCommandCommand<Persistent
     return await interaction.reply({ embeds: [embed] })
   }
 
-  private async fetchPersistentRoles (
-    interaction: BaseGuildCommandInteraction<'cached'>,
-    member: GuildMember
-  ): Promise<Collection<string, Role>> {
+  private async fetchPersistentRoles (member: GuildMember): Promise<Collection<string, Role>> {
     const data = await this.getData(member)
 
-    return interaction.guild.roles.cache.filter(role => (
+    return member.guild.roles.cache.filter(role => (
       data?.roles.some(persistentRole => persistentRole.id === role.id) === true
     ))
   }
 
-  private async persistRole (
-    interaction: BaseGuildCommandInteraction<'cached'>,
-    member: GuildMember,
-    role: Role
-  ): Promise<this> {
+  private async persistRole (member: GuildMember, role: Role): Promise<void> {
     await member.roles.add(role)
     const data = await this.getData(member) ?? await this.memberRepository.save(this.memberRepository.create({
       userId: member.id,
@@ -100,13 +93,12 @@ export default class PersistentRolesCommand extends SubCommandCommand<Persistent
     if (data.roles.some(otherRole => otherRole.id === role.id)) {
       throw new Error('Member does already have role.')
     } else {
-      data.roles.push({ id: role.id, guildId: interaction.guild.id })
+      data.roles.push({ id: role.id, guildId: member.guild.id })
       await this.memberRepository.save(data)
-      return this
     }
   }
 
-  private async unpersistRole (member: GuildMember, role: Role): Promise<this> {
+  private async unpersistRole (member: GuildMember, role: Role): Promise<void> {
     const data = await this.getData(member)
 
     if (typeof data === 'undefined' || !data?.roles.some(otherRole => otherRole.id === role.id)) {
@@ -115,7 +107,6 @@ export default class PersistentRolesCommand extends SubCommandCommand<Persistent
       data.roles = data.roles.filter(otherRole => otherRole.id !== role.id)
       await this.memberRepository.save(data)
       await member.roles.remove(role)
-      return this
     }
   }
 
