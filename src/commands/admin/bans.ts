@@ -24,20 +24,20 @@ const validateReason = validators([noChannels, noTags, noUrls])
   subCommands: {
     create: {
       args: [
-        { key: 'user', name: 'username', type: 'roblox-user' },
+        { key: 'username', name: 'user', type: 'roblox-user' },
         { key: 'duration', required: false },
         { key: 'reason', validate: validateReason }
       ]
     },
     delete: {
       args: [
-        { key: 'user', name: 'username', type: 'roblox-user' },
+        { key: 'username', name: 'user', type: 'roblox-user' },
         { key: 'reason', validate: validateReason }
       ]
     },
     edit: {
       args: [
-        { key: 'user', name: 'username', type: 'roblox-user' },
+        { key: 'username', name: 'user', type: 'roblox-user' },
         {
           key: 'key',
           parse: (val: string) => val.toLowerCase()
@@ -47,16 +47,19 @@ const validateReason = validators([noChannels, noTags, noUrls])
     },
     extend: {
       args: [
-        { key: 'user', name: 'username', type: 'roblox-user' },
-        { key: 'days' },
+        { key: 'username', name: 'user', type: 'roblox-user' },
+        {
+          key: 'days',
+          validate: (val: string) => parseInt(val) !== 0
+        },
         { key: 'reason', validate: validateReason }
       ]
     },
     list: {
       args: [
         {
-          key: 'user',
-          name: 'username',
+          key: 'username',
+          name: 'user',
           type: 'roblox-user',
           required: false
         }

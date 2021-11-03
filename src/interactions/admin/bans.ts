@@ -17,15 +17,8 @@ const bansCommand = {
       name: 'duration',
       description: 'The amount of days to ban this user',
       type: ApplicationCommandOptionType.Integer,
-      choices: [
-        { name: '1 day', value: 1 },
-        { name: '2 days', value: 2 },
-        { name: '3 days', value: 3 },
-        { name: '4 days', value: 4 },
-        { name: '5 days', value: 5 },
-        { name: '6 days', value: 6 },
-        { name: '7 days', value: 7 }
-      ]
+      min_value: 1,
+      max_value: 7
     }, {
       name: 'reason',
       description: 'The reason for this ban',
@@ -85,20 +78,8 @@ const bansCommand = {
       description: 'The amount of days to extend this ban with',
       type: ApplicationCommandOptionType.Integer,
       required: true,
-      choices: [
-        { name: '-6 day', value: -6 },
-        { name: '-5 day', value: -5 },
-        { name: '-4 day', value: -4 },
-        { name: '-3 day', value: -3 },
-        { name: '-2 day', value: -2 },
-        { name: '-1 day', value: -1 },
-        { name: '1 day', value: 1 },
-        { name: '2 days', value: 2 },
-        { name: '3 days', value: 3 },
-        { name: '4 days', value: 4 },
-        { name: '5 days', value: 5 },
-        { name: '6 days', value: 6 }
-      ]
+      min_value: 1,
+      max_value: 7
     }, {
       name: 'reason',
       description: 'The reason for this extension',
