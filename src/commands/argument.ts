@@ -46,10 +46,7 @@ export default class Argument<T> {
   }
 
   public get validate (): ValidatorFunction<T> | null {
-    if (typeof this.validator !== 'undefined') {
-      return this.validator
-    }
-    return !Array.isArray(this.type)
+    return this.validator ?? (!Array.isArray(this.type)
       ? this.type?.validate ?? null
       : async function (
         this: Argument<T> & { type: Array<BaseArgumentType<T>> },
@@ -67,13 +64,11 @@ export default class Argument<T> {
         }
         return false
       }
+    )
   }
 
   public get parse (): ParserFunction<T> | null {
-    if (typeof this.parser !== 'undefined') {
-      return this.parser
-    }
-    return !Array.isArray(this.type)
+    return this.parser ?? (!Array.isArray(this.type)
       ? this.type?.parse ?? null
       : async function (
         this: Argument<T> & { type: Array<BaseArgumentType<T>> },
@@ -89,6 +84,7 @@ export default class Argument<T> {
         }
         return null
       }
+    )
   }
 
   private resolveOptions (options: ArgumentOptions<T>): ArgumentResolvedOptions<T> {

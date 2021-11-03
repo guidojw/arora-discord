@@ -11,7 +11,7 @@ interface BaseCommandOptions {
   requiresSingleGuild?: boolean
 }
 
-export type SubCommandOptions = {
+type SubCommandOptions = {
   args: Array<ArgumentOptions<any>>
 } | true
 
