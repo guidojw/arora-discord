@@ -3,7 +3,7 @@ import { ApplicationCommandOptionType } from 'discord-api-types/v9'
 const pollCommand = {
   name: 'poll',
   description: 'Create a poll',
-  defaultPermission: false,
+  default_permission: false,
   options: [{
     name: 'choices',
     description: 'The amount of possible choices',

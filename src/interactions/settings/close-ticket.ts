@@ -1,7 +1,7 @@
 const closeTicketCommand = {
   name: 'closeticket',
   description: 'Close this ticket',
-  defaultPermission: false
+  default_permission: false
 }
 
 export default closeTicketCommand

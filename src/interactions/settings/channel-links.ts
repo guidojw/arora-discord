@@ -3,7 +3,7 @@ import { ApplicationCommandOptionType, ChannelType } from 'discord-api-types/v9'
 const channelLinksCommand = {
   name: 'channellinks',
   description: 'Link or unlink a text channel from a voice channel',
-  defaultPermission: false,
+  default_permission: false,
   options: [{
     name: 'link',
     description: 'Link a voice channel to a text channel',

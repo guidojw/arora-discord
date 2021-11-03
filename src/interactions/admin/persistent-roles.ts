@@ -3,7 +3,7 @@ import { ApplicationCommandOptionType } from 'discord-api-types/v9'
 const persistentRolesCommand = {
   name: 'persistentroles',
   description: 'Persist or unpersist roles on a member',
-  defaultPermission: false,
+  default_permission: false,
   options: [{
     name: 'persist',
     description: 'Persist a role on a member',

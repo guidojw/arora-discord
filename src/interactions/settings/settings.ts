@@ -13,7 +13,7 @@ const choices = getEnumKeys(GuildSetting)
 const settingsCommand = {
   name: 'settings',
   description: 'Get or set a guild setting',
-  defaultPermission: false,
+  default_permission: false,
   options: [{
     name: 'get',
     description: 'Get a guild setting',

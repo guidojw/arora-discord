@@ -1,7 +1,7 @@
 const restartCommand = {
   name: 'restart',
   description: 'Restarts the bot',
-  defaultPermission: false
+  default_permission: false
 }
 
 export default restartCommand

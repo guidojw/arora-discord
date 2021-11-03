@@ -3,7 +3,7 @@ import { ApplicationCommandOptionType } from 'discord-api-types/v9'
 const roleBindingsCommand = {
   name: 'rolebindings',
   description: 'Create, delete or list a role binding',
-  defaultPermission: false,
+  default_permission: false,
   options: [{
     name: 'create',
     description: 'Create a role binding',

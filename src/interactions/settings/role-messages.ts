@@ -3,7 +3,7 @@ import { ApplicationCommandOptionType } from 'discord-api-types/v9'
 const roleMessagesCommand = {
   name: 'rolemessages',
   description: 'Create, delete or list a role message',
-  defaultPermission: false,
+  default_permission: false,
   options: [{
     name: 'create',
     description: 'Create a role message',

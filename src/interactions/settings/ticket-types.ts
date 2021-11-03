@@ -3,7 +3,7 @@ import { ApplicationCommandOptionType } from 'discord-api-types/v9'
 const ticketTypesCommand = {
   name: 'tickettypes',
   description: 'Create, link, delete or list a ticket type',
-  defaultPermission: false,
+  default_permission: false,
   options: [{
     name: 'create',
     description: 'Create a ticket type',

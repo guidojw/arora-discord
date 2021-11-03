@@ -3,7 +3,7 @@ import { ApplicationCommandOptionType, ChannelType } from 'discord-api-types/v9'
 const groupsCommand = {
   name: 'groups',
   description: 'Create, edit, delete or list a group',
-  defaultPermission: false,
+  default_permission: false,
   options: [{
     name: 'create',
     description: 'Create a group',

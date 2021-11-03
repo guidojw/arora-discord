@@ -6,7 +6,7 @@ const { ActivityTypes } = Constants
 const setActivityCommand = {
   name: 'setactivity',
   description: 'Set the bot\'s activity',
-  defaultPermission: false,
+  default_permission: false,
   options: [{
     name: 'name',
     description: 'The name for the new activity',

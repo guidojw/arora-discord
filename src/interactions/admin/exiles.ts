@@ -3,7 +3,7 @@ import { ApplicationCommandOptionType } from 'discord-api-types/v9'
 const exilesCommand = {
   name: 'exiles',
   description: 'Exile or unexile a Roblox user',
-  defaultPermission: false,
+  default_permission: false,
   options: [{
     name: 'create',
     description: 'Exile a Roblox user',

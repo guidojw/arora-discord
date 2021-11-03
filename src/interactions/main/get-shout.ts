@@ -1,7 +1,7 @@
 const getShoutCommand = {
   name: 'getshout',
   description: 'Get the group\'s shout',
-  defaultPermission: false
+  default_permission: false
 }
 
 export default getShoutCommand

@@ -3,7 +3,7 @@ import { ApplicationCommandOptionType } from 'discord-api-types/v9'
 const tagsCommand = {
   name: 'tags',
   description: 'Create, edit or delete a tag',
-  defaultPermission: false,
+  default_permission: false,
   options: [{
     name: 'create',
     description: 'Create a tag',

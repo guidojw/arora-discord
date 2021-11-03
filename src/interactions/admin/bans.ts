@@ -3,7 +3,7 @@ import { ApplicationCommandOptionType } from 'discord-api-types/v9'
 const bansCommand = {
   name: 'bans',
   description: 'Ban or unban a Roblox user',
-  defaultPermission: false,
+  default_permission: false,
   options: [{
     name: 'create',
     description: 'Ban a Roblox user',

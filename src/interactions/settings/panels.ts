@@ -3,7 +3,7 @@ import { ApplicationCommandOptionType, ChannelType } from 'discord-api-types/v9'
 const panelsCommand = {
   name: 'panels',
   description: 'Create, edit, post, list or delete a panel',
-  defaultPermission: false,
+  default_permission: false,
   options: [{
     name: 'create',
     description: 'Create a panel',

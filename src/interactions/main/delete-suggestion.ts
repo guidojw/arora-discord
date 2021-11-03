@@ -1,7 +1,7 @@
 const deleteSuggestionCommand = {
   name: 'deletesuggestion',
   description: 'Delete your last suggestion',
-  defaultPermission: false
+  default_permission: false
 }
 
 export default deleteSuggestionCommand
