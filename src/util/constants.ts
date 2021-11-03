@@ -18,6 +18,10 @@ export const TYPES = {
   TicketRepository: Symbol.for('TicketRepository'),
   TicketTypeRepository: Symbol.for('TicketTypeRepository'),
 
+  // Services
+  ChannelLinkService: Symbol.for('ChannelLinkService'),
+  PersistentRoleService: Symbol.for('PersistentRoleService'),
+
   // Other
   ArgumentType: Symbol.for('ArgumentType'),
   ArgumentTypeFactory: Symbol.for('ArgumentTypeFactory'),

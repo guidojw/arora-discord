@@ -1,5 +1,6 @@
 import * as argumentTypes from '../types'
 import * as commands from '../commands'
+import * as services from '../services'
 import { AnnounceTrainingsJob, HealthCheckJob, PremiumMembersReportJob } from '../jobs'
 import {
   Channel,
@@ -252,5 +253,9 @@ bind<Repository<Ticket>>(TYPES.TicketRepository).toDynamicValue(() => {
 bind<Repository<TicketType>>(TYPES.TicketTypeRepository).toDynamicValue(() => {
   return getRepository(TicketType)
 })
+
+// Services
+bind<services.ChannelLinkService>(TYPES.ChannelLinkService).to(services.ChannelLinkService)
+bind<services.PersistentRoleService>(TYPES.PermissionRepository).to(services.PersistentRoleService)
 
 export default container

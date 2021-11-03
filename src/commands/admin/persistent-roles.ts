@@ -1,10 +1,9 @@
 import type { BaseGuildCommandInteraction, CommandInteraction, GuildMember, Role } from 'discord.js'
-import { Collection, MessageEmbed } from 'discord.js'
-import type { Member as MemberEntity, Role as RoleEntity } from '../../entities'
 import { inject, injectable } from 'inversify'
 import { ApplyOptions } from '../../util/decorators'
 import type { GuildContext } from '../../structures'
-import type { Repository } from 'typeorm'
+import { MessageEmbed } from 'discord.js'
+import type { PersistentRoleService } from '../../services'
 import { SubCommandCommand } from '../base'
 import type { SubCommandCommandOptions } from '../base'
 import applicationConfig from '../../configs/application'
@@ -27,14 +26,14 @@ const { TYPES } = constants
   }
 })
 export default class PersistentRolesCommand extends SubCommandCommand<PersistentRolesCommand> {
-  @inject(TYPES.MemberRepository)
-  private readonly memberRepository!: Repository<MemberEntity>
+  @inject(TYPES.PersistentRoleService)
+  private readonly persistentRoleService!: PersistentRoleService
 
   public async persist (
     interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
     { member, role }: { member: GuildMember, role: Role }
   ): Promise<void> {
-    await this.persistRole(member, role)
+    await this.persistentRoleService.persistRole(member, role)
 
     return await interaction.reply({
       content: `Successfully persisted role **${role.toString()}** on member **${member.toString()}**.`,
@@ -46,7 +45,7 @@ export default class PersistentRolesCommand extends SubCommandCommand<Persistent
     interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
     { member, role }: { member: GuildMember, role: Role }
   ): Promise<void> {
-    await this.unpersistRole(member, role)
+    await this.persistentRoleService.unpersistRole(member, role)
 
     return await interaction.reply({
       content: `Successfully removed persistent role **${role.toString()}** from member **${member.toString()}**.`,
@@ -60,7 +59,7 @@ export default class PersistentRolesCommand extends SubCommandCommand<Persistent
   ): Promise<void> {
     const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
 
-    const persistentRoles = await this.fetchPersistentRoles(member)
+    const persistentRoles = await this.persistentRoleService.fetchPersistentRoles(member)
     if (persistentRoles.size === 0) {
       return await interaction.reply('No persistent roles found.')
     }
@@ -70,50 +69,5 @@ export default class PersistentRolesCommand extends SubCommandCommand<Persistent
       .setDescription(persistentRoles.map(role => role.toString()).toString())
       .setColor(context.primaryColor ?? applicationConfig.defaultColor)
     return await interaction.reply({ embeds: [embed] })
-  }
-
-  private async fetchPersistentRoles (member: GuildMember): Promise<Collection<string, Role>> {
-    const data = await this.getData(member)
-
-    return member.guild.roles.cache.filter(role => (
-      data?.roles.some(persistentRole => persistentRole.id === role.id) === true
-    ))
-  }
-
-  private async persistRole (member: GuildMember, role: Role): Promise<void> {
-    await member.roles.add(role)
-    const data = await this.getData(member) ?? await this.memberRepository.save(this.memberRepository.create({
-      userId: member.id,
-      guildId: member.guild.id
-    }))
-    if (typeof data.roles === 'undefined') {
-      data.roles = []
-    }
-
-    if (data.roles.some(otherRole => otherRole.id === role.id)) {
-      throw new Error('Member does already have role.')
-    } else {
-      data.roles.push({ id: role.id, guildId: member.guild.id })
-      await this.memberRepository.save(data)
-    }
-  }
-
-  private async unpersistRole (member: GuildMember, role: Role): Promise<void> {
-    const data = await this.getData(member)
-
-    if (typeof data === 'undefined' || !data?.roles.some(otherRole => otherRole.id === role.id)) {
-      throw new Error('Member does not have role.')
-    } else {
-      data.roles = data.roles.filter(otherRole => otherRole.id !== role.id)
-      await this.memberRepository.save(data)
-      await member.roles.remove(role)
-    }
-  }
-
-  private async getData (member: GuildMember): Promise<(MemberEntity & { roles: RoleEntity[] }) | undefined> {
-    return await this.memberRepository.findOne(
-      { userId: member.id, guildId: member.guild.id },
-      { relations: ['moderatingTickets', 'roles'] }
-    ) as (MemberEntity & { roles: RoleEntity[] }) | undefined
   }
 }
