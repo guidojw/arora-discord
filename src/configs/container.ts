@@ -70,7 +70,7 @@ bind<BaseHandler>(TYPES.Handler).to(eventHandlers.RoleDeleteEventHandler)
 bind<BaseHandler>(TYPES.Handler).to(eventHandlers.VoiceStateUpdateEventHandler)
   .whenTargetTagged('eventHandler', 'voiceStateUpdate')
 
-bind<interfaces.Factory<BaseHandler>>(TYPES.EventHandlerFactory).toFactory<BaseHandler>(
+bind<interfaces.Factory<BaseHandler>>(TYPES.EventHandlerFactory).toFactory<BaseHandler, [string]>(
   (context: interfaces.Context) => {
     return (eventName: string) => {
       return context.container.getTagged<BaseHandler>(TYPES.Handler, 'eventHandler', eventName)
@@ -86,7 +86,7 @@ bind<BaseJob>(TYPES.Job).to(HealthCheckJob)
 bind<BaseJob>(TYPES.Job).to(PremiumMembersReportJob)
   .whenTargetTagged('job', 'premiumMembersReport')
 
-bind<interfaces.Factory<BaseJob>>(TYPES.JobFactory).toFactory<BaseJob>(
+bind<interfaces.Factory<BaseJob>>(TYPES.JobFactory).toFactory<BaseJob, [string]>(
   (context: interfaces.Context) => {
     return (jobName: string) => {
       return context.container.getTagged<BaseJob>(TYPES.Job, 'job', jobName)
@@ -100,7 +100,7 @@ bind<BaseHandler>(TYPES.Handler).to(packetHandlers.RankChangePacketHandler)
 bind<BaseHandler>(TYPES.Handler).to(packetHandlers.TrainDeveloperPayoutReportPacketHandler)
   .whenTargetTagged('packetHandler', 'trainDeveloperPayoutReport')
 
-bind<interfaces.Factory<BaseHandler>>(TYPES.PacketHandlerFactory).toFactory<BaseHandler>(
+bind<interfaces.Factory<BaseHandler>>(TYPES.PacketHandlerFactory).toFactory<BaseHandler, [string]>(
   (context: interfaces.Context) => {
     return (eventName: string) => {
       return context.container.getTagged<BaseHandler>(TYPES.Handler, 'packetHandler', eventName)
