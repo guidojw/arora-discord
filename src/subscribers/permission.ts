@@ -1,6 +1,5 @@
-import type { EntitySubscriberInterface, InsertEvent } from 'typeorm'
+import { type EntitySubscriberInterface, EventSubscriber, type InsertEvent } from 'typeorm'
 import { Permission, Role } from '../entities'
-import { EventSubscriber } from 'typeorm'
 
 @EventSubscriber()
 export class PermissionSubscriber implements EntitySubscriberInterface<Permission> {

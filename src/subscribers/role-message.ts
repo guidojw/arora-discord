@@ -1,6 +1,5 @@
 import { Emoji, Message, Role, RoleMessage } from '../entities'
-import type { EntitySubscriberInterface, InsertEvent } from 'typeorm'
-import { EventSubscriber } from 'typeorm'
+import { type EntitySubscriberInterface, EventSubscriber, type InsertEvent } from 'typeorm'
 
 @EventSubscriber()
 export class RoleMessageSubscriber implements EntitySubscriberInterface<RoleMessage> {

@@ -1,4 +1,5 @@
-import { AnnounceTrainingsJob, HealthCheckJob, PremiumMembersReportJob } from '../jobs'
+import { AnnounceTrainingsJob, type BaseJob, HealthCheckJob, PremiumMembersReportJob } from '../jobs'
+import { type BaseHandler, eventHandlers, packetHandlers } from '../client'
 import {
   Channel,
   Command,
@@ -18,14 +19,9 @@ import {
   Ticket,
   TicketType
 } from '../entities'
-import { eventHandlers, packetHandlers } from '../client'
-import type { BaseHandler } from '../client'
-import type { BaseJob } from '../jobs'
-import { Container } from 'inversify'
-import type { Repository } from 'typeorm'
+import { Container, type interfaces } from 'inversify'
+import { type Repository, getRepository } from 'typeorm'
 import { constants } from '../util'
-import { getRepository } from 'typeorm'
-import type { interfaces } from 'inversify'
 
 const { TYPES } = constants
 

@@ -1,7 +1,6 @@
 import type { CommandoClient, CommandoMessage } from 'discord.js-commando'
-import type { Guild, GuildMember, Message } from 'discord.js'
+import { type Guild, type GuildMember, type Message, MessageEmbed } from 'discord.js'
 import BaseCommand from '../base'
-import { MessageEmbed } from 'discord.js'
 import { applicationAdapter } from '../../adapters'
 import applicationConfig from '../../configs/application'
 import { argumentUtil } from '../../util'

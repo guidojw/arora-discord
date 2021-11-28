@@ -23,8 +23,10 @@ module.exports = {
         tabWidth: 2
       }
     ],
+    'no-duplicate-imports': 'error',
     'sort-imports': 'error',
     'unicorn/prefer-node-protocol': 'error',
+    '@typescript-eslint/consistent-type-imports': 'error',
     '@typescript-eslint/explicit-member-accessibility': 'error'
   }
 }

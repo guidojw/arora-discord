@@ -1,8 +1,15 @@
-import type { Client, Guild, GuildMember, GuildMemberResolvable, Snowflake } from 'discord.js'
-import { Collection, Constants } from 'discord.js'
+import {
+  type Client,
+  Collection,
+  Constants,
+  type Guild,
+  type GuildMember,
+  type GuildMemberResolvable,
+  type Snowflake
+} from 'discord.js'
 import type { Member as MemberEntity, Ticket as TicketEntity } from '../entities'
-import type { Repository } from 'typeorm'
-import { Ticket } from '../structures'
+import { Repository } from 'typeorm'
+import type { Ticket } from '../structures'
 import { constants } from '../util'
 import container from '../configs/container'
 import getDecorators from 'inversify-inject-decorators'

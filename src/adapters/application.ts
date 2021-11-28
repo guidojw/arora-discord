@@ -1,6 +1,5 @@
-import type { AxiosPromise, AxiosRequestConfig, Method } from 'axios'
+import axios, { type AxiosPromise, type AxiosRequestConfig, type Method } from 'axios'
 import applicationConfig from '../configs/application'
-import axios from 'axios'
 
 export default async function applicationAdapter (method: Method, pathname: string, data?: any): Promise<AxiosPromise> {
   if (applicationConfig.apiEnabled === true) {

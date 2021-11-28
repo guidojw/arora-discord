@@ -1,8 +1,7 @@
 import type { CommandoClient, CommandoMessage } from 'discord.js-commando'
-import { Role, TextChannel } from 'discord.js'
+import { type Message, Role, TextChannel } from 'discord.js'
 import BaseCommand from '../base'
 import type { Group } from '../../structures'
-import type { Message } from 'discord.js'
 
 export default class AddToGroupCommand extends BaseCommand {
   public constructor (client: CommandoClient) {
