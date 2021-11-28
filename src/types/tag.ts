@@ -1,7 +1,6 @@
-import { BaseStructure, Tag } from '../structures'
-import BaseArgumentType from './base'
+import BaseArgumentType, { type FilterableArgumentType } from './base'
+import { type BaseStructure, Tag } from '../structures'
 import type { CommandoClient } from 'discord.js-commando'
-import type { FilterableArgumentType } from './base'
 
 export default class TagArgumentType extends BaseArgumentType<Tag> implements FilterableArgumentType<Tag> {
   public constructor (client: CommandoClient) {

@@ -3,7 +3,7 @@ import type BaseHandler from '../base'
 import type { Channel } from '../../entities'
 import type Client from '../client'
 import type { Channel as DiscordChannel } from 'discord.js'
-import type { Repository } from 'typeorm'
+import { Repository } from 'typeorm'
 import { constants } from '../../util'
 
 const { TYPES } = constants

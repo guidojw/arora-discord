@@ -1,8 +1,13 @@
-import type { EmojiResolvable, Guild, Message, RoleResolvable } from 'discord.js'
+import {
+  type EmojiResolvable,
+  type Guild,
+  GuildEmoji,
+  type Message,
+  type RoleResolvable
+} from 'discord.js'
 import BaseManager from './base'
 import type { CommandoClient } from 'discord.js-commando'
-import { GuildEmoji } from 'discord.js'
-import type { Repository } from 'typeorm'
+import { Repository } from 'typeorm'
 import { RoleMessage } from '../structures'
 import type { RoleMessage as RoleMessageEntity } from '../entities'
 import { constants } from '../util'
