@@ -3,7 +3,7 @@ import type BaseHandler from '../base'
 import type Client from '../client'
 import type { Emoji } from '../../entities'
 import type { GuildEmoji } from 'discord.js'
-import { Repository } from 'typeorm'
+import type { Repository } from 'typeorm'
 import { constants } from '../../util'
 
 const { TYPES } = constants

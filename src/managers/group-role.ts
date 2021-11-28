@@ -1,6 +1,6 @@
 import type { Collection, Guild, Role, RoleResolvable, Snowflake } from 'discord.js'
 import type { Group as GroupEntity, Role as RoleEntity } from '../entities'
-import { Repository } from 'typeorm'
+import type { Repository } from 'typeorm'
 import type { RoleGroup } from '../structures'
 import { constants } from '../util'
 import container from '../configs/container'

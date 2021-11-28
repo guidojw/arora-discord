@@ -1,12 +1,12 @@
-import {
-  type GuildEmoji,
-  type Message,
-  MessageEmbed,
-  type MessageReaction,
-  type ReactionEmoji,
-  type User,
-  type UserResolvable
+import type {
+  GuildEmoji,
+  Message,
+  MessageReaction,
+  ReactionEmoji,
+  User,
+  UserResolvable
 } from 'discord.js'
+import { MessageEmbed } from 'discord.js'
 
 const REACTION_COLLECTOR_TIME = 60000
 

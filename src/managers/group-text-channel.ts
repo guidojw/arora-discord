@@ -1,7 +1,7 @@
 import type { Channel as ChannelEntity, Group as GroupEntity } from '../entities'
 import type { Collection, Guild, Snowflake, TextChannel } from 'discord.js'
 import type { ChannelGroup } from '../structures'
-import { Repository } from 'typeorm'
+import type { Repository } from 'typeorm'
 import type { TextChannelResolvable } from './guild-ticket'
 import { constants } from '../util'
 import container from '../configs/container'

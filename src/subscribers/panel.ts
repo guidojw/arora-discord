@@ -1,5 +1,6 @@
-import { type EntitySubscriberInterface, EventSubscriber, type UpdateEvent } from 'typeorm'
+import type { EntitySubscriberInterface, UpdateEvent } from 'typeorm'
 import { Message, Panel } from '../entities'
+import { EventSubscriber } from 'typeorm'
 
 @EventSubscriber()
 export class PanelSubscriber implements EntitySubscriberInterface<Panel> {

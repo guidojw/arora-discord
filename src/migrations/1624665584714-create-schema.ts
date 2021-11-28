@@ -1,4 +1,5 @@
-import { type MigrationInterface, type QueryRunner, Table, TableCheck, TableForeignKey } from 'typeorm'
+import type { MigrationInterface, QueryRunner } from 'typeorm'
+import { Table, TableCheck, TableForeignKey } from 'typeorm'
 
 export class createSchema1624665584714 implements MigrationInterface {
   public async up (queryRunner: QueryRunner): Promise<void> {

@@ -1,6 +1,7 @@
 import type { CommandoClient, CommandoMessage } from 'discord.js-commando'
-import { type Message, type MessageAttachment, MessageEmbed } from 'discord.js'
+import type { Message, MessageAttachment } from 'discord.js'
 import BaseCommand from '../base'
+import { MessageEmbed } from 'discord.js'
 import { argumentUtil } from '../../util'
 
 const { validators, noTags } = argumentUtil

@@ -1,6 +1,8 @@
-import { Command, type CommandGroup, type CommandoClient, type CommandoMessage } from 'discord.js-commando'
-import { type Message, Role } from 'discord.js'
+import type { CommandGroup, CommandoClient, CommandoMessage } from 'discord.js-commando'
 import BaseCommand from '../base'
+import { Command } from 'discord.js-commando'
+import type { Message } from 'discord.js'
+import { Role } from 'discord.js'
 import type { RoleGroup } from '../../structures'
 import { argumentUtil } from '../../util'
 

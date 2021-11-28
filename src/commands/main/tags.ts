@@ -1,6 +1,7 @@
 import type { CommandoClient, CommandoMessage } from 'discord.js-commando'
-import { type Message, MessageEmbed } from 'discord.js'
 import BaseCommand from '../base'
+import type { Message } from 'discord.js'
+import { MessageEmbed } from 'discord.js'
 import type { Tag } from '../../structures'
 import applicationConfig from '../../configs/application'
 import { util } from '../../util'

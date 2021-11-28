@@ -1,7 +1,8 @@
 import type { Argument, ArgumentType, CommandoMessage } from 'discord.js-commando'
-import { type Enum, getEnumKeys } from './util'
+import type { Enum } from './util'
 import { MessageMentions } from 'discord.js'
 import { getDateInfo } from './time'
+import { getEnumKeys } from './util'
 
 type Validator =
 (this: ArgumentType, val: string, msg: CommandoMessage, arg: Argument) => boolean | string | Promise<boolean | string>

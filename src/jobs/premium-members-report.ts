@@ -1,5 +1,6 @@
-import { type Guild, type GuildMember, MessageEmbed } from 'discord.js'
+import type { Guild, GuildMember } from 'discord.js'
 import type BaseJob from './base'
+import { MessageEmbed } from 'discord.js'
 import { injectable } from 'inversify'
 import pluralize from 'pluralize'
 import { timeUtil } from '../util'

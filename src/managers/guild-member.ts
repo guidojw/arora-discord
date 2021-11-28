@@ -1,12 +1,5 @@
-import {
-  Collection,
-  type FetchMemberOptions,
-  type FetchMembersOptions,
-  type GuildMember,
-  GuildMemberManager,
-  type Snowflake,
-  type UserResolvable
-} from 'discord.js'
+import { Collection, GuildMemberManager } from 'discord.js'
+import type { FetchMemberOptions, FetchMembersOptions, GuildMember, Snowflake, UserResolvable } from 'discord.js'
 import { userService } from '../services'
 
 const memberNameRegex = (name: string): RegExp => new RegExp(`^(${name})$|\\s*[(](${name})[)]\\s*`)

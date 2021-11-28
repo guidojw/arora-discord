@@ -1,4 +1,5 @@
-import { ArgumentType, type CommandoClient, type CommandoMessage } from 'discord.js-commando'
+import type { CommandoClient, CommandoMessage } from 'discord.js-commando'
+import { ArgumentType } from 'discord.js-commando'
 import type { Message } from 'discord.js'
 
 const messageUrlRegex = /^https:\/\/discord.com\/channels\/([0-9]+|@me)\/[0-9]+\/[0-9]+$/

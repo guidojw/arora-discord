@@ -1,8 +1,10 @@
-import { CategoryChannel, GuildChannel, type Message, TextChannel } from 'discord.js'
+import { CategoryChannel, GuildChannel, TextChannel } from 'discord.js'
 import type { CommandoClient, CommandoMessage } from 'discord.js-commando'
-import { GuildSetting, type GuildUpdateOptions } from '../../extensions'
 import { argumentUtil, util } from '../../util'
 import BaseCommand from '../base'
+import { GuildSetting } from '../../extensions'
+import type { GuildUpdateOptions } from '../../extensions'
+import type { Message } from 'discord.js'
 import { VerificationProvider } from '../../util/constants'
 
 const { guildSettingTransformer, parseEnum, parseNoneOrType } = argumentUtil

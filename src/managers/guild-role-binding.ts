@@ -1,6 +1,6 @@
 import type { Collection, Guild, RoleResolvable } from 'discord.js'
 import BaseManager from './base'
-import { Repository } from 'typeorm'
+import type { Repository } from 'typeorm'
 import { RoleBinding } from '../structures'
 import type { RoleBinding as RoleBindingEntity } from '../entities'
 import { constants } from '../util'

@@ -1,5 +1,6 @@
-import { type EntitySubscriberInterface, EventSubscriber, type InsertEvent } from 'typeorm'
+import type { EntitySubscriberInterface, InsertEvent } from 'typeorm'
 import { Role, RoleBinding } from '../entities'
+import { EventSubscriber } from 'typeorm'
 
 @EventSubscriber()
 export class RoleBindingSubscriber implements EntitySubscriberInterface<RoleBinding> {

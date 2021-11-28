@@ -1,14 +1,11 @@
-import {
-  type EmojiResolvable,
-  type Guild,
-  GuildEmoji,
-  type Message
-} from 'discord.js'
-import { TicketType, type TicketTypeUpdateOptions } from '../structures'
+import type { EmojiResolvable, Guild, Message } from 'discord.js'
 import BaseManager from './base'
 import type { CommandoClient } from 'discord.js-commando'
-import { Repository } from 'typeorm'
+import { GuildEmoji } from 'discord.js'
+import type { Repository } from 'typeorm'
+import { TicketType } from '../structures'
 import type { TicketType as TicketTypeEntity } from '../entities'
+import type { TicketTypeUpdateOptions } from '../structures'
 import { constants } from '../util'
 import container from '../configs/container'
 import getDecorators from 'inversify-inject-decorators'

@@ -1,22 +1,12 @@
-import {
-  type Client,
-  Collection,
-  Constants,
-  type Guild,
-  type GuildMember,
-  type Message,
-  MessageAttachment,
-  MessageEmbed,
-  type PartialGuildMember,
-  type TextChannel
-} from 'discord.js'
+import type { Client, Guild, GuildMember, Message, PartialGuildMember, TextChannel } from 'discord.js'
+import { Collection, Constants, MessageAttachment, MessageEmbed } from 'discord.js'
 import { discordService, userService } from '../services'
 import { timeUtil, util } from '../util'
 import BaseStructure from './base'
 import type { TextChannelResolvable } from '../managers'
 import type { Ticket as TicketEntity } from '../entities'
 import TicketGuildMemberManager from '../managers/ticket-guild-member'
-import type TicketType from './ticket-type'
+import TicketType from './ticket-type'
 import applicationConfig from '../configs/application'
 import pluralize from 'pluralize'
 import { stripIndents } from 'common-tags'

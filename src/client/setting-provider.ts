@@ -1,10 +1,4 @@
-import {
-  type Command,
-  type CommandGroup,
-  type CommandoClient,
-  type CommandoGuild,
-  SettingProvider
-} from 'discord.js-commando'
+import type { Command, CommandGroup, CommandoClient, CommandoGuild } from 'discord.js-commando'
 import type {
   Command as CommandEntity,
   GuildCommand as GuildCommandEntity,
@@ -13,7 +7,8 @@ import type {
   RoleMessage as RoleMessageEntity,
   Tag as TagEntity
 } from '../entities'
-import { Repository } from 'typeorm'
+import type { Repository } from 'typeorm'
+import { SettingProvider } from 'discord.js-commando'
 import type { Snowflake } from 'discord.js'
 import { constants } from '../util'
 import container from '../configs/container'

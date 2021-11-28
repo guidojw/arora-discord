@@ -1,9 +1,10 @@
 import type { Command, CommandGroup } from 'discord.js-commando'
-import { type PermissionManager, RoleGroupManager } from '../managers'
-import { type Role, Structures } from 'discord.js'
+import { PermissionManager, RoleGroupManager } from '../managers'
 import type { BaseStructure } from '../structures'
 import Permissible from '../structures/mixins/permissible'
+import type { Role } from 'discord.js'
 import type { Role as RoleEntity } from '../entities'
+import { Structures } from 'discord.js'
 
 declare module 'discord.js' {
   interface Role {

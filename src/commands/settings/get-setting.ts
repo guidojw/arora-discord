@@ -1,7 +1,8 @@
 import type { CommandoClient, CommandoMessage } from 'discord.js-commando'
-import { type Guild, GuildChannel, type Message } from 'discord.js'
+import type { Guild, Message } from 'discord.js'
 import { argumentUtil, util } from '../../util'
 import BaseCommand from '../base'
+import { GuildChannel } from 'discord.js'
 import { GuildSetting } from '../../extensions'
 
 const { guildSettingTransformer, parseEnum } = argumentUtil

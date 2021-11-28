@@ -1,4 +1,5 @@
-import { type ValidationArguments, type ValidationOptions, registerDecorator } from 'class-validator'
+import type { ValidationArguments, ValidationOptions } from 'class-validator'
+import { registerDecorator } from 'class-validator'
 
 /**
  * Used to mark a XOR relation between given and specified properties.

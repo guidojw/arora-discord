@@ -1,6 +1,7 @@
 import type { CommandoClient, CommandoMessage } from 'discord.js-commando'
-import { type GuildMember, type Message, MessageEmbed } from 'discord.js'
+import type { GuildMember, Message } from 'discord.js'
 import BaseCommand from '../base'
+import { MessageEmbed } from 'discord.js'
 import pluralize from 'pluralize'
 import { timeUtil } from '../../util'
 

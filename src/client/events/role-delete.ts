@@ -2,7 +2,7 @@ import { inject, injectable } from 'inversify'
 import type BaseHandler from '../base'
 import type Client from '../client'
 import type { Role as DiscordRole } from 'discord.js'
-import { Repository } from 'typeorm'
+import type { Repository } from 'typeorm'
 import type { Role } from '../../entities'
 import { constants } from '../../util'
 
