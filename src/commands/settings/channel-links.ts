@@ -1,7 +1,6 @@
 import type { CommandoClient, CommandoMessage } from 'discord.js-commando'
-import type { Message, VoiceChannel } from 'discord.js'
+import { type Message, MessageEmbed, type VoiceChannel } from 'discord.js'
 import BaseCommand from '../base'
-import { MessageEmbed } from 'discord.js'
 import applicationConfig from '../../configs/application'
 
 export default class ChannelLinksCommand extends BaseCommand {

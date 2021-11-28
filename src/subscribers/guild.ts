@@ -1,6 +1,5 @@
 import { Channel, Guild } from '../entities'
-import type { EntitySubscriberInterface, UpdateEvent } from 'typeorm'
-import { EventSubscriber } from 'typeorm'
+import { type EntitySubscriberInterface, EventSubscriber, type UpdateEvent } from 'typeorm'
 
 @EventSubscriber()
 export class GuildSubscriber implements EntitySubscriberInterface<Guild> {

@@ -1,11 +1,18 @@
-import type { Guild, GuildMemberResolvable, MessageReaction, Snowflake, User } from 'discord.js'
-import { GuildEmoji, MessageEmbed, TextChannel } from 'discord.js'
+import {
+  type Guild,
+  GuildEmoji,
+  type GuildMemberResolvable,
+  MessageEmbed,
+  type MessageReaction,
+  type Snowflake,
+  TextChannel,
+  type User
+} from 'discord.js'
+import { Ticket, type TicketUpdateOptions } from '../structures'
 import BaseManager from './base'
-import type { Repository } from 'typeorm'
-import { Ticket } from '../structures'
+import { Repository } from 'typeorm'
 import type { Ticket as TicketEntity } from '../entities'
 import type { TicketTypeResolvable } from './guild-ticket-type'
-import type { TicketUpdateOptions } from '../structures'
 import { constants } from '../util'
 import container from '../configs/container'
 import getDecorators from 'inversify-inject-decorators'
