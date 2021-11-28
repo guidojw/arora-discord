@@ -11,6 +11,7 @@
   "main": "dist/app.js",
   "scripts": {
     "build": "tsc",
+    "build:prod": "tsc -p tsconfig.production.json",
     "lint": "eslint src",
     "start": "node dist/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"

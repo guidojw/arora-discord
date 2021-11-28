@@ -1,5 +1,5 @@
 {
-  "extends": ["config:base", ":preserveSemverRanges", ":disableDependencyDashboard"],
+  "extends": ["config:base", ":preserveSemverRanges", ":disableDependencyDashboard", "helpers:pinGitHubActionDigests"],
   "labels": ["dependencies"],
   "rangeStrategy": "bump",
   "packageRules": [
@@ -27,11 +27,11 @@
       "matchUpdateTypes": ["minor", "patch"],
       "groupName": "Node.js",
       "groupSlug": "nodejs"
+    },
+    {
+      "matchManagers": ["github-actions"]
     }
   ],
-  "buildkite": {
-    "enabled": false
-  },
   "docker-compose": {
     "enabled": false
   }
