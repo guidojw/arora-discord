@@ -1,5 +1,4 @@
-import { Structures } from 'discord.js'
-import type { TextChannel } from 'discord.js'
+import { Structures, type TextChannel } from 'discord.js'
 import { TextChannelGroupManager } from '../managers'
 
 declare module 'discord.js' {

@@ -1,5 +1,4 @@
-import type { AxiosPromise, Method } from 'axios'
-import axios from 'axios'
+import axios, { type AxiosPromise, type Method } from 'axios'
 
 export default async function roVerAdapter (method: Method, pathname: string): Promise<AxiosPromise> {
   return await axios({

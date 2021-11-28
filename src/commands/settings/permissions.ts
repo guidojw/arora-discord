@@ -1,6 +1,5 @@
-import type { Collection, Message, Role } from 'discord.js'
+import { type Collection, GuildMember, type Message, MessageEmbed, type Role } from 'discord.js'
 import type { Command, CommandGroup, CommandoClient, CommandoMessage } from 'discord.js-commando'
-import { GuildMember, MessageEmbed } from 'discord.js'
 import BaseCommand from '../base'
 import type { RoleGroup } from '../../structures'
 import applicationConfig from '../../configs/application'

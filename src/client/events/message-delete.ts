@@ -3,7 +3,7 @@ import type BaseHandler from '../base'
 import type Client from '../client'
 import type { CommandoMessage } from 'discord.js-commando'
 import type { Message } from '../../entities'
-import type { Repository } from 'typeorm'
+import { Repository } from 'typeorm'
 import { constants } from '../../util'
 
 const { TYPES } = constants
