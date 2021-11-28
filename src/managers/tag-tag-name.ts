@@ -1,5 +1,5 @@
-import type { Tag as TagEntity, TagName as TagNameEntity } from '../entities'
 import { BaseManager as DiscordBaseManager, type Guild } from 'discord.js'
+import type { Tag as TagEntity, TagName as TagNameEntity } from '../entities'
 import type { CommandoClient } from 'discord.js-commando'
 import { Repository } from 'typeorm'
 import type { Tag } from '../structures'

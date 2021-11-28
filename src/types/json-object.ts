@@ -1,4 +1,4 @@
-import { ArgumentType, type Argument, type CommandoClient, type CommandoMessage } from 'discord.js-commando'
+import { type Argument, ArgumentType, type CommandoClient, type CommandoMessage } from 'discord.js-commando'
 
 export default class JsonObjectArgumentType extends ArgumentType {
   public constructor (client: CommandoClient) {

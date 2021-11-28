@@ -1,5 +1,5 @@
 import type { AbstractConstructor, Constructor, Mixin } from '../../util/util'
-import { type Base as DiscordBaseStructure, Constants, type Guild, type Message, type TextChannel } from 'discord.js'
+import { Constants, type Base as DiscordBaseStructure, type Guild, type Message, type TextChannel } from 'discord.js'
 import type BaseStructure from '../base'
 
 const { PartialTypes } = Constants

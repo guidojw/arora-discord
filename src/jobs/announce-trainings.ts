@@ -1,4 +1,4 @@
-import { type  Guild, MessageEmbed } from 'discord.js'
+import { type Guild, MessageEmbed } from 'discord.js'
 import { groupService, userService } from '../services'
 import type BaseJob from './base'
 import type { GetUsers } from '../services/user'

@@ -1,5 +1,5 @@
-import BaseManager from './base'
 import { Group, type GroupUpdateOptions } from '../structures'
+import BaseManager from './base'
 import type { Group as GroupEntity } from '../entities'
 import type { GroupType } from '../util/constants'
 import type { Guild } from 'discord.js'

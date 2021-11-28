@@ -1,4 +1,4 @@
-import { Command, type CommandoClient, CommandGroup } from 'discord.js-commando'
+import { Command, CommandGroup, type CommandoClient } from 'discord.js-commando'
 import { type Guild, Role } from 'discord.js'
 import type { PermissibleType, PermissionUpdateOptions } from '../structures'
 import BaseManager from './base'
