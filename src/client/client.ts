@@ -33,7 +33,7 @@ const { PartialTypes } = Constants
 const { TYPES } = constants
 const { lazyInject } = getDecorators(container)
 
-const registerFilter = /^(?!base\.js|.*\.d\.).*/
+const registerFilter = /^(?!base\.js|.*\.d\.|.*\.map).*/
 
 const ACTIVITY_CAROUSEL_INTERVAL = 60 * 1000
 
