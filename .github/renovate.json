@@ -27,9 +27,6 @@
       "matchUpdateTypes": ["minor", "patch"],
       "groupName": "Node.js",
       "groupSlug": "nodejs"
-    },
-    {
-      "matchManagers": ["github-actions"]
     }
   ],
   "docker-compose": {
