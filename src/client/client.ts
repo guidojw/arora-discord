@@ -1,25 +1,27 @@
 import '../extensions' // Extend Discord.js structures before the client collections get instantiated.
-import type {
-  APIMessage,
-  GuildMember,
-  Message,
-  MessageOptions,
-  PartialGuildMember,
-  Presence,
-  User
+import {
+  type APIMessage,
+  Constants,
+  DiscordAPIError,
+  type GuildMember,
+  Intents,
+  type Message,
+  type MessageOptions,
+  type PartialGuildMember,
+  type Presence,
+  type User
 } from 'discord.js'
-import type {
+import {
+  CommandoClient,
   // Commando doesn't export these. PR a fix and uncomment this + fix
   // Client.bindEvent when merged.
-  // CommandoClientEvents,
-  CommandoClientOptions,
-  CommandoMessage,
-  Inhibition
+  // type CommandoClientEvents,
+  type CommandoClientOptions,
+  type CommandoMessage,
+  type Inhibition
 } from 'discord.js-commando'
-import { Constants, DiscordAPIError, Intents } from 'discord.js'
 import AroraProvider from './setting-provider'
 import type BaseHandler from './base'
-import { CommandoClient } from 'discord.js-commando'
 import { WebSocketManager } from './websocket'
 import applicationConfig from '../configs/application'
 import { constants } from '../util'
@@ -31,7 +33,7 @@ const { PartialTypes } = Constants
 const { TYPES } = constants
 const { lazyInject } = getDecorators(container)
 
-const registerFilter = /^(?!base\.js|.*\.d\.).*/
+const registerFilter = /^(?!base\.js|.*\.d\.|.*\.map).*/
 
 const ACTIVITY_CAROUSEL_INTERVAL = 60 * 1000
 

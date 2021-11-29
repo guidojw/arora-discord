@@ -1,5 +1,10 @@
-import type { ArgumentCollectorResult, CommandInfo, CommandoClient, CommandoMessage } from 'discord.js-commando'
-import { Command } from 'discord.js-commando'
+import {
+  type ArgumentCollectorResult,
+  Command,
+  type CommandInfo,
+  type CommandoClient,
+  type CommandoMessage
+} from 'discord.js-commando'
 import type { Message } from 'discord.js'
 
 interface AroraCommandInfo extends Omit<CommandInfo, 'memberName'> {

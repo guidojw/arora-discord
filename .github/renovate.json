@@ -1,11 +1,13 @@
 {
-  "extends": ["config:base", ":preserveSemverRanges"],
+  "extends": ["config:base", ":preserveSemverRanges", ":disableDependencyDashboard", "helpers:pinGitHubActionDigests"],
   "labels": ["dependencies"],
-  "dependencyDashboard": false,
+  "rangeStrategy": "bump",
   "packageRules": [
     {
+      "matchManagers": ["npm"],
       "matchPackagePatterns": ["*"],
       "matchUpdateTypes": ["minor", "patch"],
+      "excludePackageNames": ["yarn"],
       "groupName": "all non-major dependencies",
       "groupSlug": "all-minor-patch"
     },
@@ -16,20 +18,17 @@
     },
     {
       "matchManagers": ["dockerfile", "nvm"],
-      "matchUpdateTypes": ["minor", "patch"],
       "groupName": "Node.js",
-      "groupSlug": "nodejs"
+      "groupSlug": "nodejs",
+      "ignoreUnstable": false
     },
     {
       "matchManagers": ["dockerfile", "nvm"],
-      "matchUpdateTypes": ["major"],
+      "matchUpdateTypes": ["minor", "patch"],
       "groupName": "Node.js",
       "groupSlug": "nodejs"
     }
   ],
-  "buildkite": {
-    "enabled": false
-  },
   "docker-compose": {
     "enabled": false
   }

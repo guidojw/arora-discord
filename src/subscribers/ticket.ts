@@ -1,6 +1,5 @@
 import { Channel, Member, Ticket } from '../entities'
-import type { EntitySubscriberInterface, InsertEvent } from 'typeorm'
-import { EventSubscriber } from 'typeorm'
+import { type EntitySubscriberInterface, EventSubscriber, type InsertEvent } from 'typeorm'
 
 @EventSubscriber()
 export class TicketSubscriber implements EntitySubscriberInterface<Ticket> {

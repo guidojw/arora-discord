@@ -1,15 +1,17 @@
-import type {
-  CategoryChannel,
-  Client,
-  ColorResolvable,
-  Guild,
-  Message,
-  MessageReaction,
-  Snowflake,
-  TextChannel,
-  User
+import {
+  type CategoryChannel,
+  type Client,
+  type ColorResolvable,
+  type Guild,
+  GuildEmoji,
+  type Message,
+  MessageEmbed,
+  type MessageReaction,
+  type Snowflake,
+  Structures,
+  type TextChannel,
+  type User
 } from 'discord.js'
-import { GuildEmoji, MessageEmbed, Structures } from 'discord.js'
 import {
   GuildGroupManager,
   GuildMemberManager,
@@ -23,7 +25,7 @@ import {
 import type { BaseJob } from '../jobs'
 import type { BaseStructure } from '../structures'
 import type { Guild as GuildEntity } from '../entities'
-import type { Repository } from 'typeorm'
+import { Repository } from 'typeorm'
 import type { VerificationProvider } from '../util/constants'
 import applicationConfig from '../configs/application'
 import { constants } from '../util'

@@ -1,6 +1,5 @@
 import { Channel, Message } from '../entities'
-import type { EntitySubscriberInterface, InsertEvent } from 'typeorm'
-import { EventSubscriber } from 'typeorm'
+import { type EntitySubscriberInterface, EventSubscriber, type InsertEvent } from 'typeorm'
 
 @EventSubscriber()
 export class MessageSubscriber implements EntitySubscriberInterface<Message> {

@@ -1,0 +1,53 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches: [staging, main]
+  pull_request:
+  workflow_call:
+    inputs:
+      sha:
+        required: false
+        type: string
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # renovate: tag=v2.4.0
+        with:
+          ref: ${{ inputs.sha }}
+
+      - name: Add problem matchers
+        run: |
+          echo '::add-matcher::.github/problem-matchers/tsc.json'
+
+      - name: Build test image
+        uses: guidojw/actions/build-docker-image@fcb92ed90a3965b130f4e5ed3f53df9ef65e6de1 # renovate: tag=v1.0.0
+        with:
+          name: app
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # renovate: tag=v2.4.0
+        with:
+          ref: ${{ inputs.sha }}
+
+      - name: Add problem matchers
+        run: |
+          echo '::add-matcher::.github/problem-matchers/eslint-stylish.json'
+
+      - name: Load test image
+        uses: guidojw/actions/load-docker-image@fcb92ed90a3965b130f4e5ed3f53df9ef65e6de1 # renovate: tag=v1.0.0
+        with:
+          name: app
+
+      - name: Lint
+        run: |
+          docker run app yarn lint
