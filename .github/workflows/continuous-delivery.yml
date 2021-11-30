@@ -115,6 +115,8 @@ jobs:
     uses: guidojw/arora-discord/.github/workflows/publish-image.yml@staging
     with:
       sha: ${{ needs.merge.outputs.sha }}
+    secrets:
+      sentry_auth_token: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
   deploy:
     name: Deploy

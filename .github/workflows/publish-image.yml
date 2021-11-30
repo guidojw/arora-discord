@@ -8,6 +8,9 @@ on:
       sha:
         required: false
         type: string
+    secrets:
+      sentry_auth_token:
+        required: true
   workflow_dispatch:
 
 env:
