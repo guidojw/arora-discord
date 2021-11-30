@@ -102,7 +102,7 @@ jobs:
           environment: ${{ needs.metadata.outputs.stage }}
           finalize: false
           sourcemaps: sourcemaps
-          url_prefix: /opt/app/dist
+          url_prefix: ~/dist
 
   update_check_run:
     name: Update Check Run
