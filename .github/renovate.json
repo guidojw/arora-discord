@@ -25,7 +25,7 @@
     {
       "matchManagers": ["dockerfile", "nvm"],
       "matchUpdateTypes": ["minor", "patch"],
-      "groupName": "Node.js",
+      "groupName": "Node.js (non-major)",
       "groupSlug": "nodejs"
     }
   ],
