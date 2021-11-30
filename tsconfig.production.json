@@ -2,7 +2,7 @@
   "extends": "./tsconfig",
   "compilerOptions": {
      "sourceMap": true,                     /* Generates corresponding '.map' file. */
-     "sourceRoot": "/",                      /* Specify the location where debugger should locate TypeScript files instead of source locations. */
+     "sourceRoot": "src",                      /* Specify the location where debugger should locate TypeScript files instead of source locations. */
      "inlineSources": true,                 /* Emit the source alongside the sourcemaps within a single file; requires '--inlineSourceMap' or '--sourceMap' to be set. */
   }
 }

@@ -1,6 +1,7 @@
 import * as Sentry from '@sentry/node'
 import { AroraClient } from '../client'
 import type { BaseJob } from '../jobs'
+import { RewriteFrames } from '@sentry/integrations'
 import { constants } from '../util'
 import container from '../configs/container'
 import { createConnection } from 'typeorm'
@@ -14,7 +15,12 @@ export async function init (): Promise<AroraClient> {
     Sentry.init({
       dsn: process.env.SENTRY_DSN,
       environment: process.env.NODE_ENV,
-      release: process.env.BUILD_HASH
+      release: process.env.BUILD_HASH,
+      integrations: [
+        new RewriteFrames({
+          root: process.cwd()
+        })
+      ]
     })
   }
 
