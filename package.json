@@ -17,6 +17,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "@sentry/integrations": "^6.15.0",
     "@sentry/node": "^6.15.0",
     "axios": "^0.24.0",
     "class-validator": "^0.13.2",
