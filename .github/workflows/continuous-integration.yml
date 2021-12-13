@@ -25,7 +25,7 @@ jobs:
           echo '::add-matcher::.github/problem-matchers/tsc.json'
 
       - name: Build test image
-        uses: guidojw/actions/build-docker-image@fcb92ed90a3965b130f4e5ed3f53df9ef65e6de1 # renovate: tag=v1.0.0
+        uses: guidojw/actions/build-docker-image@2b1dea8cbd9e44491c269e771b75636026caf8ca # renovate: tag=v1.1.0
         with:
           name: app
 
@@ -44,7 +44,7 @@ jobs:
           echo '::add-matcher::.github/problem-matchers/eslint-stylish.json'
 
       - name: Load test image
-        uses: guidojw/actions/load-docker-image@fcb92ed90a3965b130f4e5ed3f53df9ef65e6de1 # renovate: tag=v1.0.0
+        uses: guidojw/actions/load-docker-image@2b1dea8cbd9e44491c269e771b75636026caf8ca # renovate: tag=v1.1.0
         with:
           name: app
 
