@@ -40,12 +40,8 @@ jobs:
             BUILD_ARGS='BUILD_HASH='$GITHUB_SHA
             if [ $GITHUB_REF_NAME = 'main' ]; then
               BUILD_ARGS+=$'\nNODE_ENV=production'
-
-              echo '::set-output name=stage::production'
             else
               BUILD_ARGS+=$'\nNODE_ENV=staging'
-
-              echo '::set-output name=stage::staging'
             fi
             BUILD_ARGS=${BUILD_ARGS//$'\n'/'%0A'}
             echo '::set-output name=build_args::'$BUILD_ARGS
@@ -99,9 +95,9 @@ jobs:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_PROJECT: ${{ env.PROJECT_NAME }}
         with:
-          environment: ${{ needs.metadata.outputs.stage }}
           finalize: false
           sourcemaps: sourcemaps
+          version: ${{ inputs.sha }}
           url_prefix: ~/dist
 
   update_check_run:
