@@ -29,6 +29,8 @@ jobs:
     steps:
       - name: Get metadata
         id: get_metadata
+        env:
+          INPUT_SHA: ${{ inputs.sha }}
         run: |
           if [ $GITHUB_REF_NAME = 'main' ]; then
             echo '::set-output name=tag::latest'
@@ -37,7 +39,7 @@ jobs:
           fi
 
           if [ $GITHUB_REF_NAME = 'staging' ] || [ $GITHUB_REF_NAME = 'main' ]; then
-            BUILD_ARGS='BUILD_HASH='$GITHUB_SHA
+            BUILD_ARGS='BUILD_HASH='${INPUT_SHA:-GITHUB_SHA}
             if [ $GITHUB_REF_NAME = 'main' ]; then
               BUILD_ARGS+=$'\nNODE_ENV=production'
             else
