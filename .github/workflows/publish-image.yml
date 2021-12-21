@@ -122,7 +122,7 @@ jobs:
           done
 
       - name: Update Publish Image check run
-        uses: guidojw/actions/update-check-run@fcb92ed90a3965b130f4e5ed3f53df9ef65e6de1 # renovate: tag=v1.0.0
+        uses: guidojw/actions/update-check-run@2b1dea8cbd9e44491c269e771b75636026caf8ca # renovate: tag=v1.1.0
         with:
           app_id: ${{ env.APP_ID }}
           private_key: ${{ secrets.APP_PRIVATE_KEY }}
