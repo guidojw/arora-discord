@@ -901,7 +901,7 @@ __metadata:
     common-tags: ^1.8.2
     discord.js: ^12.5.3
     discord.js-commando: ^0.12.3
-    dotenv: ^10.0.0
+    dotenv: ^12.0.0
     eslint: ^8.4.1
     eslint-config-standard-with-typescript: ^21.0.1
     eslint-plugin-import: ^2.25.3
@@ -1450,10 +1450,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv@npm:^10.0.0":
-  version: 10.0.0
-  resolution: "dotenv@npm:10.0.0"
-  checksum: f412c5fe8c24fbe313d302d2500e247ba8a1946492db405a4de4d30dd0eb186a88a43f13c958c5a7de303938949c4231c56994f97d05c4bc1f22478d631b4005
+"dotenv@npm:^12.0.0":
+  version: 12.0.0
+  resolution: "dotenv@npm:12.0.0"
+  checksum: 180dc6ad474584889e7bb18b58a31e590ab84012bdb5dbaf37083d2fe708e3c78a9181c0ec4e0711f672477996b516dace09f55a52f9c7b5d19b8d049306b706
   languageName: node
   linkType: hard
 
