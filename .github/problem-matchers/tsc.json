@@ -1,0 +1,28 @@
+{
+  "problemMatcher": [
+    {
+      "owner": "tsc",
+      "pattern": [
+        {
+          "regexp": "^------$"
+        },
+        {
+          "regexp": "^.*$"
+        },
+        {
+          "regexp": "^.*$"
+        },
+        {
+          "regexp": "^#\\d+\\s\\d+\\.\\d+\\s([^\\s].*)[\\(:](\\d+)[,:](\\d+)(?:\\):\\s+|\\s+-\\s+)(error|warning|info)\\s+TS(\\d+)\\s*:\\s*(.*)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "code": 5,
+          "message": 6,
+          "loop": true
+        }
+      ]
+    }
+  ]
+}

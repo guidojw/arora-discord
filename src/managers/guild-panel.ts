@@ -1,7 +1,6 @@
-import type { GuildContext, PanelUpdateOptions } from '../structures'
+import { type GuildContext, Panel, type PanelUpdateOptions } from '../structures'
 import BaseManager from './base'
 import { MessageEmbed } from 'discord.js'
-import { Panel } from '../structures'
 import type { Panel as PanelEntity } from '../entities'
 import type { Repository } from 'typeorm'
 import type { TextChannelResolvable } from './guild-ticket'

@@ -1,7 +1,8 @@
 import * as argumentTypes from '../types'
 import * as commands from '../commands'
 import * as services from '../services'
-import { AnnounceTrainingsJob, HealthCheckJob, PremiumMembersReportJob } from '../jobs'
+import { AnnounceTrainingsJob, type BaseJob, HealthCheckJob, PremiumMembersReportJob } from '../jobs'
+import { type BaseHandler, eventHandlers, packetHandlers } from '../client'
 import {
   Channel,
   Command,
@@ -21,16 +22,11 @@ import {
   Ticket,
   TicketType
 } from '../entities'
-import { eventHandlers, packetHandlers } from '../client'
+import { Container, type interfaces } from 'inversify'
+import { type Repository, getRepository } from 'typeorm'
 import type { BaseArgumentType } from '../types'
 import type { BaseCommand } from '../commands'
-import type { BaseHandler } from '../client'
-import type { BaseJob } from '../jobs'
-import { Container } from 'inversify'
-import type { Repository } from 'typeorm'
 import { constants } from '../util'
-import { getRepository } from 'typeorm'
-import type { interfaces } from 'inversify'
 
 const { TYPES } = constants
 
@@ -163,7 +159,7 @@ bind<BaseHandler>(TYPES.Handler).to(eventHandlers.RoleDeleteEventHandler)
 bind<BaseHandler>(TYPES.Handler).to(eventHandlers.VoiceStateUpdateEventHandler)
   .whenTargetTagged('eventHandler', 'voiceStateUpdate')
 
-bind<interfaces.Factory<BaseHandler>>(TYPES.EventHandlerFactory).toFactory<BaseHandler>(
+bind<interfaces.Factory<BaseHandler>>(TYPES.EventHandlerFactory).toFactory<BaseHandler, [string]>(
   (context: interfaces.Context) => {
     return (eventName: string) => {
       return context.container.getTagged<BaseHandler>(TYPES.Handler, 'eventHandler', eventName)
@@ -179,7 +175,7 @@ bind<BaseJob>(TYPES.Job).to(HealthCheckJob)
 bind<BaseJob>(TYPES.Job).to(PremiumMembersReportJob)
   .whenTargetTagged('job', 'premiumMembersReport')
 
-bind<interfaces.Factory<BaseJob>>(TYPES.JobFactory).toFactory<BaseJob>(
+bind<interfaces.Factory<BaseJob>>(TYPES.JobFactory).toFactory<BaseJob, [string]>(
   (context: interfaces.Context) => {
     return (jobName: string) => {
       return context.container.getTagged<BaseJob>(TYPES.Job, 'job', jobName)
@@ -193,7 +189,7 @@ bind<BaseHandler>(TYPES.Handler).to(packetHandlers.RankChangePacketHandler)
 bind<BaseHandler>(TYPES.Handler).to(packetHandlers.TrainDeveloperPayoutReportPacketHandler)
   .whenTargetTagged('packetHandler', 'trainDeveloperPayoutReport')
 
-bind<interfaces.Factory<BaseHandler>>(TYPES.PacketHandlerFactory).toFactory<BaseHandler>(
+bind<interfaces.Factory<BaseHandler>>(TYPES.PacketHandlerFactory).toFactory<BaseHandler, [string]>(
   (context: interfaces.Context) => {
     return (eventName: string) => {
       return context.container.getTagged<BaseHandler>(TYPES.Handler, 'packetHandler', eventName)

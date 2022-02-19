@@ -1,5 +1,4 @@
-import Argument from './argument'
-import type { ArgumentOptions } from './argument'
+import Argument, { type ArgumentOptions } from './argument'
 import type { AroraClient } from '../client'
 import type { CommandInteraction } from 'discord.js'
 import type { KeyOfType } from '../util/util'

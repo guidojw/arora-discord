@@ -1,7 +1,6 @@
-import type { ActivityType, Message } from 'discord.js'
+import { type ActivityType, Constants, type Message } from 'discord.js'
 import type { CommandoClient, CommandoMessage } from 'discord.js-commando'
 import BaseCommand from '../base'
-import { Constants } from 'discord.js'
 import { argumentUtil } from '../../util'
 
 const { ActivityTypes } = Constants

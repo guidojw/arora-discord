@@ -1,14 +1,17 @@
-import { Client, Constants, DiscordAPIError, Intents } from 'discord.js'
-import type {
-  ClientEvents,
-  ClientOptions,
-  GuildMember,
-  Message,
-  MessageOptions,
-  MessagePayload,
-  PartialGuildMember,
-  Presence,
-  User
+import {
+  Client,
+  type ClientEvents,
+  type ClientOptions,
+  Constants,
+  DiscordAPIError,
+  type GuildMember,
+  Intents,
+  type Message,
+  type MessageOptions,
+  type MessagePayload,
+  type PartialGuildMember,
+  type Presence,
+  type User
 } from 'discord.js'
 import type { BaseArgumentType } from '../types'
 import type BaseHandler from './base'

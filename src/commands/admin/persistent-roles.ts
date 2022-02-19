@@ -1,11 +1,15 @@
-import type { BaseGuildCommandInteraction, CommandInteraction, GuildMember, Role } from 'discord.js'
+import {
+  type BaseGuildCommandInteraction,
+  type CommandInteraction,
+  type GuildMember,
+  MessageEmbed,
+  type Role
+} from 'discord.js'
+import { SubCommandCommand, type SubCommandCommandOptions } from '../base'
 import { inject, injectable } from 'inversify'
 import { ApplyOptions } from '../../util/decorators'
 import type { GuildContext } from '../../structures'
-import { MessageEmbed } from 'discord.js'
 import type { PersistentRoleService } from '../../services'
-import { SubCommandCommand } from '../base'
-import type { SubCommandCommandOptions } from '../base'
 import applicationConfig from '../../configs/application'
 import { constants } from '../../util'
 

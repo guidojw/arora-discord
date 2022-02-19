@@ -1,6 +1,5 @@
-import type { GroupUpdateOptions, GuildContext } from '../structures'
+import { Group, type GroupUpdateOptions, type GuildContext } from '../structures'
 import BaseManager from './base'
-import { Group } from '../structures'
 import type { Group as GroupEntity } from '../entities'
 import type { GroupType } from '../util/constants'
 import type { Repository } from 'typeorm'

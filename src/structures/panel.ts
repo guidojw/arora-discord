@@ -1,7 +1,6 @@
-import type { Client, Message, TextChannel } from 'discord.js'
+import { type Client, type Message, MessageEmbed, type TextChannel } from 'discord.js'
 import BaseStructure from './base'
 import type GuildContext from './guild-context'
-import { MessageEmbed } from 'discord.js'
 import type { Panel as PanelEntity } from '../entities'
 import Postable from './mixins/postable'
 

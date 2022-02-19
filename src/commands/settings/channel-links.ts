@@ -1,11 +1,15 @@
-import type { BaseGuildCommandInteraction, CommandInteraction, TextChannel, VoiceChannel } from 'discord.js'
+import {
+  type BaseGuildCommandInteraction,
+  type CommandInteraction,
+  MessageEmbed,
+  type TextChannel,
+  type VoiceChannel
+} from 'discord.js'
+import { SubCommandCommand, type SubCommandCommandOptions } from '../base'
 import { inject, injectable } from 'inversify'
 import { ApplyOptions } from '../../util/decorators'
 import type { ChannelLinkService } from '../../services'
 import type { GuildContext } from '../../structures'
-import { MessageEmbed } from 'discord.js'
-import { SubCommandCommand } from '../base'
-import type { SubCommandCommandOptions } from '../base'
 import applicationConfig from '../../configs/application'
 import { constants } from '../../util'
 

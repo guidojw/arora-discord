@@ -11,49 +11,52 @@
   "main": "dist/app.js",
   "scripts": {
     "build": "tsc",
+    "build:prod": "tsc -p tsconfig.production.json",
     "lint": "eslint src",
     "start": "node dist/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@sentry/node": "^6.12.0",
-    "axios": "^0.21.4",
-    "class-validator": "^0.13.1",
-    "common-tags": "^1.8.0",
+    "@sentry/integrations": "^6.16.1",
+    "@sentry/node": "^6.16.1",
+    "axios": "^0.25.0",
+    "class-validator": "^0.13.2",
+    "common-tags": "^1.8.2",
     "discord.js": "^13.2.0",
-    "dotenv": "^10.0.0",
+    "dotenv": "^15.0.0",
     "emoji-regex": "^10.0.0",
-    "inversify": "^5.1.1",
+    "inversify": "^6.0.1",
     "inversify-inject-decorators": "^3.1.0",
     "lodash": "^4.17.21",
     "node-cron": "^3.0.0",
     "pg": "^8.7.1",
     "pg-hstore": "^2.3.4",
     "pluralize": "^8.0.0",
-    "typeorm": "^0.2.37",
-    "ws": "^8.2.2"
+    "typeorm": "^0.2.41",
+    "ws": "^8.3.0"
   },
   "devDependencies": {
     "@discordjs/rest": "^0.1.0-canary.0",
-    "@guidojw/bloxy": "^5.7.5",
+    "@guidojw/bloxy": "^5.7.6",
     "@types/common-tags": "^1.8.1",
-    "@types/lodash": "^4.14.172",
-    "@types/node": "^16.9.1",
-    "@types/node-cron": "^2.0.4",
+    "@types/lodash": "^4.14.178",
+    "@types/node": "^16.11.12",
+    "@types/node-cron": "^3.0.0",
     "@types/pluralize": "^0.0.29",
-    "@types/ws": "^8.0.0",
-    "@typescript-eslint/eslint-plugin": "^4.31.0",
+    "@types/ws": "^8.2.2",
+    "@typescript-eslint/eslint-plugin": "^5.6.0",
     "discord-api-types": "^0.23.1",
-    "eslint": "^7.32.0",
+    "eslint": "^8.4.1",
     "eslint-config-standard-with-typescript": "^21.0.1",
-    "eslint-plugin-import": "^2.24.2",
+    "eslint-plugin-import": "^2.25.3",
     "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^5.1.0",
-    "eslint-plugin-unicorn": "^36.0.0",
+    "eslint-plugin-promise": "^6.0.0",
+    "eslint-plugin-unicorn": "^40.0.0",
     "reflect-metadata": "^0.1.13",
-    "typescript": "^4.4.3"
+    "typescript": "^4.5.3"
   },
   "engines": {
     "node": ">=14"
-  }
+  },
+  "packageManager": "yarn@3.1.1"
 }

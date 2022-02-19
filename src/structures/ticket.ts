@@ -1,5 +1,14 @@
-import type { Client, GuildMember, Message, PartialGuildMember, TextChannel } from 'discord.js'
-import { Collection, Constants, MessageAttachment, MessageEmbed } from 'discord.js'
+import {
+  type Client,
+  Collection,
+  Constants,
+  type GuildMember,
+  type Message,
+  MessageAttachment,
+  MessageEmbed
+  type PartialGuildMember,
+  type TextChannel
+} from 'discord.js'
 import { discordService, userService } from '../services'
 import { timeUtil, util } from '../util'
 import BaseStructure from './base'

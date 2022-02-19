@@ -1,4 +1,4 @@
-FROM node:16.9.1
+FROM node:17.3.0
 
 ARG NODE_ENV
 ENV NODE_ENV=$NODE_ENV
@@ -7,12 +7,13 @@ ENV BUILD_HASH=$BUILD_HASH
 
 # Install dependencies
 WORKDIR /opt/app
-COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
+COPY package.json yarn.lock .yarnrc.yml ./
+COPY .yarn .yarn
+RUN yarn install --immutable
 
 # Bundle app source
 COPY . .
-RUN yarn build
+RUN yarn build:prod
 
 RUN chmod +x ./bin/wait-for-it.sh
 

@@ -1,6 +1,5 @@
-import type { BaseStructure } from '../structures'
+import { type BaseStructure, Tag } from '../structures'
 import { BaseStructureArgumentType } from './base'
-import { Tag } from '../structures'
 import { injectable } from 'inversify'
 
 @injectable()

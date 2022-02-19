@@ -1,7 +1,5 @@
-import type { ValidationArguments, ValidationOptions } from 'class-validator'
-import { createClassDecorator, createProxy } from './util'
-import type { Constructor } from './util'
-import { registerDecorator } from 'class-validator'
+import { type Constructor, createClassDecorator, createProxy } from './util'
+import { type ValidationArguments, type ValidationOptions, registerDecorator } from 'class-validator'
 
 /**
  * Applies given options to the class' constructor.

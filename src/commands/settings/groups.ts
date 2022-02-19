@@ -1,10 +1,14 @@
-import type { BaseGuildCommandInteraction, CommandInteraction, Role, TextChannel } from 'discord.js'
+import {
+  type BaseGuildCommandInteraction,
+  type CommandInteraction,
+  MessageEmbed,
+  type Role,
+  type TextChannel
+} from 'discord.js'
 import type { ChannelGroup, Group, GuildContext, RoleGroup } from '../../structures'
+import { SubCommandCommand, type SubCommandCommandOptions } from '../base'
 import { ApplyOptions } from '../../util/decorators'
 import { GroupType } from '../../util/constants'
-import { MessageEmbed } from 'discord.js'
-import { SubCommandCommand } from '../base'
-import type { SubCommandCommandOptions } from '../base'
 import applicationConfig from '../../configs/application'
 import { argumentUtil } from '../../util'
 import { discordService } from '../../services'

@@ -1,7 +1,6 @@
-import { MessageEmbed, User } from 'discord.js'
+import { MessageEmbed, type Snowflake, User } from 'discord.js'
 import type BaseHandler from '../../base'
 import type Client from '../../client'
-import type { Snowflake } from 'discord.js'
 import { injectable } from 'inversify'
 import pluralize from 'pluralize'
 import { userService } from '../../../services'

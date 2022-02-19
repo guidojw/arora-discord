@@ -1,7 +1,6 @@
+import { type Client, MessageEmbed } from 'discord.js'
 import BaseStructure from './base'
-import type { Client } from 'discord.js'
 import type GuildContext from './guild-context'
-import { MessageEmbed } from 'discord.js'
 import type { Tag as TagEntity } from '../entities'
 import TagTagNameManager from '../managers/tag-tag-name'
 
