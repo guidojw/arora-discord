@@ -54,7 +54,7 @@ bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.TagArgumentType
 bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.TimeArgumentType)
   .whenTargetTagged('argumentType', 'time')
 
-bind<interfaces.Factory<BaseArgumentType<any>>>(TYPES.ArgumentTypeFactory).toFactory<BaseArgumentType<any>>(
+bind<interfaces.Factory<BaseArgumentType<any>>>(TYPES.ArgumentTypeFactory).toFactory<BaseArgumentType<any>, [string]>(
   (context: interfaces.Context) => {
     return (argumentTypeName: string) => {
       return context.container.getTagged<BaseArgumentType<any>>(TYPES.ArgumentType, 'argumentType', argumentTypeName)
@@ -123,7 +123,7 @@ bind<BaseCommand<any>>(TYPES.Command).to(commands.TicketTypesCommand)
 bind<BaseCommand<any>>(TYPES.Command).to(commands.ToggleSupportCommand)
   .whenTargetTagged('command', 'togglesupport')
 
-bind<interfaces.Factory<BaseCommand<any>>>(TYPES.CommandFactory).toFactory<BaseCommand<any>>(
+bind<interfaces.Factory<BaseCommand<any>>>(TYPES.CommandFactory).toFactory<BaseCommand<any>, [string]>(
   (context: interfaces.Context) => {
     return (commandName: string) => {
       return context.container.getTagged<BaseCommand<any>>(TYPES.Command, 'command', commandName)

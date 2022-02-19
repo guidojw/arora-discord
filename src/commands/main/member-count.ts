@@ -1,5 +1,5 @@
 import { Command, type CommandOptions } from '../base'
-import type { type CommandInteraction, MessageEmbed } from 'discord.js'
+import { type CommandInteraction, MessageEmbed } from 'discord.js'
 import { ApplyOptions } from '../../util/decorators'
 import type { GuildContext } from '../../structures'
 import applicationConfig from '../../configs/application'
