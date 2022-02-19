@@ -1,5 +1,5 @@
 import {
-  type BaseGuildCommandInteraction,
+  type BaseCommandInteraction,
   type CommandInteraction,
   MessageEmbed,
   type Role,
@@ -66,7 +66,7 @@ const { validators, noNumber, noWhitespace } = argumentUtil
 })
 export default class GroupsCommand extends SubCommandCommand<GroupsCommand> {
   public async create (
-    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
     { name, type }: { name: string, type: GroupType }
   ): Promise<void> {
     const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
@@ -77,7 +77,7 @@ export default class GroupsCommand extends SubCommandCommand<GroupsCommand> {
   }
 
   public async delete (
-    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
     { group }: { group: Group }
   ): Promise<void> {
     await group.delete()
@@ -86,7 +86,7 @@ export default class GroupsCommand extends SubCommandCommand<GroupsCommand> {
   }
 
   public async channels (
-    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
     subCommand: 'add' | 'remove',
     { group, channel }: { group: ChannelGroup, channel: TextChannel }
   ): Promise<void> {
@@ -107,7 +107,7 @@ export default class GroupsCommand extends SubCommandCommand<GroupsCommand> {
   }
 
   public async roles (
-    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
     subCommand: 'add' | 'remove',
     { group, role }: { group: RoleGroup, role: Role }
   ): Promise<void> {
@@ -133,7 +133,7 @@ export default class GroupsCommand extends SubCommandCommand<GroupsCommand> {
   }
 
   public async list (
-    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
     { group }: { group: Group | null }
   ): Promise<void> {
     const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext

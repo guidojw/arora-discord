@@ -1,5 +1,5 @@
 import {
-  type BaseGuildCommandInteraction,
+  type BaseCommandInteraction,
   type CommandInteraction,
   MessageEmbed,
   type TextChannel,
@@ -34,7 +34,7 @@ export default class ChannelLinksCommand extends SubCommandCommand<ChannelLinksC
   private readonly channelLinkService!: ChannelLinkService
 
   public async link (
-    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
     { fromChannel, toChannel }: {
       fromChannel: VoiceChannel
       toChannel: TextChannel
@@ -47,7 +47,7 @@ export default class ChannelLinksCommand extends SubCommandCommand<ChannelLinksC
   }
 
   public async unlink (
-    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
     { fromChannel, toChannel }: {
       fromChannel: VoiceChannel
       toChannel: TextChannel
@@ -60,7 +60,7 @@ export default class ChannelLinksCommand extends SubCommandCommand<ChannelLinksC
   }
 
   public async list (
-    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
     { channel }: { channel: VoiceChannel }
   ): Promise<void> {
     const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext

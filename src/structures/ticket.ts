@@ -5,7 +5,7 @@ import {
   type GuildMember,
   type Message,
   MessageAttachment,
-  MessageEmbed
+  MessageEmbed,
   type PartialGuildMember,
   type TextChannel
 } from 'discord.js'

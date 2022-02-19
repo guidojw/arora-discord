@@ -1,4 +1,4 @@
-import type { BaseGuildCommandInteraction, CommandInteraction } from 'discord.js'
+import type { BaseCommandInteraction, CommandInteraction } from 'discord.js'
 import { argumentUtil, timeUtil } from '../../util'
 import { groupService, userService, verificationService } from '../../services'
 import { ApplyOptions } from '../../util/decorators'
@@ -54,7 +54,7 @@ const validateReason = validators([noChannels, noTags, noUrls])
 })
 export default class TrainingsCommand extends SubCommandCommand<TrainingsCommand> {
   public async create (
-    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
     { type, date, time, notes }: {
       type: string
       date: string
@@ -106,7 +106,7 @@ export default class TrainingsCommand extends SubCommandCommand<TrainingsCommand
   }
 
   public async cancel (
-    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
     { id, reason }: { id: number, reason: string }
   ): Promise<void> {
     const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
@@ -128,7 +128,7 @@ export default class TrainingsCommand extends SubCommandCommand<TrainingsCommand
   }
 
   public async edit (
-    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
     { id, key, value }: {
       id: number
       key: string
@@ -197,7 +197,7 @@ export default class TrainingsCommand extends SubCommandCommand<TrainingsCommand
   }
 
   public async list (
-    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
     { id }: { id: number | null }
   ): Promise<void> {
     const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }

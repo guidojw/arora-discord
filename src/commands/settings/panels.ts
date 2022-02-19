@@ -1,4 +1,4 @@
-import type { BaseGuildCommandInteraction, CommandInteraction, TextChannel } from 'discord.js'
+import type { BaseCommandInteraction, CommandInteraction, TextChannel } from 'discord.js'
 import { Formatters, Message } from 'discord.js'
 import type { GuildContext, Panel, PanelUpdateOptions } from '../../structures'
 import { ApplyOptions } from '../../util/decorators'
@@ -55,7 +55,7 @@ const { validators, isObject, noNumber, noWhitespace } = argumentUtil
 })
 export default class PanelsCommand extends SubCommandCommand<PanelsCommand> {
   public async create (
-    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
     { name, content }: {
       name: string
       content: object
@@ -69,7 +69,7 @@ export default class PanelsCommand extends SubCommandCommand<PanelsCommand> {
   }
 
   public async delete (
-    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
     { panel }: { panel: Panel }
   ): Promise<void> {
     const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
@@ -80,7 +80,7 @@ export default class PanelsCommand extends SubCommandCommand<PanelsCommand> {
   }
 
   public async edit (
-    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
     { panel, key, data }: {
       panel: Panel
       key: string
@@ -110,7 +110,7 @@ export default class PanelsCommand extends SubCommandCommand<PanelsCommand> {
   }
 
   public async post (
-    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
     { panel, channel }: {
       panel: Panel
       channel: TextChannel | null
@@ -128,7 +128,7 @@ export default class PanelsCommand extends SubCommandCommand<PanelsCommand> {
   }
 
   public async list (
-    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
     { panel }: { panel: Panel | null }
   ): Promise<void> {
     const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
@@ -152,7 +152,7 @@ export default class PanelsCommand extends SubCommandCommand<PanelsCommand> {
   }
 
   public async raw (
-    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
     { panel }: { panel: Panel }
   ): Promise<void> {
     await interaction.reply({

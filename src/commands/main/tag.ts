@@ -1,4 +1,4 @@
-import type { BaseGuildCommandInteraction, CommandInteraction, GuildMember } from 'discord.js'
+import type { BaseCommandInteraction, CommandInteraction, GuildMember } from 'discord.js'
 import type { GuildContext, Tag } from '../../structures'
 import { ApplyOptions } from '../../util/decorators'
 import { Command } from '../base'
@@ -26,7 +26,7 @@ const { makeCommaSeparatedString } = util
 })
 export default class TagsCommand extends Command {
   public async execute (
-    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
     { tag, who }: { tag: Tag | null, who: GuildMember | null }
   ): Promise<void> {
     const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext

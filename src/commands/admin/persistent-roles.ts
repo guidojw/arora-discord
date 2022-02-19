@@ -1,5 +1,5 @@
 import {
-  type BaseGuildCommandInteraction,
+  type BaseCommandInteraction,
   type CommandInteraction,
   type GuildMember,
   MessageEmbed,
@@ -34,7 +34,7 @@ export default class PersistentRolesCommand extends SubCommandCommand<Persistent
   private readonly persistentRoleService!: PersistentRoleService
 
   public async persist (
-    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
     { member, role }: { member: GuildMember, role: Role }
   ): Promise<void> {
     await this.persistentRoleService.persistRole(member, role)
@@ -46,7 +46,7 @@ export default class PersistentRolesCommand extends SubCommandCommand<Persistent
   }
 
   public async unpersist (
-    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
     { member, role }: { member: GuildMember, role: Role }
   ): Promise<void> {
     await this.persistentRoleService.unpersistRole(member, role)
@@ -58,7 +58,7 @@ export default class PersistentRolesCommand extends SubCommandCommand<Persistent
   }
 
   public async list (
-    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
     { member }: { member: GuildMember }
   ): Promise<void> {
     const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext

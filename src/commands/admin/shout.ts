@@ -1,4 +1,4 @@
-import { type BaseGuildCommandInteraction, type CommandInteraction, MessageEmbed } from 'discord.js'
+import { type BaseCommandInteraction, type CommandInteraction, MessageEmbed } from 'discord.js'
 import { Command, type CommandOptions } from '../base'
 import { ApplyOptions } from '../../util/decorators'
 import type { GuildContext } from '../../structures'
@@ -20,7 +20,7 @@ const { validators, noChannels, noTags, noUrls } = argumentUtil
 })
 export default class ShoutCommand extends Command {
   public async execute (
-    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
     { message }: { message: string | null }
   ): Promise<void> {
     const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }

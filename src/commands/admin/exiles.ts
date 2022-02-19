@@ -1,4 +1,4 @@
-import { type BaseGuildCommandInteraction, type CommandInteraction, MessageEmbed } from 'discord.js'
+import { type BaseCommandInteraction, type CommandInteraction, MessageEmbed } from 'discord.js'
 import { SubCommandCommand, type SubCommandCommandOptions } from '../base'
 import { groupService, verificationService } from '../../services'
 import { ApplyOptions } from '../../util/decorators'
@@ -37,7 +37,7 @@ const { getDate, getTime } = timeUtil
 })
 export default class ExilesCommand extends SubCommandCommand<ExilesCommand> {
   public async create (
-    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
     { user, reason }: { user: RobloxUser, reason: string }
   ): Promise<void> {
     const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
@@ -60,7 +60,7 @@ export default class ExilesCommand extends SubCommandCommand<ExilesCommand> {
   }
 
   public async delete (
-    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
     { user, reason }: { user: RobloxUser, reason: string }
   ): Promise<void> {
     const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
@@ -82,7 +82,7 @@ export default class ExilesCommand extends SubCommandCommand<ExilesCommand> {
   }
 
   public async list (
-    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
     { user }: { user: RobloxUser | null }
   ): Promise<void> {
     const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }

@@ -1,4 +1,4 @@
-import { type BaseGuildCommandInteraction, type CommandInteraction, MessageEmbed } from 'discord.js'
+import { type BaseCommandInteraction, type CommandInteraction, MessageEmbed } from 'discord.js'
 import { SubCommandCommand, type SubCommandCommandOptions } from '../base'
 import { argumentUtil, timeUtil } from '../../util'
 import { groupService, userService, verificationService } from '../../services'
@@ -67,7 +67,7 @@ const validateReason = validators([noChannels, noTags, noUrls])
 })
 export default class BansCommand extends SubCommandCommand<BansCommand> {
   public async create (
-    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
     { user, duration, reason }: {
       user: RobloxUser
       duration: number | null
@@ -95,7 +95,7 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
   }
 
   public async delete (
-    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
     { user, reason }: { user: RobloxUser, reason: string }
   ): Promise<void> {
     const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
@@ -117,7 +117,7 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
   }
 
   public async edit (
-    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
     { user, key, value }: {
       user: RobloxUser
       key: string
@@ -146,7 +146,7 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
   }
 
   public async extend (
-    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
     { user, days, reason }: {
       user: RobloxUser
       days: number
@@ -176,7 +176,7 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
   }
 
   public async list (
-    interaction: CommandInteraction & BaseGuildCommandInteraction<'cached'>,
+    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
     { user }: { user: RobloxUser | null }
   ): Promise<void> {
     const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
