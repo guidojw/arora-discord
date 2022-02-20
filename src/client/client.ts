@@ -4,14 +4,10 @@ import {
   type ClientOptions,
   Constants,
   DiscordAPIError,
-  type GuildMember,
   Intents,
   type Message,
-  type MessageOptions,
-  type MessagePayload,
-  type PartialGuildMember,
-  type Presence,
-  type User
+  type PartialTextBasedChannelFields,
+  type Presence
 } from 'discord.js'
 import type { BaseArgumentType } from '../types'
 import type BaseHandler from './base'
@@ -38,13 +34,13 @@ declare module 'discord.js' {
     provider: SettingProvider
     mainGuild: Guild | null
 
-    startActivityCarousel: () => Presence | null
-    stopActivityCarousel: () => void
-    nextActivity: (activity?: number) => Presence
-    send: (
-      user: GuildMember | PartialGuildMember | User,
-      content: string | MessagePayload | MessageOptions
-    ) => Promise<Message>
+    startActivityCarousel (): Presence | null
+    stopActivityCarousel(): void
+    nextActivity(activity?: number): Presence
+    send<T extends PartialTextBasedChannelFields>(
+      user: T,
+      ...args: Parameters<PartialTextBasedChannelFields['send']>
+    ): Promise<Message>
   }
 }
 
@@ -145,7 +141,6 @@ export default class AroraClient<Ready extends boolean = boolean> extends Client
     console.log(`Ready to serve on ${this.guilds.cache.size} servers, for ${this.users.cache.size} users.`)
   }
 
-  // @ts-expect-error
   public override startActivityCarousel (): Presence | null {
     if (this.activityCarouselInterval === null) {
       this.activityCarouselInterval = setInterval(this.nextActivity.bind(this), ACTIVITY_CAROUSEL_INTERVAL).unref()
@@ -154,7 +149,6 @@ export default class AroraClient<Ready extends boolean = boolean> extends Client
     return null
   }
 
-  // @ts-expect-error
   public override stopActivityCarousel (): void {
     if (this.activityCarouselInterval !== null) {
       clearInterval(this.activityCarouselInterval)
@@ -162,7 +156,6 @@ export default class AroraClient<Ready extends boolean = boolean> extends Client
     }
   }
 
-  // @ts-expect-error
   public override nextActivity (activity?: number): Presence {
     if (this.user === null) {
       throw new Error('Can\'t set activity when the client is not logged in.')
@@ -180,17 +173,16 @@ export default class AroraClient<Ready extends boolean = boolean> extends Client
     }
   }
 
-  // @ts-expect-error
-  public override async send (
-    user: GuildMember | PartialGuildMember | User,
-    content: string | MessagePayload | MessageOptions
+  public override async send<T extends PartialTextBasedChannelFields> (
+    user: T,
+    ...args: Parameters<PartialTextBasedChannelFields['send']>
   ): Promise<Message> {
-    return await failSilently(user.send.bind(user, content), [50007])
+    return await failSilently(user.send.bind(user, ...args), [50007])
     // 50007: Cannot send messages to this user, user probably has DMs closed.
   }
 
-  public override async login (token = this.token): Promise<string> {
-    const usedToken = await super.login(token ?? undefined)
+  public override async login (token = this.token ?? undefined): Promise<string> {
+    const usedToken = await super.login(token)
     this.aroraWs?.connect()
     return usedToken
   }
