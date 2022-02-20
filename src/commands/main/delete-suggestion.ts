@@ -1,4 +1,4 @@
-import type { BaseCommandInteraction, CommandInteraction, Message } from 'discord.js'
+import type { CommandInteraction, Message } from 'discord.js'
 import { Command } from '../base'
 import type { GuildContext } from '../../structures'
 import { discordService } from '../../services'
@@ -6,7 +6,10 @@ import { injectable } from 'inversify'
 
 @injectable()
 export default class DeleteSuggestionCommand extends Command {
-  public async execute (interaction: CommandInteraction & BaseCommandInteraction<'cached'>): Promise<void> {
+  public async execute (interaction: CommandInteraction): Promise<void> {
+    if (!interaction.inGuild()) {
+      return
+    }
     const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
 
     if (context.suggestionsChannel === null) {

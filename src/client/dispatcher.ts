@@ -1,21 +1,8 @@
-import type {
-  APIInteractionDataResolvedChannel,
-  APIInteractionDataResolvedGuildMember,
-  APIMessage,
-  APIRole
-} from 'discord-api-types'
-import type { Argument, BaseCommand } from '../commands'
-import { Command, SubCommandCommand } from '../commands'
+import { type Argument, type BaseCommand, Command, SubCommandCommand } from '../commands'
 import type {
   CommandInteraction,
   CommandInteractionOption,
-  GuildChannel,
-  GuildMember,
-  Interaction,
-  Message,
-  Role,
-  ThreadChannel,
-  User
+  Interaction
 } from 'discord.js'
 import type Client from './client'
 import applicationConfig from '../configs/application'
@@ -52,8 +39,8 @@ export default class Dispatcher {
     if (command.options.requiresApi === true && applicationConfig.apiEnabled !== true) {
       error = 'This command requires that the bot has an API connected.'
     }
-    if (command.options.requiresRobloxGroup === true && (interaction.guild === null ||
-      this.client.guildContexts.resolve(interaction.guild)?.robloxGroupId === null)) {
+    if (command.options.requiresRobloxGroup === true && (interaction.guildId === null ||
+      this.client.guildContexts.resolve(interaction.guildId)?.robloxGroupId === null)) {
       error = 'This command requires that the server has its robloxGroup setting set.'
     }
     if (command.options.requiresSingleGuild === true && this.client.guilds.cache.size !== 1) {
@@ -95,7 +82,7 @@ export default class Dispatcher {
 
     if (command instanceof Command) {
       return await command.execute(interaction, args)
-    } else if (command instanceof SubCommandCommand) {
+    } else {
       return subCommandGroupName != null
         ? await command.execute(interaction, subCommandGroupName, subCommandName, args)
         : await command.execute(interaction, subCommandName, args)
@@ -143,8 +130,14 @@ export default class Dispatcher {
 
   private static getCommandInteractionOptionValue (
     option: CommandInteractionOption
-  ): string | number | boolean | User | GuildMember | APIInteractionDataResolvedGuildMember | GuildChannel |
-    ThreadChannel | APIInteractionDataResolvedChannel | Role | APIRole | Message | APIMessage | null {
+  ): Exclude<
+    | CommandInteractionOption['value']
+    | CommandInteractionOption['user']
+    | CommandInteractionOption['member']
+    | CommandInteractionOption['channel']
+    | CommandInteractionOption['role'],
+    undefined
+    > {
     switch (option.type) {
       case 'SUB_COMMAND':
       case 'SUB_COMMAND_GROUP':

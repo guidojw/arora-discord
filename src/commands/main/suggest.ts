@@ -1,5 +1,5 @@
-import { type BaseCommandInteraction, type CommandInteraction, MessageEmbed } from 'discord.js'
 import { Command, type CommandOptions } from '../base'
+import { type CommandInteraction, MessageEmbed } from 'discord.js'
 import { ApplyOptions } from '../../util/decorators'
 import type { GuildContext } from '../../structures'
 import { argumentUtil } from '../../util'
@@ -20,9 +20,12 @@ const { validators, noTags } = argumentUtil
 })
 export default class SuggestCommand extends Command {
   public async execute (
-    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
+    interaction: CommandInteraction,
     { suggestion }: { suggestion: string }
   ): Promise<void> {
+    if (!interaction.inGuild()) {
+      return
+    }
     const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
 
     if (context.suggestionsChannel === null) {

@@ -1,8 +1,7 @@
-import type { BaseCommandInteraction, CommandInteraction } from 'discord.js'
+import { Command, type CommandOptions } from '../base'
 import { ApplyOptions } from '../../util/decorators'
 import type { ChangeMemberRole } from '../../services/group'
-import { Command } from '../base'
-import type { CommandOptions } from '../base'
+import type { CommandInteraction } from 'discord.js'
 import type { GuildContext } from '../../structures'
 import type { RobloxUser } from '../../types/roblox-user'
 import { applicationAdapter } from '../../adapters'
@@ -19,7 +18,7 @@ import { verificationService } from '../../services'
 })
 export default class DemoteCommand extends Command {
   public async execute (
-    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
+    interaction: CommandInteraction<'present'>,
     { user }: { user: RobloxUser }
   ): Promise<void> {
     const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }

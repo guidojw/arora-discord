@@ -1,5 +1,5 @@
-import { type CommandInteraction, MessageEmbed } from 'discord.js'
 import { Command, type CommandOptions } from '../base'
+import { type CommandInteraction, MessageEmbed } from 'discord.js'
 import { ApplyOptions } from '../../util/decorators'
 import type { GuildContext } from '../../structures'
 import type { RobloxUser } from '../../types/roblox-user'
@@ -27,7 +27,7 @@ const { getDate } = timeUtil
 })
 export default class WhoIsCommand extends Command {
   public async execute (interaction: CommandInteraction, { user }: { user: RobloxUser }): Promise<void> {
-    const context = interaction.inCachedGuild()
+    const context = interaction.inGuild()
       ? this.client.guildContexts.resolve(interaction.guildId) as GuildContext
       : null
 
@@ -36,14 +36,14 @@ export default class WhoIsCommand extends Command {
     const outfits = await userService.getUserOutfits(user.id)
 
     const embed = new MessageEmbed()
-      .setAuthor(userInfo.name ?? 'Unknown', `https://www.roblox.com/headshot-thumbnail/image?width=150&height=150&format=png&userId=${user.id}`)
+      .setAuthor({ name: userInfo.name ?? 'Unknown', iconURL: `https://www.roblox.com/headshot-thumbnail/image?width=150&height=150&format=png&userId=${user.id}` })
       .setThumbnail(`https://www.roblox.com/outfit-thumbnail/image?width=150&height=150&format=png&userOutfitId=${outfits[0]?.id ?? 0}`)
       .setColor(context?.primaryColor ?? applicationConfig.defaultColor)
       .addField('Blurb', userInfo.description !== '' ? userInfo.description : 'No blurb')
       .addField('Join Date', getDate(new Date(userInfo.created)), true)
       .addField('Account Age', pluralize('day', age, true), true)
       .addField('\u200b', '\u200b', true)
-      .setFooter(`User ID: ${user.id}`)
+      .setFooter({ text: `User ID: ${user.id}` })
       .setTimestamp()
     // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
     if (context !== null && context.robloxGroupId !== null) {

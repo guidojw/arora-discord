@@ -1,7 +1,6 @@
+import { Command, type CommandOptions } from '../base'
 import { ApplyOptions } from '../../util/decorators'
-import { Command } from '../base'
 import type { CommandInteraction } from 'discord.js'
-import type { CommandOptions } from '../base'
 import { injectable } from 'inversify'
 
 @injectable()

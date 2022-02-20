@@ -1,10 +1,4 @@
-import {
-  type BaseCommandInteraction,
-  type CommandInteraction,
-  type GuildMember,
-  MessageEmbed,
-  type Role
-} from 'discord.js'
+import { type CommandInteraction, type GuildMember, MessageEmbed, type Role } from 'discord.js'
 import { SubCommandCommand, type SubCommandCommandOptions } from '../base'
 import { inject, injectable } from 'inversify'
 import { ApplyOptions } from '../../util/decorators'
@@ -34,7 +28,7 @@ export default class PersistentRolesCommand extends SubCommandCommand<Persistent
   private readonly persistentRoleService!: PersistentRoleService
 
   public async persist (
-    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
+    interaction: CommandInteraction<'present'>,
     { member, role }: { member: GuildMember, role: Role }
   ): Promise<void> {
     await this.persistentRoleService.persistRole(member, role)
@@ -46,7 +40,7 @@ export default class PersistentRolesCommand extends SubCommandCommand<Persistent
   }
 
   public async unpersist (
-    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
+    interaction: CommandInteraction<'present'>,
     { member, role }: { member: GuildMember, role: Role }
   ): Promise<void> {
     await this.persistentRoleService.unpersistRole(member, role)
@@ -58,7 +52,7 @@ export default class PersistentRolesCommand extends SubCommandCommand<Persistent
   }
 
   public async list (
-    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
+    interaction: CommandInteraction<'present'>,
     { member }: { member: GuildMember }
   ): Promise<void> {
     const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext

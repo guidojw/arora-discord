@@ -34,11 +34,11 @@ declare module 'discord.js' {
     provider: SettingProvider
     mainGuild: Guild | null
 
-    startActivityCarousel (): Presence | null
+    startActivityCarousel(): Presence | null
     stopActivityCarousel(): void
     nextActivity(activity?: number): Presence
-    send<T extends PartialTextBasedChannelFields>(
-      user: T,
+    send(
+      user: PartialTextBasedChannelFields,
       ...args: Parameters<PartialTextBasedChannelFields['send']>
     ): Promise<Message>
   }
@@ -173,8 +173,8 @@ export default class AroraClient<Ready extends boolean = boolean> extends Client
     }
   }
 
-  public override async send<T extends PartialTextBasedChannelFields> (
-    user: T,
+  public override async send (
+    user: PartialTextBasedChannelFields,
     ...args: Parameters<PartialTextBasedChannelFields['send']>
   ): Promise<Message> {
     return await failSilently(user.send.bind(user, ...args), [50007])

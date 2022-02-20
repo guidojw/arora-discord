@@ -24,7 +24,7 @@ import { injectable } from 'inversify'
 })
 export default class MemberCountCommand extends Command {
   public async execute (interaction: CommandInteraction, { id }: { id: number | null }): Promise<void> {
-    const context = interaction.inCachedGuild()
+    const context = interaction.inGuild()
       ? this.client.guildContexts.resolve(interaction.guildId) as GuildContext
       : null
 

@@ -1,11 +1,9 @@
-import type { BaseCommandInteraction, CommandInteraction } from 'discord.js'
+import { type CommandInteraction, MessageEmbed } from 'discord.js'
+import { SubCommandCommand, type SubCommandCommandOptions } from '../base'
 import { argumentUtil, timeUtil } from '../../util'
 import { groupService, userService, verificationService } from '../../services'
 import { ApplyOptions } from '../../util/decorators'
 import type { GuildContext } from '../../structures'
-import { MessageEmbed } from 'discord.js'
-import { SubCommandCommand } from '../base'
-import type { SubCommandCommandOptions } from '../base'
 import type { Training } from '../../services/group'
 import { applicationAdapter } from '../../adapters'
 import applicationConfig from '../../configs/application'
@@ -54,7 +52,7 @@ const validateReason = validators([noChannels, noTags, noUrls])
 })
 export default class TrainingsCommand extends SubCommandCommand<TrainingsCommand> {
   public async create (
-    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
+    interaction: CommandInteraction<'present'>,
     { type, date, time, notes }: {
       type: string
       date: string
@@ -106,7 +104,7 @@ export default class TrainingsCommand extends SubCommandCommand<TrainingsCommand
   }
 
   public async cancel (
-    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
+    interaction: CommandInteraction<'present'>,
     { id, reason }: { id: number, reason: string }
   ): Promise<void> {
     const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
@@ -128,7 +126,7 @@ export default class TrainingsCommand extends SubCommandCommand<TrainingsCommand
   }
 
   public async edit (
-    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
+    interaction: CommandInteraction<'present'>,
     { id, key, value }: {
       id: number
       key: string
@@ -197,7 +195,7 @@ export default class TrainingsCommand extends SubCommandCommand<TrainingsCommand
   }
 
   public async list (
-    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
+    interaction: CommandInteraction<'present'>,
     { id }: { id: number | null }
   ): Promise<void> {
     const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }

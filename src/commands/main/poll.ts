@@ -1,5 +1,5 @@
-import { type CommandInteraction, type Message, MessageEmbed } from 'discord.js'
 import { Command, type CommandOptions } from '../base'
+import { type CommandInteraction, type Message, MessageEmbed } from 'discord.js'
 import { ApplyOptions } from '../../util/decorators'
 import type { GuildContext } from '../../structures'
 import applicationConfig from '../../configs/application'
@@ -21,7 +21,7 @@ const { validators, noTags } = argumentUtil
 })
 export default class PollCommand extends Command {
   public async execute (interaction: CommandInteraction, { poll }: { poll: string }): Promise<void> {
-    const context = interaction.inCachedGuild()
+    const context = interaction.inGuild()
       ? this.client.guildContexts.resolve(interaction.guildId) as GuildContext
       : null
 
@@ -33,7 +33,7 @@ export default class PollCommand extends Command {
     }
     const embed = new MessageEmbed()
       .setDescription(poll)
-      .setAuthor(interaction.user.tag, interaction.user.displayAvatarURL())
+      .setAuthor({ name: interaction.user.tag, iconURL: interaction.user.displayAvatarURL() })
       .setColor(context?.primaryColor ?? applicationConfig.defaultColor)
 
     const newMessage = await interaction.reply({ embeds: [embed], fetchReply: true }) as Message

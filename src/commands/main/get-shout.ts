@@ -1,5 +1,5 @@
-import { type BaseCommandInteraction, type CommandInteraction, MessageEmbed } from 'discord.js'
 import { Command, type CommandOptions } from '../base'
+import { type CommandInteraction, MessageEmbed } from 'discord.js'
 import { ApplyOptions } from '../../util/decorators'
 import type { GetGroupStatus } from '../../services/group'
 import type { GuildContext } from '../../structures'
@@ -13,7 +13,7 @@ import { injectable } from 'inversify'
   requiresRobloxGroup: true
 })
 export default class GetShoutCommand extends Command {
-  public async execute (interaction: CommandInteraction & BaseCommandInteraction<'cached'>): Promise<void> {
+  public async execute (interaction: CommandInteraction<'present'>): Promise<void> {
     const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
 
     const shout: GetGroupStatus | '' = (await applicationAdapter('GET', `v1/groups/${context.robloxGroupId}/status`)).data

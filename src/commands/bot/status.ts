@@ -17,7 +17,7 @@ export default class StatusCommand extends Command {
       .setAuthor(interaction.client.user?.username ?? 'Arora', interaction.client.user?.displayAvatarURL())
       .setColor(0xff82d1)
 
-    if (interaction.inCachedGuild()) {
+    if (interaction.inGuild()) {
       const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
       embed.addField('System Statuses', `Tickets System: **${context.supportEnabled ? 'online' : 'offline'}**`)
     }
