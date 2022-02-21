@@ -1,5 +1,5 @@
 import { Command, type CommandGroup } from 'discord.js-commando'
-import type { Constructor, Mixin } from '../../util/util'
+import type { Constructor, Mixin } from '../../utils/util'
 import type Group from '../group'
 import PermissionManager from '../../managers/permission'
 import type { Role } from 'discord.js'

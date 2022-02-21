@@ -1,5 +1,5 @@
 import BaseArgumentType from './base'
-import { argumentUtil } from '../util'
+import { argumentUtil } from '../utils'
 import { injectable } from 'inversify'
 
 const { validTime } = argumentUtil

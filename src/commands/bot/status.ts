@@ -1,5 +1,5 @@
 import { type CommandInteraction, MessageEmbed } from 'discord.js'
-import { timeUtil, util } from '../../util'
+import { timeUtil, util } from '../../utils'
 import { Command } from '../base'
 import type { GuildContext } from '../../structures'
 import { applicationAdapter } from '../../adapters'

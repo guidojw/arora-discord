@@ -1,10 +1,8 @@
-import type { BaseCommandInteraction, CommandInteraction, TextChannel } from 'discord.js'
-import { Formatters, Message } from 'discord.js'
+import { type CommandInteraction, Formatters, Message, type TextChannel } from 'discord.js'
 import type { GuildContext, Panel, PanelUpdateOptions } from '../../structures'
-import { ApplyOptions } from '../../util/decorators'
-import { SubCommandCommand } from '../base'
-import type { SubCommandCommandOptions } from '../base'
-import { argumentUtil } from '../../util'
+import { SubCommandCommand, type SubCommandCommandOptions } from '../base'
+import { ApplyOptions } from '../../utils/decorators'
+import { argumentUtil } from '../../utils'
 import { discordService } from '../../services'
 import { injectable } from 'inversify'
 
@@ -29,7 +27,7 @@ const { validators, isObject, noNumber, noWhitespace } = argumentUtil
           key: 'key',
           parse: (val: string) => val.toLowerCase()
         },
-        { key: 'data', type: 'json-object|message' }
+        { key: 'value', type: 'json-object|message' }
       ]
     },
     post: {
@@ -55,12 +53,15 @@ const { validators, isObject, noNumber, noWhitespace } = argumentUtil
 })
 export default class PanelsCommand extends SubCommandCommand<PanelsCommand> {
   public async create (
-    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
+    interaction: CommandInteraction,
     { name, content }: {
       name: string
       content: object
     }
   ): Promise<void> {
+    if (!interaction.inGuild()) {
+      return
+    }
     const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
 
     const panel = await context.panels.create(name, content)
@@ -69,7 +70,7 @@ export default class PanelsCommand extends SubCommandCommand<PanelsCommand> {
   }
 
   public async delete (
-    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
+    interaction: CommandInteraction<'present'>,
     { panel }: { panel: Panel }
   ): Promise<void> {
     const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
@@ -80,28 +81,28 @@ export default class PanelsCommand extends SubCommandCommand<PanelsCommand> {
   }
 
   public async edit (
-    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
-    { panel, key, data }: {
+    interaction: CommandInteraction<'present'>,
+    { panel, key, value }: {
       panel: Panel
       key: string
-      data: object | Message
+      value: object | Message
     }
   ): Promise<void> {
     const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
 
     const changes: PanelUpdateOptions = {}
     if (key === 'content') {
-      if (data instanceof Message) {
-        return await interaction.reply({ content: '`data` must be an object.', ephemeral: true })
+      if (value instanceof Message) {
+        return await interaction.reply({ content: '`value` must be an object.', ephemeral: true })
       }
 
-      changes.content = data
+      changes.content = value
     } else if (key === 'message') {
-      if (!(data instanceof Message)) {
-        return await interaction.reply({ content: '`data` must be a message URL.', ephemeral: true })
+      if (!(value instanceof Message)) {
+        return await interaction.reply({ content: '`value` must be a message URL.', ephemeral: true })
       }
 
-      changes.message = data
+      changes.message = value
     }
 
     panel = await context.panels.update(panel, changes)
@@ -110,7 +111,7 @@ export default class PanelsCommand extends SubCommandCommand<PanelsCommand> {
   }
 
   public async post (
-    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
+    interaction: CommandInteraction<'present'>,
     { panel, channel }: {
       panel: Panel
       channel: TextChannel | null
@@ -128,9 +129,12 @@ export default class PanelsCommand extends SubCommandCommand<PanelsCommand> {
   }
 
   public async list (
-    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
+    interaction: CommandInteraction,
     { panel }: { panel: Panel | null }
   ): Promise<void> {
+    if (!interaction.inGuild()) {
+      return
+    }
     const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
 
     if (panel !== null) {
@@ -145,14 +149,12 @@ export default class PanelsCommand extends SubCommandCommand<PanelsCommand> {
         context.panels.cache.values(),
         getPanelRow
       )
-      for (const embed of embeds) {
-        await interaction.reply({ embeds: [embed] })
-      }
+      await interaction.reply({ embeds })
     }
   }
 
   public async raw (
-    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
+    interaction: CommandInteraction<'present'>,
     { panel }: { panel: Panel }
   ): Promise<void> {
     await interaction.reply({

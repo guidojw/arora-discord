@@ -1,6 +1,6 @@
 import type { CommandoClient, CommandoMessage } from 'discord.js-commando'
 import { type Guild, GuildChannel, type Message } from 'discord.js'
-import { argumentUtil, util } from '../../util'
+import { argumentUtil, util } from '../../utils'
 import BaseCommand from '../base'
 import { GuildSetting } from '../../extensions'
 

@@ -2,7 +2,7 @@ import type { Collection, Role, RoleResolvable, Snowflake } from 'discord.js'
 import type { Group as GroupEntity, Role as RoleEntity } from '../entities'
 import type { GuildContext, RoleGroup } from '../structures'
 import type { Repository } from 'typeorm'
-import { constants } from '../util'
+import { constants } from '../utils'
 import container from '../configs/container'
 import getDecorators from 'inversify-inject-decorators'
 

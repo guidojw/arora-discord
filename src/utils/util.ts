@@ -2,9 +2,46 @@ export type Constructor<T = {}> = new (...args: any[]) => T
 export type AbstractConstructor<T = {}> = abstract new (...args: any[]) => T
 export type Mixin<T extends AnyFunction> = InstanceType<ReturnType<T>>
 export type Enum = Record<string, number | string>
-export type KeyOfType<T, U> = {[P in keyof T]: T[P] extends U ? P: never}[keyof T]
+export type KeyOfType<T, U> = {[K in keyof T]: T[K] extends U ? K : never}[keyof T]
+export type AnyFunction<T = any> = (...input: any[]) => T
 
-type AnyFunction<T = any> = (...input: any[]) => T
+export type OverloadedParameters<T> = Overloads<T> extends infer U
+  ? {[K in keyof U]: Parameters<Extract<U[K], (...args: any) => any>>}
+  : never
+
+export type OverloadedReturnType<T> = Overloads<T> extends infer U
+  ? {[K in keyof U]: ReturnType<Extract<U[K], (...args: any) => any>>}
+  : never
+
+// Supports up to 4 overload signatures.
+type Overloads<T> = T extends {
+  (...args: infer A1): infer R1
+  (...args: infer A2): infer R2
+  (...args: infer A3): infer R3
+  (...args: infer A4): infer R4
+} ? [
+      (...args: A1) => R1,
+      (...args: A2) => R2,
+      (...args: A3) => R3,
+      (...args: A4) => R4
+    ] : T extends {
+      (...args: infer A1): infer R1
+      (...args: infer A2): infer R2
+      (...args: infer A3): infer R3
+    } ? [
+          (...args: A1) => R1,
+          (...args: A2) => R2,
+          (...args: A3) => R3
+        ] : T extends {
+          (...args: infer A1): infer R1
+          (...args: infer A2): infer R2
+        } ? [
+              (...args: A1) => R1,
+              (...args: A2) => R2
+            ] : T extends (...args: infer A1) => infer R1
+              ? [(...args: A1) => R1]
+              : any
+
 type EnumKeys<T extends Enum> = Exclude<keyof T, number>
 
 function getEnumObject<T extends Enum> (

@@ -3,7 +3,7 @@ import type { ChannelGroup, GuildContext } from '../structures'
 import type { Collection, Snowflake, TextChannel } from 'discord.js'
 import type { Repository } from 'typeorm'
 import type { TextChannelResolvable } from './guild-ticket'
-import { constants } from '../util'
+import { constants } from '../utils'
 import container from '../configs/container'
 import getDecorators from 'inversify-inject-decorators'
 

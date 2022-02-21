@@ -3,7 +3,7 @@ import { inject, injectable } from 'inversify'
 import type { Channel as ChannelEntity } from '../entities'
 import { Collection } from 'discord.js'
 import type { Repository } from 'typeorm'
-import { constants } from '../util'
+import { constants } from '../utils'
 
 const { TYPES } = constants
 

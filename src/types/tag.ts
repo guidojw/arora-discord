@@ -5,7 +5,7 @@ import { injectable } from 'inversify'
 @injectable()
 export default class TagArgumentType extends BaseStructureArgumentType<Tag> {
   public constructor () {
-    super(Tag, 'tags')
+    super(Tag)
   }
 
   public override filterExact (search: string): (structure: BaseStructure) => boolean {

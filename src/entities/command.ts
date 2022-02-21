@@ -1,5 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
-import { CommandType } from '../util/constants'
+import { CommandType } from '../utils/constants'
 import GuildCommand from './guild-command'
 import { IsNotEmpty } from 'class-validator'
 import Permission from './permission'

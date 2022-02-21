@@ -10,7 +10,7 @@ import {
   type TextChannel
 } from 'discord.js'
 import { discordService, userService } from '../services'
-import { timeUtil, util } from '../util'
+import { timeUtil, util } from '../utils'
 import BaseStructure from './base'
 import type GuildContext from './guild-context'
 import type { TextChannelResolvable } from '../managers'

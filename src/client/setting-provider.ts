@@ -7,7 +7,7 @@ import type {
 import type AroraClient from './client'
 import type { Guild } from 'discord.js'
 import type { Repository } from 'typeorm'
-import { constants } from '../util'
+import { constants } from '../utils'
 import container from '../configs/container'
 import getDecorators from 'inversify-inject-decorators'
 

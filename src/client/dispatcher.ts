@@ -1,12 +1,8 @@
 import { type Argument, type BaseCommand, Command, SubCommandCommand } from '../commands'
-import type {
-  CommandInteraction,
-  CommandInteractionOption,
-  Interaction
-} from 'discord.js'
+import type { CommandInteraction, CommandInteractionOption, Interaction } from 'discord.js'
 import type Client from './client'
 import applicationConfig from '../configs/application'
-import { constants } from '../util'
+import { constants } from '../utils'
 import container from '../configs/container'
 import getDecorators from 'inversify-inject-decorators'
 
@@ -146,8 +142,8 @@ export default class Dispatcher {
       case 'BOOLEAN': return option.value ?? null
       // Discord.js resolves the user to a member too. The dispatcher will
       // always send the member as option value to the commands since most
-      // commands require the member anyway and it's easier to get the user from
-      // a member than vice versa.
+      // commands require the member anyway, and it's easier to get the user
+      // from a member than vice versa.
       case 'USER': return option.member ?? null
       case 'CHANNEL': return option.channel ?? null
       case 'ROLE': return option.role ?? null

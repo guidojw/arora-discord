@@ -1,16 +1,10 @@
-import {
-  type BaseCommandInteraction,
-  type CommandInteraction,
-  MessageEmbed,
-  type Role,
-  type TextChannel
-} from 'discord.js'
 import type { ChannelGroup, Group, GuildContext, RoleGroup } from '../../structures'
+import { type CommandInteraction, MessageEmbed, type Role, type TextChannel } from 'discord.js'
 import { SubCommandCommand, type SubCommandCommandOptions } from '../base'
-import { ApplyOptions } from '../../util/decorators'
-import { GroupType } from '../../util/constants'
+import { ApplyOptions } from '../../utils/decorators'
+import { GroupType } from '../../utils/constants'
 import applicationConfig from '../../configs/application'
-import { argumentUtil } from '../../util'
+import { argumentUtil } from '../../utils'
 import { discordService } from '../../services'
 import { injectable } from 'inversify'
 
@@ -34,13 +28,13 @@ const { validators, noNumber, noWhitespace } = argumentUtil
     channels: {
       add: {
         args: [
-          { key: 'id', name: 'group', type: 'group' },
+          { key: 'id', name: 'group', type: 'channel-group' },
           { key: 'channel' }
         ]
       },
       remove: {
         args: [
-          { key: 'id', name: 'group', type: 'group' },
+          { key: 'id', name: 'group', type: 'channel-group' },
           { key: 'channel' }
         ]
       }
@@ -48,13 +42,13 @@ const { validators, noNumber, noWhitespace } = argumentUtil
     roles: {
       add: {
         args: [
-          { key: 'id', name: 'group', type: 'group' },
+          { key: 'id', name: 'group', type: 'role-group' },
           { key: 'role' }
         ]
       },
       remove: {
         args: [
-          { key: 'id', name: 'group', type: 'group' },
+          { key: 'id', name: 'group', type: 'role-group' },
           { key: 'role' }
         ]
       }
@@ -66,9 +60,12 @@ const { validators, noNumber, noWhitespace } = argumentUtil
 })
 export default class GroupsCommand extends SubCommandCommand<GroupsCommand> {
   public async create (
-    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
+    interaction: CommandInteraction,
     { name, type }: { name: string, type: GroupType }
   ): Promise<void> {
+    if (!interaction.inGuild()) {
+      return
+    }
     const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
 
     const group = await context.groups.create(name, type)
@@ -77,7 +74,7 @@ export default class GroupsCommand extends SubCommandCommand<GroupsCommand> {
   }
 
   public async delete (
-    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
+    interaction: CommandInteraction<'present'>,
     { group }: { group: Group }
   ): Promise<void> {
     await group.delete()
@@ -86,7 +83,7 @@ export default class GroupsCommand extends SubCommandCommand<GroupsCommand> {
   }
 
   public async channels (
-    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
+    interaction: CommandInteraction<'present'>,
     subCommand: 'add' | 'remove',
     { group, channel }: { group: ChannelGroup, channel: TextChannel }
   ): Promise<void> {
@@ -107,7 +104,7 @@ export default class GroupsCommand extends SubCommandCommand<GroupsCommand> {
   }
 
   public async roles (
-    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
+    interaction: CommandInteraction<'present'>,
     subCommand: 'add' | 'remove',
     { group, role }: { group: RoleGroup, role: Role }
   ): Promise<void> {
@@ -133,9 +130,12 @@ export default class GroupsCommand extends SubCommandCommand<GroupsCommand> {
   }
 
   public async list (
-    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
+    interaction: CommandInteraction,
     { group }: { group: Group | null }
   ): Promise<void> {
+    if (!interaction.inGuild()) {
+      return
+    }
     const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
 
     if (group !== null) {
@@ -163,9 +163,7 @@ export default class GroupsCommand extends SubCommandCommand<GroupsCommand> {
         context.groups.cache.values(),
         getGroupRow
       )
-      for (const embed of embeds) {
-        await interaction.reply({ embeds: [embed] })
-      }
+      await interaction.reply({ embeds })
     }
   }
 }

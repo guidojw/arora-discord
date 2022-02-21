@@ -2,7 +2,7 @@ import { Command, type CommandGroup, type CommandoClient, type CommandoMessage }
 import { type Message, Role } from 'discord.js'
 import BaseCommand from '../base'
 import type { RoleGroup } from '../../structures'
-import { argumentUtil } from '../../util'
+import { argumentUtil } from '../../utils'
 
 const { validateNoneOrType, parseNoneOrType } = argumentUtil
 

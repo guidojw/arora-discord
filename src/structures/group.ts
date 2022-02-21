@@ -2,7 +2,7 @@ import BaseStructure from './base'
 import type ChannelGroup from './channel-group'
 import type { Client } from 'discord.js'
 import type { Group as GroupEntity } from '../entities'
-import { GroupType } from '../util/constants'
+import { GroupType } from '../utils/constants'
 import type GuildContext from './guild-context'
 import type RoleGroup from './role-group'
 

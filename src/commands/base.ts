@@ -1,7 +1,7 @@
+import type { AnyFunction, KeyOfType, OverloadedParameters } from '../utils/util'
 import Argument, { type ArgumentOptions } from './argument'
 import type { AroraClient } from '../client'
 import type { CommandInteraction } from 'discord.js'
-import type { KeyOfType } from '../util/util'
 
 interface BaseCommandOptions {
   ownerOwnly?: boolean
@@ -18,11 +18,17 @@ export interface CommandOptions extends BaseCommandOptions {
   command?: SubCommandOptions
 }
 
+type SubCommandNames<T, U = OverloadedParameters<T>> = {
+  [K in keyof U as U[K] extends any[] ? K : never]: U[K] extends any[] ? U[K][1] : never
+}
+
 export interface SubCommandCommandOptions<T extends SubCommandCommand<any>> extends BaseCommandOptions {
   subCommands: {
-    [K in Exclude<KeyOfType<T, Function>, 'execute'>]?: Parameters<T[K]>[1] extends string
-      ? Record<Parameters<T[K]>[1], SubCommandOptions>
-      : SubCommandOptions
+    [K in Exclude<KeyOfType<T, AnyFunction>, 'execute'>]: T[K] extends AnyFunction
+      ? Parameters<T[K]>[1] extends string
+        ? {[U in keyof SubCommandNames<T[K]> as SubCommandNames<T[K]>[U]]: SubCommandOptions}
+        : SubCommandOptions
+      : never
   }
 }
 
@@ -89,12 +95,12 @@ export class SubCommandCommand<T extends SubCommandCommand<any>> extends BaseCom
     }
   }
 
-  public async execute (
+  public execute (
     interaction: CommandInteraction,
     subCommandName: string,
     args: Record<string, any>
   ): Promise<void>
-  public async execute (
+  public execute (
     interaction: CommandInteraction,
     subCommandGroupName: string,
     subCommandName: string,

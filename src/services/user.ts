@@ -2,7 +2,7 @@ import type { GetUserById, GetUsersByUserIds, GetUsersByUsernames } from '@guido
 import type { GetUserOutfits as BloxyGetUserOutfits } from '@guidojw/bloxy/dist/client/apis/AvatarAPI'
 import type { GetUserGroups } from '@guidojw/bloxy/dist/client/apis/GroupsAPI'
 import { robloxAdapter } from '../adapters'
-import { util } from '../util'
+import { util } from '../utils'
 
 export type GetUsers = GetUsersByUserIds['data']
 export type GetGroupsRoles = GetUserGroups['data']

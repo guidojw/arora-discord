@@ -4,7 +4,7 @@ import type Client from '../client'
 import type { Role as DiscordRole } from 'discord.js'
 import { Repository } from 'typeorm'
 import type { Role } from '../../entities'
-import { constants } from '../../util'
+import { constants } from '../../utils'
 
 const { TYPES } = constants
 

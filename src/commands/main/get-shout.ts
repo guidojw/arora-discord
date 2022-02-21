@@ -1,6 +1,6 @@
 import { Command, type CommandOptions } from '../base'
 import { type CommandInteraction, MessageEmbed } from 'discord.js'
-import { ApplyOptions } from '../../util/decorators'
+import { ApplyOptions } from '../../utils/decorators'
 import type { GetGroupStatus } from '../../services/group'
 import type { GuildContext } from '../../structures'
 import { applicationAdapter } from '../../adapters'

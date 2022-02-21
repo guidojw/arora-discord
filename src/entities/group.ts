@@ -9,7 +9,7 @@ import {
   PrimaryGeneratedColumn
 } from 'typeorm'
 import Channel from './channel'
-import { GroupType } from '../util/constants'
+import { GroupType } from '../utils/constants'
 import Guild from './guild'
 import { IsNotEmpty } from 'class-validator'
 import Permission from './permission'

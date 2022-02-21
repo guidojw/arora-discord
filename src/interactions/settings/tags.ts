@@ -30,6 +30,27 @@ const tagsCommand = {
       required: true
     }]
   }, {
+    name: 'edit',
+    description: 'Edit a tag',
+    type: ApplicationCommandOptionType.Subcommand,
+    options: [{
+      name: 'id',
+      description: 'The ID of the tag to edit',
+      type: ApplicationCommandOptionType.Integer,
+      required: true
+    }, {
+      name: 'key',
+      description: 'The key of the tag to edit',
+      type: ApplicationCommandOptionType.String,
+      required: true,
+      choices: [{ name: 'content', value: 'content' }]
+    }, {
+      name: 'value',
+      description: 'The value to change this key to',
+      type: ApplicationCommandOptionType.String,
+      required: true
+    }]
+  }, {
     name: 'aliases',
     description: 'Create or delete an alias from a tag',
     type: ApplicationCommandOptionType.SubcommandGroup,
@@ -53,16 +74,21 @@ const tagsCommand = {
       description: 'Delete an alias from a tag',
       type: ApplicationCommandOptionType.Subcommand,
       options: [{
-        name: 'id',
-        description: 'The ID of the tag to delete an alias from',
-        type: ApplicationCommandOptionType.Subcommand,
-        required: true
-      }, {
         name: 'name',
-        description: 'The name of the alias to delete from the tag',
+        description: 'The name of the alias to delete',
         type: ApplicationCommandOptionType.String,
         required: true
       }]
+    }]
+  }, {
+    name: 'raw',
+    description: 'Get the raw content of a tag',
+    type: ApplicationCommandOptionType.Subcommand,
+    options: [{
+      name: 'id',
+      description: 'The ID of the tag to get the raw content of',
+      type: ApplicationCommandOptionType.Integer,
+      required: true
     }]
   }]
 }

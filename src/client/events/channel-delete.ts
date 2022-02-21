@@ -4,7 +4,7 @@ import type { Channel } from '../../entities'
 import type Client from '../client'
 import type { Channel as DiscordChannel } from 'discord.js'
 import { Repository } from 'typeorm'
-import { constants } from '../../util'
+import { constants } from '../../utils'
 
 const { TYPES } = constants
 

@@ -1,7 +1,7 @@
 import { type ActivityType, Constants, type Message } from 'discord.js'
 import type { CommandoClient, CommandoMessage } from 'discord.js-commando'
 import BaseCommand from '../base'
-import { argumentUtil } from '../../util'
+import { argumentUtil } from '../../utils'
 
 const { ActivityTypes } = Constants
 const { parseNoneOrType, urlRegex, validateNoneOrType } = argumentUtil

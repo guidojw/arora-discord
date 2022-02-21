@@ -1,17 +1,11 @@
-import {
-  type BaseCommandInteraction,
-  type CommandInteraction,
-  MessageEmbed,
-  type TextChannel,
-  type VoiceChannel
-} from 'discord.js'
+import { type CommandInteraction, MessageEmbed, type TextChannel, type VoiceChannel } from 'discord.js'
 import { SubCommandCommand, type SubCommandCommandOptions } from '../base'
 import { inject, injectable } from 'inversify'
-import { ApplyOptions } from '../../util/decorators'
+import { ApplyOptions } from '../../utils/decorators'
 import type { ChannelLinkService } from '../../services'
 import type { GuildContext } from '../../structures'
 import applicationConfig from '../../configs/application'
-import { constants } from '../../util'
+import { constants } from '../../utils'
 
 const { TYPES } = constants
 
@@ -19,10 +13,16 @@ const { TYPES } = constants
 @ApplyOptions<SubCommandCommandOptions<ChannelLinksCommand>>({
   subCommands: {
     link: {
-      args: [{ key: 'fromchannel', name: 'fromChannel' }, { key: 'tochannel', name: 'toChannel' }]
+      args: [
+        { key: 'fromchannel', name: 'fromChannel' },
+        { key: 'tochannel', name: 'toChannel' }
+      ]
     },
     unlink: {
-      args: [{ key: 'fromchannel', name: 'fromChannel' }, { key: 'tochannel', name: 'toChannel' }]
+      args: [
+        { key: 'fromchannel', name: 'fromChannel' },
+        { key: 'tochannel', name: 'toChannel' }
+      ]
     },
     list: {
       args: [{ key: 'channel' }]
@@ -34,7 +34,7 @@ export default class ChannelLinksCommand extends SubCommandCommand<ChannelLinksC
   private readonly channelLinkService!: ChannelLinkService
 
   public async link (
-    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
+    interaction: CommandInteraction<'present'>,
     { fromChannel, toChannel }: {
       fromChannel: VoiceChannel
       toChannel: TextChannel
@@ -47,7 +47,7 @@ export default class ChannelLinksCommand extends SubCommandCommand<ChannelLinksC
   }
 
   public async unlink (
-    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
+    interaction: CommandInteraction<'present'>,
     { fromChannel, toChannel }: {
       fromChannel: VoiceChannel
       toChannel: TextChannel
@@ -60,7 +60,7 @@ export default class ChannelLinksCommand extends SubCommandCommand<ChannelLinksC
   }
 
   public async list (
-    interaction: CommandInteraction & BaseCommandInteraction<'cached'>,
+    interaction: CommandInteraction<'present'>,
     { channel }: { channel: VoiceChannel }
   ): Promise<void> {
     const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext

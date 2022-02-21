@@ -8,7 +8,7 @@ import applicationConfig from '../configs/application'
 import { injectable } from 'inversify'
 import lodash from 'lodash'
 import pluralize from 'pluralize'
-import { timeUtil } from '../util'
+import { timeUtil } from '../utils'
 
 const { getDate, getTime, getTimeZoneAbbreviation } = timeUtil
 

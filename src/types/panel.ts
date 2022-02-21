@@ -5,6 +5,6 @@ import { injectable } from 'inversify'
 @injectable()
 export default class PanelArgumentType extends BaseStructureArgumentType<Panel> {
   public constructor () {
-    super(Panel, 'panels')
+    super(Panel)
   }
 }

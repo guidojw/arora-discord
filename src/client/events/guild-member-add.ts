@@ -3,7 +3,7 @@ import type BaseHandler from '../base'
 import type Client from '../client'
 import applicationConfig from '../../configs/application'
 import { injectable } from 'inversify'
-import { util } from '../../util'
+import { util } from '../../utils'
 
 const { getOrdinalNum } = util
 

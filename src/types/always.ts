@@ -1,13 +1,10 @@
 import BaseArgumentType from './base'
-import { argumentUtil } from '../utils'
 import { injectable } from 'inversify'
-
-const { validDate } = argumentUtil
 
 @injectable()
 export default class extends BaseArgumentType<string> {
-  public validate (value: string): boolean {
-    return validDate(value)
+  public validate (): boolean {
+    return true
   }
 
   public parse (value: string): string {

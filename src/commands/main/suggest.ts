@@ -1,8 +1,8 @@
 import { Command, type CommandOptions } from '../base'
 import { type CommandInteraction, MessageEmbed } from 'discord.js'
-import { ApplyOptions } from '../../util/decorators'
+import { ApplyOptions } from '../../utils/decorators'
 import type { GuildContext } from '../../structures'
-import { argumentUtil } from '../../util'
+import { argumentUtil } from '../../utils'
 import { injectable } from 'inversify'
 
 const { validators, noTags } = argumentUtil

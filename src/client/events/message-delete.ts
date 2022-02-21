@@ -4,7 +4,7 @@ import type Client from '../client'
 import type { CommandoMessage } from 'discord.js-commando'
 import type { Message } from '../../entities'
 import { Repository } from 'typeorm'
-import { constants } from '../../util'
+import { constants } from '../../utils'
 
 const { TYPES } = constants
 

@@ -1,9 +1,9 @@
 import { CategoryChannel, GuildChannel, type Message, TextChannel } from 'discord.js'
 import type { CommandoClient, CommandoMessage } from 'discord.js-commando'
 import { GuildSetting, type GuildUpdateOptions } from '../../extensions'
-import { argumentUtil, util } from '../../util'
+import { argumentUtil, util } from '../../utils'
 import BaseCommand from '../base'
-import { VerificationProvider } from '../../util/constants'
+import { VerificationProvider } from '../../utils/constants'
 
 const { guildSettingTransformer, parseEnum, parseNoneOrType } = argumentUtil
 const { getEnumKeys, getEnumValues } = util

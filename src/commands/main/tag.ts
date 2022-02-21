@@ -1,10 +1,10 @@
 import { Command, type CommandOptions } from '../base'
 import { type CommandInteraction, type GuildMember, MessageEmbed } from 'discord.js'
 import type { GuildContext, Tag } from '../../structures'
-import { ApplyOptions } from '../../util/decorators'
+import { ApplyOptions } from '../../utils/decorators'
 import applicationConfig from '../../configs/application'
 import { injectable } from 'inversify'
-import { util } from '../../util'
+import { util } from '../../utils'
 
 const { makeCommaSeparatedString } = util
 

@@ -4,7 +4,7 @@ import type Client from '../client'
 import type { Emoji } from '../../entities'
 import type { GuildEmoji } from 'discord.js'
 import { Repository } from 'typeorm'
-import { constants } from '../../util'
+import { constants } from '../../utils'
 
 const { TYPES } = constants
 

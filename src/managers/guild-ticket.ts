@@ -12,7 +12,7 @@ import BaseManager from './base'
 import type { Repository } from 'typeorm'
 import type { Ticket as TicketEntity } from '../entities'
 import type { TicketTypeResolvable } from './guild-ticket-type'
-import { constants } from '../util'
+import { constants } from '../utils'
 import container from '../configs/container'
 import getDecorators from 'inversify-inject-decorators'
 

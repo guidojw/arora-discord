@@ -16,7 +16,7 @@ import { GuildContextManager } from '../managers'
 import SettingProvider from './setting-provider'
 import { WebSocketManager } from './websocket'
 import applicationConfig from '../configs/application'
-import { constants } from '../util'
+import { constants } from '../utils'
 import container from '../configs/container'
 import getDecorators from 'inversify-inject-decorators'
 

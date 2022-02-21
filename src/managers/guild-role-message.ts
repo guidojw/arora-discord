@@ -3,7 +3,7 @@ import { GuildContext, RoleMessage } from '../structures'
 import BaseManager from './base'
 import type { Repository } from 'typeorm'
 import type { RoleMessage as RoleMessageEntity } from '../entities'
-import { constants } from '../util'
+import { constants } from '../utils'
 import container from '../configs/container'
 import getDecorators from 'inversify-inject-decorators'
 

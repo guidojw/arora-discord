@@ -1,5 +1,5 @@
 import { Command, type CommandOptions } from '../base'
-import { ApplyOptions } from '../../util/decorators'
+import { ApplyOptions } from '../../utils/decorators'
 import type { ChangeMemberRole } from '../../services/group'
 import type { CommandInteraction } from 'discord.js'
 import type { GuildContext } from '../../structures'

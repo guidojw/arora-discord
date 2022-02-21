@@ -1,54 +1,45 @@
-import type { CommandoClient, CommandoMessage } from 'discord.js-commando'
-import type { GuildMember, Message, TextChannel } from 'discord.js'
-import BaseCommand from '../base'
+import type { CommandInteraction, Message } from 'discord.js'
+import { Command } from '../base'
+import type { GuildContext } from '../../structures'
 import applicationConfig from '../../configs/application'
 import { discordService } from '../../services'
-import { stripIndents } from 'common-tags'
+import { injectable } from 'inversify'
 
-export default class CloseTicketCommand extends BaseCommand {
-  public constructor (client: CommandoClient) {
-    super(client, {
-      group: 'settings',
-      name: 'closeticket',
-      aliases: ['close'],
-      description: 'Closes this ticket.',
-      clientPermissions: ['ADD_REACTIONS', 'SEND_MESSAGES', 'MANAGE_CHANNELS'],
-      guarded: true,
-      hidden: true
-    })
-  }
+@injectable()
+export default class CloseTicketCommand extends Command {
+  public async execute (interaction: CommandInteraction): Promise<void> {
+    if (!interaction.inGuild()) {
+      return
+    }
+    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
 
-  public async run (
-    message: CommandoMessage & { member: GuildMember, channel: TextChannel }
-  ): Promise<Message | Message[] | null> {
-    const ticket = message.guild.tickets.resolve(message.channel)
+    const ticket = context.tickets.resolve(interaction.channelId)
     if (ticket !== null) {
-      const prompt = await message.channel.send('Are you sure you want to close this ticket?')
-      const choice = (await discordService.prompt(message.author, prompt, ['✅', '🚫']))?.toString() === '✅'
+      const prompt = await interaction.reply({
+        content: 'Are you sure you want to close this ticket?',
+        fetchReply: true
+      }) as Message
+      const choice = (await discordService.prompt(interaction.user, prompt, ['✅', '🚫']))?.toString() === '✅'
 
       if (choice) {
-        await message.guild.log(
-          message.author,
-          stripIndents`
-          ${message.author} **closed ticket** \`${ticket.id}\`
-          ${message.content}
-          `,
+        await context.log(
+          interaction.user,
+          `${interaction.user.toString()} **closed ticket** \`${ticket.id}\``,
           { footer: `Ticket ID: ${ticket.id}` }
         )
 
-        if (message.member.id === ticket.author?.id) {
+        if (interaction.user.id === ticket.author?.id) {
           await ticket.close(
             'Ticket successfully closed.',
             false,
-            message.guild.primaryColor ?? applicationConfig.defaultColor)
+            context.primaryColor ?? applicationConfig.defaultColor)
         } else {
           await ticket.close(
             'The moderator has closed your ticket.',
             true,
-            message.guild.primaryColor ?? applicationConfig.defaultColor)
+            context.primaryColor ?? applicationConfig.defaultColor)
         }
       }
     }
-    return null
   }
 }

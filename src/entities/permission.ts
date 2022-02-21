@@ -2,7 +2,7 @@ import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 't
 import Command from './command'
 import Group from './group'
 import Role from './role'
-import { decorators } from '../util'
+import { decorators } from '../utils'
 
 const { Xor } = decorators
 

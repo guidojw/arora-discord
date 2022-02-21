@@ -1,32 +1,15 @@
 import * as argumentTypes from '../types'
 import * as commands from '../commands'
+import * as entities from '../entities'
+import * as jobs from '../jobs'
 import * as services from '../services'
-import { AnnounceTrainingsJob, type BaseJob, HealthCheckJob, PremiumMembersReportJob } from '../jobs'
 import { type BaseHandler, eventHandlers, packetHandlers } from '../client'
-import {
-  Channel,
-  Command,
-  Emoji,
-  Group,
-  Guild,
-  GuildCommand,
-  Member,
-  Message,
-  Panel,
-  Permission,
-  Role,
-  RoleBinding,
-  RoleMessage,
-  Tag,
-  TagName,
-  Ticket,
-  TicketType
-} from '../entities'
 import { Container, type interfaces } from 'inversify'
 import { type Repository, getRepository } from 'typeorm'
 import type { BaseArgumentType } from '../types'
 import type { BaseCommand } from '../commands'
-import { constants } from '../util'
+import type { BaseJob } from '../jobs'
+import { constants } from '../utils'
 
 const { TYPES } = constants
 
@@ -34,6 +17,10 @@ const container = new Container()
 const bind = container.bind.bind(container)
 
 // Argument Types
+bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.AlwaysType)
+  .whenTargetTagged('argumentType', 'always')
+bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.ChannelGroupArgumentType)
+  .whenTargetTagged('argumentType', 'channel-group')
 bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.DateArgumentType)
   .whenTargetTagged('argumentType', 'date')
 bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.DefaultEmojiArgumentType)
@@ -47,10 +34,18 @@ bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.MessageArgument
 bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.PanelArgumentType)
   .whenTargetTagged('argumentType', 'panel')
 bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.RobloxUserArgumentType)
-  .inSingletonScope()
+  .inSingletonScope() // Singleton because this type has persistent state.
   .whenTargetTagged('argumentType', 'roblox-user')
+bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.RoleBindingArgumentType)
+  .whenTargetTagged('argumentType', 'role-binding')
+bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.RoleGroupArgumentType)
+  .whenTargetTagged('argumentType', 'role-group')
+bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.RoleMessageArgumentType)
+  .whenTargetTagged('argumentType', 'role-message')
 bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.TagArgumentType)
   .whenTargetTagged('argumentType', 'tag')
+bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.TicketTypeArgumentType)
+  .whenTargetTagged('argumentType', 'ticket-type')
 bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.TimeArgumentType)
   .whenTargetTagged('argumentType', 'time')
 
@@ -168,11 +163,11 @@ bind<interfaces.Factory<BaseHandler>>(TYPES.EventHandlerFactory).toFactory<BaseH
 )
 
 // Jobs
-bind<BaseJob>(TYPES.Job).to(AnnounceTrainingsJob)
+bind<BaseJob>(TYPES.Job).to(jobs.AnnounceTrainingsJob)
   .whenTargetTagged('job', 'announceTrainings')
-bind<BaseJob>(TYPES.Job).to(HealthCheckJob)
+bind<BaseJob>(TYPES.Job).to(jobs.HealthCheckJob)
   .whenTargetTagged('job', 'healthCheck')
-bind<BaseJob>(TYPES.Job).to(PremiumMembersReportJob)
+bind<BaseJob>(TYPES.Job).to(jobs.PremiumMembersReportJob)
   .whenTargetTagged('job', 'premiumMembersReport')
 
 bind<interfaces.Factory<BaseJob>>(TYPES.JobFactory).toFactory<BaseJob, [string]>(
@@ -198,56 +193,56 @@ bind<interfaces.Factory<BaseHandler>>(TYPES.PacketHandlerFactory).toFactory<Base
 )
 
 // Repositories
-bind<Repository<Channel>>(TYPES.ChannelRepository).toDynamicValue(() => {
-  return getRepository(Channel)
+bind<Repository<entities.Channel>>(TYPES.ChannelRepository).toDynamicValue(() => {
+  return getRepository(entities.Channel)
 })
-bind<Repository<Command>>(TYPES.CommandRepository).toDynamicValue(() => {
-  return getRepository(Command)
+bind<Repository<entities.Command>>(TYPES.CommandRepository).toDynamicValue(() => {
+  return getRepository(entities.Command)
 })
-bind<Repository<Emoji>>(TYPES.EmojiRepository).toDynamicValue(() => {
-  return getRepository(Emoji)
+bind<Repository<entities.Emoji>>(TYPES.EmojiRepository).toDynamicValue(() => {
+  return getRepository(entities.Emoji)
 })
-bind<Repository<Group>>(TYPES.GroupRepository).toDynamicValue(() => {
-  return getRepository(Group)
+bind<Repository<entities.Group>>(TYPES.GroupRepository).toDynamicValue(() => {
+  return getRepository(entities.Group)
 })
-bind<Repository<Guild>>(TYPES.GuildRepository).toDynamicValue(() => {
-  return getRepository(Guild)
+bind<Repository<entities.Guild>>(TYPES.GuildRepository).toDynamicValue(() => {
+  return getRepository(entities.Guild)
 })
-bind<Repository<GuildCommand>>(TYPES.GuildCommandRepository).toDynamicValue(() => {
-  return getRepository(GuildCommand)
+bind<Repository<entities.GuildCommand>>(TYPES.GuildCommandRepository).toDynamicValue(() => {
+  return getRepository(entities.GuildCommand)
 })
-bind<Repository<Member>>(TYPES.MemberRepository).toDynamicValue(() => {
-  return getRepository(Member)
+bind<Repository<entities.Member>>(TYPES.MemberRepository).toDynamicValue(() => {
+  return getRepository(entities.Member)
 })
-bind<Repository<Message>>(TYPES.MessageRepository).toDynamicValue(() => {
-  return getRepository(Message)
+bind<Repository<entities.Message>>(TYPES.MessageRepository).toDynamicValue(() => {
+  return getRepository(entities.Message)
 })
-bind<Repository<Panel>>(TYPES.PanelRepository).toDynamicValue(() => {
-  return getRepository(Panel)
+bind<Repository<entities.Panel>>(TYPES.PanelRepository).toDynamicValue(() => {
+  return getRepository(entities.Panel)
 })
-bind<Repository<Permission>>(TYPES.PermissionRepository).toDynamicValue(() => {
-  return getRepository(Permission)
+bind<Repository<entities.Permission>>(TYPES.PermissionRepository).toDynamicValue(() => {
+  return getRepository(entities.Permission)
 })
-bind<Repository<Role>>(TYPES.RoleRepository).toDynamicValue(() => {
-  return getRepository(Role)
+bind<Repository<entities.Role>>(TYPES.RoleRepository).toDynamicValue(() => {
+  return getRepository(entities.Role)
 })
-bind<Repository<RoleBinding>>(TYPES.RoleBindingRepository).toDynamicValue(() => {
-  return getRepository(RoleBinding)
+bind<Repository<entities.RoleBinding>>(TYPES.RoleBindingRepository).toDynamicValue(() => {
+  return getRepository(entities.RoleBinding)
 })
-bind<Repository<RoleMessage>>(TYPES.RoleMessageRepository).toDynamicValue(() => {
-  return getRepository(RoleMessage)
+bind<Repository<entities.RoleMessage>>(TYPES.RoleMessageRepository).toDynamicValue(() => {
+  return getRepository(entities.RoleMessage)
 })
-bind<Repository<Tag>>(TYPES.TagRepository).toDynamicValue(() => {
-  return getRepository(Tag)
+bind<Repository<entities.Tag>>(TYPES.TagRepository).toDynamicValue(() => {
+  return getRepository(entities.Tag)
 })
-bind<Repository<TagName>>(TYPES.TagNameRepository).toDynamicValue(() => {
-  return getRepository(TagName)
+bind<Repository<entities.TagName>>(TYPES.TagNameRepository).toDynamicValue(() => {
+  return getRepository(entities.TagName)
 })
-bind<Repository<Ticket>>(TYPES.TicketRepository).toDynamicValue(() => {
-  return getRepository(Ticket)
+bind<Repository<entities.Ticket>>(TYPES.TicketRepository).toDynamicValue(() => {
+  return getRepository(entities.Ticket)
 })
-bind<Repository<TicketType>>(TYPES.TicketTypeRepository).toDynamicValue(() => {
-  return getRepository(TicketType)
+bind<Repository<entities.TicketType>>(TYPES.TicketTypeRepository).toDynamicValue(() => {
+  return getRepository(entities.TicketType)
 })
 
 // Services

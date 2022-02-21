@@ -3,7 +3,7 @@ import { GuildContext, RoleBinding } from '../structures'
 import BaseManager from './base'
 import type { Repository } from 'typeorm'
 import type { RoleBinding as RoleBindingEntity } from '../entities'
-import { constants } from '../util'
+import { constants } from '../utils'
 import container from '../configs/container'
 import getDecorators from 'inversify-inject-decorators'
 

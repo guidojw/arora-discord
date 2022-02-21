@@ -1,7 +1,7 @@
 import type { BaseStructure, GuildContext } from '../structures'
 import type { Argument } from '../commands'
 import type { CommandInteraction } from 'discord.js'
-import type { Constructor } from '../util/util'
+import type { Constructor } from '../utils/util'
 import lodash from 'lodash'
 import pluralize from 'pluralize'
 
@@ -41,7 +41,7 @@ export class BaseStructureArgumentType<T extends IdentifiableStructure> {
     interaction: CommandInteraction,
     _arg: Argument<T>
   ): boolean | string | Promise<boolean | string> {
-    if (!interaction.inCachedGuild()) {
+    if (!interaction.inGuild()) {
       return false
     }
     const context = interaction.client.guildContexts.resolve(interaction.guildId) as GuildContext
@@ -50,7 +50,7 @@ export class BaseStructureArgumentType<T extends IdentifiableStructure> {
     if (!isNaN(id)) {
       // @ts-expect-error
       const structure = context[this.managerName].cache.get(id)
-      return typeof structure !== 'undefined'
+      return typeof structure !== 'undefined' && structure instanceof this.holds
     }
     const search = value.toLowerCase()
     // @ts-expect-error
@@ -68,7 +68,7 @@ export class BaseStructureArgumentType<T extends IdentifiableStructure> {
     interaction: CommandInteraction,
     _arg: Argument<T>
   ): T | null | Promise<T | null> {
-    if (!interaction.inCachedGuild()) {
+    if (!interaction.inGuild()) {
       return null
     }
     const context = interaction.client.guildContexts.resolve(interaction.guildId) as GuildContext

@@ -1,14 +1,14 @@
 import { type CommandInteraction, MessageEmbed } from 'discord.js'
 import { SubCommandCommand, type SubCommandCommandOptions } from '../base'
 import { groupService, verificationService } from '../../services'
-import { ApplyOptions } from '../../util/decorators'
+import { ApplyOptions } from '../../utils/decorators'
 import type { Exile } from '../../services/group'
 import type { GuildContext } from '../../structures'
 import type { RobloxUser } from '../../types/roblox-user'
 import { applicationAdapter } from '../../adapters'
 import applicationConfig from '../../configs/application'
 import { injectable } from 'inversify'
-import { timeUtil } from '../../util'
+import { timeUtil } from '../../utils'
 
 const { getDate, getTime } = timeUtil
 

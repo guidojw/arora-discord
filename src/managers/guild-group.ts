@@ -1,9 +1,9 @@
 import { Group, type GroupUpdateOptions, type GuildContext } from '../structures'
 import BaseManager from './base'
 import type { Group as GroupEntity } from '../entities'
-import type { GroupType } from '../util/constants'
+import type { GroupType } from '../utils/constants'
 import type { Repository } from 'typeorm'
-import { constants } from '../util'
+import { constants } from '../utils'
 import container from '../configs/container'
 import getDecorators from 'inversify-inject-decorators'
 

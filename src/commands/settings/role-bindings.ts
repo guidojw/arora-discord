@@ -1,52 +1,91 @@
-import type { CommandoClient, CommandoMessage } from 'discord.js-commando'
-import { type Message, MessageEmbed } from 'discord.js'
-import BaseCommand from '../base'
-import type { RoleBinding } from '../../structures'
+import { type CommandInteraction, MessageEmbed, type Role } from 'discord.js'
+import type { GuildContext, RoleBinding } from '../../structures'
+import { SubCommandCommand, type SubCommandCommandOptions } from '../base'
+import { ApplyOptions } from '../../utils/decorators'
 import applicationConfig from '../../configs/application'
 import { discordService } from '../../services'
+import { injectable } from 'inversify'
 import lodash from 'lodash'
 
-export default class RoleBindingsCommand extends BaseCommand {
-  public constructor (client: CommandoClient) {
-    super(client, {
-      group: 'settings',
-      name: 'rolebindings',
-      aliases: ['rolebnds', 'rolebinding', 'rolebnd'],
-      description: 'Lists all Roblox rank to Discord role bindings.',
-      clientPermissions: ['SEND_MESSAGES'],
-      args: [{
-        key: 'roleBinding',
-        prompt: 'What role binding would you like to know the information of?',
-        type: 'role-binding',
-        default: ''
-      }]
+@injectable()
+@ApplyOptions<SubCommandCommandOptions<RoleBindingsCommand>>({
+  requiresRobloxGroup: true,
+  subCommands: {
+    create: {
+      args: [
+        { key: 'role' },
+        { key: 'min' },
+        { key: 'max', required: false }
+      ]
+    },
+    delete: {
+      args: [{ key: 'id', name: 'roleBinding', type: 'role-binding' }]
+    },
+    list: {
+      args: [
+        {
+          key: 'id',
+          name: 'roleBinding',
+          type: 'role-binding',
+          required: false
+        }
+      ]
+    }
+  }
+})
+export default class RoleBindingsCommand extends SubCommandCommand<RoleBindingsCommand> {
+  public async create (
+    interaction: CommandInteraction<'present'>,
+    { role, min, max }: {
+      role: Role
+      min: number
+      max: number | null
+    }
+  ): Promise<void> {
+    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
+
+    const roleBinding = await context.roleBindings.create({ role, min, max: max ?? undefined })
+
+    return await interaction.reply({
+      content: `Successfully bound group \`${roleBinding.robloxGroupId}\` rank \`${getRangeString(roleBinding.min, roleBinding.max)}\` to role ${roleBinding.role?.toString() ?? 'Unknown'}.`,
+      allowedMentions: { users: [interaction.user.id] }
     })
   }
 
-  public async run (
-    message: CommandoMessage,
-    { roleBinding }: { roleBinding: RoleBinding | '' }
-  ): Promise<Message | Message[] | null> {
-    if (roleBinding !== '') {
+  public async delete (
+    interaction: CommandInteraction<'present'>,
+    { roleBinding }: { roleBinding: RoleBinding }
+  ): Promise<void> {
+    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
+
+    await context.roleBindings.delete(roleBinding)
+
+    return await interaction.reply('Successfully deleted role binding.')
+  }
+
+  public async list (
+    interaction: CommandInteraction<'present'>,
+    { roleBinding }: { roleBinding: RoleBinding | null }
+  ): Promise<void> {
+    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
+
+    if (roleBinding !== null) {
       const embed = new MessageEmbed()
         .addField(`Role Binding ${roleBinding.id}`, `\`${roleBinding.robloxGroupId}\` \`${getRangeString(roleBinding.min, roleBinding.max)}\` => ${roleBinding.role?.toString() ?? 'Unknown'}`)
-        .setColor(message.guild.primaryColor ?? applicationConfig.defaultColor)
-      return await message.replyEmbed(embed)
+        .setColor(context.primaryColor ?? applicationConfig.defaultColor)
+      return await interaction.reply({ embeds: [embed] })
     } else {
-      await message.guild.roleBindings.fetch()
-      if (message.guild.roleBindings.cache.size === 0) {
-        return await message.reply('No role bindings found.')
+      await context.roleBindings.fetch()
+      if (context.roleBindings.cache.size === 0) {
+        return await interaction.reply('No role bindings found.')
       }
 
       const embeds = discordService.getListEmbeds(
         'Role Bindings',
-        Object.values(lodash.groupBy(Array.from(message.guild.roleBindings.cache.values()), 'roleId')),
+        Object.values(lodash.groupBy(Array.from(context.roleBindings.cache.values()), 'roleId')),
         getGroupedRoleBindingRow
       )
-      for (const embed of embeds) {
-        await message.replyEmbed(embed)
-      }
-      return null
+      await interaction.reply({ embeds })
     }
   }
 }

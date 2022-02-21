@@ -15,11 +15,6 @@ export function validators (
   steps: Array<ValidatorFunction<any> | Array<ValidatorFunction<any>>> = []
 ): ValidatorFunction<any> {
   return async function (this: Argument<any>, val, interaction) {
-    const valid = await this.type?.validate(val, interaction, this) ?? true
-    if (valid !== true) {
-      return valid
-    }
-
     if (steps.length === 0) {
       return true
     }
@@ -89,7 +84,7 @@ export function typeOf (type: string): ValidatorFunction<any> {
   return makeValidator(
     async function (val, interaction, arg) {
       // eslint-disable-next-line valid-typeof
-      return typeof (await arg.type?.parse(val, interaction, arg) ?? val) === type
+      return typeof (await arg.parse?.(val, interaction, arg) ?? val) === type
     },
     `must be a ${type}`
   )

@@ -1,12 +1,12 @@
 import { Command, type CommandOptions } from '../base'
 import { type CommandInteraction, MessageEmbed } from 'discord.js'
-import { ApplyOptions } from '../../util/decorators'
+import { ApplyOptions } from '../../utils/decorators'
 import type { GuildContext } from '../../structures'
 import type { RobloxUser } from '../../types/roblox-user'
 import applicationConfig from '../../configs/application'
 import { injectable } from 'inversify'
 import pluralize from 'pluralize'
-import { timeUtil } from '../../util'
+import { timeUtil } from '../../utils'
 import { userService } from '../../services'
 
 const { getDate } = timeUtil

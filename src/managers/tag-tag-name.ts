@@ -3,7 +3,7 @@ import type { Tag as TagEntity, TagName as TagNameEntity } from '../entities'
 import { CachedManager } from 'discord.js'
 import type { Repository } from 'typeorm'
 import TagName from '../structures/tag-name'
-import { constants } from '../util'
+import { constants } from '../utils'
 import container from '../configs/container'
 import getDecorators from 'inversify-inject-decorators'
 

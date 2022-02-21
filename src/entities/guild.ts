@@ -13,7 +13,7 @@ import RoleMessage from './role-message'
 import Tag from './tag'
 import Ticket from './ticket'
 import TicketType from './ticket-type'
-import { VerificationProvider } from '../util/constants'
+import { VerificationProvider } from '../utils/constants'
 
 @Entity('guilds')
 export default class Guild {

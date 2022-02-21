@@ -2,7 +2,7 @@ import { type Guild, type GuildMember, MessageEmbed } from 'discord.js'
 import type BaseJob from './base'
 import { injectable } from 'inversify'
 import pluralize from 'pluralize'
-import { timeUtil } from '../util'
+import { timeUtil } from '../utils'
 
 interface PremiumGuildMember extends GuildMember {
   premiumSince: Date
