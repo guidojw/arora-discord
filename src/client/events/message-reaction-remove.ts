@@ -1,11 +1,12 @@
 import type { MessageReaction, User } from 'discord.js'
 import type BaseHandler from '../base'
 import type Client from '../client'
+import type { GuildContext } from '../../structures'
 import { injectable } from 'inversify'
 
 @injectable()
 export default class MessageReactionRemoveEventHandler implements BaseHandler {
-  public async handle (_client: Client, reaction: MessageReaction, user: User): Promise<void> {
+  public async handle (client: Client, reaction: MessageReaction, user: User): Promise<void> {
     if (user.bot) {
       return
     }
@@ -15,7 +16,8 @@ export default class MessageReactionRemoveEventHandler implements BaseHandler {
     if (reaction.message.guild === null) {
       return
     }
+    const context = client.guildContexts.resolve(reaction.message.guild) as GuildContext
 
-    await reaction.message.guild.handleRoleMessage('remove', reaction, user)
+    await context.handleRoleMessage('remove', reaction, user)
   }
 }

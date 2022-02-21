@@ -5,6 +5,7 @@ import type { Repository } from 'typeorm'
 import type { TicketType as TicketTypeEntity } from '../entities'
 import { constants } from '../utils'
 import container from '../configs/container'
+import emojiRegex from 'emoji-regex'
 import getDecorators from 'inversify-inject-decorators'
 
 export type TicketTypeResolvable = TicketType | string
@@ -119,10 +120,8 @@ export default class GuildTicketTypeManager extends BaseManager<TicketType, Tick
     }
     let emoji
     if (typeof emojiResolvable === 'string') {
-      const valid = this.client.argumentTypeFactory('default-emoji')
-        // @ts-expect-error
-        ?.validate(emojiResolvable, null, {})
-      emoji = valid !== true ? null : emojiResolvable
+      const valid = new RegExp(`^(?:${emojiRegex().source})$`).test(emojiResolvable)
+      emoji = valid ? emojiResolvable : null
     } else {
       emoji = this.context.guild.emojis.resolve(emojiResolvable)
     }

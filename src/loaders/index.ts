@@ -35,7 +35,7 @@ export async function init (): Promise<AroraClient> {
     healthCheckJob.run.bind(healthCheckJob.run, 'main')
   )
 
-  const client = new AroraClient({ commandEditableDuration: 0 })
+  const client = new AroraClient()
   await client.login(process.env.DISCORD_TOKEN)
 
   return client

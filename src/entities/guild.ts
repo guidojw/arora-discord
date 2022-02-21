@@ -1,5 +1,4 @@
 import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryColumn } from 'typeorm'
-import { IsNotEmpty, ValidateIf } from 'class-validator'
 import Channel from './channel'
 import Emoji from './emoji'
 import Group from './group'
@@ -19,11 +18,6 @@ import { VerificationProvider } from '../utils/constants'
 export default class Guild {
   @PrimaryColumn({ type: 'bigint' })
   public id!: string
-
-  @Column('varchar', { name: 'command_prefix', nullable: true, length: 255 })
-  @ValidateIf(guild => guild.commandPrefix != null)
-  @IsNotEmpty()
-  public commandPrefix?: string | null
 
   @Column('int', { name: 'primary_color', nullable: true })
   public primaryColor?: number | null

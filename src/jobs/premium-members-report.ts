@@ -1,5 +1,6 @@
-import { type Guild, type GuildMember, MessageEmbed } from 'discord.js'
+import { type GuildMember, MessageEmbed } from 'discord.js'
 import type BaseJob from './base'
+import type { GuildContext } from '../structures'
 import { injectable } from 'inversify'
 import pluralize from 'pluralize'
 import { timeUtil } from '../utils'
@@ -12,16 +13,16 @@ const { diffDays } = timeUtil
 
 @injectable()
 export default class PremiumMembersReportJob implements BaseJob {
-  public async run (guild: Guild): Promise<void> {
-    const serverBoosterReportChannelsGroup = guild.groups.resolve('serverBoosterReportChannels')
+  public async run (context: GuildContext): Promise<void> {
+    const serverBoosterReportChannelsGroup = context.groups.resolve('serverBoosterReportChannels')
     if (
       serverBoosterReportChannelsGroup === null || !serverBoosterReportChannelsGroup.isChannelGroup() ||
-        serverBoosterReportChannelsGroup.channels.cache.size === 0)
-    {
+        serverBoosterReportChannelsGroup.channels.cache.size === 0
+    ) {
       return
     }
 
-    const members = await guild.members.fetch()
+    const members = await context.guild.members.fetch()
     const premiumMembers: PremiumGuildMember[] = []
     for (const member of members.values()) {
       if (member.premiumSince !== null) {
@@ -46,7 +47,7 @@ export default class PremiumMembersReportJob implements BaseJob {
       const embed = new MessageEmbed()
         .setTitle('Server Booster Report')
         .setColor(0xff73fa)
-      const emoji = guild.emojis.cache.find(emoji => emoji.name?.toLowerCase() === 'boost')
+      const emoji = context.guild.emojis.cache.find(emoji => emoji.name?.toLowerCase() === 'boost')
 
       for (const { member, months } of monthlyPremiumMembers) {
         embed.addField(`${member.user.tag} ${emoji?.toString() ?? ''}`, `Has been boosting this server for **${pluralize('month', months, true)}**!`)

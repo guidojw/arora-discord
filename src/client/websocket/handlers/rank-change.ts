@@ -1,4 +1,3 @@
-import type { Collection, GuildMember } from 'discord.js'
 import type BaseHandler from '../../base'
 import type Client from '../../client'
 import { injectable } from 'inversify'
@@ -15,11 +14,11 @@ export default class RankChangePacketHandler implements BaseHandler {
   public async handle (client: Client, { data }: { data: RankChangePacket }): Promise<void> {
     const { groupId, userId, rank } = data
     const username = (await userService.getUser(userId)).name
-    for (const guild of client.guilds.cache.values()) {
-      if (guild.robloxGroupId === groupId) {
-        const roleBindings = await guild.roleBindings.fetch()
+    for (const context of client.guildContexts.cache.values()) {
+      if (context.robloxGroupId === groupId) {
+        const roleBindings = await context.roleBindings.fetch()
         if (roleBindings.size > 0) {
-          const members = await guild.members.fetch(username) as unknown as Collection<string, GuildMember>
+          const members = await context.fetchMembersByRobloxUsername(username)
           if (members.size > 0) {
             for (const roleBinding of roleBindings.values()) {
               if (rank === roleBinding.min ||

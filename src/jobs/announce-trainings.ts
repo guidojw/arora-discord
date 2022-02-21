@@ -1,7 +1,8 @@
-import { type Guild, MessageEmbed } from 'discord.js'
 import { groupService, userService } from '../services'
 import type BaseJob from './base'
 import type { GetUsers } from '../services/user'
+import type { GuildContext } from '../structures'
+import { MessageEmbed } from 'discord.js'
 import type { Training } from '../services/group'
 import { applicationAdapter } from '../adapters'
 import applicationConfig from '../configs/application'
@@ -14,26 +15,26 @@ const { getDate, getTime, getTimeZoneAbbreviation } = timeUtil
 
 @injectable()
 export default class AnnounceTrainingsJob implements BaseJob {
-  public async run (guild: Guild): Promise<void> {
-    if (guild.robloxGroupId === null) {
+  public async run (context: GuildContext): Promise<void> {
+    if (context.robloxGroupId === null) {
       return
     }
-    const trainingsInfoPanel = guild.panels.resolve('trainingsInfoPanel')
-    const trainingsPanel = guild.panels.resolve('trainingsPanel')
+    const trainingsInfoPanel = context.panels.resolve('trainingsInfoPanel')
+    const trainingsPanel = context.panels.resolve('trainingsPanel')
     if (trainingsInfoPanel?.message == null && trainingsPanel?.message == null) {
       return
     }
 
     const trainings: Training[] = (await applicationAdapter(
       'GET',
-      `v1/groups/${guild.robloxGroupId}/trainings?sort=date`
+      `v1/groups/${context.robloxGroupId}/trainings?sort=date`
     )).data
     const authorIds = [...new Set(trainings.map(training => training.authorId))]
     const authors = await userService.getUsers(authorIds)
 
     // Trainings Info Panel
     if (trainingsInfoPanel?.message != null) {
-      const embed = trainingsInfoPanel.embed.setColor(guild.primaryColor ?? applicationConfig.defaultColor)
+      const embed = trainingsInfoPanel.embed.setColor(context.primaryColor ?? applicationConfig.defaultColor)
       const now = new Date()
 
       if (embed.description !== null) {
@@ -53,9 +54,9 @@ export default class AnnounceTrainingsJob implements BaseJob {
 
     // Trainings Panel
     if (trainingsPanel?.message != null) {
-      const embed = await getTrainingsEmbed(guild.robloxGroupId, trainings, authors)
+      const embed = await getTrainingsEmbed(context.robloxGroupId, trainings, authors)
 
-      embed.setColor(guild.primaryColor ?? applicationConfig.defaultColor)
+      embed.setColor(context.primaryColor ?? applicationConfig.defaultColor)
 
       await trainingsPanel.message.edit({ embeds: [embed] })
     }
@@ -73,7 +74,7 @@ async function getTrainingsEmbed (groupId: number, trainings: Training[], author
 
   const types = Object.keys(groupedTrainings)
   const embed = new MessageEmbed()
-    .setFooter('Updated at')
+    .setFooter({ text: 'Updated at' })
     .setTimestamp()
 
   for (let i = 0; i < types.length; i++) {

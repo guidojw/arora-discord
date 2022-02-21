@@ -5,6 +5,7 @@ import type { Repository } from 'typeorm'
 import type { RoleMessage as RoleMessageEntity } from '../entities'
 import { constants } from '../utils'
 import container from '../configs/container'
+import emojiRegex from 'emoji-regex'
 import getDecorators from 'inversify-inject-decorators'
 
 export type RoleMessageResolvable = RoleMessage | number
@@ -48,10 +49,8 @@ export default class GuildRoleMessageManager extends BaseManager<RoleMessage, Ro
     }
     let emoji: string | GuildEmoji | null
     if (typeof emojiResolvable === 'string') {
-      const valid = this.client.argumentTypeFactory('default-emoji')
-        // @ts-expect-error
-        ?.validate(emojiResolvable, null, {})
-      emoji = valid !== true ? null : emojiResolvable
+      const valid = new RegExp(`^(?:${emojiRegex().source})$`).test(emojiResolvable)
+      emoji = valid ? emojiResolvable : null
     } else {
       emoji = this.context.guild.emojis.resolve(emojiResolvable)
     }

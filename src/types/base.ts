@@ -7,7 +7,7 @@ import pluralize from 'pluralize'
 
 export interface IdentifiableStructure extends BaseStructure {
   id: number
-  toString: () => string
+  toString (): string
 }
 
 export default abstract class BaseArgumentType<T> {

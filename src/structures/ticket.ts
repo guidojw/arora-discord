@@ -9,7 +9,7 @@ import {
   type PartialGuildMember,
   type TextChannel
 } from 'discord.js'
-import { discordService, userService } from '../services'
+import { discordService, userService, verificationService } from '../services'
 import { timeUtil, util } from '../utils'
 import BaseStructure from './base'
 import type GuildContext from './guild-context'
@@ -107,7 +107,7 @@ export default class Ticket extends BaseStructure {
       User ID: \`${robloxId ?? 'unknown'}\`
       Start time: \`${readableDate} ${readableTime}\`
       `)
-      .setFooter(`Ticket ID: ${this.id} | ${this.type.name}`)
+      .setFooter({ text: `Ticket ID: ${this.id} | ${this.type.name}` })
     await this.channel?.send({ content: this.author.toString(), embeds: [ticketInfoEmbed] })
 
     const additionalInfoPanel = this.context.panels.resolve('additionalTicketInfoPanel')
@@ -125,7 +125,7 @@ export default class Ticket extends BaseStructure {
     if (this.author !== null) {
       const embed = new MessageEmbed()
         .setColor(color ?? (success ? 0x00ff00 : 0xff0000))
-        .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
+        .setAuthor({ name: this.client.user.username, iconURL: this.client.user.displayAvatarURL() })
         .setTitle(message)
       const sent = await this.client.send(this.author, { embeds: [embed] }) !== null
 
@@ -136,14 +136,14 @@ export default class Ticket extends BaseStructure {
 
           const embed = new MessageEmbed()
             .setColor(this.context.primaryColor ?? applicationConfig.defaultColor)
-            .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
+            .setAuthor({ name: this.client.user.username, iconURL: this.client.user.displayAvatarURL() })
             .setTitle('Rating submitted')
             .setDescription('Thank you!')
           await this.client.send(this.author, { embeds: [embed] })
         } else {
           const embed = new MessageEmbed()
             .setColor(this.context.primaryColor ?? applicationConfig.defaultColor)
-            .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
+            .setAuthor({ name: this.client.user.username, iconURL: this.client.user.displayAvatarURL() })
             .setTitle('No rating submitted')
           await this.client.send(this.author, { embeds: [embed] })
         }
@@ -160,7 +160,7 @@ export default class Ticket extends BaseStructure {
 
     const embed = new MessageEmbed()
       .setColor(this.context.primaryColor ?? applicationConfig.defaultColor)
-      .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
+      .setAuthor({ name: this.client.user.username, iconURL: this.client.user.displayAvatarURL() })
       .setTitle('How would you rate the support you received?')
     const message = await this.client.send(this.author, { embeds: [embed] }) as Message | null
 
@@ -194,13 +194,16 @@ export default class Ticket extends BaseStructure {
 
     const embed = new MessageEmbed()
       .setColor(this.context.primaryColor ?? applicationConfig.defaultColor)
-      .setAuthor(this.author?.user?.tag ?? this.authorId ?? 'unknown', this.author?.user?.displayAvatarURL())
+      .setAuthor({
+        name: this.author?.user?.tag ?? this.authorId ?? 'unknown',
+        iconURL: this.author?.user?.displayAvatarURL()
+      })
       .setTitle('Ticket Rating')
       .setDescription(stripIndents`
       ${pluralize('Moderator', this.moderators.cache.size)}: ${moderatorsString}
       Rating: **${rating}**
       `)
-      .setFooter(`Ticket ID: ${this.id}`)
+      .setFooter({ text: `Ticket ID: ${this.id}` })
     return await this.context.ratingsChannel.send({ embeds: [embed] })
   }
 
@@ -256,12 +259,17 @@ export default class Ticket extends BaseStructure {
   public async fetchAuthorData (): Promise<{ robloxId: number | null, robloxUsername: string | null }> {
     let robloxId = null
     let robloxUsername = null
-    try {
-      robloxId = this.author?.robloxId ?? (await this.author?.fetchVerificationData())?.robloxId ?? null
-      robloxUsername = this.author?.robloxUsername ?? (robloxId !== null
-        ? (await userService.getUser(robloxId)).name
-        : null)
-    } catch {}
+    if (this.author !== null) {
+      try {
+        const verificationData = await verificationService.fetchVerificationData(this.author.id)
+        if (verificationData !== null) {
+          robloxId = verificationData.robloxId
+          robloxUsername = robloxId !== null
+            ? (await userService.getUser(robloxId)).name
+            : null
+        }
+      } catch {}
+    }
     return { robloxId, robloxUsername }
   }
 

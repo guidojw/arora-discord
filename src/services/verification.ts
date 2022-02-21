@@ -1,6 +1,11 @@
 import { bloxlinkAdapter, roVerAdapter } from '../adapters'
-import type { VerificationData } from '../extensions/guild-member'
 import { VerificationProvider } from '../utils/constants'
+
+export interface VerificationData {
+  provider: VerificationProvider
+  robloxId: number
+  robloxUsername: string | null
+}
 
 export async function fetchVerificationData (
   userId: string,

@@ -34,10 +34,10 @@ declare module 'discord.js' {
     provider: SettingProvider
     mainGuild: Guild | null
 
-    startActivityCarousel(): Presence | null
-    stopActivityCarousel(): void
-    nextActivity(activity?: number): Presence
-    send(
+    startActivityCarousel (): Presence | null
+    stopActivityCarousel (): void
+    nextActivity (activity?: number): Presence
+    send (
       user: PartialTextBasedChannelFields,
       ...args: Parameters<PartialTextBasedChannelFields['send']>
     ): Promise<Message>
@@ -181,7 +181,7 @@ export default class AroraClient<Ready extends boolean = boolean> extends Client
     // 50007: Cannot send messages to this user, user probably has DMs closed.
   }
 
-  public override async login (token = this.token ?? undefined): Promise<string> {
+  public override async login (token?: string): Promise<string> {
     const usedToken = await super.login(token)
     this.aroraWs?.connect()
     return usedToken

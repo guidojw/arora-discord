@@ -1,4 +1,4 @@
-import { Collection, type GuildChannel, type TextChannel, type VoiceChannel } from 'discord.js'
+import { Collection, type GuildChannel, type TextChannel, type VoiceBasedChannel } from 'discord.js'
 import { inject, injectable } from 'inversify'
 import type { Channel as ChannelEntity } from '../entities'
 import type { Repository } from 'typeorm'
@@ -11,7 +11,7 @@ export default class ChannelLinkService {
   @inject(TYPES.ChannelRepository)
   private readonly channelRepository!: Repository<ChannelEntity>
 
-  public async fetchToLinks (channel: VoiceChannel): Promise<Collection<string, TextChannel>> {
+  public async fetchToLinks (channel: VoiceBasedChannel): Promise<Collection<string, TextChannel>> {
     const data = await this.getData(channel)
 
     return channel.guild.channels.cache.filter(otherChannel => (
@@ -19,7 +19,7 @@ export default class ChannelLinkService {
     ) as Collection<string, TextChannel>
   }
 
-  public async linkChannel (voiceChannel: VoiceChannel, textChannel: TextChannel): Promise<void> {
+  public async linkChannel (voiceChannel: VoiceBasedChannel, textChannel: TextChannel): Promise<void> {
     const data = await this.getData(voiceChannel) ?? await this.channelRepository.save(this.channelRepository.create({
       id: voiceChannel.id,
       guildId: voiceChannel.guild.id
@@ -36,7 +36,7 @@ export default class ChannelLinkService {
     }
   }
 
-  public async unlinkChannel (voiceChannel: VoiceChannel, textChannel: TextChannel): Promise<void> {
+  public async unlinkChannel (voiceChannel: VoiceBasedChannel, textChannel: TextChannel): Promise<void> {
     const data = await this.getData(voiceChannel)
 
     if (typeof data === 'undefined' || !data?.toLinks.some(link => link.id === textChannel.id)) {

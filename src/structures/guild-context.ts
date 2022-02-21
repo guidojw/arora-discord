@@ -47,7 +47,6 @@ export enum GuildContextSetting {
 }
 
 export interface GuildContextUpdateOptions {
-  commandPrefix?: string | null
   logsChannelId?: Snowflake | null
   primaryColor?: number | null
   ratingsChannelId?: Snowflake | null
@@ -253,14 +252,14 @@ export default class GuildContext extends BaseStructure {
       }
 
       const embed = new MessageEmbed()
-        .setAuthor(author.tag, author.displayAvatarURL())
+        .setAuthor({ name: author.tag, iconURL: author.displayAvatarURL() })
         .setColor(this.primaryColor ?? applicationConfig.defaultColor)
         .setDescription(content)
       if (typeof options.color !== 'undefined') {
         embed.setColor(options.color)
       }
       if (typeof options.footer !== 'undefined') {
-        embed.setFooter(options.footer)
+        embed.setFooter({ text: options.footer })
       }
 
       return await this.logsChannel.send({ embeds: [embed] })

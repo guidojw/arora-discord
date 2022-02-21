@@ -181,8 +181,6 @@ bind<interfaces.Factory<BaseJob>>(TYPES.JobFactory).toFactory<BaseJob, [string]>
 // Packet Handlers
 bind<BaseHandler>(TYPES.Handler).to(packetHandlers.RankChangePacketHandler)
   .whenTargetTagged('packetHandler', 'rankChange')
-bind<BaseHandler>(TYPES.Handler).to(packetHandlers.TrainDeveloperPayoutReportPacketHandler)
-  .whenTargetTagged('packetHandler', 'trainDeveloperPayoutReport')
 
 bind<interfaces.Factory<BaseHandler>>(TYPES.PacketHandlerFactory).toFactory<BaseHandler, [string]>(
   (context: interfaces.Context) => {
@@ -219,9 +217,6 @@ bind<Repository<entities.Message>>(TYPES.MessageRepository).toDynamicValue(() =>
 })
 bind<Repository<entities.Panel>>(TYPES.PanelRepository).toDynamicValue(() => {
   return getRepository(entities.Panel)
-})
-bind<Repository<entities.Permission>>(TYPES.PermissionRepository).toDynamicValue(() => {
-  return getRepository(entities.Permission)
 })
 bind<Repository<entities.Role>>(TYPES.RoleRepository).toDynamicValue(() => {
   return getRepository(entities.Role)

@@ -66,7 +66,7 @@ export default class GuildTicketManager extends BaseManager<Ticket, TicketResolv
         channelName,
         { parent: this.context.ticketsCategory ?? undefined }
       )
-      await channel.updateOverwrite(author, { VIEW_CHANNEL: true })
+      await channel.permissionOverwrites.edit(author, { VIEW_CHANNEL: true })
     } catch (err) {
       await channel?.delete()
       throw err
@@ -161,7 +161,7 @@ export default class GuildTicketManager extends BaseManager<Ticket, TicketResolv
           if (!this.context.supportEnabled) {
             const embed = new MessageEmbed()
               .setColor(0xff0000)
-              .setAuthor(this.client.user.username, this.client.user.displayAvatarURL())
+              .setAuthor({ name: this.client.user.username, iconURL: this.client.user.displayAvatarURL() })
               .setTitle(`Welcome to ${this.context.guild.name} Support`)
               .setDescription(`We are currently closed. Check the ${this.context.guild.name} server for more information.`)
             await this.client.send(user, { embeds: [embed] })
