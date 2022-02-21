@@ -1,12 +1,12 @@
 import { argumentUtil, util } from '../../utils'
 import { ApplicationCommandOptionType } from 'discord-api-types/v9'
-import { GuildSetting } from '../../extensions'
+import { GuildContextSetting } from '../../structures'
 
-const { guildSettingTransformer } = argumentUtil
+const { guildContextSettingTransformer } = argumentUtil
 const { getEnumKeys } = util
 
-const choices = getEnumKeys(GuildSetting)
-  .map(guildSettingTransformer)
+const choices = getEnumKeys(GuildContextSetting)
+  .map(guildContextSettingTransformer)
   .map(attribute => attribute.toLowerCase())
   .map(attribute => ({ name: attribute, value: attribute }))
 

@@ -14,8 +14,10 @@ const { diffDays } = timeUtil
 export default class PremiumMembersReportJob implements BaseJob {
   public async run (guild: Guild): Promise<void> {
     const serverBoosterReportChannelsGroup = guild.groups.resolve('serverBoosterReportChannels')
-    if (serverBoosterReportChannelsGroup === null || !serverBoosterReportChannelsGroup.isChannelGroup() ||
-        serverBoosterReportChannelsGroup.channels.cache.size === 0) {
+    if (
+      serverBoosterReportChannelsGroup === null || !serverBoosterReportChannelsGroup.isChannelGroup() ||
+        serverBoosterReportChannelsGroup.channels.cache.size === 0)
+    {
       return
     }
 

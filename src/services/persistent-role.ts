@@ -1,7 +1,6 @@
-import type { GuildMember, Role } from 'discord.js'
+import { Collection, type GuildMember, type Role } from 'discord.js'
 import type { Member as MemberEntity, Role as RoleEntity } from '../entities'
 import { inject, injectable } from 'inversify'
-import { Collection } from 'discord.js'
 import type { Repository } from 'typeorm'
 import { constants } from '../utils'
 

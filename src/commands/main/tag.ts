@@ -48,7 +48,7 @@ export default class TagsCommand extends Command {
       const embed = new MessageEmbed()
         .setTitle('Tags')
         .setDescription(list)
-        .setFooter(`Page 1/1 (${context.tags.cache.size} entries)`)
+        .setFooter({ text: `Page 1/1 (${context.tags.cache.size} entries)` })
         .setColor(context.primaryColor ?? applicationConfig.defaultColor)
       return await interaction.reply({ embeds: [embed] })
     }

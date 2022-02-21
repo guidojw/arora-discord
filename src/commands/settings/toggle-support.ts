@@ -1,25 +1,22 @@
-import type { CommandoClient, CommandoMessage } from 'discord.js-commando'
-import { type Message, MessageEmbed } from 'discord.js'
-import BaseCommand from '../base'
+import { type CommandInteraction, MessageEmbed } from 'discord.js'
+import { Command } from '../base'
+import type { GuildContext } from '../../structures'
+import { injectable } from 'inversify'
 
-export default class ToggleSupportCommand extends BaseCommand {
-  public constructor (client: CommandoClient) {
-    super(client, {
-      group: 'settings',
-      name: 'togglesupport',
-      aliases: ['toggle'],
-      description: 'Enables/disables the support system.',
-      clientPermissions: ['SEND_MESSAGES']
-    })
-  }
+@injectable()
+export default class ToggleSupportCommand extends Command {
+  public async execute (interaction: CommandInteraction): Promise<void> {
+    if (!interaction.inGuild()) {
+      return
+    }
+    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
 
-  public async run (message: CommandoMessage): Promise<Message | Message[] | null> {
-    await message.guild.update({ supportEnabled: !message.guild.supportEnabled })
+    await context.update({ supportEnabled: !context.supportEnabled })
 
     const embed = new MessageEmbed()
-      .setColor(message.guild.supportEnabled ? 0x00ff00 : 0xff0000)
+      .setColor(context.supportEnabled ? 0x00ff00 : 0xff0000)
       .setTitle('Successfully toggled support')
-      .setDescription(`Tickets System: **${message.guild.supportEnabled ? 'online' : 'offline'}**`)
-    return await message.replyEmbed(embed)
+      .setDescription(`Tickets System: **${context.supportEnabled ? 'online' : 'offline'}**`)
+    return await interaction.reply({ embeds: [embed] })
   }
 }

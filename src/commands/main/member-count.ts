@@ -14,7 +14,7 @@ import { injectable } from 'inversify'
         key: 'id',
         required: false,
         default: (interaction: CommandInteraction) => (
-          interaction.inCachedGuild()
+          interaction.inGuild()
             ? (interaction.client.guildContexts.resolve(interaction.guildId) as GuildContext).robloxGroupId
             : null
         )

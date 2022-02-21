@@ -1,8 +1,7 @@
 import * as interactions from '../../interactions'
-import { ApplicationCommandData, TextChannel } from 'discord.js'
+import { ApplicationCommandData, type Message, TextChannel } from 'discord.js'
 import type BaseHandler from '../base'
 import type Client from '../client'
-import type { Message } from 'discord.js'
 import { injectable } from 'inversify'
 import { stripIndents } from 'common-tags'
 
@@ -28,8 +27,10 @@ export default class MessageEventHandler implements BaseHandler {
 
     const photoContestChannelsGroup = guild.groups.resolve('photoContestChannels')
     // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
-    if (photoContestChannelsGroup !== null && photoContestChannelsGroup.isChannelGroup() &&
-      photoContestChannelsGroup.channels.cache.has(message.channel.id)) {
+    if (
+      photoContestChannelsGroup !== null && photoContestChannelsGroup.isChannelGroup() &&
+      photoContestChannelsGroup.channels.cache.has(message.channel.id)
+    ) {
       if (message.attachments.size > 0 || message.embeds.length > 0) {
         await message.react('👍')
       }

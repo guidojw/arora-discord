@@ -14,7 +14,10 @@ const { getDurationString } = timeUtil
 export default class StatusCommand extends Command {
   public async execute (interaction: CommandInteraction): Promise<void> {
     const embed = new MessageEmbed()
-      .setAuthor(interaction.client.user?.username ?? 'Arora', interaction.client.user?.displayAvatarURL())
+      .setAuthor({
+        name: interaction.client.user?.username ?? 'Arora',
+        iconURL: interaction.client.user?.displayAvatarURL()
+      })
       .setColor(0xff82d1)
 
     if (interaction.inGuild()) {
@@ -27,7 +30,7 @@ export default class StatusCommand extends Command {
       .addField('Load Average', os.loadavg().join(', '), true)
       .addField('Memory Usage', `${formatBytes(totalMem - os.freemem(), 3)} / ${formatBytes(totalMem, 3)}`, true)
       .addField('Uptime', getDurationString(interaction.client.uptime ?? 0), true)
-      .setFooter(`Process ID: ${process.pid} | ${os.hostname()}`)
+      .setFooter({ text: `Process ID: ${process.pid} | ${os.hostname()}` })
       .setTimestamp()
 
     if (applicationConfig.apiEnabled === true) {

@@ -8,7 +8,7 @@ services:
     environment:
       - POSTGRES_HOST=db
     volumes:
-      - ./config/application.js:/opt/app/config/application.js
+      - ./application.js:/opt/app/dist/configs/application.js
     command: /bin/bash ./bin/wait-for-it.sh db:5432 -- yarn start
 
   db:

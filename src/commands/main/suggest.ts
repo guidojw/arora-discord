@@ -37,7 +37,7 @@ export default class SuggestCommand extends Command {
     const authorUrl = `https://discord.com/users/${interaction.user.id}`
     const embed = new MessageEmbed()
       .setDescription(suggestion)
-      .setAuthor(interaction.user.tag, interaction.user.displayAvatarURL(), authorUrl)
+      .setAuthor({ name: interaction.user.tag, iconURL: interaction.user.displayAvatarURL(), url: authorUrl })
       .setColor(0x000af43)
 
     const newMessage = await context.suggestionsChannel.send({ embeds: [embed] })

@@ -38,7 +38,7 @@ export default class BoostInfoCommand extends Command {
       .setTitle(`${member.user.tag} ${emoji?.toString() ?? ''}`)
       .setThumbnail(member.user.displayAvatarURL())
       .setDescription(`Has been boosting this server for **${pluralize('month', months, true)}** and **${pluralize('day', days, true)}**!`)
-      .setFooter('* Discord Nitro months are 30 days long.')
+      .setFooter({ text: '* Discord Nitro months are 30 days long.' })
       .setColor(0xff73fa)
     return await interaction.reply({ embeds: [embed] })
   }
