@@ -1,18 +1,18 @@
 import { type Argument, type BaseCommand, Command, SubCommandCommand } from '../commands'
 import type { CommandInteraction, CommandInteractionOption, Interaction } from 'discord.js'
 import type Client from './client'
-import type { Constructor } from '../utils/util'
 import applicationConfig from '../configs/application'
 import { constants } from '../utils'
 import container from '../configs/container'
 import getDecorators from 'inversify-inject-decorators'
+import type { interfaces } from 'inversify'
 
 const { TYPES } = constants
 const { lazyInject } = getDecorators(container)
 
 export default class Dispatcher {
   @lazyInject(TYPES.CommandFactory)
-  public readonly commandFactory!: (commandName: string) => Constructor<BaseCommand> | undefined
+  public readonly commandFactory!: (commandName: string) => interfaces.Newable<BaseCommand> | undefined
 
   private readonly client: Client
 
@@ -31,6 +31,7 @@ export default class Dispatcher {
     if (typeof ctor === 'undefined') {
       throw new Error(`Unknown command "${interaction.commandName}".`)
     }
+    // @ts-expect-error
     // eslint-disable-next-line new-cap
     const command = new ctor(this.client)
 
