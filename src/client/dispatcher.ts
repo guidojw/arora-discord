@@ -11,7 +11,7 @@ const { lazyInject } = getDecorators(container)
 
 export default class Dispatcher {
   @lazyInject(TYPES.CommandFactory)
-  public readonly commandFactory!: (commandName: string) => BaseCommand | undefined
+  public readonly commandFactory!: (commandName: string) => (client: Client) => BaseCommand | undefined
 
   private readonly client: Client
 
@@ -26,7 +26,7 @@ export default class Dispatcher {
   }
 
   private async handleCommandInteraction (interaction: CommandInteraction): Promise<void> {
-    const command = this.commandFactory(interaction.commandName)
+    const command = this.commandFactory(interaction.commandName)(this.client)
     if (typeof command === 'undefined') {
       throw new Error(`Unknown command "${interaction.commandName}".`)
     }

@@ -71,7 +71,7 @@ export function getListEmbeds<T, D extends any[]> (
   return embeds
 }
 
-export function validateEmbed (embed: MessageEmbed): boolean | string {
+export function validateEmbed (embed: MessageEmbed): string | true {
   if (embed.length > 6000) {
     return 'Embed length is too big.'
   } else if ((embed.title?.length ?? 0) > 256) {

@@ -1,4 +1,3 @@
-import * as interactions from '../../interactions'
 import { ApplicationCommandData, type Message, TextChannel } from 'discord.js'
 import type BaseHandler from '../base'
 import type Client from '../client'
@@ -23,6 +22,7 @@ export default class MessageEventHandler implements BaseHandler {
         await client.application?.fetch()
       }
       if (message.content.toLowerCase() === '!deploy' && message.author.id === client.application?.owner?.id) {
+        const interactions = await import('../../interactions')
         await guild.commands.set(Object.values(interactions) as ApplicationCommandData[])
       }
     }

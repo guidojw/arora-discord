@@ -1,12 +1,7 @@
-import { CachedManager, type Client, type Constructable } from 'discord.js'
+import { CachedManager, type Client } from 'discord.js'
 
 export default class BaseManager<Holds extends { id: number }, R> extends CachedManager<number, Holds, R> {
-  public override readonly client: Client<true>
-
-  public constructor (client: Client<true>, holds: Constructable<Holds>) {
-    super(client, holds)
-    this.client = client
-  }
+  public override readonly client!: Client<true>
 
   public override resolve (resolvable: Holds): Holds
   public override resolve (resolvable: R): Holds | null

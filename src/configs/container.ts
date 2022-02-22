@@ -3,17 +3,18 @@ import * as commands from '../commands'
 import * as entities from '../entities'
 import * as jobs from '../jobs'
 import * as services from '../services'
-import { type BaseHandler, eventHandlers, packetHandlers } from '../client'
+import { type AroraClient, type BaseHandler, eventHandlers, packetHandlers } from '../client'
 import { Container, type interfaces } from 'inversify'
 import { type Repository, getRepository } from 'typeorm'
 import type { BaseArgumentType } from '../types'
 import type { BaseCommand } from '../commands'
 import type { BaseJob } from '../jobs'
+import type { Constructor } from '../utils/util'
 import { constants } from '../utils'
 
 const { TYPES } = constants
 
-const container = new Container()
+const container = new Container({ skipBaseClassChecks: true })
 const bind = container.bind.bind(container)
 
 // Argument Types
@@ -58,70 +59,78 @@ bind<interfaces.Factory<BaseArgumentType<any>>>(TYPES.ArgumentTypeFactory).toFac
 )
 
 // Commands
-bind<BaseCommand<any>>(TYPES.Command).to(commands.BansCommand)
+bind<BaseCommand<any>>(TYPES.Command).toConstructor(commands.BansCommand)
   .whenTargetTagged('command', 'bans')
-bind<BaseCommand<any>>(TYPES.Command).to(commands.DemoteCommand)
+bind<BaseCommand<any>>(TYPES.Command).toConstructor(commands.DemoteCommand)
   .whenTargetTagged('command', 'demote')
-bind<BaseCommand<any>>(TYPES.Command).to(commands.ExilesCommand)
+bind<BaseCommand<any>>(TYPES.Command).toConstructor(commands.ExilesCommand)
   .whenTargetTagged('command', 'exiles')
-bind<BaseCommand<any>>(TYPES.Command).to(commands.PersistentRolesCommand)
+bind<BaseCommand<any>>(TYPES.Command).toConstructor(commands.PersistentRolesCommand)
   .whenTargetTagged('command', 'persistentroles')
-bind<BaseCommand<any>>(TYPES.Command).to(commands.PromoteCommand)
+bind<BaseCommand<any>>(TYPES.Command).toConstructor(commands.PromoteCommand)
   .whenTargetTagged('command', 'promote')
-bind<BaseCommand<any>>(TYPES.Command).to(commands.ShoutCommand)
+bind<BaseCommand<any>>(TYPES.Command).toConstructor(commands.ShoutCommand)
   .whenTargetTagged('command', 'shout')
-bind<BaseCommand<any>>(TYPES.Command).to(commands.TrainingsCommand)
+bind<BaseCommand<any>>(TYPES.Command).toConstructor(commands.TrainingsCommand)
   .whenTargetTagged('command', 'trainings')
 
-bind<BaseCommand<any>>(TYPES.Command).to(commands.RestartCommand)
+bind<BaseCommand<any>>(TYPES.Command).toConstructor(commands.RestartCommand)
   .whenTargetTagged('command', 'restart')
-bind<BaseCommand<any>>(TYPES.Command).to(commands.StatusCommand)
+bind<BaseCommand<any>>(TYPES.Command).toConstructor(commands.StatusCommand)
   .whenTargetTagged('command', 'status')
 
-bind<BaseCommand<any>>(TYPES.Command).to(commands.BoostInfoCommand)
+bind<BaseCommand<any>>(TYPES.Command).toConstructor(commands.BoostInfoCommand)
   .whenTargetTagged('command', 'boostinfo')
-bind<BaseCommand<any>>(TYPES.Command).to(commands.DeleteSuggestionCommand)
+bind<BaseCommand<any>>(TYPES.Command).toConstructor(commands.DeleteSuggestionCommand)
   .whenTargetTagged('command', 'deletesuggestion')
-bind<BaseCommand<any>>(TYPES.Command).to(commands.GetShoutCommand)
+bind<BaseCommand<any>>(TYPES.Command).toConstructor(commands.GetShoutCommand)
   .whenTargetTagged('command', 'getshout')
-bind<BaseCommand<any>>(TYPES.Command).to(commands.MemberCountCommand)
+bind<BaseCommand<any>>(TYPES.Command).toConstructor(commands.MemberCountCommand)
   .whenTargetTagged('command', 'membercount')
-bind<BaseCommand<any>>(TYPES.Command).to(commands.PollCommand)
+bind<BaseCommand<any>>(TYPES.Command).toConstructor(commands.PollCommand)
   .whenTargetTagged('command', 'poll')
-bind<BaseCommand<any>>(TYPES.Command).to(commands.SuggestCommand)
+bind<BaseCommand<any>>(TYPES.Command).toConstructor(commands.SuggestCommand)
   .whenTargetTagged('command', 'suggest')
-bind<BaseCommand<any>>(TYPES.Command).to(commands.TagCommand)
+bind<BaseCommand<any>>(TYPES.Command).toConstructor(commands.TagCommand)
   .whenTargetTagged('command', 'tag')
-bind<BaseCommand<any>>(TYPES.Command).to(commands.WhoIsCommand)
+bind<BaseCommand<any>>(TYPES.Command).toConstructor(commands.WhoIsCommand)
   .whenTargetTagged('command', 'whois')
 
-bind<BaseCommand<any>>(TYPES.Command).to(commands.ChannelLinksCommand)
+bind<BaseCommand<any>>(TYPES.Command).toConstructor(commands.ChannelLinksCommand)
   .whenTargetTagged('command', 'channellinks')
-bind<BaseCommand<any>>(TYPES.Command).to(commands.CloseTicketCommand)
+bind<BaseCommand<any>>(TYPES.Command).toConstructor(commands.CloseTicketCommand)
   .whenTargetTagged('command', 'closeticket')
-bind<BaseCommand<any>>(TYPES.Command).to(commands.GroupsCommand)
+bind<BaseCommand<any>>(TYPES.Command).toConstructor(commands.GroupsCommand)
   .whenTargetTagged('command', 'groups')
-bind<BaseCommand<any>>(TYPES.Command).to(commands.PanelsCommand)
+bind<BaseCommand<any>>(TYPES.Command).toConstructor(commands.PanelsCommand)
   .whenTargetTagged('command', 'panels')
-bind<BaseCommand<any>>(TYPES.Command).to(commands.RoleBindingsCommand)
+bind<BaseCommand<any>>(TYPES.Command).toConstructor(commands.RoleBindingsCommand)
   .whenTargetTagged('command', 'rolebindings')
-bind<BaseCommand<any>>(TYPES.Command).to(commands.RoleMessagesCommand)
+bind<BaseCommand<any>>(TYPES.Command).toConstructor(commands.RoleMessagesCommand)
   .whenTargetTagged('command', 'rolemessages')
-bind<BaseCommand<any>>(TYPES.Command).to(commands.SetActivityCommand)
+bind<BaseCommand<any>>(TYPES.Command).toConstructor(commands.SetActivityCommand)
   .whenTargetTagged('command', 'setactivity')
-bind<BaseCommand<any>>(TYPES.Command).to(commands.SettingsCommand)
+bind<BaseCommand<any>>(TYPES.Command).toConstructor(commands.SettingsCommand)
   .whenTargetTagged('command', 'settings')
-bind<BaseCommand<any>>(TYPES.Command).to(commands.TagsCommand)
+bind<BaseCommand<any>>(TYPES.Command).toConstructor(commands.TagsCommand)
   .whenTargetTagged('command', 'tags')
-bind<BaseCommand<any>>(TYPES.Command).to(commands.TicketTypesCommand)
+bind<BaseCommand<any>>(TYPES.Command).toConstructor(commands.TicketTypesCommand)
   .whenTargetTagged('command', 'tickettypes')
-bind<BaseCommand<any>>(TYPES.Command).to(commands.ToggleSupportCommand)
+bind<BaseCommand<any>>(TYPES.Command).toConstructor(commands.ToggleSupportCommand)
   .whenTargetTagged('command', 'togglesupport')
 
-bind<interfaces.Factory<BaseCommand<any>>>(TYPES.CommandFactory).toFactory<BaseCommand<any>, [string]>(
+bind<interfaces.Factory<BaseCommand<any>>>(TYPES.CommandFactory)
+  // eslint-disable-next-line no-extra-parens
+  .toFactory<(client: AroraClient) => BaseCommand<any>, [string]>(
   (context: interfaces.Context) => {
-    return (commandName: string) => {
-      return context.container.getTagged<BaseCommand<any>>(TYPES.Command, 'command', commandName)
+    return (commandName: string) => (client: AroraClient) => {
+      const commandClass = context.container.getTagged<Constructor<BaseCommand<any>>>(
+        TYPES.Command,
+        'command',
+        commandName
+      )
+      // eslint-disable-next-line new-cap
+      return new commandClass(client)
     }
   }
 )

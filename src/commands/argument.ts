@@ -32,8 +32,8 @@ export default class Argument<T> {
   public readonly parser?: ParserFunction<T>
 
   public constructor (client: AroraClient, options: ArgumentOptions<T>) {
-    this.validateOptions(options)
     this.client = client
+    this.validateOptions(options)
 
     const resolvedOptions = this.resolveOptions(options)
     this.key = resolvedOptions.key
@@ -47,7 +47,7 @@ export default class Argument<T> {
 
   public get validate (): ValidatorFunction<T> | null {
     return this.validator ?? (!Array.isArray(this.type)
-      ? this.type?.validate ?? null
+      ? this.type?.validate.bind(this.type) ?? null
       : async function (
         this: Argument<T> & { type: Array<BaseArgumentType<T>> },
         value: string,
@@ -69,7 +69,7 @@ export default class Argument<T> {
 
   public get parse (): ParserFunction<T> | null {
     return this.parser ?? (!Array.isArray(this.type)
-      ? this.type?.parse ?? null
+      ? this.type?.parse.bind(this.type) ?? null
       : async function (
         this: Argument<T> & { type: Array<BaseArgumentType<T>> },
         value: string,
