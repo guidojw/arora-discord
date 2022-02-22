@@ -32,7 +32,7 @@ export default class WhoIsCommand extends Command {
       : null
 
     const userInfo = await userService.getUser(user.id)
-    const age = Math.floor((Date.now() - new Date(userInfo.created).getTime()) / (24 * 60 * 60 * 1000))
+    const age = Math.floor((Date.now() - new Date(userInfo.created).getTime()) / 86_400_000)
     const outfits = await userService.getUserOutfits(user.id)
 
     const embed = new MessageEmbed()

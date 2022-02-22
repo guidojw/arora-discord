@@ -87,7 +87,7 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
     await applicationAdapter('POST', `v1/groups/${context.robloxGroupId}/bans`, {
       userId: user.id,
       authorId,
-      duration: duration === null ? undefined : duration * 24 * 60 * 60 * 1000,
+      duration: duration === null ? undefined : duration * 86_400_000,
       reason
     })
 
@@ -165,7 +165,7 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
 
     await applicationAdapter('POST', `v1/groups/${context.robloxGroupId}/bans/${user.id}/extend`, {
       authorId,
-      duration: days * 24 * 60 * 60 * 1000,
+      duration: days * 86_400_000,
       reason
     })
 
@@ -181,11 +181,11 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
     if (user !== null) {
       const ban = (await applicationAdapter('GET', `v1/groups/${context.robloxGroupId}/bans/${user.id}`)).data
 
-      const days = ban.duration / (24 * 60 * 60 * 1000)
+      const days = ban.duration / 86_400_000
       const date = new Date(ban.date)
       let extensionDays = 0
       for (const extension of ban.extensions) {
-        extensionDays += extension.duration / (24 * 60 * 60 * 1000)
+        extensionDays += extension.duration / 86_400_000
       }
       const extensionString = extensionDays !== 0
         ? ` (${Math.sign(extensionDays) === 1 ? '+' : ''}${extensionDays})`

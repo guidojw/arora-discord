@@ -24,7 +24,7 @@ const { PartialTypes } = Constants
 const { TYPES } = constants
 const { lazyInject } = getDecorators(container)
 
-const ACTIVITY_CAROUSEL_INTERVAL = 60 * 1000
+const ACTIVITY_CAROUSEL_INTERVAL = 60_000
 
 declare module 'discord.js' {
   interface Client {
@@ -50,9 +50,6 @@ export default class AroraClient<Ready extends boolean = boolean> extends Client
 
   @lazyInject(TYPES.EventHandlerFactory)
   private readonly eventHandlerFactory!: (eventName: string) => BaseHandler
-
-  @lazyInject(TYPES.PacketHandlerFactory)
-  public readonly packetHandlerFactory!: (eventName: string) => BaseHandler
 
   private readonly aroraWs: WebSocketManager | null
   private currentActivity: number
@@ -100,7 +97,7 @@ export default class AroraClient<Ready extends boolean = boolean> extends Client
 
     this.guildContexts = new GuildContextManager(this)
 
-    this.dispatcher = new Dispatcher(this)
+    this.dispatcher = new Dispatcher()
     this.provider = new SettingProvider()
 
     this.mainGuild = null

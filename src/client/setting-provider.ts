@@ -27,11 +27,7 @@ export default class SettingProvider {
   @lazyInject(TYPES.TagRepository)
   private readonly tagRepository!: Repository<TagEntity>
 
-  private client!: AroraClient
-
   public async init (client: AroraClient): Promise<void> {
-    this.client = client
-
     await Promise.all(client.guilds.cache.map(async guild => await this.setupGuild(guild)))
   }
 
@@ -73,7 +69,7 @@ export default class SettingProvider {
     // Remove more from the relations and put it here if above error returns..
 
     // @ts-expect-error
-    const context = this.client.guildContexts._add(data, true, { id: data.id, extras: [guild] })
+    const context = guild.client.guildContexts._add(data, true, { id: data.id, extras: [guild] })
     await context.init()
   }
 }

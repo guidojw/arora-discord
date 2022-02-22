@@ -22,8 +22,8 @@ export type TicketResolvable = TextChannelResolvable | GuildMemberResolvable | T
 const { TYPES } = constants
 const { lazyInject } = getDecorators(container)
 
-const TICKETS_INTERVAL = 60 * 1000
-const SUBMISSION_TIME = 30 * 60 * 1000
+const TICKETS_INTERVAL = 60_000
+const SUBMISSION_TIME = 3_600_000
 
 // @ts-expect-error
 export default class GuildTicketManager extends BaseManager<Ticket, TicketResolvable> {

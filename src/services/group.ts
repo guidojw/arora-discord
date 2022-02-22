@@ -95,9 +95,9 @@ export function getBanRow (ban: Ban, { users, roles }: { users: GetUsers, roles:
 
   let durationString = ''
   if (ban.duration !== null) {
-    const days = ban.duration / (24 * 60 * 60 * 1000)
+    const days = ban.duration / 86_400_000
     const extensionDays = ban.extensions.reduce((result, extension) => result + extension.duration, 0) /
-      (24 * 60 * 60 * 1000)
+      86_400_000
     const extensionString = extensionDays !== 0
       ? ` (${Math.sign(extensionDays) === 1 ? '+' : ''}${extensionDays})`
       : ''

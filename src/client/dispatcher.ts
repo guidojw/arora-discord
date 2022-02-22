@@ -1,6 +1,5 @@
 import { type Argument, type BaseCommand, Command, SubCommandCommand } from '../commands'
 import type { CommandInteraction, CommandInteractionOption, Interaction } from 'discord.js'
-import type Client from './client'
 import applicationConfig from '../configs/application'
 import { constants } from '../utils'
 import container from '../configs/container'
@@ -13,12 +12,6 @@ const { lazyInject } = getDecorators(container)
 export default class Dispatcher {
   @lazyInject(TYPES.CommandFactory)
   public readonly commandFactory!: (commandName: string) => interfaces.Newable<BaseCommand> | undefined
-
-  private readonly client: Client
-
-  public constructor (client: Client) {
-    this.client = client
-  }
 
   public async handleInteraction (interaction: Interaction): Promise<void> {
     if (interaction.isCommand()) {
@@ -33,7 +26,7 @@ export default class Dispatcher {
     }
     // @ts-expect-error
     // eslint-disable-next-line new-cap
-    const command = new ctor(this.client)
+    const command = new ctor(interaction.client)
 
     let error
     if (command.options.requiresApi === true && applicationConfig.apiEnabled !== true) {
@@ -41,18 +34,18 @@ export default class Dispatcher {
     }
     if (
       command.options.requiresRobloxGroup === true && (interaction.guildId === null ||
-      this.client.guildContexts.resolve(interaction.guildId)?.robloxGroupId === null)
+        interaction.client.guildContexts.resolve(interaction.guildId)?.robloxGroupId === null)
     ) {
       error = 'This command requires that the server has its robloxGroup setting set.'
     }
-    if (command.options.requiresSingleGuild === true && this.client.guilds.cache.size !== 1) {
+    if (command.options.requiresSingleGuild === true && interaction.client.guilds.cache.size !== 1) {
       error = 'This command requires the bot to be in only one guild.'
     }
     if (command.options.ownerOwnly === true) {
-      if (this.client.application?.owner === null) {
-        await this.client.application?.fetch()
+      if (interaction.client.application?.owner === null) {
+        await interaction.client.application?.fetch()
       }
-      if (interaction.user.id !== this.client.application?.owner?.id) {
+      if (interaction.user.id !== interaction.client.application?.owner?.id) {
         error = 'This command can only be run by the application owner.'
       }
     }
@@ -82,13 +75,11 @@ export default class Dispatcher {
       ? await Dispatcher.parseArgs(interaction, subCommandArgs as Record<string, Argument<any>>)
       : {}
 
-    if (command instanceof Command) {
-      return await command.execute(interaction, args)
-    } else {
-      return subCommandGroupName != null
-        ? await command.execute(interaction, subCommandGroupName, subCommandName, args)
-        : await command.execute(interaction, subCommandName, args)
-    }
+    return command instanceof Command
+      ? await command.execute(interaction, args)
+      : subCommandGroupName == null
+        ? await command.execute(interaction, subCommandName, args)
+        : await command.execute(interaction, subCommandGroupName, subCommandName, args)
   }
 
   private static async parseArgs (
@@ -103,7 +94,7 @@ export default class Dispatcher {
         continue
       }
 
-      const val = option !== null
+      let val = option !== null
         ? Dispatcher.getCommandInteractionOptionValue(option)
         : typeof arg.default === 'string' ? arg.default : (arg.default as Function)(interaction)
       if (typeof val !== 'string') {
@@ -121,8 +112,7 @@ export default class Dispatcher {
       }
 
       if (arg.parse !== null) {
-        result[key] = await arg.parse(val, interaction, arg)
-        continue
+        val = await arg.parse(val, interaction, arg)
       }
 
       result[key] = val

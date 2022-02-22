@@ -14,7 +14,7 @@ export function diffDays (date1: Date, date2: Date): number {
   const d2 = new Date(date2)
   d1.setHours(0, 0, 0)
   d2.setHours(0, 0, 0)
-  return Math.round(Math.abs((d1.getTime() - d2.getTime()) / (24 * 60 * 60 * 1000)))
+  return Math.round(Math.abs((d1.getTime() - d2.getTime()) / 86_400_000))
 }
 
 export function getDate (date: Date): string {
@@ -32,13 +32,13 @@ export function getDateInfo (dateString: string): DateInfo {
 }
 
 export function getDurationString (milliseconds: number): string {
-  const days = Math.floor(milliseconds / (24 * 60 * 60 * 1000))
-  const daysMilliseconds = milliseconds % (24 * 60 * 60 * 1000)
-  const hours = Math.floor(daysMilliseconds / (60 * 60 * 1000))
-  const hoursMilliseconds = milliseconds % (60 * 60 * 1000)
-  const minutes = Math.floor(hoursMilliseconds / (60 * 1000))
-  const minutesMilliseconds = milliseconds % (60 * 1000)
-  const seconds = Math.floor(minutesMilliseconds / (1000))
+  const days = Math.floor(milliseconds / 86_400_000)
+  const daysMilliseconds = milliseconds % 86_400_000
+  const hours = Math.floor(daysMilliseconds / 3_600_000)
+  const hoursMilliseconds = milliseconds % 3_600_000
+  const minutes = Math.floor(hoursMilliseconds / 60_000)
+  const minutesMilliseconds = milliseconds % 60_000
+  const seconds = Math.floor(minutesMilliseconds / 1000)
   return `${days > 0 ? `${days}d ` : ''}${hours > 0 ? `${hours}h ` : ''}${minutes > 0 ? `${minutes}m ` : ''}${seconds > 0 ? `${seconds}s ` : ''}`
 }
 
