@@ -3,7 +3,7 @@ import * as commands from '../commands'
 import * as entities from '../entities'
 import * as jobs from '../jobs'
 import * as services from '../services'
-import { type AroraClient, type BaseHandler, eventHandlers, packetHandlers } from '../client'
+import { type BaseHandler, eventHandlers, packetHandlers } from '../client'
 import { Container, type interfaces } from 'inversify'
 import { type Repository, getRepository } from 'typeorm'
 import type { BaseArgumentType } from '../types'
@@ -119,18 +119,10 @@ bind<BaseCommand<any>>(TYPES.Command).toConstructor(commands.TicketTypesCommand)
 bind<BaseCommand<any>>(TYPES.Command).toConstructor(commands.ToggleSupportCommand)
   .whenTargetTagged('command', 'togglesupport')
 
-bind<interfaces.Factory<BaseCommand<any>>>(TYPES.CommandFactory)
-  // eslint-disable-next-line no-extra-parens
-  .toFactory<(client: AroraClient) => BaseCommand<any>, [string]>(
+bind<interfaces.Factory<BaseCommand<any>>>(TYPES.CommandFactory).toFactory<Constructor<BaseCommand<any>>, [string]>(
   (context: interfaces.Context) => {
-    return (commandName: string) => (client: AroraClient) => {
-      const commandClass = context.container.getTagged<Constructor<BaseCommand<any>>>(
-        TYPES.Command,
-        'command',
-        commandName
-      )
-      // eslint-disable-next-line new-cap
-      return new commandClass(client)
+    return (commandName: string) => {
+      return context.container.getTagged<Constructor<BaseCommand<any>>>(TYPES.Command, 'command', commandName)
     }
   }
 )

@@ -1,6 +1,7 @@
 import { type Argument, type BaseCommand, Command, SubCommandCommand } from '../commands'
 import type { CommandInteraction, CommandInteractionOption, Interaction } from 'discord.js'
 import type Client from './client'
+import type { Constructor } from '../utils/util'
 import applicationConfig from '../configs/application'
 import { constants } from '../utils'
 import container from '../configs/container'
@@ -11,7 +12,7 @@ const { lazyInject } = getDecorators(container)
 
 export default class Dispatcher {
   @lazyInject(TYPES.CommandFactory)
-  public readonly commandFactory!: (commandName: string) => (client: Client) => BaseCommand | undefined
+  public readonly commandFactory!: (commandName: string) => Constructor<BaseCommand> | undefined
 
   private readonly client: Client
 
@@ -26,17 +27,21 @@ export default class Dispatcher {
   }
 
   private async handleCommandInteraction (interaction: CommandInteraction): Promise<void> {
-    const command = this.commandFactory(interaction.commandName)(this.client)
-    if (typeof command === 'undefined') {
+    const ctor = this.commandFactory(interaction.commandName)
+    if (typeof ctor === 'undefined') {
       throw new Error(`Unknown command "${interaction.commandName}".`)
     }
+    // eslint-disable-next-line new-cap
+    const command = new ctor(this.client)
 
     let error
     if (command.options.requiresApi === true && applicationConfig.apiEnabled !== true) {
       error = 'This command requires that the bot has an API connected.'
     }
-    if (command.options.requiresRobloxGroup === true && (interaction.guildId === null ||
-      this.client.guildContexts.resolve(interaction.guildId)?.robloxGroupId === null)) {
+    if (
+      command.options.requiresRobloxGroup === true && (interaction.guildId === null ||
+      this.client.guildContexts.resolve(interaction.guildId)?.robloxGroupId === null)
+    ) {
       error = 'This command requires that the server has its robloxGroup setting set.'
     }
     if (command.options.requiresSingleGuild === true && this.client.guilds.cache.size !== 1) {
