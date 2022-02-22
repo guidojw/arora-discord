@@ -2,7 +2,7 @@ import type { ChannelGroup, Group, GuildContext, RoleGroup } from '../../structu
 import { type CommandInteraction, MessageEmbed, type Role, type TextChannel } from 'discord.js'
 import { SubCommandCommand, type SubCommandCommandOptions } from '../base'
 import { ApplyOptions } from '../../utils/decorators'
-import { GroupType } from '../../utils/constants'
+import type { GroupType } from '../../utils/constants'
 import applicationConfig from '../../configs/application'
 import { argumentUtil } from '../../utils'
 import { discordService } from '../../services'

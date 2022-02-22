@@ -148,6 +148,7 @@ export default class Dispatcher {
       case 'CHANNEL': return option.channel ?? null
       case 'ROLE': return option.role ?? null
       case 'MENTIONABLE': return option.member ?? option.user ?? option.role ?? null
+      case 'NUMBER': return option.value ?? null
       default: return null
     }
   }

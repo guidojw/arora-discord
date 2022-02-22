@@ -1,4 +1,4 @@
-import { CachedManager, Client, Guild } from 'discord.js'
+import { CachedManager, type Client, Guild } from 'discord.js'
 import { GuildContext } from '../structures'
 
 export type GuildContextResolvable = GuildContext | Guild | string

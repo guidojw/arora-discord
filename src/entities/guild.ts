@@ -2,7 +2,6 @@ import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryColumn } from '
 import Channel from './channel'
 import Emoji from './emoji'
 import Group from './group'
-import GuildCommand from './guild-command'
 import Member from './member'
 import Message from './message'
 import Panel from './panel'
@@ -53,9 +52,6 @@ export default class Guild {
 
   @Column('bigint', { name: 'tickets_category_id', nullable: true })
   public ticketsCategoryId?: string | null
-
-  @OneToMany(() => GuildCommand, guildCommand => guildCommand.guild)
-  public guildCommands?: GuildCommand[]
 
   @OneToMany(() => Tag, tag => tag.guild)
   public tags?: Tag[]

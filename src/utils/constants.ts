@@ -1,15 +1,12 @@
 export const TYPES = {
   // Repositories
   ChannelRepository: Symbol.for('ChannelRepository'),
-  CommandRepository: Symbol.for('CommandRepository'),
   EmojiRepository: Symbol.for('EmojiRepository'),
   GroupRepository: Symbol.for('GroupRepository'),
   GuildRepository: Symbol.for('GuildRepository'),
-  GuildCommandRepository: Symbol.for('GuildCommandRepository'),
   MemberRepository: Symbol.for('MemberRepository'),
   MessageRepository: Symbol.for('MessageRepository'),
   PanelRepository: Symbol.for('PanelRepository'),
-  PermissionRepository: Symbol.for('PermissionRepository'),
   RoleRepository: Symbol.for('RoleRepository'),
   RoleBindingRepository: Symbol.for('RoleBindingRepository'),
   RoleMessageRepository: Symbol.for('RoleMessageRepository'),

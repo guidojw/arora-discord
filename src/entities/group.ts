@@ -1,18 +1,8 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  JoinTable,
-  ManyToMany,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn
-} from 'typeorm'
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
 import Channel from './channel'
 import { GroupType } from '../utils/constants'
 import Guild from './guild'
 import { IsNotEmpty } from 'class-validator'
-import Permission from './permission'
 import Role from './role'
 
 @Entity('groups')
@@ -52,7 +42,4 @@ export default class Group {
     inverseJoinColumn: { name: 'role_id' }
   })
   public roles?: Role[]
-
-  @OneToMany(() => Permission, permission => permission.group)
-  public permissions?: Permission[]
 }

@@ -6,7 +6,7 @@ import {
   type GuildMemberResolvable,
   type Snowflake
 } from 'discord.js'
-import { GuildContext, Ticket } from '../structures'
+import type { GuildContext, Ticket } from '../structures'
 import type { Member as MemberEntity, Ticket as TicketEntity } from '../entities'
 import type { Repository } from 'typeorm'
 import { constants } from '../utils'

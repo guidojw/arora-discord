@@ -1,4 +1,4 @@
-import { type ActivityType, type CommandInteraction } from 'discord.js'
+import type { ActivityType, CommandInteraction } from 'discord.js'
 import { Command, type CommandOptions } from '../base'
 import { ApplyOptions } from '../../utils/decorators'
 import { argumentUtil } from '../../utils'

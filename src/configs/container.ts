@@ -194,9 +194,6 @@ bind<interfaces.Factory<BaseHandler>>(TYPES.PacketHandlerFactory).toFactory<Base
 bind<Repository<entities.Channel>>(TYPES.ChannelRepository).toDynamicValue(() => {
   return getRepository(entities.Channel)
 })
-bind<Repository<entities.Command>>(TYPES.CommandRepository).toDynamicValue(() => {
-  return getRepository(entities.Command)
-})
 bind<Repository<entities.Emoji>>(TYPES.EmojiRepository).toDynamicValue(() => {
   return getRepository(entities.Emoji)
 })
@@ -205,9 +202,6 @@ bind<Repository<entities.Group>>(TYPES.GroupRepository).toDynamicValue(() => {
 })
 bind<Repository<entities.Guild>>(TYPES.GuildRepository).toDynamicValue(() => {
   return getRepository(entities.Guild)
-})
-bind<Repository<entities.GuildCommand>>(TYPES.GuildCommandRepository).toDynamicValue(() => {
-  return getRepository(entities.GuildCommand)
 })
 bind<Repository<entities.Member>>(TYPES.MemberRepository).toDynamicValue(() => {
   return getRepository(entities.Member)
@@ -242,6 +236,6 @@ bind<Repository<entities.TicketType>>(TYPES.TicketTypeRepository).toDynamicValue
 
 // Services
 bind<services.ChannelLinkService>(TYPES.ChannelLinkService).to(services.ChannelLinkService)
-bind<services.PersistentRoleService>(TYPES.PermissionRepository).to(services.PersistentRoleService)
+bind<services.PersistentRoleService>(TYPES.PersistentRoleService).to(services.PersistentRoleService)
 
 export default container

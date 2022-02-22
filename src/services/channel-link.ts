@@ -1,4 +1,4 @@
-import { Collection, type GuildChannel, type TextChannel, type VoiceBasedChannel } from 'discord.js'
+import type { Collection, GuildChannel, TextChannel, VoiceBasedChannel } from 'discord.js'
 import { inject, injectable } from 'inversify'
 import type { Channel as ChannelEntity } from '../entities'
 import type { Repository } from 'typeorm'

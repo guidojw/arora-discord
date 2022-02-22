@@ -9,6 +9,10 @@ const suggestCommand = {
     description: 'The suggestion to make',
     type: ApplicationCommandOptionType.String,
     required: true
+  }, {
+    name: 'attachment',
+    description: 'Image to attach to the suggestion',
+    type: ApplicationCommandOptionType.Attachment
   }]
 }
 

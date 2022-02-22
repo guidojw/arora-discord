@@ -1,5 +1,5 @@
 import { Command, type CommandOptions } from '../base'
-import { type CommandInteraction, MessageEmbed } from 'discord.js'
+import { type CommandInteraction, type MessageAttachment, MessageEmbed } from 'discord.js'
 import { ApplyOptions } from '../../utils/decorators'
 import type { GuildContext } from '../../structures'
 import { argumentUtil } from '../../utils'
@@ -14,14 +14,15 @@ const { validators, noTags } = argumentUtil
       {
         key: 'suggestion',
         validate: validators([noTags])
-      }
+      },
+      { key: 'attachment', required: false }
     ]
   }
 })
 export default class SuggestCommand extends Command {
   public async execute (
     interaction: CommandInteraction,
-    { suggestion }: { suggestion: string }
+    { suggestion, attachment }: { suggestion: string, attachment: MessageAttachment | null }
   ): Promise<void> {
     if (!interaction.inGuild()) {
       return
@@ -39,6 +40,11 @@ export default class SuggestCommand extends Command {
       .setDescription(suggestion)
       .setAuthor({ name: interaction.user.tag, iconURL: interaction.user.displayAvatarURL(), url: authorUrl })
       .setColor(0x000af43)
+    if (attachment !== null) {
+      if (attachment.height !== null) {
+        embed.setImage(attachment.url)
+      }
+    }
 
     const newMessage = await context.suggestionsChannel.send({ embeds: [embed] })
     await newMessage.react('⬆️')

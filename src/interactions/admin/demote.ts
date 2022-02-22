@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionType } from 'discord-api-types'
+import { ApplicationCommandOptionType } from 'discord-api-types/v9'
 
 const demoteCommand = {
   name: 'demote',

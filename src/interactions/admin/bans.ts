@@ -14,16 +14,16 @@ const bansCommand = {
       type: ApplicationCommandOptionType.String,
       required: true
     }, {
+      name: 'reason',
+      description: 'The reason for this ban',
+      type: ApplicationCommandOptionType.String,
+      required: true
+    }, {
       name: 'duration',
       description: 'The amount of days to ban this user',
       type: ApplicationCommandOptionType.Integer,
       min_value: 1,
       max_value: 7
-    }, {
-      name: 'reason',
-      description: 'The reason for this ban',
-      type: ApplicationCommandOptionType.String,
-      required: true
     }]
   }, {
     name: 'delete',

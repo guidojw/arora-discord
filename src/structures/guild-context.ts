@@ -233,9 +233,11 @@ export default class GuildContext extends BaseStructure {
   ): Promise<void> {
     const member = await this.guild.members.fetch(user)
     for (const roleMessage of this.roleMessages.cache.values()) {
-      if (reaction.message.id === roleMessage.messageId && (reaction.emoji instanceof GuildEmoji
-        ? roleMessage.emoji instanceof GuildEmoji && reaction.emoji.id === roleMessage.emojiId
-        : !(roleMessage.emoji instanceof GuildEmoji) && reaction.emoji.name === roleMessage.emojiId)) {
+      if (
+        reaction.message.id === roleMessage.messageId && (reaction.emoji instanceof GuildEmoji
+          ? roleMessage.emoji instanceof GuildEmoji && reaction.emoji.id === roleMessage.emojiId
+          : !(roleMessage.emoji instanceof GuildEmoji) && reaction.emoji.name === roleMessage.emojiId)
+      ) {
         await member.roles[type](roleMessage.roleId)
       }
     }

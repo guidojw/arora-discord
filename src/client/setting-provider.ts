@@ -43,15 +43,11 @@ export default class SettingProvider {
         relations: [
           'groups',
           'groups.channels',
-          'groups.permissions',
           'groups.roles',
-          'guildCommands',
-          'guildCommands.command',
           'panels',
           'panels.message',
           // See "Band-aid fix" below.
           // 'roles',
-          // 'roles.permissions',
           // 'roleBindings', // moved to RoleBindingManager.fetch
           // 'roleMessages',
           // 'roleMessages.message',
@@ -65,16 +61,13 @@ export default class SettingProvider {
         ]
       }
     ) ?? await this.guildRepository.save(this.guildRepository.create({ id: guild.id }))
-    if (typeof data.guildCommands === 'undefined') {
-      data.guildCommands = []
-    }
 
     // Band-aid fix. idk why, but somehow after merging
-    // https://github.com/guidojw/nsadmin-discord/pull/164 the bot's memory
+    // https://github.com/guidojw/arora-discord/pull/164 the bot's memory
     // usage raised rapidly on start up and kept causing numerous out of memory
-    // errors. I tried several things and it seems to be pg related.
+    // errors. I tried several things, and it seems to be pg related.
     // Removing includes from the relations somehow fixed the issue.
-    data.roles = await this.roleRepository.find({ where: { guildId: guild.id }, relations: ['permissions'] })
+    data.roles = await this.roleRepository.find({ where: { guildId: guild.id } })
     data.roleMessages = await this.roleMessageRepository.find({ where: { guildId: guild.id }, relations: ['message'] })
     data.tags = await this.tagRepository.find({ where: { guildId: guild.id }, relations: ['names'] })
     // Remove more from the relations and put it here if above error returns..
