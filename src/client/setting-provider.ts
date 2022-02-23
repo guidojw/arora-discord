@@ -31,8 +31,7 @@ export default class SettingProvider {
     await Promise.all(client.guilds.cache.map(async guild => await this.setupGuild(guild)))
   }
 
-  // @ts-expect-error
-  public override async setupGuild (guild: Guild): Promise<void> {
+  public async setupGuild (guild: Guild): Promise<void> {
     const data = await this.guildRepository.findOne(
       guild.id,
       {
@@ -70,6 +69,6 @@ export default class SettingProvider {
 
     // @ts-expect-error
     const context = guild.client.guildContexts._add(data, true, { id: data.id, extras: [guild] })
-    await context.init()
+    context.init()
   }
 }

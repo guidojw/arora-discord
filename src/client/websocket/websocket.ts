@@ -1,25 +1,15 @@
-import type BaseHandler from '../base'
 import type Client from '../client'
 import WebSocket from 'ws'
-import { constants } from '../../utils'
-import container from '../../configs/container'
-import getDecorators from 'inversify-inject-decorators'
 
 export interface Packet {
   event: string
   data?: any
 }
 
-const { TYPES } = constants
-const { lazyInject } = getDecorators(container)
-
 const RECONNECT_TIMEOUT = 30_000
 const PING_TIMEOUT = 30_000 + 1000
 
 export default class WebSocketManager {
-  @lazyInject(TYPES.PacketHandlerFactory)
-  private readonly packetHandlerFactory!: (eventName: string) => BaseHandler
-
   public readonly client: Client
   private readonly host: string
   private connection: WebSocket | null
@@ -79,6 +69,6 @@ export default class WebSocketManager {
 
   private handlePacket (packet: Packet): void {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    this.packetHandlerFactory(packet.event).handle(this.client, packet)
+    this.client.packetHandlerFactory(packet.event).handle(this.client, packet)
   }
 }

@@ -48,6 +48,9 @@ export default class AroraClient<Ready extends boolean = boolean> extends Client
   @lazyInject(TYPES.ArgumentTypeFactory)
   public readonly argumentTypeFactory!: (argumentTypeName: string) => BaseArgumentType<any> | undefined
 
+  @lazyInject(TYPES.PacketHandlerFactory)
+  public readonly packetHandlerFactory!: (eventName: string) => BaseHandler
+
   @lazyInject(TYPES.EventHandlerFactory)
   private readonly eventHandlerFactory!: (eventName: string) => BaseHandler
 
