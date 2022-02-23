@@ -172,7 +172,7 @@ export default class GuildTicketManager extends BaseManager<Ticket, TicketResolv
           await ticket.populateChannel()
           ticket.timeout = setTimeout(
             () => {
-              Promise.resolve(ticket.close('Timeout: ticket closed', false)).catch(console.error)
+              ticket.close('Timeout: ticket closed', false).catch(console.error)
             },
             SUBMISSION_TIME
           ).unref()

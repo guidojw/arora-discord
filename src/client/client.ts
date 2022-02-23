@@ -78,8 +78,8 @@ export default class AroraClient<Ready extends boolean = boolean> extends Client
     options.intents.add(...REQUIRED_INTENTS)
     options.partials = [...new Set(
       ...options.partials ?? [],
-      ...REQUIRED_PARTIALS)
-    ] as Array<keyof typeof PartialTypes>
+      ...REQUIRED_PARTIALS
+    )] as Array<keyof typeof PartialTypes>
     super(options)
 
     this.guildContexts = new GuildContextManager(this)
