@@ -170,12 +170,9 @@ export default class GuildTicketManager extends BaseManager<Ticket, TicketResolv
 
           const ticket = await this.create({ author: user, ticketType })
           await ticket.populateChannel()
-          ticket.timeout = setTimeout(
-            () => {
-              ticket.close('Timeout: ticket closed', false).catch(console.error)
-            },
-            SUBMISSION_TIME
-          ).unref()
+          ticket.timeout = setTimeout(() => {
+            ticket.close('Timeout: ticket closed', false).catch(console.error)
+          }, SUBMISSION_TIME).unref()
         } else {
           const embed = new MessageEmbed()
             .setColor(0xff0000)

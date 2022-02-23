@@ -167,22 +167,16 @@ export default class GuildContext extends BaseStructure {
     if (applicationConfig.apiEnabled === true) {
       const announceTrainingsJobConfig = cronConfig.announceTrainingsJob
       const announceTrainingsJob = this.jobFactory(announceTrainingsJobConfig.name)
-      cron.schedule(
-        announceTrainingsJobConfig.expression,
-        () => {
-          Promise.resolve(announceTrainingsJob.run(this)).catch(console.error)
-        }
-      )
+      cron.schedule(announceTrainingsJobConfig.expression, () => {
+        Promise.resolve(announceTrainingsJob.run(this)).catch(console.error)
+      })
     }
 
     const premiumMembersReportJobConfig = cronConfig.premiumMembersReportJob
     const premiumMembersReportJob = this.jobFactory(premiumMembersReportJobConfig.name)
-    cron.schedule(
-      premiumMembersReportJobConfig.expression,
-      () => {
-        Promise.resolve(premiumMembersReportJob.run(this)).catch(console.error)
-      }
-    )
+    cron.schedule(premiumMembersReportJobConfig.expression, () => {
+      Promise.resolve(premiumMembersReportJob.run(this)).catch(console.error)
+    })
   }
 
   public get id (): string {
