@@ -25,6 +25,21 @@ const { TYPES } = constants
 const { lazyInject } = getDecorators(container)
 
 const ACTIVITY_CAROUSEL_INTERVAL = 60_000
+const REQUIRED_INTENTS: number[] = [
+  Intents.FLAGS.GUILDS,
+  Intents.FLAGS.GUILD_MEMBERS,
+  Intents.FLAGS.GUILD_VOICE_STATES,
+  Intents.FLAGS.GUILD_MESSAGES,
+  Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+  Intents.FLAGS.DIRECT_MESSAGES,
+  Intents.FLAGS.DIRECT_MESSAGE_REACTIONS
+]
+const REQUIRED_PARTIALS: Array<keyof typeof PartialTypes> = [
+  PartialTypes.GUILD_MEMBER,
+  PartialTypes.REACTION,
+  PartialTypes.MESSAGE,
+  PartialTypes.USER
+]
 
 declare module 'discord.js' {
   interface Client {
@@ -59,43 +74,12 @@ export default class AroraClient<Ready extends boolean = boolean> extends Client
   private activityCarouselInterval: NodeJS.Timeout | null
 
   public constructor (options: ClientOptions = { intents: [] }) {
-    const intentsArray = options.intents as number[]
-    if (!intentsArray.includes(Intents.FLAGS.GUILDS)) {
-      intentsArray.push(Intents.FLAGS.GUILDS)
-    }
-    if (!intentsArray.includes(Intents.FLAGS.GUILD_MEMBERS)) {
-      intentsArray.push(Intents.FLAGS.GUILD_MEMBERS)
-    }
-    if (!intentsArray.includes(Intents.FLAGS.GUILD_VOICE_STATES)) {
-      intentsArray.push(Intents.FLAGS.GUILD_VOICE_STATES)
-    }
-    if (!intentsArray.includes(Intents.FLAGS.GUILD_MESSAGES)) {
-      intentsArray.push(Intents.FLAGS.GUILD_MESSAGES)
-    }
-    if (!intentsArray.includes(Intents.FLAGS.GUILD_MESSAGE_REACTIONS)) {
-      intentsArray.push(Intents.FLAGS.GUILD_MESSAGE_REACTIONS)
-    }
-    if (!intentsArray.includes(Intents.FLAGS.DIRECT_MESSAGES)) {
-      intentsArray.push(Intents.FLAGS.DIRECT_MESSAGES)
-    }
-    if (!intentsArray.includes(Intents.FLAGS.DIRECT_MESSAGE_REACTIONS)) {
-      intentsArray.push(Intents.FLAGS.DIRECT_MESSAGE_REACTIONS)
-    }
-    if (typeof options.partials === 'undefined') {
-      options.partials = []
-    }
-    if (!options.partials.includes(PartialTypes.GUILD_MEMBER)) {
-      options.partials.push(PartialTypes.GUILD_MEMBER)
-    }
-    if (!options.partials.includes(PartialTypes.REACTION)) {
-      options.partials.push(PartialTypes.REACTION)
-    }
-    if (!options.partials.includes(PartialTypes.MESSAGE)) {
-      options.partials.push(PartialTypes.MESSAGE)
-    }
-    if (!options.partials.includes(PartialTypes.USER)) {
-      options.partials.push(PartialTypes.USER)
-    }
+    options.intents = new Intents(options.intents)
+    options.intents.add(...REQUIRED_INTENTS)
+    options.partials = [...new Set(
+      ...options.partials ?? [],
+      ...REQUIRED_PARTIALS)
+    ] as Array<keyof typeof PartialTypes>
     super(options)
 
     this.guildContexts = new GuildContextManager(this)
@@ -110,7 +94,6 @@ export default class AroraClient<Ready extends boolean = boolean> extends Client
 
     this.aroraWs = applicationConfig.apiEnabled === true ? new WebSocketManager(this) : null
 
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     this.once('ready', this.ready.bind(this))
   }
 
@@ -189,7 +172,6 @@ export default class AroraClient<Ready extends boolean = boolean> extends Client
 
   private bindEvent (eventName: keyof ClientEvents): void {
     const handler = this.eventHandlerFactory(eventName)
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     this.on(eventName, handler.handle.bind(handler, this))
   }
 }

@@ -31,8 +31,9 @@ export async function init (): Promise<AroraClient> {
   const healthCheckJob = jobFactory(healthCheckJobConfig.name)
   cron.schedule(
     healthCheckJobConfig.expression,
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    healthCheckJob.run.bind(healthCheckJob.run, 'main')
+    () => {
+      Promise.resolve(healthCheckJob.run('main')).catch(console.error)
+    }
   )
 
   const client = new AroraClient()

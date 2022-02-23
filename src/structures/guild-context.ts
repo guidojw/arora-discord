@@ -169,8 +169,9 @@ export default class GuildContext extends BaseStructure {
       const announceTrainingsJob = this.jobFactory(announceTrainingsJobConfig.name)
       cron.schedule(
         announceTrainingsJobConfig.expression,
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        announceTrainingsJob.run.bind(announceTrainingsJob, this)
+        () => {
+          Promise.resolve(announceTrainingsJob.run(this)).catch(console.error)
+        }
       )
     }
 
@@ -178,8 +179,9 @@ export default class GuildContext extends BaseStructure {
     const premiumMembersReportJob = this.jobFactory(premiumMembersReportJobConfig.name)
     cron.schedule(
       premiumMembersReportJobConfig.expression,
-      // eslint-disable-next-line @typescript-eslint/no-misused-promises
-      premiumMembersReportJob.run.bind(premiumMembersReportJob, this)
+      () => {
+        Promise.resolve(premiumMembersReportJob.run(this)).catch(console.error)
+      }
     )
   }
 

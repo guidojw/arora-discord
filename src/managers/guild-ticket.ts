@@ -170,10 +170,12 @@ export default class GuildTicketManager extends BaseManager<Ticket, TicketResolv
 
           const ticket = await this.create({ author: user, ticketType })
           await ticket.populateChannel()
-          // eslint-disable-next-line @typescript-eslint/no-misused-promises
-          ticket.timeout = setTimeout(async () => (
-            await ticket.close('Timeout: ticket closed', false)
-          ), SUBMISSION_TIME).unref()
+          ticket.timeout = setTimeout(
+            () => {
+              Promise.resolve(ticket.close('Timeout: ticket closed', false)).catch(console.error)
+            },
+            SUBMISSION_TIME
+          ).unref()
           ticket.timeout.unref()
         } else {
           const embed = new MessageEmbed()

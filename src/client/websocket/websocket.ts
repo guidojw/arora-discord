@@ -68,7 +68,6 @@ export default class WebSocketManager {
   }
 
   private handlePacket (packet: Packet): void {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    this.client.packetHandlerFactory(packet.event).handle(this.client, packet)
+    Promise.resolve(this.client.packetHandlerFactory(packet.event).handle(this.client, packet)).catch(console.error)
   }
 }
