@@ -1,6 +1,7 @@
 import { CachedManager, type Client } from 'discord.js'
+import type { IdentifiableStructure } from '../types'
 
-export default class BaseManager<Holds extends { id: number }, R> extends CachedManager<number, Holds, R> {
+export default class BaseManager<Holds extends IdentifiableStructure, R> extends CachedManager<number, Holds, R> {
   public override readonly client!: Client<true>
 
   public override resolve (resolvable: Holds): Holds

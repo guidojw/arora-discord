@@ -24,12 +24,14 @@ export default abstract class BaseArgumentType<T> {
   ): T | null | Promise<T | null>
 }
 
-export class BaseStructureArgumentType<T extends IdentifiableStructure> {
+export class BaseStructureArgumentType<T extends IdentifiableStructure> extends BaseArgumentType<T> {
   protected readonly holds: Constructor<T>
 
   private readonly managerName: string
 
   public constructor (holds: Constructor<T>, managerName?: string) {
+    super()
+
     this.holds = holds
     this.managerName = typeof managerName === 'undefined'
       ? pluralize(lodash.camelCase(holds.name))

@@ -5,11 +5,10 @@ const pollCommand = {
   description: 'Create a poll',
   default_permission: false,
   options: [{
-    name: 'choices',
-    description: 'The amount of possible choices',
-    type: ApplicationCommandOptionType.Integer,
-    min_value: 1,
-    max_value: 10
+    name: 'poll',
+    description: 'The question to poll',
+    type: ApplicationCommandOptionType.String,
+    required: true
   }]
 }
 
