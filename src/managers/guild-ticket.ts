@@ -176,7 +176,6 @@ export default class GuildTicketManager extends BaseManager<Ticket, TicketResolv
             },
             SUBMISSION_TIME
           ).unref()
-          ticket.timeout.unref()
         } else {
           const embed = new MessageEmbed()
             .setColor(0xff0000)
