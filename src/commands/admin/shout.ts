@@ -15,7 +15,12 @@ const { validators, noChannels, noTags, noUrls } = argumentUtil
   requiresApi: true,
   requiresRobloxGroup: true,
   command: {
-    args: [{ key: 'message', validate: validators([noChannels, noTags, noUrls]) }]
+    args: [
+      {
+        key: 'message',
+        validate: validators([noChannels, noTags, noUrls])
+      }
+    ]
   }
 })
 export default class ShoutCommand extends Command {

@@ -39,14 +39,17 @@ export default class MessageEventHandler implements BaseHandler {
     }
 
     const noTextChannelsGroup = context.groups.resolve('noTextChannels')
-    // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
-    if (noTextChannelsGroup !== null && noTextChannelsGroup.isChannelGroup() &&
-      noTextChannelsGroup.channels.cache.has(message.channel.id)) {
+    if (
+      // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
+      noTextChannelsGroup !== null && noTextChannelsGroup.isChannelGroup() &&
+      noTextChannelsGroup.channels.cache.has(message.channel.id)
+    ) {
       if (message.attachments.size === 0 && message.embeds.length === 0) {
         const canTalkInNoTextChannelsGroup = context.groups.resolve('canTalkInNoTextChannels')
-        // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
-        if (canTalkInNoTextChannelsGroup === null || (canTalkInNoTextChannelsGroup.isRoleGroup() &&
-          message.member?.roles.cache.some(role => canTalkInNoTextChannelsGroup.roles.cache.has(role.id)) === false)) {
+        if (
+          canTalkInNoTextChannelsGroup === null || (canTalkInNoTextChannelsGroup.isRoleGroup() &&
+          message.member?.roles.cache.some(role => canTalkInNoTextChannelsGroup.roles.cache.has(role.id)) === false)
+        ) {
           try {
             await message.delete()
             await context.log(

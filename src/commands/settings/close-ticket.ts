@@ -32,12 +32,14 @@ export default class CloseTicketCommand extends Command {
           await ticket.close(
             'Ticket successfully closed.',
             false,
-            context.primaryColor ?? applicationConfig.defaultColor)
+            context.primaryColor ?? applicationConfig.defaultColor
+          )
         } else {
           await ticket.close(
             'The moderator has closed your ticket.',
             true,
-            context.primaryColor ?? applicationConfig.defaultColor)
+            context.primaryColor ?? applicationConfig.defaultColor
+          )
         }
       }
     }

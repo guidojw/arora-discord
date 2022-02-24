@@ -13,8 +13,14 @@ const { validators, isObject, noNumber, noWhitespace } = argumentUtil
   subCommands: {
     create: {
       args: [
-        { key: 'name', validate: validators([noNumber, noWhitespace]) },
-        { key: 'content', validate: validators([isObject]) }
+        {
+          key: 'name',
+          validate: validators([noNumber, noWhitespace])
+        },
+        {
+          key: 'content',
+          validate: validators([isObject])
+        }
       ]
     },
     delete: {

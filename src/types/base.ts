@@ -1,6 +1,6 @@
 import type { BaseStructure, GuildContext } from '../structures'
+import type { CachedManager, Collection, CommandInteraction } from 'discord.js'
 import type { Argument } from '../commands'
-import type { CommandInteraction } from 'discord.js'
 import type { Constructor } from '../utils/util'
 import lodash from 'lodash'
 import pluralize from 'pluralize'
@@ -48,16 +48,14 @@ export class BaseStructureArgumentType<T extends IdentifiableStructure> extends 
     }
     const context = interaction.client.guildContexts.resolve(interaction.guildId) as GuildContext
 
+    const manager = context[this.managerName as keyof typeof context] as unknown as CachedManager<number, any, any>
     const id = parseInt(value)
     if (!isNaN(id)) {
-      // @ts-expect-error
-      const structure = context[this.managerName].cache.get(id)
+      const structure = manager.cache.get(id)
       return typeof structure !== 'undefined' && structure instanceof this.holds
     }
     const search = value.toLowerCase()
-    // @ts-expect-error
-    const structures: Collection<number, T> = context[this.managerName].cache
-      .filter(this.filterInexact(search))
+    const structures: Collection<number, T> = manager.cache.filter(this.filterInexact(search))
     if (structures.size === 1) {
       return true
     }
@@ -75,14 +73,13 @@ export class BaseStructureArgumentType<T extends IdentifiableStructure> extends 
     }
     const context = interaction.client.guildContexts.resolve(interaction.guildId) as GuildContext
 
+    const manager = context[this.managerName as keyof typeof context] as unknown as CachedManager<number, any, any>
     const id = parseInt(value)
     if (!isNaN(id)) {
-      // @ts-expect-error
-      return context[this.managerName].cache.get(id) ?? null
+      return manager.cache.get(id) ?? null
     }
     const search = value.toLowerCase()
-    // @ts-expect-error
-    const structures = context[this.managerName].cache.filter(this.filterInexact(search))
+    const structures = manager.cache.filter(this.filterInexact(search))
     if (structures.size === 0) {
       return null
     }

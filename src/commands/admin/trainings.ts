@@ -25,7 +25,7 @@ const validateReason = validators([noChannels, noTags, noUrls])
         { key: 'type', parse: parseKey },
         { key: 'date', type: 'date' },
         { key: 'time', type: 'time' },
-        { key: 'notes', required: false, validate: validateReason }
+        { key: 'notes', validate: validateReason, required: false }
       ]
     },
     cancel: {

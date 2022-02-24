@@ -68,7 +68,7 @@ export function formatBytes (bytes: number, decimals = 2): string {
 export function getAbbreviation (val: string): string {
   return val
     .trim()
-    .split(/ +/)
+    .split(/\s+/)
     .map(word => word.charAt(0))
     .join('')
 }
