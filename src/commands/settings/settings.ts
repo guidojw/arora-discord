@@ -1,4 +1,4 @@
-import { CategoryChannel, type CommandInteraction, GuildChannel, type Message, TextChannel } from 'discord.js'
+import { CategoryChannel, type CommandInteraction, GuildChannel, TextChannel } from 'discord.js'
 import { type GuildContext, GuildContextSetting, type GuildContextUpdateOptions } from '../../structures'
 import { SubCommandCommand, type SubCommandCommandOptions } from '../base'
 import { argumentUtil, util } from '../../utils'
@@ -26,7 +26,11 @@ const { guildContextSettingTransformer, parseEnum } = argumentUtil
           key: 'setting',
           parse: parseEnum(GuildContextSetting, guildContextSettingTransformer)
         },
-        { key: 'value', required: false }
+        {
+          key: 'value',
+          type: 'category-channel|text-channel|always',
+          required: false
+        }
       ]
     }
   }
@@ -63,7 +67,7 @@ export default class SettingsCommand extends SubCommandCommand<SettingsCommand> 
     interaction: CommandInteraction,
     { setting, value }: {
       setting: keyof typeof GuildContextSetting
-      value: CategoryChannel | TextChannel | Message | number | boolean | string | null
+      value: CategoryChannel | TextChannel | number | boolean | string | null
     }
   ): Promise<void> {
     if (!interaction.inGuild()) {
