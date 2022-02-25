@@ -229,8 +229,10 @@ export default class Ticket extends BaseStructure {
 
     const messages = await this.fetchMessages()
     const firstMessage = messages.first()
-    if (typeof firstMessage !== 'undefined' &&
-      (firstMessage.author.id !== this.client.user.id || firstMessage.content !== this.author?.toString())) {
+    if (
+      typeof firstMessage !== 'undefined' &&
+      (firstMessage.author.id !== this.client.user.id || firstMessage.content !== this.author?.toString())
+    ) {
       output += '...\n\n'
       output += '='.repeat(100) + '\n\n'
     }

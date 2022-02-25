@@ -51,11 +51,11 @@ export default class SettingsCommand extends SubCommandCommand<SettingsCommand> 
       const color = context.primaryColor?.toString(16) ?? ''
       result = `0x${color}${'0'.repeat(6 - color.length)}`
     } else if (setting.includes('Channel') || setting.includes('Category')) {
-      settingName = setting.slice(0, -2)
+      settingName = guildSettingTransformer(setting)
       result = context[settingName as keyof GuildContext] as GuildChannel
     } else if (setting.includes('Id')) {
       result = context[setting]
-      settingName = setting.slice(0, -2)
+      settingName = guildSettingTransformer(setting)
     } else {
       result = context[setting]
     }
@@ -127,6 +127,6 @@ export default class SettingsCommand extends SubCommandCommand<SettingsCommand> 
     await context.update(changes)
 
     // eslint-disable-next-line @typescript-eslint/no-base-to-string
-    return await interaction.reply(`Successfully set ${setting.endsWith('Id') ? setting.slice(0, -2) : setting} to ${value instanceof GuildChannel ? value.toString() : `\`${String(value)}\``}.`)
+    return await interaction.reply(`Successfully set ${guildSettingTransformer(setting)} to ${value instanceof GuildChannel ? value.toString() : `\`${String(value)}\``}.`)
   }
 }

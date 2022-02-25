@@ -103,8 +103,8 @@ export default class GuildTagManager extends BaseManager<Tag, TagResolvable> {
     }
 
     const newData = await this.tagRepository.save(this.tagRepository.create({
-      id,
-      ...changes
+      ...changes,
+      id
     }))
 
     const _tag = this.cache.get(id)

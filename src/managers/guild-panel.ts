@@ -120,8 +120,8 @@ export default class GuildPanelManager extends BaseManager<Panel, PanelResolvabl
     }
 
     await this.panelRepository.save(this.panelRepository.create({
-      id: panel.id,
-      ...changes
+      ...changes,
+      id: panel.id
     }), {
       data: options
     })
@@ -159,8 +159,8 @@ export default class GuildPanelManager extends BaseManager<Panel, PanelResolvabl
       data.messageId = message.id
     }
     await this.panelRepository.save(this.panelRepository.create({
-      id: panel.id,
-      ...data
+      ...data,
+      id: panel.id
     }), {
       data: {
         channelId: channel?.id ?? null,

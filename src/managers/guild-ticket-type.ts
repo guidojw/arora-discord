@@ -84,8 +84,8 @@ export default class GuildTicketTypeManager extends BaseManager<TicketType, Tick
     }
 
     await this.ticketTypeRepository.save(this.ticketTypeRepository.create({
-      id,
-      ...changes
+      ...changes,
+      id
     }))
     const newData = await this.ticketTypeRepository.findOne(
       id,

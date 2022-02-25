@@ -128,8 +128,8 @@ export default class GuildTicketManager extends BaseManager<Ticket, TicketResolv
     }
 
     await this.ticketRepository.save(this.ticketRepository.create({
-      id,
-      ...changes
+      ...changes,
+      id
     }))
     const newData = await this.ticketRepository.findOne(
       id,

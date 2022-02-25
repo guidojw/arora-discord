@@ -267,8 +267,8 @@ export default class GuildContext extends BaseStructure {
 
   public async update (data: GuildUpdateOptions): Promise<this> {
     await this.guildRepository.save(this.guildRepository.create({
-      id: this.guild.id,
-      ...data
+      ...data,
+      id: this.guild.id
     }))
     const newData = await this.guildRepository.findOne(this.guild.id) as GuildEntity
 

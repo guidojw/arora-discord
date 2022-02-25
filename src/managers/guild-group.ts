@@ -88,8 +88,8 @@ export default class GuildGroupManager extends BaseManager<Group, GroupResolvabl
     }
 
     const newData = await this.groupRepository.save(this.groupRepository.create({
-      id,
-      ...changes
+      ...changes,
+      id
     }))
 
     const _group = this.cache.get(id)
