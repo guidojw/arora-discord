@@ -12,7 +12,6 @@ export type RoleBindingResolvable = RoleBinding | number
 const { TYPES } = constants
 const { lazyInject } = getDecorators(container)
 
-// @ts-expect-error
 export default class GuildRoleBindingManager extends BaseManager<RoleBinding, RoleBindingResolvable> {
   @lazyInject(TYPES.RoleBindingRepository)
   private readonly roleBindingRepository!: Repository<RoleBindingEntity>
@@ -26,8 +25,7 @@ export default class GuildRoleBindingManager extends BaseManager<RoleBinding, Ro
   }
 
   public override _add (data: RoleBindingEntity, cache = true): RoleBinding {
-    // @ts-expect-error
-    return super._add(data, cache, { id: data.id, extras: [this.guild] })
+    return super._add(data, cache, { id: data.id, extras: [this.context] })
   }
 
   public async create ({ role: roleResolvable, min, max }: {

@@ -25,7 +25,6 @@ const { lazyInject } = getDecorators(container)
 const TICKETS_INTERVAL = 60_000
 const SUBMISSION_TIME = 3_600_000
 
-// @ts-expect-error
 export default class GuildTicketManager extends BaseManager<Ticket, TicketResolvable> {
   @lazyInject(TYPES.TicketRepository)
   private readonly ticketRepository!: Repository<TicketEntity>
@@ -42,8 +41,7 @@ export default class GuildTicketManager extends BaseManager<Ticket, TicketResolv
   }
 
   public override _add (data: TicketEntity, cache = true): Ticket {
-    // @ts-expect-error
-    return super._add(data, cache, { id: data.id, extras: [this.guild] })
+    return super._add(data, cache, { id: data.id, extras: [this.context] })
   }
 
   public async create ({ author: authorResolvable, ticketType: ticketTypeResolvable }: {

@@ -14,7 +14,6 @@ export type TagResolvable = TagNameResolvable | Tag | number
 const { TYPES } = constants
 const { lazyInject } = getDecorators(container)
 
-// @ts-expect-error
 export default class GuildTagManager extends BaseManager<Tag, TagResolvable> {
   @lazyInject(TYPES.TagRepository)
   private readonly tagRepository!: Repository<TagEntity>
@@ -28,8 +27,7 @@ export default class GuildTagManager extends BaseManager<Tag, TagResolvable> {
   }
 
   public override _add (data: TagEntity, cache = true): Tag {
-    // @ts-expect-error
-    return super._add(data, cache, { id: data.id, extras: [this.guild] })
+    return super._add(data, cache, { id: data.id, extras: [this.context] })
   }
 
   public async create (name: string, content: string | object): Promise<Tag> {

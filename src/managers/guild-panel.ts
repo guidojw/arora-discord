@@ -14,7 +14,6 @@ export type PanelResolvable = string | Panel | number
 const { TYPES } = constants
 const { lazyInject } = getDecorators(container)
 
-// @ts-expect-error
 export default class GuildPanelManager extends BaseManager<Panel, PanelResolvable> {
   @lazyInject(TYPES.PanelRepository)
   private readonly panelRepository!: Repository<PanelEntity>
@@ -28,7 +27,6 @@ export default class GuildPanelManager extends BaseManager<Panel, PanelResolvabl
   }
 
   public override _add (data: PanelEntity, cache = true): Panel {
-    // @ts-expect-error
     return super._add(data, cache, { id: data.id, extras: [this.context] })
   }
 

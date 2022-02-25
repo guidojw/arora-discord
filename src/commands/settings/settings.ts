@@ -48,8 +48,7 @@ export default class SettingsCommand extends SubCommandCommand<SettingsCommand> 
       result = `0x${color}${'0'.repeat(6 - color.length)}`
     } else if (setting.includes('Channel') || setting.includes('Category')) {
       settingName = setting.slice(0, -2)
-      // @ts-expect-error
-      result = message.guild[settingName]
+      result = context[settingName as keyof GuildContext] as GuildChannel
     } else if (setting.includes('Id')) {
       result = context[setting]
       settingName = setting.slice(0, -2)

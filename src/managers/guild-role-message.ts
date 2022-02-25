@@ -13,7 +13,6 @@ export type RoleMessageResolvable = RoleMessage | number
 const { TYPES } = constants
 const { lazyInject } = getDecorators(container)
 
-// @ts-expect-error
 export default class GuildRoleMessageManager extends BaseManager<RoleMessage, RoleMessageResolvable> {
   @lazyInject(TYPES.RoleMessageRepository)
   private readonly roleMessageRepository!: Repository<RoleMessageEntity>
@@ -27,8 +26,7 @@ export default class GuildRoleMessageManager extends BaseManager<RoleMessage, Ro
   }
 
   public override _add (data: RoleMessageEntity, cache = true): RoleMessage {
-    // @ts-expect-error
-    return super._add(data, cache, { id: data.id, extras: [this.guild] })
+    return super._add(data, cache, { id: data.id, extras: [this.context] })
   }
 
   public async create ({ role: roleResolvable, message, emoji: emojiResolvable }: {
