@@ -3,7 +3,7 @@ import BaseArgumentType from './base'
 import { injectable } from 'inversify'
 
 @injectable()
-export default class ChannelGroupArgumentType extends BaseArgumentType<CategoryChannel> {
+export default class CategoryChannelArgumentType extends BaseArgumentType<CategoryChannel> {
   public validate (value: string, interaction: CommandInteraction): boolean {
     if (!interaction.inCachedGuild()) {
       return false
