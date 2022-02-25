@@ -34,7 +34,7 @@ import cron from 'node-cron'
 import cronConfig from '../configs/cron'
 import getDecorators from 'inversify-inject-decorators'
 
-export enum GuildContextSetting {
+export enum GuildSetting {
   logsChannelId,
   primaryColor,
   ratingsChannelId,
@@ -46,7 +46,7 @@ export enum GuildContextSetting {
   verificationPreference
 }
 
-export interface GuildContextUpdateOptions {
+export interface GuildUpdateOptions {
   logsChannelId?: Snowflake | null
   primaryColor?: number | null
   ratingsChannelId?: Snowflake | null
@@ -265,7 +265,7 @@ export default class GuildContext extends BaseStructure {
     return null
   }
 
-  public async update (data: GuildContextUpdateOptions): Promise<this> {
+  public async update (data: GuildUpdateOptions): Promise<this> {
     await this.guildRepository.save(this.guildRepository.create({
       id: this.guild.id,
       ...data

@@ -124,6 +124,6 @@ export function parseEnum<T extends Enum> (
   }
 }
 
-export function guildContextSettingTransformer (value: string): string {
+export function guildSettingTransformer (value: string): string {
   return value.endsWith('Id') ? value.slice(0, -2) : value
 }

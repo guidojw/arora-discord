@@ -1,5 +1,5 @@
 import { CategoryChannel, type CommandInteraction, GuildChannel, TextChannel } from 'discord.js'
-import { type GuildContext, GuildContextSetting, type GuildContextUpdateOptions } from '../../structures'
+import { type GuildContext, GuildSetting, type GuildUpdateOptions } from '../../structures'
 import { SubCommandCommand, type SubCommandCommandOptions } from '../base'
 import { argumentUtil, util } from '../../utils'
 import { ApplyOptions } from '../../utils/decorators'
@@ -7,7 +7,7 @@ import { VerificationProvider } from '../../utils/constants'
 import { injectable } from 'inversify'
 
 const { getEnumValues } = util
-const { guildContextSettingTransformer, parseEnum } = argumentUtil
+const { guildSettingTransformer, parseEnum } = argumentUtil
 
 @injectable()
 @ApplyOptions<SubCommandCommandOptions<SettingsCommand>>({
@@ -16,7 +16,7 @@ const { guildContextSettingTransformer, parseEnum } = argumentUtil
       args: [
         {
           key: 'setting',
-          parse: parseEnum(GuildContextSetting, guildContextSettingTransformer)
+          parse: parseEnum(GuildSetting, guildSettingTransformer)
         }
       ]
     },
@@ -24,7 +24,7 @@ const { guildContextSettingTransformer, parseEnum } = argumentUtil
       args: [
         {
           key: 'setting',
-          parse: parseEnum(GuildContextSetting, guildContextSettingTransformer)
+          parse: parseEnum(GuildSetting, guildSettingTransformer)
         },
         {
           key: 'value',
@@ -38,7 +38,7 @@ const { guildContextSettingTransformer, parseEnum } = argumentUtil
 export default class SettingsCommand extends SubCommandCommand<SettingsCommand> {
   public async get (
     interaction: CommandInteraction,
-    { setting }: { setting: keyof typeof GuildContextSetting }
+    { setting }: { setting: keyof typeof GuildSetting }
   ): Promise<void> {
     if (!interaction.inGuild()) {
       return
@@ -66,7 +66,7 @@ export default class SettingsCommand extends SubCommandCommand<SettingsCommand> 
   public async set (
     interaction: CommandInteraction,
     { setting, value }: {
-      setting: keyof typeof GuildContextSetting
+      setting: keyof typeof GuildSetting
       value: CategoryChannel | TextChannel | number | boolean | string | null
     }
   ): Promise<void> {
@@ -75,7 +75,7 @@ export default class SettingsCommand extends SubCommandCommand<SettingsCommand> 
     }
     const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
 
-    const changes: Pick<GuildContextUpdateOptions, keyof typeof GuildContextSetting> = {}
+    const changes: Pick<GuildUpdateOptions, keyof typeof GuildSetting> = {}
     if (typeof value === 'undefined' && !['robloxUsernamesInNicknames', 'verificationPreference'].includes(setting)) {
       changes[setting as Exclude<typeof setting, 'robloxUsernamesInNicknames' | 'verificationPreference'>] = null
     } else {
