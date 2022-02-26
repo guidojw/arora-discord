@@ -90,11 +90,12 @@ export default class Argument<T> {
   private resolveOptions (options: ArgumentOptions<T>): ArgumentResolvedOptions<T> {
     let resolvedType
     if (typeof options.type !== 'undefined') {
-      if (!Array.isArray(options.type)) {
+      if (!options.type.includes('|')) {
         resolvedType = this.client.argumentTypeFactory(options.type)
       } else {
         resolvedType = []
-        for (const typeName of options.type) {
+        const typeNames = options.type.split('|')
+        for (const typeName of typeNames) {
           const type = this.client.argumentTypeFactory(typeName)
           if (typeof type !== 'undefined') {
             resolvedType.push(type)
