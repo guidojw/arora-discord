@@ -1,5 +1,5 @@
 import { type EmojiResolvable, GuildEmoji, type Message } from 'discord.js'
-import { GuildContext, TicketType, type TicketTypeUpdateOptions } from '../structures'
+import { type GuildContext, TicketType, type TicketTypeUpdateOptions } from '../structures'
 import BaseManager from './base'
 import type { Repository } from 'typeorm'
 import type { TicketType as TicketTypeEntity } from '../entities'

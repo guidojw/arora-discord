@@ -1,5 +1,5 @@
 import { type EmojiResolvable, GuildEmoji, type Message, type RoleResolvable } from 'discord.js'
-import { GuildContext, RoleMessage } from '../structures'
+import { type GuildContext, RoleMessage } from '../structures'
 import BaseManager from './base'
 import type { Repository } from 'typeorm'
 import type { RoleMessage as RoleMessageEntity } from '../entities'

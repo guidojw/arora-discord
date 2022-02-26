@@ -1,4 +1,4 @@
-import { GuildContext, Tag, type TagUpdateOptions } from '../structures'
+import { type GuildContext, Tag, type TagUpdateOptions } from '../structures'
 import BaseManager from './base'
 import { MessageEmbed } from 'discord.js'
 import type { Repository } from 'typeorm'
