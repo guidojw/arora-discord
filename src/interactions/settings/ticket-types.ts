@@ -21,7 +21,7 @@ const ticketTypesCommand = {
     options: [{
       name: 'id',
       description: 'The ID of the ticket type to delete',
-      type: ApplicationCommandOptionType.Integer,
+      type: ApplicationCommandOptionType.String,
       required: true
     }]
   }, {
@@ -31,7 +31,7 @@ const ticketTypesCommand = {
     options: [{
       name: 'id',
       description: 'The ID of the ticket type to link',
-      type: ApplicationCommandOptionType.Integer,
+      type: ApplicationCommandOptionType.String,
       required: true
     }, {
       name: 'emoji',
@@ -51,7 +51,7 @@ const ticketTypesCommand = {
     options: [{
       name: 'id',
       description: 'The ID of the ticket type to unlink',
-      type: ApplicationCommandOptionType.Integer,
+      type: ApplicationCommandOptionType.String,
       required: true
     }]
   }, {
@@ -61,7 +61,7 @@ const ticketTypesCommand = {
     options: [{
       name: 'id',
       description: 'The ID of the ticket type to list',
-      type: ApplicationCommandOptionType.Integer
+      type: ApplicationCommandOptionType.String
     }]
   }]
 }

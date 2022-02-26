@@ -31,7 +31,7 @@ const roleMessagesCommand = {
     options: [{
       name: 'id',
       description: 'The ID of the role message to delete',
-      type: ApplicationCommandOptionType.Integer,
+      type: ApplicationCommandOptionType.String,
       required: true
     }]
   }, {
@@ -41,7 +41,7 @@ const roleMessagesCommand = {
     options: [{
       name: 'id',
       description: 'The ID of the role message to list',
-      type: ApplicationCommandOptionType.Integer
+      type: ApplicationCommandOptionType.String
     }]
   }]
 }

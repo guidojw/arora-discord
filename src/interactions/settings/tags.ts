@@ -26,7 +26,7 @@ const tagsCommand = {
     options: [{
       name: 'id',
       description: 'The ID of the tag to delete',
-      type: ApplicationCommandOptionType.Integer,
+      type: ApplicationCommandOptionType.String,
       required: true
     }]
   }, {
@@ -36,7 +36,7 @@ const tagsCommand = {
     options: [{
       name: 'id',
       description: 'The ID of the tag to edit',
-      type: ApplicationCommandOptionType.Integer,
+      type: ApplicationCommandOptionType.String,
       required: true
     }, {
       name: 'key',
@@ -61,7 +61,7 @@ const tagsCommand = {
       options: [{
         name: 'id',
         description: 'The ID of the tag to create an alias for',
-        type: ApplicationCommandOptionType.Integer,
+        type: ApplicationCommandOptionType.String,
         required: true
       }, {
         name: 'name',
@@ -87,7 +87,7 @@ const tagsCommand = {
     options: [{
       name: 'id',
       description: 'The ID of the tag to get the raw content of',
-      type: ApplicationCommandOptionType.Integer,
+      type: ApplicationCommandOptionType.String,
       required: true
     }]
   }]

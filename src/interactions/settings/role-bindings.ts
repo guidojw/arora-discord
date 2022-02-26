@@ -30,7 +30,7 @@ const roleBindingsCommand = {
     options: [{
       name: 'id',
       description: 'The ID of the role binding to delete',
-      type: ApplicationCommandOptionType.Integer,
+      type: ApplicationCommandOptionType.String,
       required: true
     }]
   }, {
@@ -40,7 +40,7 @@ const roleBindingsCommand = {
     options: [{
       name: 'id',
       description: 'The ID of the role binding to list',
-      type: ApplicationCommandOptionType.Integer
+      type: ApplicationCommandOptionType.String
     }]
   }]
 }

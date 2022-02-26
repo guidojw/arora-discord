@@ -30,7 +30,7 @@ const groupsCommand = {
     options: [{
       name: 'id',
       description: 'The ID of the group to delete',
-      type: ApplicationCommandOptionType.Integer,
+      type: ApplicationCommandOptionType.String,
       required: true
     }]
   }, {
@@ -40,7 +40,7 @@ const groupsCommand = {
     options: [{
       name: 'id',
       description: 'The ID of the group to list',
-      type: ApplicationCommandOptionType.Integer
+      type: ApplicationCommandOptionType.String
     }]
   }, {
     name: 'channels',
@@ -53,7 +53,7 @@ const groupsCommand = {
       options: [{
         name: 'id',
         description: 'The ID of the group to add a channel to',
-        type: ApplicationCommandOptionType.Integer,
+        type: ApplicationCommandOptionType.String,
         required: true
       }, {
         name: 'channel',
@@ -69,7 +69,7 @@ const groupsCommand = {
       options: [{
         name: 'id',
         description: 'The ID of the group to remove a channel from',
-        type: ApplicationCommandOptionType.Integer,
+        type: ApplicationCommandOptionType.String,
         required: true
       }, {
         name: 'channel',
@@ -90,7 +90,7 @@ const groupsCommand = {
       options: [{
         name: 'id',
         description: 'The ID of the group to add a role to',
-        type: ApplicationCommandOptionType.Integer,
+        type: ApplicationCommandOptionType.String,
         required: true
       }, {
         name: 'role',
@@ -105,7 +105,7 @@ const groupsCommand = {
       options: [{
         name: 'id',
         description: 'The ID of the group to remove a role from',
-        type: ApplicationCommandOptionType.Integer,
+        type: ApplicationCommandOptionType.String,
         required: true
       }, {
         name: 'role',
