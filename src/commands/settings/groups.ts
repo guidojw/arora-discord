@@ -54,7 +54,14 @@ const { validators, noNumber, noWhitespace } = argumentUtil
       }
     },
     list: {
-      args: [{ key: 'group', type: 'group', required: false }]
+      args: [
+        {
+          key: 'id',
+          name: 'group',
+          type: 'group',
+          required: false
+        }
+      ]
     }
   }
 })
