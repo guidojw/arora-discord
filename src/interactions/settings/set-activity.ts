@@ -1,7 +1,12 @@
-import { ApplicationCommandOptionType } from 'discord-api-types/v9'
-import { Constants } from 'discord.js'
+import { ActivityType, ApplicationCommandOptionType } from 'discord-api-types/v9'
+import { util } from '../../utils'
 
-const { ActivityTypes } = Constants
+const { getEnumKeys } = util
+
+const choices = getEnumKeys(ActivityType)
+  .filter(type => type !== 'CUSTOM_STATUS')
+  .map(type => type.toLowerCase())
+  .map(type => ({ name: type, value: type }))
 
 const setActivityCommand = {
   name: 'setactivity',
@@ -15,10 +20,7 @@ const setActivityCommand = {
     name: 'type',
     description: 'The type for the new activity',
     type: ApplicationCommandOptionType.String,
-    choices: Object.keys(ActivityTypes)
-      .filter(type => type !== 'CUSTOM_STATUS')
-      .map(type => type.toLowerCase())
-      .map(type => ({ name: type, value: type }))
+    choices: choices
   }]
 }
 
