@@ -1,7 +1,7 @@
-import { argumentUtil, util } from '../../utils'
+import { argumentUtil, constants, util } from '../../utils'
 import { ApplicationCommandOptionType } from 'discord-api-types/v9'
-import { GuildSetting } from '../../structures'
 
+const { GuildSetting } = constants
 const { guildSettingTransformer } = argumentUtil
 const { getEnumKeys } = util
 

@@ -34,6 +34,18 @@ export const TYPES = {
   JobFactory: Symbol.for('JobFactory')
 }
 
+export enum GuildSetting {
+  logsChannelId,
+  primaryColor,
+  ratingsChannelId,
+  robloxGroupId,
+  robloxUsernamesInNicknames,
+  suggestionsChannelId,
+  ticketArchivesChannelId,
+  ticketsCategoryId,
+  verificationPreference
+}
+
 export enum CommandType {
   Command = 'command',
   Group = 'group'

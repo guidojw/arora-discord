@@ -32,19 +32,6 @@ import { constants } from '../utils'
 import container from '../configs/container'
 import cron from 'node-cron'
 import cronConfig from '../configs/cron'
-import getDecorators from 'inversify-inject-decorators'
-
-export enum GuildSetting {
-  logsChannelId,
-  primaryColor,
-  ratingsChannelId,
-  robloxGroupId,
-  robloxUsernamesInNicknames,
-  suggestionsChannelId,
-  ticketArchivesChannelId,
-  ticketsCategoryId,
-  verificationPreference
-}
 
 export interface GuildUpdateOptions {
   logsChannelId?: Snowflake | null

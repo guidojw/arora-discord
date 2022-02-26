@@ -1,11 +1,12 @@
 import { CategoryChannel, type CommandInteraction, GuildChannel, TextChannel } from 'discord.js'
-import { type GuildContext, GuildSetting, type GuildUpdateOptions } from '../../structures'
+import { type GuildContext, type GuildUpdateOptions } from '../../structures'
 import { SubCommandCommand, type SubCommandCommandOptions } from '../base'
-import { argumentUtil, util } from '../../utils'
+import { argumentUtil, constants, util } from '../../utils'
 import { ApplyOptions } from '../../utils/decorators'
 import { VerificationProvider } from '../../utils/constants'
 import { injectable } from 'inversify'
 
+const GuildSetting = constants.GuildSetting
 const { getEnumValues } = util
 const { guildSettingTransformer, parseEnum } = argumentUtil
 
