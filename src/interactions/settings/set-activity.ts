@@ -20,7 +20,7 @@ const setActivityCommand = {
     name: 'type',
     description: 'The type for the new activity',
     type: ApplicationCommandOptionType.String,
-    choices: choices
+    choices
   }]
 }
 
