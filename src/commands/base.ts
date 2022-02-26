@@ -114,7 +114,7 @@ export class SubCommandCommand<T extends SubCommandCommand<any>> extends BaseCom
   ): Promise<void> {
     const fn = this[subCommandNameOrSubCommandGroupName as keyof this]
     if (typeof fn === 'function') {
-      return await Promise.resolve(fn(interaction, argsOrSubCommandName, args))
+      return await Promise.resolve(fn.call(this, interaction, argsOrSubCommandName, args))
     } else {
       throw new Error(`Subcommand "${subCommandNameOrSubCommandGroupName.toString()}" does not exist.`)
     }
