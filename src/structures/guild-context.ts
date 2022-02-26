@@ -22,14 +22,10 @@ import {
   GuildTicketTypeManager
 } from '../managers'
 import type { AroraClient } from '../client'
-import type { BaseJob } from '../jobs'
 import BaseStructure from './base'
 import type { Guild as GuildEntity } from '../entities'
-import type { Repository } from 'typeorm'
 import type { VerificationProvider } from '../utils/constants'
 import applicationConfig from '../configs/application'
-import { constants } from '../utils'
-import container from '../configs/container'
 import cron from 'node-cron'
 import cronConfig from '../configs/cron'
 
@@ -46,18 +42,9 @@ export interface GuildUpdateOptions {
   verificationPreference?: VerificationProvider
 }
 
-const { TYPES } = constants
-const { lazyInject } = getDecorators(container)
-
 const memberNameRegex = (name: string): RegExp => new RegExp(`^(${name})$|\\s*[(](${name})[)]\\s*`)
 
 export default class GuildContext extends BaseStructure {
-  @lazyInject(TYPES.GuildRepository)
-  private readonly guildRepository!: Repository<GuildEntity>
-
-  @lazyInject(TYPES.JobFactory)
-  private readonly jobFactory!: (jobName: string) => BaseJob
-
   public readonly guild: Guild
 
   public readonly groups: GuildGroupManager
@@ -153,14 +140,14 @@ export default class GuildContext extends BaseStructure {
   public init (): void {
     if (applicationConfig.apiEnabled === true) {
       const announceTrainingsJobConfig = cronConfig.announceTrainingsJob
-      const announceTrainingsJob = this.jobFactory(announceTrainingsJobConfig.name)
+      const announceTrainingsJob = this.client.jobFactory(announceTrainingsJobConfig.name)
       cron.schedule(announceTrainingsJobConfig.expression, () => {
         Promise.resolve(announceTrainingsJob.run(this)).catch(console.error)
       })
     }
 
     const premiumMembersReportJobConfig = cronConfig.premiumMembersReportJob
-    const premiumMembersReportJob = this.jobFactory(premiumMembersReportJobConfig.name)
+    const premiumMembersReportJob = this.client.jobFactory(premiumMembersReportJobConfig.name)
     cron.schedule(premiumMembersReportJobConfig.expression, () => {
       Promise.resolve(premiumMembersReportJob.run(this)).catch(console.error)
     })
@@ -253,11 +240,11 @@ export default class GuildContext extends BaseStructure {
   }
 
   public async update (data: GuildUpdateOptions): Promise<this> {
-    await this.guildRepository.save(this.guildRepository.create({
+    await this.client.guildRepository.save(this.client.guildRepository.create({
       ...data,
       id: this.guild.id
     }))
-    const newData = await this.guildRepository.findOne(this.guild.id) as GuildEntity
+    const newData = await this.client.guildRepository.findOne(this.guild.id) as GuildEntity
 
     this.setup(newData)
     return this

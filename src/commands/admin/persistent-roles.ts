@@ -1,13 +1,9 @@
 import { type CommandInteraction, type GuildMember, MessageEmbed, type Role } from 'discord.js'
 import { SubCommandCommand, type SubCommandCommandOptions } from '../base'
-import { inject, injectable } from 'inversify'
 import { ApplyOptions } from '../../utils/decorators'
 import type { GuildContext } from '../../structures'
-import type { PersistentRoleService } from '../../services'
 import applicationConfig from '../../configs/application'
-import { constants } from '../../utils'
-
-const { TYPES } = constants
+import { injectable } from 'inversify'
 
 @injectable()
 @ApplyOptions<SubCommandCommandOptions<PersistentRolesCommand>>({
@@ -24,14 +20,11 @@ const { TYPES } = constants
   }
 })
 export default class PersistentRolesCommand extends SubCommandCommand<PersistentRolesCommand> {
-  @inject(TYPES.PersistentRoleService)
-  private readonly persistentRoleService!: PersistentRoleService
-
   public async persist (
     interaction: CommandInteraction<'present'>,
     { member, role }: { member: GuildMember, role: Role }
   ): Promise<void> {
-    await this.persistentRoleService.persistRole(member, role)
+    await this.client.persistentRoleService.persistRole(member, role)
 
     return await interaction.reply({
       content: `Successfully persisted role **${role.toString()}** on member **${member.toString()}**.`,
@@ -43,7 +36,7 @@ export default class PersistentRolesCommand extends SubCommandCommand<Persistent
     interaction: CommandInteraction<'present'>,
     { member, role }: { member: GuildMember, role: Role }
   ): Promise<void> {
-    await this.persistentRoleService.unpersistRole(member, role)
+    await this.client.persistentRoleService.unpersistRole(member, role)
 
     return await interaction.reply({
       content: `Successfully removed persistent role **${role.toString()}** from member **${member.toString()}**.`,
@@ -57,7 +50,7 @@ export default class PersistentRolesCommand extends SubCommandCommand<Persistent
   ): Promise<void> {
     const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
 
-    const persistentRoles = await this.persistentRoleService.fetchPersistentRoles(member)
+    const persistentRoles = await this.client.persistentRoleService.fetchPersistentRoles(member)
     if (persistentRoles.size === 0) {
       return await interaction.reply('No persistent roles found.')
     }

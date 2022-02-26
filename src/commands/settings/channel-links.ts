@@ -1,13 +1,9 @@
 import { type CommandInteraction, MessageEmbed, type TextChannel, type VoiceChannel } from 'discord.js'
 import { SubCommandCommand, type SubCommandCommandOptions } from '../base'
-import { inject, injectable } from 'inversify'
 import { ApplyOptions } from '../../utils/decorators'
-import type { ChannelLinkService } from '../../services'
 import type { GuildContext } from '../../structures'
 import applicationConfig from '../../configs/application'
-import { constants } from '../../utils'
-
-const { TYPES } = constants
+import { injectable } from 'inversify'
 
 @injectable()
 @ApplyOptions<SubCommandCommandOptions<ChannelLinksCommand>>({
@@ -30,9 +26,6 @@ const { TYPES } = constants
   }
 })
 export default class ChannelLinksCommand extends SubCommandCommand<ChannelLinksCommand> {
-  @inject(TYPES.ChannelLinkService)
-  private readonly channelLinkService!: ChannelLinkService
-
   public async link (
     interaction: CommandInteraction<'present'>,
     { fromChannel, toChannel }: {
@@ -40,7 +33,7 @@ export default class ChannelLinksCommand extends SubCommandCommand<ChannelLinksC
       toChannel: TextChannel
     }
   ): Promise<void> {
-    await this.channelLinkService.linkChannel(fromChannel, toChannel)
+    await this.client.channelLinkService.linkChannel(fromChannel, toChannel)
 
     // eslint-disable-next-line @typescript-eslint/no-base-to-string
     return await interaction.reply(`Successfully linked voice channel ${fromChannel.toString()} to text channel ${toChannel.toString()}.`)
@@ -53,7 +46,7 @@ export default class ChannelLinksCommand extends SubCommandCommand<ChannelLinksC
       toChannel: TextChannel
     }
   ): Promise<void> {
-    await this.channelLinkService.unlinkChannel(fromChannel, toChannel)
+    await this.client.channelLinkService.unlinkChannel(fromChannel, toChannel)
 
     // eslint-disable-next-line @typescript-eslint/no-base-to-string
     return await interaction.reply(`Successfully unlinked text channel ${toChannel.toString()} from voice channel ${fromChannel.toString()}.`)
@@ -65,7 +58,7 @@ export default class ChannelLinksCommand extends SubCommandCommand<ChannelLinksC
   ): Promise<void> {
     const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
 
-    const links = await this.channelLinkService.fetchToLinks(channel)
+    const links = await this.client.channelLinkService.fetchToLinks(channel)
     if (links.size === 0) {
       return await interaction.reply('No links found.')
     }

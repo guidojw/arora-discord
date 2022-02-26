@@ -1,3 +1,4 @@
+import type { ChannelLinkService, PersistentRoleService } from '../services'
 import {
   Client,
   type ClientEvents,
@@ -11,8 +12,11 @@ import {
 } from 'discord.js'
 import type { BaseArgumentType } from '../types'
 import type BaseHandler from './base'
+import type { BaseJob } from '../jobs'
 import Dispatcher from './dispatcher'
 import { GuildContextManager } from '../managers'
+import type { Guild as GuildEntity } from '../entities'
+import type { Repository } from 'typeorm'
 import SettingProvider from './setting-provider'
 import { WebSocketManager } from './websocket'
 import applicationConfig from '../configs/application'
@@ -43,6 +47,11 @@ const REQUIRED_PARTIALS: Array<keyof typeof PartialTypes> = [
 
 declare module 'discord.js' {
   interface Client {
+    guildRepository: Repository<GuildEntity>
+    jobFactory (jobName: string): BaseJob
+    channelLinkService: ChannelLinkService
+    persistentRoleService: PersistentRoleService
+
     guildContexts: GuildContextManager
 
     dispatcher: Dispatcher
@@ -65,6 +74,18 @@ export default class AroraClient<Ready extends boolean = boolean> extends Client
 
   @lazyInject(TYPES.PacketHandlerFactory)
   public readonly packetHandlerFactory!: (eventName: string) => BaseHandler
+
+  @lazyInject(TYPES.GuildRepository)
+  public override readonly guildRepository!: Repository<GuildEntity>
+
+  @lazyInject(TYPES.JobFactory)
+  public override readonly jobFactory!: (jobName: string) => BaseJob
+
+  @lazyInject(TYPES.ChannelLinkService)
+  public override readonly channelLinkService!: ChannelLinkService
+
+  @lazyInject(TYPES.PersistentRoleService)
+  public override readonly persistentRoleService!: PersistentRoleService
 
   @lazyInject(TYPES.EventHandlerFactory)
   private readonly eventHandlerFactory!: (eventName: string) => BaseHandler
