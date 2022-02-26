@@ -9,7 +9,7 @@ export default class TextChannelArgumentType extends BaseArgumentType<TextChanne
       return false
     }
 
-    const match = value.match(/(d+)/)
+    const match = value.match(/(\d+)/)
     if (match === null) {
       return false
     }
@@ -22,7 +22,7 @@ export default class TextChannelArgumentType extends BaseArgumentType<TextChanne
       return null
     }
 
-    const match = value.match(/(d+)/)
+    const match = value.match(/(\d+)/)
     if (match === null) {
       return null
     }
