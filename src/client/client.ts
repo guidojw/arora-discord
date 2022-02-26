@@ -10,6 +10,7 @@ import {
   type PartialTextBasedChannelFields,
   type Presence
 } from 'discord.js'
+import type { AnyFunction } from '../utils/util'
 import type { BaseArgumentType } from '../types'
 import type BaseHandler from './base'
 import type { BaseJob } from '../jobs'
@@ -64,7 +65,7 @@ declare module 'discord.js' {
     send (
       user: PartialTextBasedChannelFields,
       ...args: Parameters<PartialTextBasedChannelFields['send']>
-    ): Promise<Message>
+    ): Promise<Message | null>
   }
 }
 
@@ -180,7 +181,7 @@ export default class AroraClient<Ready extends boolean = boolean> extends Client
   public override async send (
     user: PartialTextBasedChannelFields,
     ...args: Parameters<PartialTextBasedChannelFields['send']>
-  ): Promise<Message> {
+  ): Promise<Message | null> {
     return await failSilently(user.send.bind(user, ...args), [50007])
     // 50007: Cannot send messages to this user, user probably has DMs closed.
   }
@@ -197,10 +198,10 @@ export default class AroraClient<Ready extends boolean = boolean> extends Client
   }
 }
 
-async function failSilently (
-  fn: ((...args: any[]) => any | Promise<any>),
+async function failSilently<T extends AnyFunction> (
+  fn: T,
   codes: number[]
-): Promise<any> {
+): Promise<ReturnType<T> | null> {
   try {
     return await Promise.resolve(fn())
   } catch (err) {
