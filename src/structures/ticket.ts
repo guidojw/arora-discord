@@ -162,7 +162,7 @@ export default class Ticket extends BaseStructure {
       .setColor(this.context.primaryColor ?? applicationConfig.defaultColor)
       .setAuthor({ name: this.client.user.username, iconURL: this.client.user.displayAvatarURL() })
       .setTitle('How would you rate the support you received?')
-    const message = await this.client.send(this.author, { embeds: [embed] }) as Message | null
+    const message = await this.client.send(this.author, { embeds: [embed] })
 
     if (message !== null) {
       const options = []

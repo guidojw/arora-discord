@@ -198,10 +198,7 @@ export default class AroraClient<Ready extends boolean = boolean> extends Client
   }
 }
 
-async function failSilently<T extends AnyFunction> (
-  fn: T,
-  codes: number[]
-): Promise<ReturnType<T> | null> {
+async function failSilently<T extends AnyFunction> (fn: T, codes: number[]): Promise<ReturnType<T> | null> {
   try {
     return await Promise.resolve(fn())
   } catch (err) {
