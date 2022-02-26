@@ -35,7 +35,7 @@ export default class TagsCommand extends Command {
     if (tag !== null) {
       const memberMention = who?.toString()
       return await interaction.reply({
-        content: typeof tag.content === 'string' ? `${memberMention ?? ''}, ${tag.content}` : memberMention ?? undefined,
+        content: typeof tag.content === 'string' ? `${typeof memberMention !== 'undefined' ? `${memberMention}, ` : ''}${tag.content}` : memberMention ?? undefined,
         embeds: typeof tag.content !== 'string' ? [tag.content] : undefined,
         allowedMentions: { users: [who?.id ?? interaction.user.id] }
       })
