@@ -173,6 +173,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           status: ${{ job.status }}
           deployment_id: ${{ steps.start_deployment.outputs.deployment_id }}
+          env: ${{ needs.metadata.outputs.stage }}
 
   update_check_run:
     name: Update Check Run
