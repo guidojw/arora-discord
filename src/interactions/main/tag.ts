@@ -1,6 +1,6 @@
-import { ApplicationCommandOptionType } from 'discord-api-types/v9'
+import { ApplicationCommandOptionType, type RESTPutAPIApplicationCommandsJSONBody } from 'discord-api-types/v9'
 
-const tagCommand = {
+const tagCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'tag',
   description: 'Post a tag',
   default_permission: false,

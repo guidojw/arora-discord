@@ -1,6 +1,6 @@
-import { ApplicationCommandOptionType } from 'discord-api-types/v9'
+import { ApplicationCommandOptionType, type RESTPutAPIApplicationCommandsJSONBody } from 'discord-api-types/v9'
 
-const persistentRolesCommand = {
+const persistentRolesCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'persistentroles',
   description: 'Persist or unpersist roles on a member',
   default_permission: false,

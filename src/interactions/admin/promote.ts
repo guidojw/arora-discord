@@ -1,6 +1,6 @@
-import { ApplicationCommandOptionType } from 'discord-api-types/v9'
+import { ApplicationCommandOptionType, type RESTPutAPIApplicationCommandsJSONBody } from 'discord-api-types/v9'
 
-const promoteCommand = {
+const promoteCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'promote',
   description: 'Promote a Roblox user in the group',
   default_permission: false,

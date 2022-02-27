@@ -1,6 +1,6 @@
-import { ApplicationCommandOptionType } from 'discord-api-types/v9'
+import { ApplicationCommandOptionType, type RESTPutAPIApplicationCommandsJSONBody } from 'discord-api-types/v9'
 
-const memberCountCommand = {
+const memberCountCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'membercount',
   description: 'Fetch a group\'s member count',
   default_permission: false,

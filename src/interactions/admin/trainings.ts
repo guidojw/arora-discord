@@ -1,6 +1,6 @@
-import { ApplicationCommandOptionType } from 'discord-api-types/v9'
+import { ApplicationCommandOptionType, type RESTPutAPIApplicationCommandsJSONBody } from 'discord-api-types/v9'
 
-const trainingsCommand = {
+const trainingsCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'trainings',
   description: 'Schedule or cancel a training',
   default_permission: false,

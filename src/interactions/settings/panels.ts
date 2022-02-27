@@ -1,6 +1,10 @@
-import { ApplicationCommandOptionType, ChannelType } from 'discord-api-types/v9'
+import {
+  ApplicationCommandOptionType,
+  ChannelType,
+  type RESTPutAPIApplicationCommandsJSONBody
+} from 'discord-api-types/v9'
 
-const panelsCommand = {
+const panelsCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'panels',
   description: 'Create, edit, post, list or delete a panel',
   default_permission: false,

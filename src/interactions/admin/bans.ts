@@ -1,6 +1,6 @@
-import { ApplicationCommandOptionType } from 'discord-api-types/v9'
+import { ApplicationCommandOptionType, type RESTPutAPIApplicationCommandsJSONBody } from 'discord-api-types/v9'
 
-const bansCommand = {
+const bansCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'bans',
   description: 'Ban or unban a Roblox user',
   default_permission: false,

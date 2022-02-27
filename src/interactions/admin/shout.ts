@@ -1,6 +1,6 @@
-import { ApplicationCommandOptionType } from 'discord-api-types/v9'
+import { ApplicationCommandOptionType, type RESTPutAPIApplicationCommandsJSONBody } from 'discord-api-types/v9'
 
-const shoutCommand = {
+const shoutCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'shout',
   description: 'Post a message to the group shout',
   default_permission: false,

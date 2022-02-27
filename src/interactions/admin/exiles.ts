@@ -1,6 +1,6 @@
-import { ApplicationCommandOptionType } from 'discord-api-types/v9'
+import { ApplicationCommandOptionType, type RESTPutAPIApplicationCommandsJSONBody } from 'discord-api-types/v9'
 
-const exilesCommand = {
+const exilesCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'exiles',
   description: 'Exile or unexile a Roblox user',
   default_permission: false,

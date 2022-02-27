@@ -1,5 +1,5 @@
+import { ApplicationCommandOptionType, type RESTPutAPIApplicationCommandsJSONBody } from 'discord-api-types/v9'
 import { argumentUtil, constants, util } from '../../utils'
-import { ApplicationCommandOptionType } from 'discord-api-types/v9'
 
 const { GuildSetting } = constants
 const { guildSettingTransformer } = argumentUtil
@@ -10,7 +10,7 @@ const choices = getEnumKeys(GuildSetting)
   .map(attribute => attribute.toLowerCase())
   .map(attribute => ({ name: attribute, value: attribute }))
 
-const settingsCommand = {
+const settingsCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'settings',
   description: 'Get or set a guild setting',
   default_permission: false,

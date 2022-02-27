@@ -1,6 +1,10 @@
-import { ApplicationCommandOptionType, ChannelType } from 'discord-api-types/v9'
+import {
+  ApplicationCommandOptionType,
+  ChannelType,
+  type RESTPutAPIApplicationCommandsJSONBody
+} from 'discord-api-types/v9'
 
-const channelLinksCommand = {
+const channelLinksCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'channellinks',
   description: 'Link or unlink a text channel from a voice channel',
   default_permission: false,

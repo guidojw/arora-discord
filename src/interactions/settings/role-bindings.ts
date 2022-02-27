@@ -1,6 +1,6 @@
-import { ApplicationCommandOptionType } from 'discord-api-types/v9'
+import { ApplicationCommandOptionType, type RESTPutAPIApplicationCommandsJSONBody } from 'discord-api-types/v9'
 
-const roleBindingsCommand = {
+const roleBindingsCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'rolebindings',
   description: 'Create, delete or list a role binding',
   default_permission: false,

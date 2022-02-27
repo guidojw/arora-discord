@@ -1,6 +1,6 @@
-import { ApplicationCommandOptionType } from 'discord-api-types/v9'
+import { ApplicationCommandOptionType, type RESTPutAPIApplicationCommandsJSONBody } from 'discord-api-types/v9'
 
-const pollCommand = {
+const pollCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'poll',
   description: 'Create a poll',
   default_permission: false,

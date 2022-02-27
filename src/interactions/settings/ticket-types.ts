@@ -1,6 +1,6 @@
-import { ApplicationCommandOptionType } from 'discord-api-types/v9'
+import { ApplicationCommandOptionType, type RESTPutAPIApplicationCommandsJSONBody } from 'discord-api-types/v9'
 
-const ticketTypesCommand = {
+const ticketTypesCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'tickettypes',
   description: 'Create, link, delete or list a ticket type',
   default_permission: false,

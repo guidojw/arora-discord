@@ -1,6 +1,10 @@
-import { ApplicationCommandOptionType, ChannelType } from 'discord-api-types/v9'
+import {
+  ApplicationCommandOptionType,
+  ChannelType,
+  type RESTPutAPIApplicationCommandsJSONBody
+} from 'discord-api-types/v9'
 
-const groupsCommand = {
+const groupsCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'groups',
   description: 'Create, edit, delete or list a group',
   default_permission: false,

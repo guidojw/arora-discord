@@ -1,4 +1,8 @@
-import { ActivityType, ApplicationCommandOptionType } from 'discord-api-types/v9'
+import {
+  ActivityType,
+  ApplicationCommandOptionType,
+  type RESTPutAPIApplicationCommandsJSONBody
+} from 'discord-api-types/v9'
 import { util } from '../../utils'
 
 const { getEnumKeys } = util
@@ -8,7 +12,7 @@ const choices = getEnumKeys(ActivityType)
   .map(type => type.toLowerCase())
   .map(type => ({ name: type, value: type }))
 
-const setActivityCommand = {
+const setActivityCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'setactivity',
   description: 'Set the bot\'s activity',
   default_permission: false,

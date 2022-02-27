@@ -1,6 +1,6 @@
-import { ApplicationCommandOptionType } from 'discord-api-types/v9'
+import { ApplicationCommandOptionType, type RESTPutAPIApplicationCommandsJSONBody } from 'discord-api-types/v9'
 
-const demoteCommand = {
+const demoteCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'demote',
   description: 'Demote a Roblox user in the group',
   default_permission: false,

@@ -1,6 +1,6 @@
-import { ApplicationCommandOptionType } from 'discord-api-types/v9'
+import { ApplicationCommandOptionType, type RESTPutAPIApplicationCommandsJSONBody } from 'discord-api-types/v9'
 
-const whoIsCommand = {
+const whoIsCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'whois',
   description: 'Get the Roblox information of a user',
   default_permission: false,

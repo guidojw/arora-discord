@@ -1,6 +1,6 @@
-import { ApplicationCommandOptionType } from 'discord-api-types/v9'
+import { ApplicationCommandOptionType, type RESTPutAPIApplicationCommandsJSONBody } from 'discord-api-types/v9'
 
-const boostInfoCommand = {
+const boostInfoCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'boostinfo',
   description: 'Get a member\'s boost information',
   default_permission: false,

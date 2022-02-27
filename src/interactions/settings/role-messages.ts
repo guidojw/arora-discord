@@ -1,6 +1,6 @@
-import { ApplicationCommandOptionType } from 'discord-api-types/v9'
+import { ApplicationCommandOptionType, type RESTPutAPIApplicationCommandsJSONBody } from 'discord-api-types/v9'
 
-const roleMessagesCommand = {
+const roleMessagesCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'rolemessages',
   description: 'Create, delete or list a role message',
   default_permission: false,

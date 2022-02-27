@@ -1,6 +1,6 @@
-import { ApplicationCommandOptionType } from 'discord-api-types/v9'
+import { ApplicationCommandOptionType, type RESTPutAPIApplicationCommandsJSONBody } from 'discord-api-types/v9'
 
-const suggestCommand = {
+const suggestCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'suggest',
   description: 'Make a suggestion',
   default_permission: false,
