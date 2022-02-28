@@ -2,7 +2,6 @@
 'use strict'
 
 require('dotenv').config()
-require('reflect-metadata')
 
 const { REST } = require('@discordjs/rest')
 const { Routes } = require('discord-api-types/v9')

@@ -116,6 +116,8 @@ jobs:
     with:
       sha: ${{ needs.merge.outputs.sha }}
     secrets:
+      staging_discord_token: ${{ secrets.STAGING_DISCORD_TOKEN }}
+      production_discord_token: ${{ secrets.PRODUCTION_DISCORD_TOKEN }}
       sentry_auth_token: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
   deploy:
