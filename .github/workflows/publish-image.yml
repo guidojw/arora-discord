@@ -59,16 +59,16 @@ jobs:
     needs: metadata
     steps:
       - name: Checkout code
-        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # renovate: tag=v2.4.0
+        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # tag=v2.4.0
         with:
           ref: ${{ inputs.sha }}
           fetch-depth: 0
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@94ab11c41e45d028884a99163086648e898eed25 # renovate: tag=v1.6.0
+        uses: docker/setup-buildx-action@94ab11c41e45d028884a99163086648e898eed25 # tag=v1.6.0
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@42d299face0c5c43a0487c477f595ac9cf22f1a7 # renovate: tag=v1.12.0
+        uses: docker/login-action@6af3c118c8376c675363897acf1757f7a9be6583 # tag=v1.13.0
         with:
           registry: ${{ env.REGISTRY_URL }}
           username: ${{ github.repository_owner }}
@@ -76,7 +76,7 @@ jobs:
 
       - name: Build and push image
         id: build_push_image
-        uses: docker/build-push-action@7f9d37fa544684fb73bfe4835ed7214c255ce02b # renovate: tag=v2.9.0
+        uses: docker/build-push-action@7f9d37fa544684fb73bfe4835ed7214c255ce02b # tag=v2.9.0
         with:
           push: true
           context: .
@@ -123,7 +123,7 @@ jobs:
 
       - name: Create Sentry release
         if: ${{ !(github.event_name == 'workflow_dispatch' && github.workflow == 'Publish Image') }}
-        uses: getsentry/action-release@744e4b262278339b79fb39c8922efcae71e98e39 # renovate: tag=v1.1.6
+        uses: getsentry/action-release@744e4b262278339b79fb39c8922efcae71e98e39 # tag=v1.1.6
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_PROJECT: ${{ env.PROJECT_NAME }}
@@ -153,7 +153,7 @@ jobs:
           done
 
       - name: Update Publish Image check run
-        uses: guidojw/actions/update-check-run@2b1dea8cbd9e44491c269e771b75636026caf8ca # renovate: tag=v1.1.0
+        uses: guidojw/actions/update-check-run@2b1dea8cbd9e44491c269e771b75636026caf8ca # tag=v1.1.0
         with:
           app_id: ${{ env.APP_ID }}
           private_key: ${{ secrets.APP_PRIVATE_KEY }}
