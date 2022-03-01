@@ -38,8 +38,7 @@ const settingsCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
     }, {
       name: 'value',
       description: 'The value to change this setting to',
-      type: ApplicationCommandOptionType.String,
-      required: true
+      type: ApplicationCommandOptionType.String
     }]
   }]
 }
