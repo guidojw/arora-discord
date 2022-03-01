@@ -8,6 +8,7 @@ import {
   Intents,
   type Message,
   type PartialTextBasedChannelFields,
+  type PartialTypes as PartialType,
   type Presence
 } from 'discord.js'
 import type { AnyFunction } from '../utils/util'
@@ -39,7 +40,7 @@ const REQUIRED_INTENTS: number[] = [
   Intents.FLAGS.DIRECT_MESSAGES,
   Intents.FLAGS.DIRECT_MESSAGE_REACTIONS
 ]
-const REQUIRED_PARTIALS: Array<keyof typeof PartialTypes> = [
+const REQUIRED_PARTIALS: PartialType[] = [
   PartialTypes.GUILD_MEMBER,
   PartialTypes.REACTION,
   PartialTypes.MESSAGE,
@@ -101,7 +102,7 @@ export default class AroraClient<Ready extends boolean = boolean> extends Client
     options.partials = [...new Set(
       ...options.partials ?? [],
       ...REQUIRED_PARTIALS
-    )] as Array<keyof typeof PartialTypes>
+    )] as PartialType[]
     super(options)
 
     this.guildContexts = new GuildContextManager(this)
