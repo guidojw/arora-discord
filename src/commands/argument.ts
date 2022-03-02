@@ -78,7 +78,7 @@ export default class Argument<T> {
       ) {
         const results = await Promise.all(this.type.map(type => type.validate(value, interaction, arg)))
         for (let i = 0; i < results.length; i++) {
-          if (typeof results[i] !== 'string') {
+          if (results[i] === true) {
             return await this.type[i].parse(value, interaction, arg)
           }
         }
