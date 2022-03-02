@@ -104,7 +104,7 @@ export default class SettingsCommand extends SubCommandCommand<SettingsCommand> 
 
         changes.robloxUsernamesInNicknames = value
       } else if (setting === 'verificationPreference') {
-        if (typeof value !== 'string' || getEnumValues(VerificationProvider).includes(value.toLowerCase())) {
+        if (typeof value !== 'string' || !getEnumValues(VerificationProvider).includes(value.toLowerCase())) {
           return await interaction.reply('Invalid verification provider.')
         }
         value = value.toLowerCase()
