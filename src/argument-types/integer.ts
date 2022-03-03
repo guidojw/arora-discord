@@ -7,7 +7,10 @@ export default class IntegerArgumentType extends BaseArgumentType<number> {
     return /^[0-9]+$/.test(value)
   }
 
-  public parse (value: string): number {
+  public parse (value: string): number | null {
+    if (!this.validate(value)) {
+      return null
+    }
     return parseInt(value)
   }
 }

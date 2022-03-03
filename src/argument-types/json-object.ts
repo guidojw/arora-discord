@@ -12,7 +12,10 @@ export default class JsonObjectArgumentType extends BaseArgumentType<object> {
     return true
   }
 
-  public parse (value: string): object {
+  public parse (value: string): object | null {
+    if (!this.validate(value)) {
+      return null
+    }
     return JSON.parse(value)
   }
 }

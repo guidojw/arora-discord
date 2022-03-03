@@ -9,6 +9,9 @@ export default class DefaultEmojiArgumentType extends BaseArgumentType<string> {
   }
 
   public parse (value: string): string | null {
+    if (!this.validate(value)) {
+      return null
+    }
     return value
   }
 }

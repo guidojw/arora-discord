@@ -11,7 +11,10 @@ export default class BooleanArgumentType extends BaseArgumentType<boolean> {
     return this.truthy.includes(search) || this.falsy.includes(search)
   }
 
-  public parse (value: string): boolean {
+  public parse (value: string): boolean | null {
+    if (!this.validate(value)) {
+      return null
+    }
     const search = value.toLowerCase()
     return this.truthy.includes(search)
   }

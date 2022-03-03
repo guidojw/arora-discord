@@ -10,7 +10,10 @@ export default class TimeArgumentType extends BaseArgumentType<string> {
     return validTime(value)
   }
 
-  public parse (value: string): string {
+  public parse (value: string): string | null {
+    if (!this.validate(value)) {
+      return null
+    }
     return value
   }
 }
