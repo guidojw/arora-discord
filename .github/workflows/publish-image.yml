@@ -9,10 +9,6 @@ on:
         required: false
         type: string
     secrets:
-      staging_discord_token:
-        required: true
-      production_discord_token:
-        required: true
       sentry_auth_token:
         required: true
   workflow_dispatch:
@@ -87,39 +83,12 @@ jobs:
             ${{ env.REGISTRY_URL }}/${{ github.repository_owner }}/${{ env.PROJECT_NAME }}:${{
             needs.metadata.outputs.tag }}
 
-      - name: Create container
-        if: ${{ !(github.event_name == 'workflow_dispatch' && github.workflow == 'Publish Image') }}
-        env:
-          IMAGE_NAME: ${{ fromJSON(steps.build_push_image.outputs.metadata)['image.name'] }}
-        run: |
-          docker create $IMAGE_NAME
-
-      - name: Deploy Application Commands (staging)
-        if: |
-          github.ref_name == 'staging' &&
-          !(github.event_name == 'workflow_dispatch' && github.workflow == 'Publish Image')
-        env:
-          IMAGE_NAME: ${{ fromJSON(steps.build_push_image.outputs.metadata)['image.name'] }}
-          DISCORD_TOKEN: ${{ secrets.STAGING_DISCORD_TOKEN }}
-        run: |
-          docker run -e DISCORD_TOKEN $IMAGE_NAME node bin/update-commands.js
-
-      - name: Deploy Application Commands (production)
-        if: |
-          github.ref_name == 'main' &&
-          !(github.event_name == 'workflow_dispatch' && github.workflow == 'Publish Image')
-        env:
-          IMAGE_NAME: ${{ fromJSON(steps.build_push_image.outputs.metadata)['image.name'] }}
-          DISCORD_TOKEN: ${{ secrets.PRODUCTION_DISCORD_TOKEN }}
-        run: |
-          docker run -e DISCORD_TOKEN $IMAGE_NAME node bin/update-commands.js
-
       - name: Get sourcemaps from image
         if: ${{ !(github.event_name == 'workflow_dispatch' && github.workflow == 'Publish Image') }}
         env:
           IMAGE_NAME: ${{ fromJSON(steps.build_push_image.outputs.metadata)['image.name'] }}
         run: |
-          docker cp $IMAGE_NAME:/opt/app/dist/. sourcemaps
+          docker cp $(docker create $IMAGE_NAME):/opt/app/dist/. sourcemaps
 
       - name: Create Sentry release
         if: ${{ !(github.event_name == 'workflow_dispatch' && github.workflow == 'Publish Image') }}
