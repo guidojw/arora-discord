@@ -1,5 +1,5 @@
 import BaseStructure from './base'
-import type Tag from './tag'
+import type { Tag } from '.'
 import type { TagName as TagNameEntity } from '../entities'
 import { injectable } from 'inversify'
 

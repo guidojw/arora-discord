@@ -1,11 +1,12 @@
 import type { ChannelGroup, Group, GuildContext, RoleGroup } from '../../../../structures'
 import { type CommandInteraction, MessageEmbed, type Role, type TextChannel } from 'discord.js'
-import { SubCommandCommand, type SubCommandCommandOptions } from '../base'
 import { argumentUtil, constants } from '../../../../utils'
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
 import type { GroupType } from '../../../../utils/constants'
 import type { GuildContextManager } from '../../../../managers'
+import { SubCommandCommand } from '../base'
+import type { SubCommandCommandOptions } from '..'
 import applicationConfig from '../../../../configs/application'
 import { discordService } from '../../../../services'
 

@@ -1,10 +1,11 @@
 import { type CommandInteraction, MessageEmbed, type TextChannel, type VoiceChannel } from 'discord.js'
-import { SubCommandCommand, type SubCommandCommandOptions } from '../base'
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
 import type { ChannelLinkService } from '../../../../services'
 import type { GuildContext } from '../../../../structures'
 import type { GuildContextManager } from '../../../../managers'
+import { SubCommandCommand } from '../base'
+import type { SubCommandCommandOptions } from '..'
 import applicationConfig from '../../../../configs/application'
 import { constants } from '../../../../utils'
 

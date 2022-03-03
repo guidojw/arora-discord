@@ -1,10 +1,11 @@
 import { CategoryChannel, type CommandInteraction, GuildChannel, TextChannel } from 'discord.js'
 import type { GuildContext, GuildUpdateOptions } from '../../../../structures'
-import { SubCommandCommand, type SubCommandCommandOptions } from '../base'
 import { argumentUtil, constants, util } from '../../../../utils'
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
 import type { GuildContextManager } from '../../../../managers'
+import { SubCommandCommand } from '../base'
+import type { SubCommandCommandOptions } from '..'
 import { VerificationProvider } from '../../../../utils/constants'
 
 const GuildSetting = constants.GuildSetting

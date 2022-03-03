@@ -1,8 +1,8 @@
 import type { GuildEmoji, Role } from 'discord.js'
 import type { AbstractConstructor } from '../utils/util'
 import BaseStructure from './base'
-import type GuildContext from './guild-context'
-import Postable from './mixins/postable'
+import type { GuildContext } from '.'
+import { Postable } from './mixins'
 import type { RoleMessage as RoleMessageEntity } from '../entities'
 import { injectable } from 'inversify'
 

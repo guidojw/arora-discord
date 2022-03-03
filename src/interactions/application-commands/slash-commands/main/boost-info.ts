@@ -1,6 +1,7 @@
-import { Command, type CommandOptions } from '../base'
 import { type CommandInteraction, type GuildMember, MessageEmbed } from 'discord.js'
 import { ApplyOptions } from '../../../../utils/decorators'
+import { Command } from '../base'
+import type { CommandOptions } from '..'
 import { injectable } from 'inversify'
 import pluralize from 'pluralize'
 import { timeUtil } from '../../../../utils'

@@ -4,8 +4,8 @@ import {
   type GuildMemberResolvable,
   MessageEmbed,
   type MessageReaction,
-  type Snowflake,
   TextChannel,
+  type TextChannelResolvable,
   type User
 } from 'discord.js'
 import { inject, injectable } from 'inversify'
@@ -21,7 +21,6 @@ const { TYPES } = constants
 const TICKETS_INTERVAL = 60_000
 const SUBMISSION_TIME = 3_600_000
 
-export type TextChannelResolvable = TextChannel | Snowflake
 export type TicketResolvable = TextChannelResolvable | GuildMemberResolvable | Ticket | number
 
 @injectable()

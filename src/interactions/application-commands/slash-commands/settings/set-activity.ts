@@ -1,6 +1,7 @@
 import type { ActivityType, CommandInteraction } from 'discord.js'
-import { Command, type CommandOptions } from '../base'
 import { ApplyOptions } from '../../../../utils/decorators'
+import { Command } from '../base'
+import type { CommandOptions } from '..'
 import { argumentUtil } from '../../../../utils'
 import { injectable } from 'inversify'
 

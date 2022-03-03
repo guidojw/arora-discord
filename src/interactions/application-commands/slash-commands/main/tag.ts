@@ -1,9 +1,10 @@
-import { Command, type CommandOptions } from '../base'
 import { type CommandInteraction, type GuildMember, MessageEmbed } from 'discord.js'
 import type { GuildContext, Tag } from '../../../../structures'
 import { constants, util } from '../../../../utils'
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
+import { Command } from '../base'
+import type { CommandOptions } from '..'
 import type { GuildContextManager } from '../../../../managers'
 import applicationConfig from '../../../../configs/application'
 

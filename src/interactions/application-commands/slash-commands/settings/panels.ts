@@ -1,10 +1,11 @@
 import { type CommandInteraction, Formatters, Message, type TextChannel } from 'discord.js'
 import type { GuildContext, Panel, PanelUpdateOptions } from '../../../../structures'
-import { SubCommandCommand, type SubCommandCommandOptions } from '../base'
 import { argumentUtil, constants } from '../../../../utils'
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
 import type { GuildContextManager } from '../../../../managers'
+import { SubCommandCommand } from '../base'
+import type { SubCommandCommandOptions } from '..'
 import { discordService } from '../../../../services'
 
 const { TYPES } = constants

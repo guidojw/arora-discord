@@ -1,10 +1,9 @@
 import type { Channel as ChannelEntity, Group as GroupEntity } from '../entities'
 import type { ChannelGroup, GuildContext } from '../structures'
-import type { Collection, Snowflake, TextChannel } from 'discord.js'
+import type { Collection, Snowflake, TextChannel, TextChannelResolvable } from 'discord.js'
 import { inject, injectable } from 'inversify'
 import BaseManager from './base'
 import type { Repository } from 'typeorm'
-import type { TextChannelResolvable } from '.'
 import { constants } from '../utils'
 
 const { TYPES } = constants

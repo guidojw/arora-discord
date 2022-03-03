@@ -1,7 +1,7 @@
 import type { CachedManager, Collection, CommandInteraction } from 'discord.js'
 import type { GuildContext, IdentifiableStructure } from '../structures'
 import { inject, injectable, named, unmanaged } from 'inversify'
-import type { Argument } from '../interactions/application-commands/slash-commands'
+import type { Argument } from '../interactions/application-commands'
 import type { Constructor } from '../utils/util'
 import type { GuildContextManager } from '../managers'
 import type { IdentifiableEntity } from '../entities'

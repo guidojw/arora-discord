@@ -3,7 +3,7 @@ import {
   type BaseCommand,
   Command,
   SubCommandCommand
-} from '../interactions/application-commands/slash-commands'
+} from '../interactions/application-commands'
 import type { CommandInteraction, CommandInteractionOption, Interaction } from 'discord.js'
 import { inject, injectable, named } from 'inversify'
 import type { GuildContextManager } from '../managers'

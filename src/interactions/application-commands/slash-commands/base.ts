@@ -1,5 +1,5 @@
 import type { AnyFunction, KeyOfType, OverloadedParameters } from '../../../utils/util'
-import type { Argument, ArgumentOptions } from './index'
+import type { Argument, ArgumentOptions } from '.'
 import { inject, injectable } from 'inversify'
 import type { AroraClient } from '../../../client'
 import type { CommandInteraction } from 'discord.js'

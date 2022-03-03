@@ -1,4 +1,4 @@
-import type { BaseManager, TextChannelResolvable, TicketGuildMemberManager } from '../managers'
+import type { BaseManager, TicketGuildMemberManager } from '../managers'
 import {
   Collection,
   Constants,
@@ -7,7 +7,8 @@ import {
   MessageAttachment,
   MessageEmbed,
   type PartialGuildMember,
-  type TextChannel
+  type TextChannel,
+  type TextChannelResolvable
 } from 'discord.js'
 import type { GuildContext, TicketType } from '.'
 import { constants, timeUtil, util } from '../utils'

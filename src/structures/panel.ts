@@ -1,9 +1,9 @@
 import { type Message, MessageEmbed, type TextChannel } from 'discord.js'
 import type { AbstractConstructor } from '../utils/util'
 import BaseStructure from './base'
-import type GuildContext from './guild-context'
+import type { GuildContext } from '.'
 import type { Panel as PanelEntity } from '../entities'
-import Postable from './mixins/postable'
+import { Postable } from './mixins'
 import { injectable } from 'inversify'
 
 export interface PanelUpdateOptions { name?: string, content?: object, message?: Message }

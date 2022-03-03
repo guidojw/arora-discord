@@ -4,7 +4,7 @@ import * as jobs from '../jobs'
 import * as managers from '../managers'
 import * as services from '../services'
 import * as structures from '../structures'
-import { Argument, type ArgumentOptions, type BaseCommand } from '../interactions/application-commands/slash-commands'
+import { Argument, type ArgumentOptions, type BaseCommand } from '../interactions/application-commands'
 import {
   AroraClient,
   type BaseHandler,
@@ -35,6 +35,7 @@ bind<SettingProvider>(TYPES.SettingProvider).to(SettingProvider)
 
 if (applicationConfig.apiEnabled === true) {
   bind<WebSocketManager>(TYPES.WebSocketManager).to(WebSocketManager)
+    .inSingletonScope()
 }
 
 // Arguments
