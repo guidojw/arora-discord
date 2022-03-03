@@ -1,12 +1,14 @@
 import { CategoryChannel, type CommandInteraction, GuildChannel, TextChannel } from 'discord.js'
-import { type GuildContext, type GuildUpdateOptions } from '../../structures'
+import type { GuildContext, GuildUpdateOptions } from '../../structures'
 import { SubCommandCommand, type SubCommandCommandOptions } from '../base'
 import { argumentUtil, constants, util } from '../../utils'
+import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../utils/decorators'
+import type { GuildContextManager } from '../../managers'
 import { VerificationProvider } from '../../utils/constants'
-import { injectable } from 'inversify'
 
 const GuildSetting = constants.GuildSetting
+const { TYPES } = constants
 const { getEnumValues } = util
 const { guildSettingTransformer, parseEnum } = argumentUtil
 
@@ -37,6 +39,10 @@ const { guildSettingTransformer, parseEnum } = argumentUtil
   }
 })
 export default class SettingsCommand extends SubCommandCommand<SettingsCommand> {
+  @inject(TYPES.Manager)
+  @named('GuildContextManager')
+  private readonly guildContexts!: GuildContextManager
+
   public async get (
     interaction: CommandInteraction,
     { setting }: { setting: keyof typeof GuildSetting }
@@ -44,7 +50,7 @@ export default class SettingsCommand extends SubCommandCommand<SettingsCommand> 
     if (!interaction.inGuild()) {
       return
     }
-    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
+    const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
     let settingName: string = setting
     let result: GuildChannel | string | boolean | number | null
@@ -74,11 +80,16 @@ export default class SettingsCommand extends SubCommandCommand<SettingsCommand> 
     if (!interaction.inGuild()) {
       return
     }
-    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
+    const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
-    const changes: Pick<GuildUpdateOptions, keyof typeof GuildSetting> = {}
-    if (typeof value === 'undefined' && !['robloxUsernamesInNicknames', 'verificationPreference'].includes(setting)) {
-      changes[setting as Exclude<typeof setting, 'robloxUsernamesInNicknames' | 'verificationPreference'>] = null
+    const changes: GuildUpdateOptions = {}
+    if (value === null && !['robloxUsernamesInNicknames', 'verificationPreference'].includes(setting)) {
+      changes[
+        guildSettingTransformer(setting) as keyof Omit<
+        GuildUpdateOptions,
+        'robloxUsernamesInNicknames' | 'verificationPreference' | 'supportEnabled'
+        >
+      ] = null
     } else {
       if (setting === 'primaryColor') {
         if (typeof value !== 'number') {
@@ -96,7 +107,7 @@ export default class SettingsCommand extends SubCommandCommand<SettingsCommand> 
           return await interaction.reply('Invalid ID.')
         }
 
-        changes.robloxGroupId = value
+        changes.robloxGroup = value
       } else if (setting === 'robloxUsernamesInNicknames') {
         if (typeof value !== 'boolean') {
           return await interaction.reply('Invalid boolean.')
@@ -121,7 +132,12 @@ export default class SettingsCommand extends SubCommandCommand<SettingsCommand> 
           }
         }
 
-        changes[setting] = value.id
+        changes[
+          guildSettingTransformer(setting) as keyof Pick<
+          GuildUpdateOptions,
+          'logsChannel' | 'ratingsChannel' | 'suggestionsChannel' | 'ticketArchivesChannel' | 'ticketsCategory'
+          >
+        ] = value.id
       }
     }
 

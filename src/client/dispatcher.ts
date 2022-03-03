@@ -1,17 +1,20 @@
 import { type Argument, type BaseCommand, Command, SubCommandCommand } from '../commands'
 import type { CommandInteraction, CommandInteractionOption, Interaction } from 'discord.js'
+import { inject, injectable, named } from 'inversify'
+import type { GuildContextManager } from '../managers'
 import applicationConfig from '../configs/application'
 import { constants } from '../utils'
-import container from '../configs/container'
-import getDecorators from 'inversify-inject-decorators'
-import type { interfaces } from 'inversify'
 
 const { TYPES } = constants
-const { lazyInject } = getDecorators(container)
 
+@injectable()
 export default class Dispatcher {
-  @lazyInject(TYPES.CommandFactory)
-  public readonly commandFactory!: (commandName: string) => interfaces.Newable<BaseCommand> | undefined
+  @inject(TYPES.CommandFactory)
+  private readonly commandFactory!: (commandName: string) => BaseCommand | undefined
+
+  @inject(TYPES.Manager)
+  @named('GuildContextManager')
+  private readonly guildContexts!: GuildContextManager
 
   public async handleInteraction (interaction: Interaction): Promise<void> {
     if (interaction.isCommand()) {
@@ -20,13 +23,10 @@ export default class Dispatcher {
   }
 
   private async handleCommandInteraction (interaction: CommandInteraction): Promise<void> {
-    const ctor = this.commandFactory(interaction.commandName)
-    if (typeof ctor === 'undefined') {
+    const command = this.commandFactory(interaction.commandName)
+    if (typeof command === 'undefined') {
       throw new Error(`Unknown command "${interaction.commandName}".`)
     }
-    // @ts-expect-error
-    // eslint-disable-next-line new-cap
-    const command = new ctor(interaction.client)
 
     let error
     if (command.options.requiresApi === true && applicationConfig.apiEnabled !== true) {
@@ -34,7 +34,7 @@ export default class Dispatcher {
     }
     if (
       command.options.requiresRobloxGroup === true && (interaction.guildId === null ||
-        interaction.client.guildContexts.resolve(interaction.guildId)?.robloxGroupId === null)
+        this.guildContexts.resolve(interaction.guildId)?.robloxGroupId === null)
     ) {
       error = 'This command requires that the server has its robloxGroup setting set.'
     }
@@ -72,7 +72,7 @@ export default class Dispatcher {
     }
 
     const args = typeof subCommandArgs !== 'undefined'
-      ? await Dispatcher.parseArgs(interaction, subCommandArgs as Record<string, Argument<any>>)
+      ? await this.parseArgs(interaction, subCommandArgs as Record<string, Argument<any>>)
       : {}
 
     return command instanceof Command
@@ -82,7 +82,7 @@ export default class Dispatcher {
         : await command.execute(interaction, subCommandGroupName, subCommandName, args)
   }
 
-  private static async parseArgs (
+  private async parseArgs (
     interaction: CommandInteraction,
     args: Record<string, Argument<any>>
   ): Promise<Record<string, any>> {
@@ -96,7 +96,7 @@ export default class Dispatcher {
 
       let val = option !== null
         ? Dispatcher.getCommandInteractionOptionValue(option)
-        : typeof arg.default === 'string' ? arg.default : (arg.default as Function)(interaction)
+        : typeof arg.default === 'string' ? arg.default : (arg.default as Function)(interaction, this.guildContexts)
       if (typeof val !== 'string') {
         result[key] = val
         continue

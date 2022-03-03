@@ -1,11 +1,15 @@
 import { type CommandInteraction, MessageEmbed, type Role } from 'discord.js'
 import type { GuildContext, RoleBinding } from '../../structures'
 import { SubCommandCommand, type SubCommandCommandOptions } from '../base'
+import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../utils/decorators'
+import type { GuildContextManager } from '../../managers'
 import applicationConfig from '../../configs/application'
+import { constants } from '../../utils'
 import { discordService } from '../../services'
-import { injectable } from 'inversify'
 import lodash from 'lodash'
+
+const { TYPES } = constants
 
 @injectable()
 @ApplyOptions<SubCommandCommandOptions<RoleBindingsCommand>>({
@@ -34,6 +38,10 @@ import lodash from 'lodash'
   }
 })
 export default class RoleBindingsCommand extends SubCommandCommand<RoleBindingsCommand> {
+  @inject(TYPES.Manager)
+  @named('GuildContextManager')
+  private readonly guildContexts!: GuildContextManager
+
   public async create (
     interaction: CommandInteraction<'present'>,
     { role, min, max }: {
@@ -42,7 +50,7 @@ export default class RoleBindingsCommand extends SubCommandCommand<RoleBindingsC
       max: number | null
     }
   ): Promise<void> {
-    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
+    const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
     const roleBinding = await context.roleBindings.create({ role, min, max: max ?? undefined })
 
@@ -56,7 +64,7 @@ export default class RoleBindingsCommand extends SubCommandCommand<RoleBindingsC
     interaction: CommandInteraction<'present'>,
     { roleBinding }: { roleBinding: RoleBinding }
   ): Promise<void> {
-    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
+    const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
     await context.roleBindings.delete(roleBinding)
 
@@ -67,7 +75,7 @@ export default class RoleBindingsCommand extends SubCommandCommand<RoleBindingsC
     interaction: CommandInteraction<'present'>,
     { roleBinding }: { roleBinding: RoleBinding | null }
   ): Promise<void> {
-    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
+    const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
     if (roleBinding !== null) {
       const embed = new MessageEmbed()

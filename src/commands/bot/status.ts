@@ -1,17 +1,23 @@
 import { type CommandInteraction, MessageEmbed } from 'discord.js'
-import { timeUtil, util } from '../../utils'
+import { constants, timeUtil, util } from '../../utils'
+import { inject, injectable, named } from 'inversify'
 import { Command } from '../base'
 import type { GuildContext } from '../../structures'
+import type { GuildContextManager } from '../../managers'
 import { applicationAdapter } from '../../adapters'
 import applicationConfig from '../../configs/application'
-import { injectable } from 'inversify'
 import os from 'node:os'
 
+const { TYPES } = constants
 const { formatBytes } = util
 const { getDurationString } = timeUtil
 
 @injectable()
 export default class StatusCommand extends Command {
+  @inject(TYPES.Manager)
+  @named('GuildContextManager')
+  private readonly guildContexts!: GuildContextManager
+
   public async execute (interaction: CommandInteraction): Promise<void> {
     const embed = new MessageEmbed()
       .setAuthor({
@@ -21,7 +27,7 @@ export default class StatusCommand extends Command {
       .setColor(0xff82d1)
 
     if (interaction.inGuild()) {
-      const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
+      const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
       embed.addField('System Statuses', `Tickets System: **${context.supportEnabled ? 'online' : 'offline'}**`)
     }
 

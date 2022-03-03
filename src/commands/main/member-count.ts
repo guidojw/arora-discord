@@ -1,10 +1,14 @@
 import { Command, type CommandOptions } from '../base'
 import { type CommandInteraction, MessageEmbed } from 'discord.js'
+import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../utils/decorators'
 import type { GuildContext } from '../../structures'
+import type { GuildContextManager } from '../../managers'
 import applicationConfig from '../../configs/application'
+import { constants } from '../../utils'
 import { groupService } from '../../services'
-import { injectable } from 'inversify'
+
+const { TYPES } = constants
 
 @injectable()
 @ApplyOptions<CommandOptions>({
@@ -13,9 +17,9 @@ import { injectable } from 'inversify'
       {
         key: 'id',
         required: false,
-        default: (interaction: CommandInteraction) => (
+        default: (interaction: CommandInteraction, guildContexts: GuildContextManager) => (
           interaction.inGuild()
-            ? (interaction.client.guildContexts.resolve(interaction.guildId) as GuildContext).robloxGroupId
+            ? (guildContexts.resolve(interaction.guildId) as GuildContext).robloxGroupId
             : null
         )
       }
@@ -23,9 +27,13 @@ import { injectable } from 'inversify'
   }
 })
 export default class MemberCountCommand extends Command {
+  @inject(TYPES.Manager)
+  @named('GuildContextManager')
+  private readonly guildContexts!: GuildContextManager
+
   public async execute (interaction: CommandInteraction, { id }: { id: number | null }): Promise<void> {
     const context = interaction.inGuild()
-      ? this.client.guildContexts.resolve(interaction.guildId) as GuildContext
+      ? this.guildContexts.resolve(interaction.guildId) as GuildContext
       : null
 
     if (id === null) {

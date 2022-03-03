@@ -1,39 +1,44 @@
-import { Group, type GroupUpdateOptions, type GuildContext } from '../structures'
-import BaseManager from './base'
+import { type ChannelGroup, Group, type GroupUpdateOptions, type GuildContext, type RoleGroup } from '../structures'
+import { inject, injectable } from 'inversify'
+import { DataManager } from './base'
 import type { Group as GroupEntity } from '../entities'
-import type { GroupType } from '../utils/constants'
+import { GroupType } from '../utils/constants'
 import type { Repository } from 'typeorm'
 import { constants } from '../utils'
-import container from '../configs/container'
-import getDecorators from 'inversify-inject-decorators'
+
+const { TYPES } = constants
 
 export type GroupResolvable = string | Group | number
 
-const { TYPES } = constants
-const { lazyInject } = getDecorators(container)
+@injectable()
+export default class GuildGroupManager extends DataManager<number, Group, GroupResolvable, GroupEntity> {
+  @inject(TYPES.StructureFactory)
+  private readonly groupFactory!: (structureName: string) =>
+  (...args: Parameters<ChannelGroup['setOptions'] | RoleGroup['setOptions']>) => ChannelGroup | RoleGroup
 
-export default class GuildGroupManager extends BaseManager<Group, GroupResolvable> {
-  @lazyInject(TYPES.GroupRepository)
+  @inject(TYPES.GroupRepository)
   private readonly groupRepository!: Repository<GroupEntity>
 
-  public readonly context: GuildContext
+  public context!: GuildContext
 
-  public constructor (context: GuildContext) {
-    super(context.client, Group)
+  public constructor () {
+    super(Group)
+  }
 
+  public override setOptions (context: GuildContext): void {
     this.context = context
   }
 
-  public override _add (data: GroupEntity, cache = true): Group {
+  public override add (data: GroupEntity): Group {
     const existing = this.cache.get(data.id)
     if (typeof existing !== 'undefined') {
       return existing
     }
 
-    const group = Group.create(this.client, data, this.context)
-    if (cache) {
-      this.cache.set(group.id, group)
-    }
+    const group = this.groupFactory(data.type === GroupType.Channel ? 'ChannelGroup' : 'RoleGroup')(
+      data, this.context
+    )
+    this.cache.set(group.id, group)
     return group
   }
 
@@ -48,7 +53,7 @@ export default class GuildGroupManager extends BaseManager<Group, GroupResolvabl
       type
     }))
 
-    return this._add(group)
+    return this.add(group)
   }
 
   public async delete (groupResolvable: GroupResolvable): Promise<void> {
@@ -94,7 +99,7 @@ export default class GuildGroupManager extends BaseManager<Group, GroupResolvabl
 
     const _group = this.cache.get(id)
     _group?.setup(newData)
-    return _group ?? this._add(newData, false)
+    return _group ?? this.add(newData)
   }
 
   public override resolve (group: Group): Group

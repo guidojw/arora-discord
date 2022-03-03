@@ -1,14 +1,16 @@
 import { Command, type CommandOptions } from '../base'
 import { type CommandInteraction, MessageEmbed } from 'discord.js'
+import { constants, timeUtil } from '../../utils'
+import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../utils/decorators'
 import type { GuildContext } from '../../structures'
+import type { GuildContextManager } from '../../managers'
 import type { RobloxUser } from '../../types/roblox-user'
 import applicationConfig from '../../configs/application'
-import { injectable } from 'inversify'
 import pluralize from 'pluralize'
-import { timeUtil } from '../../utils'
 import { userService } from '../../services'
 
+const { TYPES } = constants
 const { getDate } = timeUtil
 
 @injectable()
@@ -26,9 +28,13 @@ const { getDate } = timeUtil
   }
 })
 export default class WhoIsCommand extends Command {
+  @inject(TYPES.Manager)
+  @named('GuildContextManager')
+  private readonly guildContexts!: GuildContextManager
+
   public async execute (interaction: CommandInteraction, { user }: { user: RobloxUser }): Promise<void> {
     const context = interaction.inGuild()
-      ? this.client.guildContexts.resolve(interaction.guildId) as GuildContext
+      ? this.guildContexts.resolve(interaction.guildId) as GuildContext
       : null
 
     const userInfo = await userService.getUser(user.id)

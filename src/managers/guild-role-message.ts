@@ -1,32 +1,42 @@
 import { type EmojiResolvable, GuildEmoji, type Message, type RoleResolvable } from 'discord.js'
 import { type GuildContext, RoleMessage } from '../structures'
-import BaseManager from './base'
+import { inject, injectable } from 'inversify'
+import type { AroraClient } from '../client'
+import { DataManager } from './base'
 import type { Repository } from 'typeorm'
 import type { RoleMessage as RoleMessageEntity } from '../entities'
 import { constants } from '../utils'
-import container from '../configs/container'
 import emojiRegex from 'emoji-regex'
-import getDecorators from 'inversify-inject-decorators'
+
+const { TYPES } = constants
 
 export type RoleMessageResolvable = RoleMessage | number
 
-const { TYPES } = constants
-const { lazyInject } = getDecorators(container)
+@injectable()
+export default class GuildRoleMessageManager extends DataManager<
+number,
+RoleMessage,
+RoleMessageResolvable,
+RoleMessageEntity
+> {
+  @inject(TYPES.Client)
+  private readonly client!: AroraClient<true>
 
-export default class GuildRoleMessageManager extends BaseManager<RoleMessage, RoleMessageResolvable> {
-  @lazyInject(TYPES.RoleMessageRepository)
+  @inject(TYPES.RoleMessageRepository)
   private readonly roleMessageRepository!: Repository<RoleMessageEntity>
 
-  public readonly context: GuildContext
+  public context!: GuildContext
 
-  public constructor (context: GuildContext) {
-    super(context.client, RoleMessage)
+  public constructor () {
+    super(RoleMessage)
+  }
 
+  public override setOptions (context: GuildContext): void {
     this.context = context
   }
 
-  public override _add (data: RoleMessageEntity, cache = true): RoleMessage {
-    return super._add(data, cache, { id: data.id, extras: [this.context] })
+  public override add (data: RoleMessageEntity): RoleMessage {
+    return super.add(data, { id: data.id, extras: [this.context] })
   }
 
   public async create ({ role: roleResolvable, message, emoji: emojiResolvable }: {
@@ -78,7 +88,7 @@ export default class GuildRoleMessageManager extends BaseManager<RoleMessage, Ro
       { relations: ['message'] }
     ) as RoleMessageEntity
 
-    return this._add(newData)
+    return this.add(newData)
   }
 
   public async delete (roleMessageResolvable: RoleMessageResolvable): Promise<void> {

@@ -1,31 +1,37 @@
 import type { Collection, RoleResolvable } from 'discord.js'
 import { type GuildContext, RoleBinding } from '../structures'
-import BaseManager from './base'
+import { inject, injectable } from 'inversify'
+import { DataManager } from './base'
 import type { Repository } from 'typeorm'
 import type { RoleBinding as RoleBindingEntity } from '../entities'
 import { constants } from '../utils'
-import container from '../configs/container'
-import getDecorators from 'inversify-inject-decorators'
+
+const { TYPES } = constants
 
 export type RoleBindingResolvable = RoleBinding | number
 
-const { TYPES } = constants
-const { lazyInject } = getDecorators(container)
-
-export default class GuildRoleBindingManager extends BaseManager<RoleBinding, RoleBindingResolvable> {
-  @lazyInject(TYPES.RoleBindingRepository)
+@injectable()
+export default class GuildRoleBindingManager extends DataManager<
+number,
+RoleBinding,
+RoleBindingResolvable,
+RoleBindingEntity
+> {
+  @inject(TYPES.RoleBindingRepository)
   private readonly roleBindingRepository!: Repository<RoleBindingEntity>
 
-  public readonly context: GuildContext
+  public context!: GuildContext
 
-  public constructor (context: GuildContext) {
-    super(context.client, RoleBinding)
+  public constructor () {
+    super(RoleBinding)
+  }
 
+  public override setOptions (context: GuildContext): void {
     this.context = context
   }
 
-  public override _add (data: RoleBindingEntity, cache = true): RoleBinding {
-    return super._add(data, cache, { id: data.id, extras: [this.context] })
+  public override add (data: RoleBindingEntity): RoleBinding {
+    return super.add(data, { id: data.id, extras: [this.context] })
   }
 
   public async create ({ role: roleResolvable, min, max }: {
@@ -59,7 +65,7 @@ export default class GuildRoleBindingManager extends BaseManager<RoleBinding, Ro
       min
     }))
 
-    return this._add(newData)
+    return this.add(newData)
   }
 
   public async delete (roleBinding: RoleBindingResolvable): Promise<void> {
@@ -80,7 +86,7 @@ export default class GuildRoleBindingManager extends BaseManager<RoleBinding, Ro
     const data = await this.roleBindingRepository.find({ guildId: this.context.id })
     this.cache.clear()
     for (const rawRoleBinding of data) {
-      this._add(rawRoleBinding)
+      this.add(rawRoleBinding)
     }
     return this.cache
   }

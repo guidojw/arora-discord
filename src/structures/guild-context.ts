@@ -1,5 +1,17 @@
+import type {
+  BaseManager,
+  GuildContextManager,
+  GuildGroupManager,
+  GuildPanelManager,
+  GuildRoleBindingManager,
+  GuildRoleMessageManager,
+  GuildTagManager,
+  GuildTicketManager,
+  GuildTicketTypeManager
+} from '../managers'
 import {
   type CategoryChannel,
+  type CategoryChannelResolvable,
   Collection,
   type ColorResolvable,
   type Guild,
@@ -10,42 +22,45 @@ import {
   type MessageReaction,
   type Snowflake,
   type TextChannel,
+  type TextChannelResolvable,
   type User
 } from 'discord.js'
-import {
-  GuildGroupManager,
-  GuildPanelManager,
-  GuildRoleBindingManager,
-  GuildRoleMessageManager,
-  GuildTagManager,
-  GuildTicketManager,
-  GuildTicketTypeManager
-} from '../managers'
-import type { AroraClient } from '../client'
+import type { Group, Panel, RoleBinding, RoleMessage, Tag, Ticket, TicketType } from '.'
+import { inject, injectable, named } from 'inversify'
+import type { BaseJob } from '../jobs'
 import BaseStructure from './base'
 import type { Guild as GuildEntity } from '../entities'
 import type { VerificationProvider } from '../utils/constants'
 import applicationConfig from '../configs/application'
+import { constants } from '../utils'
 import cron from 'node-cron'
 import cronConfig from '../configs/cron'
 
-export interface GuildUpdateOptions {
-  logsChannelId?: Snowflake | null
-  primaryColor?: number | null
-  ratingsChannelId?: Snowflake | null
-  robloxGroupId?: number | null
-  robloxUsernamesInNicknames?: boolean
-  suggestionsChannelId?: Snowflake | null
-  supportEnabled?: boolean
-  ticketArchivesChannelId?: Snowflake | null
-  ticketsCategoryId?: Snowflake | null
-  verificationPreference?: VerificationProvider
-}
+const { TYPES } = constants
 
 const memberNameRegex = (name: string): RegExp => new RegExp(`^(${name})$|\\s*[(](${name})[)]\\s*`)
 
-export default class GuildContext extends BaseStructure {
-  public readonly guild: Guild
+export interface GuildUpdateOptions {
+  logsChannel?: TextChannelResolvable | null
+  primaryColor?: number | null
+  ratingsChannel?: TextChannelResolvable | null
+  robloxGroup?: number | null
+  robloxUsernamesInNicknames?: boolean
+  suggestionsChannel?: TextChannelResolvable | null
+  supportEnabled?: boolean
+  ticketArchivesChannel?: TextChannelResolvable | null
+  ticketsCategory?: CategoryChannelResolvable | null
+  verificationPreference?: VerificationProvider
+}
+
+@injectable()
+export default class GuildContext extends BaseStructure<GuildEntity> {
+  @inject(TYPES.Manager)
+  @named('GuildContextManager')
+  private readonly guildContexts!: GuildContextManager
+
+  @inject(TYPES.JobFactory)
+  public readonly jobFactory!: (jobName: string) => BaseJob
 
   public readonly groups: GuildGroupManager
   public readonly panels: GuildPanelManager
@@ -54,6 +69,8 @@ export default class GuildContext extends BaseStructure {
   public readonly tags: GuildTagManager
   public readonly tickets: GuildTicketManager
   public readonly ticketTypes: GuildTicketTypeManager
+
+  public guild!: Guild
 
   public logsChannelId!: Snowflake | null
   public primaryColor!: number | null
@@ -66,18 +83,26 @@ export default class GuildContext extends BaseStructure {
   public ticketsCategoryId!: Snowflake | null
   public verificationPreference!: VerificationProvider
 
-  public constructor (client: AroraClient<true>, data: GuildEntity, guild: Guild) {
-    super(client)
+  public constructor (
+  @inject(TYPES.ManagerFactory) managerFactory: <
+    T extends BaseManager<K, U, unknown>,
+    U extends { id: K },
+    K extends number | string = number | string
+    > (managerName: string) => (...args: T['setOptions'] extends ((...args: infer P) => any) ? P : never[]) => T
+  ) {
+    super()
 
+    this.groups = managerFactory<GuildGroupManager, Group>('GuildGroupManager')(this)
+    this.panels = managerFactory<GuildPanelManager, Panel>('GuildPanelManager')(this)
+    this.roleBindings = managerFactory<GuildRoleBindingManager, RoleBinding>('GuildRoleBindingManager')(this)
+    this.roleMessages = managerFactory<GuildRoleMessageManager, RoleMessage>('GuildRoleMessageManager')(this)
+    this.tags = managerFactory<GuildTagManager, Tag>('GuildTagManager')(this)
+    this.tickets = managerFactory<GuildTicketManager, Ticket>('GuildTicketManager')(this)
+    this.ticketTypes = managerFactory<GuildTicketTypeManager, TicketType>('GuildTicketTypeManager')(this)
+  }
+
+  public setOptions (data: GuildEntity, guild: Guild): void {
     this.guild = guild
-
-    this.groups = new GuildGroupManager(this)
-    this.panels = new GuildPanelManager(this)
-    this.roleBindings = new GuildRoleBindingManager(this)
-    this.roleMessages = new GuildRoleMessageManager(this)
-    this.tags = new GuildTagManager(this)
-    this.tickets = new GuildTicketManager(this)
-    this.ticketTypes = new GuildTicketTypeManager(this)
 
     this.setup(data)
   }
@@ -96,43 +121,43 @@ export default class GuildContext extends BaseStructure {
 
     if (typeof data.groups !== 'undefined') {
       for (const rawGroup of data.groups) {
-        this.groups._add(rawGroup)
+        this.groups.add(rawGroup)
       }
     }
 
     if (typeof data.panels !== 'undefined') {
       for (const rawPanel of data.panels) {
-        this.panels._add(rawPanel)
+        this.panels.add(rawPanel)
       }
     }
 
     if (typeof data.roleBindings !== 'undefined') {
       for (const rawRoleBinding of data.roleBindings) {
-        this.roleBindings._add(rawRoleBinding)
+        this.roleBindings.add(rawRoleBinding)
       }
     }
 
     if (typeof data.roleMessages !== 'undefined') {
       for (const rawRoleMessage of data.roleMessages) {
-        this.roleMessages._add(rawRoleMessage)
+        this.roleMessages.add(rawRoleMessage)
       }
     }
 
     if (typeof data.tags !== 'undefined') {
       for (const rawTag of data.tags) {
-        this.tags._add(rawTag)
+        this.tags.add(rawTag)
       }
     }
 
     if (typeof data.tickets !== 'undefined') {
       for (const rawTicket of data.tickets) {
-        this.tickets._add(rawTicket)
+        this.tickets.add(rawTicket)
       }
     }
 
     if (typeof data.ticketTypes !== 'undefined') {
       for (const rawTicketType of data.ticketTypes) {
-        this.ticketTypes._add(rawTicketType)
+        this.ticketTypes.add(rawTicketType)
       }
     }
   }
@@ -140,14 +165,14 @@ export default class GuildContext extends BaseStructure {
   public init (): void {
     if (applicationConfig.apiEnabled === true) {
       const announceTrainingsJobConfig = cronConfig.announceTrainingsJob
-      const announceTrainingsJob = this.client.jobFactory(announceTrainingsJobConfig.name)
+      const announceTrainingsJob = this.jobFactory(announceTrainingsJobConfig.name)
       cron.schedule(announceTrainingsJobConfig.expression, () => {
         Promise.resolve(announceTrainingsJob.run(this)).catch(console.error)
       })
     }
 
     const premiumMembersReportJobConfig = cronConfig.premiumMembersReportJob
-    const premiumMembersReportJob = this.client.jobFactory(premiumMembersReportJobConfig.name)
+    const premiumMembersReportJob = this.jobFactory(premiumMembersReportJobConfig.name)
     cron.schedule(premiumMembersReportJobConfig.expression, () => {
       Promise.resolve(premiumMembersReportJob.run(this)).catch(console.error)
     })
@@ -239,14 +264,7 @@ export default class GuildContext extends BaseStructure {
     return null
   }
 
-  public async update (data: GuildUpdateOptions): Promise<this> {
-    await this.client.guildRepository.save(this.client.guildRepository.create({
-      ...data,
-      id: this.guild.id
-    }))
-    const newData = await this.client.guildRepository.findOne(this.guild.id) as GuildEntity
-
-    this.setup(newData)
-    return this
+  public async update (data: GuildUpdateOptions): Promise<GuildContext> {
+    return await this.guildContexts.update(this, data)
   }
 }

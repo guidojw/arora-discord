@@ -1,6 +1,5 @@
 import { inject, injectable } from 'inversify'
 import type BaseHandler from '../base'
-import type Client from '../client'
 import type { Message as DiscordMessage } from 'discord.js'
 import type { Message } from '../../entities'
 import { Repository } from 'typeorm'
@@ -13,7 +12,7 @@ export default class MessageDeleteEventHandler implements BaseHandler {
   @inject(TYPES.MessageRepository)
   private readonly messageRepository!: Repository<Message>
 
-  public async handle (_client: Client, message: DiscordMessage): Promise<void> {
+  public async handle (message: DiscordMessage): Promise<void> {
     await this.messageRepository.delete(message.id)
   }
 }

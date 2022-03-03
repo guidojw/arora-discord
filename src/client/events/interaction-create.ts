@@ -1,14 +1,21 @@
+import { inject, injectable } from 'inversify'
 import type BaseHandler from '../base'
-import type Client from '../client'
+import type Dispatcher from '../dispatcher'
 import type { Interaction } from 'discord.js'
-import { injectable } from 'inversify'
+import { constants } from '../../utils'
+
+const { TYPES } = constants
 
 @injectable()
 export default class InteractionCreateEventHandler implements BaseHandler {
-  public async handle (client: Client, interaction: Interaction): Promise<void> {
+  @inject(TYPES.Dispatcher)
+  private readonly dispatcher!: Dispatcher
+
+  public async handle (interaction: Interaction): Promise<void> {
     try {
-      await client.dispatcher.handleInteraction(interaction)
+      await this.dispatcher.handleInteraction(interaction)
     } catch (err: any) {
+      console.error(err)
       if (interaction.isCommand() && !interaction.replied) {
         return await interaction.reply({
           content: err.toString(),

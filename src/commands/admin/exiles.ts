@@ -1,15 +1,17 @@
 import { type CommandInteraction, MessageEmbed } from 'discord.js'
 import { SubCommandCommand, type SubCommandCommandOptions } from '../base'
+import { constants, timeUtil } from '../../utils'
 import { groupService, verificationService } from '../../services'
+import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../utils/decorators'
 import type { Exile } from '../../services/group'
 import type { GuildContext } from '../../structures'
+import type { GuildContextManager } from '../../managers'
 import type { RobloxUser } from '../../types/roblox-user'
 import { applicationAdapter } from '../../adapters'
 import applicationConfig from '../../configs/application'
-import { injectable } from 'inversify'
-import { timeUtil } from '../../utils'
 
+const { TYPES } = constants
 const { getDate, getTime } = timeUtil
 
 @injectable()
@@ -36,11 +38,15 @@ const { getDate, getTime } = timeUtil
   }
 })
 export default class ExilesCommand extends SubCommandCommand<ExilesCommand> {
+  @inject(TYPES.Manager)
+  @named('GuildContextManager')
+  private readonly guildContexts!: GuildContextManager
+
   public async create (
     interaction: CommandInteraction<'present'>,
     { user, reason }: { user: RobloxUser, reason: string }
   ): Promise<void> {
-    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
+    const context = this.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
 
     const authorId = (await verificationService.fetchVerificationData(interaction.user.id))?.robloxId
     if (typeof authorId === 'undefined') {
@@ -63,7 +69,7 @@ export default class ExilesCommand extends SubCommandCommand<ExilesCommand> {
     interaction: CommandInteraction<'present'>,
     { user, reason }: { user: RobloxUser, reason: string }
   ): Promise<void> {
-    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
+    const context = this.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
 
     const authorId = (await verificationService.fetchVerificationData(interaction.user.id))?.robloxId
     if (typeof authorId === 'undefined') {
@@ -85,7 +91,7 @@ export default class ExilesCommand extends SubCommandCommand<ExilesCommand> {
     interaction: CommandInteraction<'present'>,
     { user }: { user: RobloxUser | null }
   ): Promise<void> {
-    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
+    const context = this.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
 
     if (user !== null) {
       const exile: Exile = (await applicationAdapter('GET', `v1/groups/${context.robloxGroupId}/exiles/${user.id}`)).data

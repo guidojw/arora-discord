@@ -1,11 +1,17 @@
+import { inject, injectable } from 'inversify'
 import type BaseHandler from '../base'
-import type Client from '../client'
 import type { Guild } from 'discord.js'
-import { injectable } from 'inversify'
+import type SettingProvider from '../setting-provider'
+import { constants } from '../../utils'
+
+const { TYPES } = constants
 
 @injectable()
 export default class GuildCreateEventHandler implements BaseHandler {
-  public async handle (client: Client, guild: Guild): Promise<void> {
-    await client.provider.setupGuild(guild)
+  @inject(TYPES.SettingProvider)
+  private readonly settingProvider!: SettingProvider
+
+  public async handle (guild: Guild): Promise<void> {
+    await this.settingProvider.setupGuild(guild)
   }
 }

@@ -4,27 +4,31 @@ import type {
   RoleMessage as RoleMessageEntity,
   Tag as TagEntity
 } from '../entities'
-import type AroraClient from './client'
+import { inject, injectable, named } from 'inversify'
+import type { AroraClient } from '.'
 import type { Guild } from 'discord.js'
+import type { GuildContextManager } from '../managers'
 import type { Repository } from 'typeorm'
 import { constants } from '../utils'
-import container from '../configs/container'
-import getDecorators from 'inversify-inject-decorators'
 
 const { TYPES } = constants
-const { lazyInject } = getDecorators(container)
 
+@injectable()
 export default class SettingProvider {
-  @lazyInject(TYPES.GuildRepository)
+  @inject(TYPES.Manager)
+  @named('GuildContextManager')
+  private readonly guildContexts!: GuildContextManager
+
+  @inject(TYPES.GuildRepository)
   private readonly guildRepository!: Repository<GuildEntity>
 
-  @lazyInject(TYPES.RoleRepository)
+  @inject(TYPES.RoleRepository)
   private readonly roleRepository!: Repository<RoleEntity>
 
-  @lazyInject(TYPES.RoleMessageRepository)
+  @inject(TYPES.RoleMessageRepository)
   private readonly roleMessageRepository!: Repository<RoleMessageEntity>
 
-  @lazyInject(TYPES.TagRepository)
+  @inject(TYPES.TagRepository)
   private readonly tagRepository!: Repository<TagEntity>
 
   public async init (client: AroraClient): Promise<void> {
@@ -67,8 +71,7 @@ export default class SettingProvider {
     data.tags = await this.tagRepository.find({ where: { guildId: guild.id }, relations: ['names'] })
     // Remove more from the relations and put it here if above error returns..
 
-    // @ts-expect-error
-    const context = guild.client.guildContexts._add(data, true, { id: data.id, extras: [guild] })
+    const context = this.guildContexts.add(data, { id: data.id, extras: [guild] })
     context.init()
   }
 }

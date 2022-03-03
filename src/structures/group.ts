@@ -1,24 +1,21 @@
+import type { ChannelGroup, GuildContext, RoleGroup } from '.'
 import BaseStructure from './base'
-import type ChannelGroup from './channel-group'
-import type { Client } from 'discord.js'
 import type { Group as GroupEntity } from '../entities'
-import { GroupType } from '../utils/constants'
-import type GuildContext from './guild-context'
-import type RoleGroup from './role-group'
+import type { GroupType } from '../utils/constants'
+import { injectable } from 'inversify'
 
 export interface GroupUpdateOptions { name?: string }
 
-export default class Group extends BaseStructure {
-  public readonly context: GuildContext
-  public readonly type: GroupType
+@injectable()
+export default class Group extends BaseStructure<GroupEntity> {
+  public context!: GuildContext
 
+  public type!: GroupType
   public id!: number
   public name!: string
   public guarded!: boolean
 
-  public constructor (client: Client<true>, data: GroupEntity, context: GuildContext) {
-    super(client)
-
+  public setOptions (data: GroupEntity, context: GuildContext): void {
     this.type = data.type
     this.context = context
   }
@@ -35,25 +32,6 @@ export default class Group extends BaseStructure {
 
   public async delete (): Promise<void> {
     return await this.context.groups.delete(this)
-  }
-
-  public static create (client: Client, data: GroupEntity, context: GuildContext): Group {
-    let group
-    switch (data.type) {
-      case GroupType.Channel: {
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        const ChannelGroup = require('./channel-group').default
-        group = new ChannelGroup(client, data, context)
-        break
-      }
-      case GroupType.Role: {
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        const RoleGroup = require('./role-group').default
-        group = new RoleGroup(client, data, context)
-        break
-      }
-    }
-    return group
   }
 
   public isChannelGroup (): this is ChannelGroup {

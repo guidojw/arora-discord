@@ -1,14 +1,16 @@
 import { type CommandInteraction, MessageEmbed } from 'discord.js'
 import { SubCommandCommand, type SubCommandCommandOptions } from '../base'
-import { argumentUtil, timeUtil } from '../../utils'
+import { argumentUtil, constants, timeUtil } from '../../utils'
 import { groupService, userService, verificationService } from '../../services'
+import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../utils/decorators'
 import type { GuildContext } from '../../structures'
+import type { GuildContextManager } from '../../managers'
 import type { Training } from '../../services/group'
 import { applicationAdapter } from '../../adapters'
 import applicationConfig from '../../configs/application'
-import { injectable } from 'inversify'
 
+const { TYPES } = constants
 const { getDate, getDateInfo, getTime, getTimeInfo, getTimeZoneAbbreviation } = timeUtil
 const { noChannels, noTags, noUrls, validDate, validTime, validators } = argumentUtil
 
@@ -51,6 +53,10 @@ const validateReason = validators([noChannels, noTags, noUrls])
   }
 })
 export default class TrainingsCommand extends SubCommandCommand<TrainingsCommand> {
+  @inject(TYPES.Manager)
+  @named('GuildContextManager')
+  private readonly guildContexts!: GuildContextManager
+
   public async create (
     interaction: CommandInteraction<'present'>,
     { type, date, time, notes }: {
@@ -60,7 +66,7 @@ export default class TrainingsCommand extends SubCommandCommand<TrainingsCommand
       notes?: string
     }
   ): Promise<void> {
-    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
+    const context = this.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
 
     const dateInfo = getDateInfo(date)
     const timeInfo = getTimeInfo(time)
@@ -107,7 +113,7 @@ export default class TrainingsCommand extends SubCommandCommand<TrainingsCommand
     interaction: CommandInteraction<'present'>,
     { id, reason }: { id: number, reason: string }
   ): Promise<void> {
-    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
+    const context = this.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
 
     const authorId = (await verificationService.fetchVerificationData(interaction.user.id))?.robloxId
     if (typeof authorId === 'undefined') {
@@ -133,7 +139,7 @@ export default class TrainingsCommand extends SubCommandCommand<TrainingsCommand
       value: string | null
     }
   ): Promise<void> {
-    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
+    const context = this.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
 
     if (['author', 'type', 'date', 'time'].includes(key) && value === null) {
       return await interaction.reply({ content: `Invalid ${key}`, ephemeral: true })
@@ -198,7 +204,7 @@ export default class TrainingsCommand extends SubCommandCommand<TrainingsCommand
     interaction: CommandInteraction<'present'>,
     { id }: { id: number | null }
   ): Promise<void> {
-    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
+    const context = this.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
 
     if (id !== null) {
       const training: Training = (await applicationAdapter('GET', `v1/groups/${context.robloxGroupId}/trainings/${id}`))

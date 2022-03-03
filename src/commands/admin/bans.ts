@@ -1,15 +1,17 @@
 import { type CommandInteraction, MessageEmbed } from 'discord.js'
 import { SubCommandCommand, type SubCommandCommandOptions } from '../base'
-import { argumentUtil, timeUtil } from '../../utils'
+import { argumentUtil, constants, timeUtil } from '../../utils'
 import { groupService, userService, verificationService } from '../../services'
+import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../utils/decorators'
 import type { GuildContext } from '../../structures'
+import type { GuildContextManager } from '../../managers'
 import type { RobloxUser } from '../../types/roblox-user'
 import { applicationAdapter } from '../../adapters'
 import applicationConfig from '../../configs/application'
-import { injectable } from 'inversify'
 import pluralize from 'pluralize'
 
+const { TYPES } = constants
 const { getDate, getTime } = timeUtil
 const { validators, noChannels, noTags, noUrls } = argumentUtil
 
@@ -66,6 +68,10 @@ const validateReason = validators([noChannels, noTags, noUrls])
   }
 })
 export default class BansCommand extends SubCommandCommand<BansCommand> {
+  @inject(TYPES.Manager)
+  @named('GuildContextManager')
+  private readonly guildContexts!: GuildContextManager
+
   public async create (
     interaction: CommandInteraction<'present'>,
     { user, duration, reason }: {
@@ -74,7 +80,7 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
       reason: string
     }
   ): Promise<void> {
-    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
+    const context = this.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
 
     const authorId = (await verificationService.fetchVerificationData(interaction.user.id))?.robloxId
     if (typeof authorId === 'undefined') {
@@ -98,7 +104,7 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
     interaction: CommandInteraction<'present'>,
     { user, reason }: { user: RobloxUser, reason: string }
   ): Promise<void> {
-    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
+    const context = this.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
 
     const authorId = (await verificationService.fetchVerificationData(interaction.user.id))?.robloxId
     if (typeof authorId === 'undefined') {
@@ -124,7 +130,7 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
       value: string
     }
   ): Promise<void> {
-    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
+    const context = this.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
 
     const changes: { authorId?: number, reason?: string } = {}
     if (key === 'author') {
@@ -153,7 +159,7 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
       reason: string
     }
   ): Promise<void> {
-    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
+    const context = this.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
 
     const authorId = (await verificationService.fetchVerificationData(interaction.user.id))?.robloxId
     if (typeof authorId === 'undefined') {
@@ -176,7 +182,7 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
     interaction: CommandInteraction<'present'>,
     { user }: { user: RobloxUser | null }
   ): Promise<void> {
-    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
+    const context = this.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
 
     if (user !== null) {
       const ban = (await applicationAdapter('GET', `v1/groups/${context.robloxGroupId}/bans/${user.id}`)).data

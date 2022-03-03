@@ -1,11 +1,17 @@
-import type { Client, GuildEmoji, Role } from 'discord.js'
+import type { GuildEmoji, Role } from 'discord.js'
+import type { AbstractConstructor } from '../utils/util'
 import BaseStructure from './base'
 import type GuildContext from './guild-context'
 import Postable from './mixins/postable'
 import type { RoleMessage as RoleMessageEntity } from '../entities'
+import { injectable } from 'inversify'
 
-export default class RoleMessage extends Postable(BaseStructure) {
-  public readonly context: GuildContext
+@injectable()
+export default class RoleMessage extends Postable<
+AbstractConstructor<BaseStructure<RoleMessageEntity>>,
+RoleMessageEntity
+>(BaseStructure) {
+  public context!: GuildContext
 
   public id!: number
   public roleId!: string
@@ -15,9 +21,7 @@ export default class RoleMessage extends Postable(BaseStructure) {
   private _emoji!: string | null
   private _emojiId!: string | null
 
-  public constructor (client: Client<true>, data: RoleMessageEntity, context: GuildContext) {
-    super(client)
-
+  public setOptions (data: RoleMessageEntity, context: GuildContext): void {
     this.context = context
 
     this.setup(data)

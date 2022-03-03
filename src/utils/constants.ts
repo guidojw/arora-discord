@@ -1,4 +1,33 @@
 export const TYPES = {
+  // Client
+  Client: Symbol.for('Client'),
+  Dispatcher: Symbol.for('Dispatcher'),
+  SettingProvider: Symbol.for('SettingProvider'),
+  WebSocketManager: Symbol.for('WebSocketManager'),
+
+  // Factories
+  Argument: Symbol.for('Argument'),
+  ArgumentFactory: Symbol.for('ArgumentFactory'),
+
+  ArgumentType: Symbol.for('ArgumentType'),
+  ArgumentTypeFactory: Symbol.for('ArgumentTypeFactory'),
+
+  Command: Symbol.for('Command'),
+  CommandFactory: Symbol.for('CommandFactory'),
+
+  Handler: Symbol.for('Handler'),
+  EventHandlerFactory: Symbol.for('EventHandlerFactory'),
+  PacketHandlerFactory: Symbol.for('PacketHandlerFactory'),
+
+  Job: Symbol.for('Job'),
+  JobFactory: Symbol.for('JobFactory'),
+
+  Manager: Symbol.for('Manager'),
+  ManagerFactory: Symbol.for('ManagerFactory'),
+
+  Structure: Symbol.for('Structure'),
+  StructureFactory: Symbol.for('StructureFactory'),
+
   // Repositories
   ChannelRepository: Symbol.for('ChannelRepository'),
   EmojiRepository: Symbol.for('EmojiRepository'),
@@ -17,21 +46,7 @@ export const TYPES = {
 
   // Services
   ChannelLinkService: Symbol.for('ChannelLinkService'),
-  PersistentRoleService: Symbol.for('PersistentRoleService'),
-
-  // Other
-  ArgumentType: Symbol.for('ArgumentType'),
-  ArgumentTypeFactory: Symbol.for('ArgumentTypeFactory'),
-
-  Command: Symbol.for('Command'),
-  CommandFactory: Symbol.for('CommandFactory'),
-
-  Handler: Symbol.for('Handler'),
-  EventHandlerFactory: Symbol.for('EventHandlerFactory'),
-  PacketHandlerFactory: Symbol.for('PacketHandlerFactory'),
-
-  Job: Symbol.for('Job'),
-  JobFactory: Symbol.for('JobFactory')
+  PersistentRoleService: Symbol.for('PersistentRoleService')
 }
 
 export enum GuildSetting {

@@ -1,3 +1,4 @@
+export * from './base'
 export * from './guild-ticket'
 export { default as BaseManager } from './base'
 export { default as GroupRoleManager } from './group-role'

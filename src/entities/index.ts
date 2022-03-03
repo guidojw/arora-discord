@@ -1,3 +1,4 @@
+export * from './base'
 export { default as Channel } from './channel'
 export { default as Emoji } from './emoji'
 export { default as Group } from './group'

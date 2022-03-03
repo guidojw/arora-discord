@@ -1,7 +1,10 @@
+import { inject, injectable, named } from 'inversify'
 import type BaseHandler from '../../base'
-import type Client from '../../client'
-import { injectable } from 'inversify'
+import type { GuildContextManager } from '../../../managers'
+import { constants } from '../../../utils'
 import { userService } from '../../../services'
+
+const { TYPES } = constants
 
 interface RankChangePacket {
   groupId: number
@@ -11,10 +14,14 @@ interface RankChangePacket {
 
 @injectable()
 export default class RankChangePacketHandler implements BaseHandler {
-  public async handle (client: Client, { data }: { data: RankChangePacket }): Promise<void> {
+  @inject(TYPES.Manager)
+  @named('GuildContextManager')
+  private readonly guildContexts!: GuildContextManager
+
+  public async handle ({ data }: { data: RankChangePacket }): Promise<void> {
     const { groupId, userId, rank } = data
     const username = (await userService.getUser(userId)).name
-    for (const context of client.guildContexts.cache.values()) {
+    for (const context of this.guildContexts.cache.values()) {
       if (context.robloxGroupId === groupId) {
         const roleBindings = await context.roleBindings.fetch()
         if (roleBindings.size > 0) {

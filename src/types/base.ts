@@ -1,15 +1,17 @@
-import type { BaseStructure, GuildContext } from '../structures'
 import type { CachedManager, Collection, CommandInteraction } from 'discord.js'
+import type { GuildContext, IdentifiableStructure } from '../structures'
+import { inject, injectable, named, unmanaged } from 'inversify'
 import type { Argument } from '../commands'
 import type { Constructor } from '../utils/util'
+import type { GuildContextManager } from '../managers'
+import type { IdentifiableEntity } from '../entities'
+import { constants } from '../utils'
 import lodash from 'lodash'
 import pluralize from 'pluralize'
 
-export interface IdentifiableStructure extends BaseStructure {
-  id: number
-  toString (): string
-}
+const { TYPES } = constants
 
+@injectable()
 export default abstract class BaseArgumentType<T> {
   public abstract validate (
     value: string,
@@ -24,12 +26,19 @@ export default abstract class BaseArgumentType<T> {
   ): T | null | Promise<T | null>
 }
 
-export class BaseStructureArgumentType<T extends IdentifiableStructure> extends BaseArgumentType<T> {
+export class BaseStructureArgumentType<
+  T extends IdentifiableStructure<number, U>,
+  U extends IdentifiableEntity
+> extends BaseArgumentType<T> {
+  @inject(TYPES.Manager)
+  @named('GuildContextManager')
+  private readonly guildContexts!: GuildContextManager
+
   protected readonly holds: Constructor<T>
 
   private readonly managerName: string
 
-  public constructor (holds: Constructor<T>, managerName?: string) {
+  public constructor (@unmanaged() holds: Constructor<T>, @unmanaged() managerName?: string) {
     super()
 
     this.holds = holds
@@ -46,7 +55,7 @@ export class BaseStructureArgumentType<T extends IdentifiableStructure> extends 
     if (!interaction.inGuild()) {
       return false
     }
-    const context = interaction.client.guildContexts.resolve(interaction.guildId) as GuildContext
+    const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
     const manager = context[this.managerName as keyof typeof context] as unknown as CachedManager<number, any, any>
     const id = parseInt(value)
@@ -71,7 +80,7 @@ export class BaseStructureArgumentType<T extends IdentifiableStructure> extends 
     if (!interaction.inGuild()) {
       return null
     }
-    const context = interaction.client.guildContexts.resolve(interaction.guildId) as GuildContext
+    const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
     const manager = context[this.managerName as keyof typeof context] as unknown as CachedManager<number, any, any>
     const id = parseInt(value)

@@ -1,22 +1,22 @@
 import type { Collection, Role, RoleResolvable, Snowflake } from 'discord.js'
 import type { Group as GroupEntity, Role as RoleEntity } from '../entities'
 import type { GuildContext, RoleGroup } from '../structures'
+import { inject, injectable } from 'inversify'
+import BaseManager from './base'
 import type { Repository } from 'typeorm'
 import { constants } from '../utils'
-import container from '../configs/container'
-import getDecorators from 'inversify-inject-decorators'
 
 const { TYPES } = constants
-const { lazyInject } = getDecorators(container)
 
-export default class GroupRoleManager {
-  @lazyInject(TYPES.GroupRepository)
+@injectable()
+export default class GroupRoleManager extends BaseManager<string, Role, RoleResolvable> {
+  @inject(TYPES.GroupRepository)
   private readonly groupRepository!: Repository<GroupEntity>
 
-  public readonly group: RoleGroup
-  public readonly context: GuildContext
+  public group!: RoleGroup
+  public context!: GuildContext
 
-  public constructor (group: RoleGroup) {
+  public override setOptions (group: RoleGroup): void {
     this.group = group
     this.context = group.context
   }

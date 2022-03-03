@@ -1,7 +1,6 @@
 import type { GuildMember, Role } from 'discord.js'
 import { inject, injectable } from 'inversify'
 import type BaseHandler from '../base'
-import type Client from '../client'
 import type { PersistentRoleService } from '../../services'
 import { constants } from '../../utils'
 
@@ -12,7 +11,7 @@ export default class GuildMemberUpdateEventHandler implements BaseHandler {
   @inject(TYPES.PersistentRoleService)
   private readonly persistentRoleService!: PersistentRoleService
 
-  public async handle (_client: Client, oldMember: GuildMember, newMember: GuildMember): Promise<void> {
+  public async handle (oldMember: GuildMember, newMember: GuildMember): Promise<void> {
     if (newMember.user.bot) {
       return
     }

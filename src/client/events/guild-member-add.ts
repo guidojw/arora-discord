@@ -1,9 +1,9 @@
 import { type GuildMember, MessageEmbed } from 'discord.js'
 import { constants, util } from '../../utils'
-import { inject, injectable } from 'inversify'
+import { inject, injectable, named } from 'inversify'
 import type BaseHandler from '../base'
-import type Client from '../client'
 import type { GuildContext } from '../../structures'
+import type { GuildContextManager } from '../../managers'
 import type { PersistentRoleService } from '../../services'
 import applicationConfig from '../../configs/application'
 
@@ -12,14 +12,18 @@ const { getOrdinalNum } = util
 
 @injectable()
 export default class GuildMemberAddEventHandler implements BaseHandler {
+  @inject(TYPES.Manager)
+  @named('GuildContextManager')
+  private readonly guildContexts!: GuildContextManager
+
   @inject(TYPES.PersistentRoleService)
   private readonly persistentRoleService!: PersistentRoleService
 
-  public async handle (client: Client, member: GuildMember): Promise<void> {
+  public async handle (member: GuildMember): Promise<void> {
     if (member.user.bot) {
       return
     }
-    const context = client.guildContexts.resolve(member.guild) as GuildContext
+    const context = this.guildContexts.resolve(member.guild) as GuildContext
 
     const guild = member.guild
     const welcomeChannelsGroup = context.groups.resolve('welcomeChannels')

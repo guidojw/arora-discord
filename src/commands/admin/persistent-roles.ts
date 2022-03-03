@@ -1,9 +1,14 @@
 import { type CommandInteraction, type GuildMember, MessageEmbed, type Role } from 'discord.js'
 import { SubCommandCommand, type SubCommandCommandOptions } from '../base'
+import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../utils/decorators'
 import type { GuildContext } from '../../structures'
+import type { GuildContextManager } from '../../managers'
+import type { PersistentRoleService } from '../../services'
 import applicationConfig from '../../configs/application'
-import { injectable } from 'inversify'
+import { constants } from '../../utils'
+
+const { TYPES } = constants
 
 @injectable()
 @ApplyOptions<SubCommandCommandOptions<PersistentRolesCommand>>({
@@ -20,11 +25,18 @@ import { injectable } from 'inversify'
   }
 })
 export default class PersistentRolesCommand extends SubCommandCommand<PersistentRolesCommand> {
+  @inject(TYPES.Manager)
+  @named('GuildContextManager')
+  private readonly guildContexts!: GuildContextManager
+
+  @inject(TYPES.PersistentRoleService)
+  private readonly persistentRoleService!: PersistentRoleService
+
   public async persist (
     interaction: CommandInteraction<'present'>,
     { member, role }: { member: GuildMember, role: Role }
   ): Promise<void> {
-    await this.client.persistentRoleService.persistRole(member, role)
+    await this.persistentRoleService.persistRole(member, role)
 
     return await interaction.reply({
       content: `Successfully persisted role **${role.toString()}** on member **${member.toString()}**.`,
@@ -36,7 +48,7 @@ export default class PersistentRolesCommand extends SubCommandCommand<Persistent
     interaction: CommandInteraction<'present'>,
     { member, role }: { member: GuildMember, role: Role }
   ): Promise<void> {
-    await this.client.persistentRoleService.unpersistRole(member, role)
+    await this.persistentRoleService.unpersistRole(member, role)
 
     return await interaction.reply({
       content: `Successfully removed persistent role **${role.toString()}** from member **${member.toString()}**.`,
@@ -48,9 +60,9 @@ export default class PersistentRolesCommand extends SubCommandCommand<Persistent
     interaction: CommandInteraction<'present'>,
     { member }: { member: GuildMember }
   ): Promise<void> {
-    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
+    const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
-    const persistentRoles = await this.client.persistentRoleService.fetchPersistentRoles(member)
+    const persistentRoles = await this.persistentRoleService.fetchPersistentRoles(member)
     if (persistentRoles.size === 0) {
       return await interaction.reply('No persistent roles found.')
     }

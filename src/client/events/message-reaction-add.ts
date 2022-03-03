@@ -1,12 +1,19 @@
 import type { MessageReaction, User } from 'discord.js'
+import { inject, injectable, named } from 'inversify'
 import type BaseHandler from '../base'
-import type Client from '../client'
 import type { GuildContext } from '../../structures'
-import { injectable } from 'inversify'
+import type { GuildContextManager } from '../../managers'
+import { constants } from '../../utils'
+
+const { TYPES } = constants
 
 @injectable()
 export default class MessageReactionAddEventHandler implements BaseHandler {
-  public async handle (client: Client, reaction: MessageReaction, user: User): Promise<void> {
+  @inject(TYPES.Manager)
+  @named('GuildContextManager')
+  private readonly guildContexts!: GuildContextManager
+
+  public async handle (reaction: MessageReaction, user: User): Promise<void> {
     if (user.bot) {
       return
     }
@@ -16,7 +23,7 @@ export default class MessageReactionAddEventHandler implements BaseHandler {
     if (reaction.message.guild === null) {
       return
     }
-    const context = client.guildContexts.resolve(reaction.message.guild) as GuildContext
+    const context = this.guildContexts.resolve(reaction.message.guild) as GuildContext
 
     await Promise.all([
       context.handleRoleMessage('add', reaction, user),

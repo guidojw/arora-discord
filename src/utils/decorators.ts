@@ -1,4 +1,4 @@
-import { type Constructor, createClassDecorator, createProxy } from './util'
+import { type Constructor, createClassDecorator } from './util'
 import { type ValidationArguments, type ValidationOptions, registerDecorator } from 'class-validator'
 
 /**
@@ -6,15 +6,9 @@ import { type ValidationArguments, type ValidationOptions, registerDecorator } f
  */
 export function ApplyOptions<T extends object> (options: T): ClassDecorator {
   return createClassDecorator((target: Constructor<any>) => (
-    createProxy(target, {
-      construct: (ctor, [client, baseOptions = {}]) => (
-        // eslint-disable-next-line new-cap
-        new ctor(client, {
-          ...baseOptions,
-          ...options
-        })
-      )
-    })
+    // Using Reflect.defineMetadata instead of a Proxy because Proxy's
+    // handler.construct doesn't work when Inversify creates an instance.
+    Reflect.defineMetadata('options', options, target)
   ))
 }
 

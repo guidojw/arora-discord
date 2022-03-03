@@ -1,36 +1,31 @@
-import {
-  type Client,
-  Collection,
-  Constants,
-  type GuildMember,
-  type GuildMemberResolvable,
-  type Snowflake
-} from 'discord.js'
+import { Collection, Constants, type GuildMember, type GuildMemberResolvable, type Snowflake } from 'discord.js'
 import type { GuildContext, Ticket } from '../structures'
 import type { Member as MemberEntity, Ticket as TicketEntity } from '../entities'
+import { inject, injectable } from 'inversify'
+import type { AroraClient } from '../client'
+import BaseManager from './base'
 import type { Repository } from 'typeorm'
 import { constants } from '../utils'
-import container from '../configs/container'
-import getDecorators from 'inversify-inject-decorators'
 
 const { PartialTypes } = Constants
 const { TYPES } = constants
-const { lazyInject } = getDecorators(container)
 
-export default class TicketGuildMemberManager {
-  @lazyInject(TYPES.MemberRepository)
+@injectable()
+export default class TicketGuildMemberManager extends BaseManager<string, GuildMember, GuildMemberResolvable> {
+  @inject(TYPES.Client)
+  private readonly client!: AroraClient<true>
+
+  @inject(TYPES.MemberRepository)
   private readonly memberRepository!: Repository<MemberEntity>
 
-  @lazyInject(TYPES.TicketRepository)
+  @inject(TYPES.TicketRepository)
   private readonly ticketRepository!: Repository<TicketEntity>
 
-  public readonly ticket: Ticket
-  public readonly client: Client
-  public readonly context: GuildContext
+  public ticket!: Ticket
+  public context!: GuildContext
 
-  public constructor (ticket: Ticket) {
+  public override setOptions (ticket: Ticket): void {
     this.ticket = ticket
-    this.client = ticket.client
     this.context = ticket.context
   }
 

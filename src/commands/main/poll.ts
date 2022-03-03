@@ -1,11 +1,13 @@
 import { Command, type CommandOptions } from '../base'
 import { type CommandInteraction, type Message, MessageEmbed } from 'discord.js'
+import { argumentUtil, constants } from '../../utils'
+import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../utils/decorators'
 import type { GuildContext } from '../../structures'
+import type { GuildContextManager } from '../../managers'
 import applicationConfig from '../../configs/application'
-import { argumentUtil } from '../../utils'
-import { injectable } from 'inversify'
 
+const { TYPES } = constants
 const { validators, noTags } = argumentUtil
 
 @injectable()
@@ -20,9 +22,13 @@ const { validators, noTags } = argumentUtil
   }
 })
 export default class PollCommand extends Command {
+  @inject(TYPES.Manager)
+  @named('GuildContextManager')
+  private readonly guildContexts!: GuildContextManager
+
   public async execute (interaction: CommandInteraction, { poll }: { poll: string }): Promise<void> {
     const context = interaction.inGuild()
-      ? this.client.guildContexts.resolve(interaction.guildId) as GuildContext
+      ? this.guildContexts.resolve(interaction.guildId) as GuildContext
       : null
 
     const options = []

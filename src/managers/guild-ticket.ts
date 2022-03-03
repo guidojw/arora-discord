@@ -8,40 +8,46 @@ import {
   TextChannel,
   type User
 } from 'discord.js'
-import BaseManager from './base'
+import { inject, injectable } from 'inversify'
+import type { AroraClient } from '../client'
+import { DataManager } from './base'
 import type { Repository } from 'typeorm'
 import type { Ticket as TicketEntity } from '../entities'
 import type { TicketTypeResolvable } from './guild-ticket-type'
 import { constants } from '../utils'
-import container from '../configs/container'
-import getDecorators from 'inversify-inject-decorators'
-
-export type TextChannelResolvable = TextChannel | Snowflake
-export type TicketResolvable = TextChannelResolvable | GuildMemberResolvable | Ticket | number
 
 const { TYPES } = constants
-const { lazyInject } = getDecorators(container)
 
 const TICKETS_INTERVAL = 60_000
 const SUBMISSION_TIME = 3_600_000
 
-export default class GuildTicketManager extends BaseManager<Ticket, TicketResolvable> {
-  @lazyInject(TYPES.TicketRepository)
+export type TextChannelResolvable = TextChannel | Snowflake
+export type TicketResolvable = TextChannelResolvable | GuildMemberResolvable | Ticket | number
+
+@injectable()
+export default class GuildTicketManager extends DataManager<number, Ticket, TicketResolvable, TicketEntity> {
+  @inject(TYPES.Client)
+  private readonly client!: AroraClient<true>
+
+  @inject(TYPES.TicketRepository)
   private readonly ticketRepository!: Repository<TicketEntity>
 
-  public readonly context: GuildContext
+  public context!: GuildContext
+
   public readonly debounces: Map<string, true>
 
-  public constructor (context: GuildContext) {
-    super(context.client, Ticket)
-
-    this.context = context
+  public constructor () {
+    super(Ticket)
 
     this.debounces = new Map()
   }
 
-  public override _add (data: TicketEntity, cache = true): Ticket {
-    return super._add(data, cache, { id: data.id, extras: [this.context] })
+  public override setOptions (context: GuildContext): void {
+    this.context = context
+  }
+
+  public override add (data: TicketEntity): Ticket {
+    return super.add(data, { id: data.id, extras: [this.context] })
   }
 
   public async create ({ author: authorResolvable, ticketType: ticketTypeResolvable }: {
@@ -81,7 +87,7 @@ export default class GuildTicketManager extends BaseManager<Ticket, TicketResolv
       id,
       { relations: ['author'] }
     ) as TicketEntity
-    const ticket = this._add(newData)
+    const ticket = this.add(newData)
 
     await this.context.log(
       author.user,
@@ -138,7 +144,7 @@ export default class GuildTicketManager extends BaseManager<Ticket, TicketResolv
 
     const _ticket = this.cache.get(id)
     _ticket?.setup(newData)
-    return _ticket ?? this._add(newData, false)
+    return _ticket ?? this.add(newData)
   }
 
   public async onMessageReactionAdd (reaction: MessageReaction, user: User): Promise<void> {

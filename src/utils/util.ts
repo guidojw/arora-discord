@@ -4,6 +4,7 @@ export type Mixin<T extends AnyFunction> = InstanceType<ReturnType<T>>
 export type Enum = Record<string, number | string>
 export type KeyOfType<T, U> = { [K in keyof T]: T[K] extends U ? K : never }[keyof T]
 export type AnyFunction<T = any> = (...input: any[]) => T
+export type Tail<T extends any[]> = T extends [any, ...infer U] ? U : never
 
 export type OverloadedParameters<T> = Overloads<T> extends infer U
   ? { [K in keyof U]: Parameters<Extract<U[K], (...args: any) => any>> }
@@ -115,14 +116,4 @@ export function getEnumValues<T extends Enum> (enumLike: T): Array<string | numb
 
 export function createClassDecorator<TFunction extends (...args: any[]) => void> (fn: TFunction): ClassDecorator {
   return fn
-}
-
-export function createProxy<T extends object> (target: T, handler: Omit<ProxyHandler<T>, 'get'>): T {
-  return new Proxy(target, {
-    ...handler,
-    get: (target, property) => {
-      const value = Reflect.get(target, property)
-      return typeof value === 'function' ? (...args: readonly unknown[]) => value.apply(target, args) : value
-    }
-  })
 }

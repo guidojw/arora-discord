@@ -1,17 +1,35 @@
-import type { AbstractConstructor, Constructor, Mixin } from '../../utils/util'
-import { Constants, type Base as DiscordBaseStructure, type Message, type TextChannel } from 'discord.js'
+import type { AbstractConstructor, Mixin } from '../../utils/util'
+import { Constants, type Message, type TextChannel } from 'discord.js'
+import { inject, injectable } from 'inversify'
+import type { AroraClient } from '../../client'
 import type BaseStructure from '../base'
 import type GuildContext from '../guild-context'
+import type { IdentifiableEntity } from '../../entities'
+import { constants } from '../../utils'
 
 const { PartialTypes } = Constants
+const { TYPES } = constants
 
 export type PostableType = Mixin<typeof Postable>
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export default function Postable<T extends AbstractConstructor<BaseStructure> | Constructor<DiscordBaseStructure>> (
+export abstract class PostableProperties {
+  public abstract readonly context: GuildContext
+
+  public abstract messageId: string | null
+  public abstract channelId: string | null
+
+  public readonly channel!: TextChannel | null
+  public readonly message!: Message | null
+}
+
+export default function Postable<T extends AbstractConstructor<BaseStructure<U>>, U extends IdentifiableEntity> (
   base: T
-) {
+): T & AbstractConstructor<PostableProperties> {
+  @injectable()
   abstract class Postable extends base {
+    @inject(TYPES.Client)
+    private readonly client!: AroraClient<true>
+
     public abstract readonly context: GuildContext
 
     public abstract messageId: string | null
@@ -26,7 +44,6 @@ export default function Postable<T extends AbstractConstructor<BaseStructure> | 
     public get message (): Message | null {
       return this.messageId !== null && this.channel !== null
         ? this.channel.messages.cache.get(this.messageId) ??
-        // @ts-expect-error
         (this.client.options.partials?.includes(PartialTypes.MESSAGE) === true
           // @ts-expect-error
           ? this.channel.messages._add({ id: this.messageId })

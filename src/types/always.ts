@@ -2,7 +2,7 @@ import BaseArgumentType from './base'
 import { injectable } from 'inversify'
 
 @injectable()
-export default class extends BaseArgumentType<string> {
+export default class AlwaysArgumentType extends BaseArgumentType<string> {
   public validate (): boolean {
     return true
   }

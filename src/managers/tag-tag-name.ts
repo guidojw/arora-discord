@@ -1,38 +1,36 @@
-import type { GuildContext, Tag } from '../structures'
+import { type GuildContext, type Tag, TagName } from '../structures'
 import type { Tag as TagEntity, TagName as TagNameEntity } from '../entities'
-import { CachedManager } from 'discord.js'
+import { inject, injectable } from 'inversify'
+import { DataManager } from './base'
 import type { Repository } from 'typeorm'
-import TagName from '../structures/tag-name'
 import { constants } from '../utils'
-import container from '../configs/container'
-import getDecorators from 'inversify-inject-decorators'
+
+const { TYPES } = constants
 
 export type TagNameResolvable = TagName | string
 
-const { TYPES } = constants
-const { lazyInject } = getDecorators(container)
-
-// @ts-expect-error
-export default class TagTagNameManager extends CachedManager<string, TagName, TagNameResolvable> {
-  @lazyInject(TYPES.TagRepository)
-  private readonly tagRepository!: Repository<TagEntity>
-
-  @lazyInject(TYPES.TagNameRepository)
+@injectable()
+export default class TagTagNameManager extends DataManager<string, TagName, TagNameResolvable, TagNameEntity> {
+  @inject(TYPES.TagNameRepository)
   private readonly tagNameRepository!: Repository<TagNameEntity>
 
-  public readonly tag: Tag
-  public readonly context: GuildContext
+  @inject(TYPES.TagRepository)
+  private readonly tagRepository!: Repository<TagEntity>
 
-  public constructor (tag: Tag) {
-    super(tag.client, TagName)
+  public tag!: Tag
+  public context!: GuildContext
 
+  public constructor () {
+    super(TagName)
+  }
+
+  public override setOptions (tag: Tag): void {
     this.tag = tag
     this.context = tag.context
   }
 
-  public override _add (data: TagNameEntity, cache = true): TagName {
-    // @ts-expect-error
-    return super._add(data, cache, { id: data.name, extras: [this.tag] })
+  public override add (data: TagNameEntity): TagName {
+    return super.add(data, { id: data.name, extras: [this.tag] })
   }
 
   public async create (name: string): Promise<TagName> {
@@ -49,7 +47,7 @@ export default class TagTagNameManager extends CachedManager<string, TagName, Ta
     tagData.names.push(tagNameData)
     await this.tagRepository.save(tagData)
 
-    return this._add(tagNameData)
+    return this.add(tagNameData)
   }
 
   public async delete (tagNameResolvable: TagNameResolvable): Promise<void> {

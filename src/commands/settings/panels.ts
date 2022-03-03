@@ -1,11 +1,13 @@
 import { type CommandInteraction, Formatters, Message, type TextChannel } from 'discord.js'
 import type { GuildContext, Panel, PanelUpdateOptions } from '../../structures'
 import { SubCommandCommand, type SubCommandCommandOptions } from '../base'
+import { argumentUtil, constants } from '../../utils'
+import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../utils/decorators'
-import { argumentUtil } from '../../utils'
+import type { GuildContextManager } from '../../managers'
 import { discordService } from '../../services'
-import { injectable } from 'inversify'
 
+const { TYPES } = constants
 const { validators, isObject, noNumber, noWhitespace } = argumentUtil
 
 @injectable()
@@ -58,6 +60,10 @@ const { validators, isObject, noNumber, noWhitespace } = argumentUtil
   }
 })
 export default class PanelsCommand extends SubCommandCommand<PanelsCommand> {
+  @inject(TYPES.Manager)
+  @named('GuildContextManager')
+  private readonly guildContexts!: GuildContextManager
+
   public async create (
     interaction: CommandInteraction,
     { name, content }: {
@@ -68,7 +74,7 @@ export default class PanelsCommand extends SubCommandCommand<PanelsCommand> {
     if (!interaction.inGuild()) {
       return
     }
-    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
+    const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
     const panel = await context.panels.create(name, content)
 
@@ -79,7 +85,7 @@ export default class PanelsCommand extends SubCommandCommand<PanelsCommand> {
     interaction: CommandInteraction<'present'>,
     { panel }: { panel: Panel }
   ): Promise<void> {
-    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
+    const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
     await context.panels.delete(panel)
 
@@ -94,7 +100,7 @@ export default class PanelsCommand extends SubCommandCommand<PanelsCommand> {
       value: object | Message
     }
   ): Promise<void> {
-    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
+    const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
     const changes: PanelUpdateOptions = {}
     if (key === 'content') {
@@ -123,7 +129,7 @@ export default class PanelsCommand extends SubCommandCommand<PanelsCommand> {
       channel: TextChannel | null
     }
   ): Promise<void> {
-    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
+    const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
     panel = await context.panels.post(panel, channel ?? undefined)
 
@@ -141,7 +147,7 @@ export default class PanelsCommand extends SubCommandCommand<PanelsCommand> {
     if (!interaction.inGuild()) {
       return
     }
-    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
+    const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
     if (panel !== null) {
       return await interaction.reply({ embeds: [panel.embed] })

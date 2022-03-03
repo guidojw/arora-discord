@@ -1,13 +1,15 @@
 import { Command, type CommandOptions } from '../base'
 import { type CommandInteraction, MessageEmbed } from 'discord.js'
+import { argumentUtil, constants } from '../../utils'
+import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../utils/decorators'
 import type { GuildContext } from '../../structures'
+import type { GuildContextManager } from '../../managers'
 import { applicationAdapter } from '../../adapters'
 import applicationConfig from '../../configs/application'
-import { argumentUtil } from '../../utils'
-import { injectable } from 'inversify'
 import { verificationService } from '../../services'
 
+const { TYPES } = constants
 const { validators, noChannels, noTags, noUrls } = argumentUtil
 
 @injectable()
@@ -24,11 +26,15 @@ const { validators, noChannels, noTags, noUrls } = argumentUtil
   }
 })
 export default class ShoutCommand extends Command {
+  @inject(TYPES.Manager)
+  @named('GuildContextManager')
+  private readonly guildContexts!: GuildContextManager
+
   public async execute (
     interaction: CommandInteraction<'present'>,
     { message }: { message: string | null }
   ): Promise<void> {
-    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
+    const context = this.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
 
     const authorId = (await verificationService.fetchVerificationData(interaction.user.id))?.robloxId
     if (typeof authorId === 'undefined') {

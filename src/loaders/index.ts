@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/node'
-import { AroraClient } from '../client'
+import type { AroraClient } from '../client'
 import type { BaseJob } from '../jobs'
 import { RewriteFrames } from '@sentry/integrations'
 import { constants } from '../utils'
@@ -36,7 +36,7 @@ export async function init (): Promise<AroraClient> {
     }
   )
 
-  const client = new AroraClient()
+  const client = container.get<AroraClient>(TYPES.Client)
   await client.login(process.env.DISCORD_TOKEN)
 
   return client

@@ -1,13 +1,19 @@
-import type { Client, GuildEmoji, Message } from 'discord.js'
+import type { GuildEmoji, Message } from 'discord.js'
+import type { AbstractConstructor } from '../utils/util'
 import BaseStructure from './base'
 import type GuildContext from './guild-context'
 import Postable from './mixins/postable'
 import type { TicketType as TicketTypeEntity } from '../entities'
+import { injectable } from 'inversify'
 
 export interface TicketTypeUpdateOptions { name?: string }
 
-export default class TicketType extends Postable(BaseStructure) {
-  public readonly context: GuildContext
+@injectable()
+export default class TicketType extends Postable<
+AbstractConstructor<BaseStructure<TicketTypeEntity>>,
+TicketTypeEntity
+>(BaseStructure) {
+  public context!: GuildContext
 
   public id!: number
   public name!: string
@@ -17,9 +23,7 @@ export default class TicketType extends Postable(BaseStructure) {
   private _emoji!: string | null
   private _emojiId!: string | null
 
-  public constructor (client: Client<true>, data: TicketTypeEntity, context: GuildContext) {
-    super(client)
-
+  public setOptions (data: TicketTypeEntity, context: GuildContext): void {
     this.context = context
 
     this.setup(data)

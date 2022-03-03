@@ -1,34 +1,24 @@
-import type { ChannelLinkService, PersistentRoleService } from '../services'
+import type { BaseHandler, SettingProvider, WebSocketManager } from '.'
 import {
   Client,
   type ClientEvents,
   type ClientOptions,
   Constants,
   DiscordAPIError,
+  type Guild,
   Intents,
   type Message,
   type PartialTextBasedChannelFields,
   type PartialTypes as PartialType,
   type Presence
 } from 'discord.js'
+import { decorate, inject, injectable, optional } from 'inversify'
 import type { AnyFunction } from '../utils/util'
-import type { BaseArgumentType } from '../types'
-import type BaseHandler from './base'
-import type { BaseJob } from '../jobs'
-import Dispatcher from './dispatcher'
-import { GuildContextManager } from '../managers'
-import type { Guild as GuildEntity } from '../entities'
-import type { Repository } from 'typeorm'
-import SettingProvider from './setting-provider'
-import { WebSocketManager } from './websocket'
 import applicationConfig from '../configs/application'
 import { constants } from '../utils'
-import container from '../configs/container'
-import getDecorators from 'inversify-inject-decorators'
 
 const { PartialTypes } = Constants
 const { TYPES } = constants
-const { lazyInject } = getDecorators(container)
 
 const ACTIVITY_CAROUSEL_INTERVAL = 60_000
 const REQUIRED_INTENTS: number[] = [
@@ -47,81 +37,45 @@ const REQUIRED_PARTIALS: PartialType[] = [
   PartialTypes.USER
 ]
 
-declare module 'discord.js' {
-  interface Client {
-    guildRepository: Repository<GuildEntity>
-    jobFactory (jobName: string): BaseJob
-    channelLinkService: ChannelLinkService
-    persistentRoleService: PersistentRoleService
+decorate(injectable(), Client)
 
-    guildContexts: GuildContextManager
-
-    dispatcher: Dispatcher
-    provider: SettingProvider
-    mainGuild: Guild | null
-
-    startActivityCarousel (): Presence | null
-    stopActivityCarousel (): void
-    nextActivity (activity?: number): Presence
-    send (
-      user: PartialTextBasedChannelFields,
-      ...args: Parameters<PartialTextBasedChannelFields['send']>
-    ): Promise<Message | null>
-  }
-}
-
+@injectable()
 export default class AroraClient<Ready extends boolean = boolean> extends Client<Ready> {
-  @lazyInject(TYPES.ArgumentTypeFactory)
-  public readonly argumentTypeFactory!: (argumentTypeName: string) => BaseArgumentType<any> | undefined
-
-  @lazyInject(TYPES.PacketHandlerFactory)
-  public readonly packetHandlerFactory!: (eventName: string) => BaseHandler
-
-  @lazyInject(TYPES.GuildRepository)
-  public override readonly guildRepository!: Repository<GuildEntity>
-
-  @lazyInject(TYPES.JobFactory)
-  public override readonly jobFactory!: (jobName: string) => BaseJob
-
-  @lazyInject(TYPES.ChannelLinkService)
-  public override readonly channelLinkService!: ChannelLinkService
-
-  @lazyInject(TYPES.PersistentRoleService)
-  public override readonly persistentRoleService!: PersistentRoleService
-
-  @lazyInject(TYPES.EventHandlerFactory)
+  @inject(TYPES.EventHandlerFactory)
   private readonly eventHandlerFactory!: (eventName: string) => BaseHandler
 
-  private readonly aroraWs: WebSocketManager | null
+  @inject(TYPES.SettingProvider)
+  private readonly settingProvider!: SettingProvider
+
+  @inject(TYPES.WebSocketManager)
+  @optional()
+  private readonly aroraWs?: WebSocketManager
+
+  public mainGuild: Guild | null
+
   private currentActivity: number
   private activityCarouselInterval: NodeJS.Timeout | null
 
-  public constructor (options: ClientOptions = { intents: [] }) {
+  public constructor () {
+    const options: ClientOptions = { intents: [] }
     options.intents = new Intents(options.intents)
     options.intents.add(...REQUIRED_INTENTS)
     options.partials = [...new Set(
-      ...options.partials ?? [],
+      ...(options.partials ?? []),
       ...REQUIRED_PARTIALS
     )] as PartialType[]
     super(options)
-
-    this.guildContexts = new GuildContextManager(this)
-
-    this.dispatcher = new Dispatcher()
-    this.provider = new SettingProvider()
 
     this.mainGuild = null
 
     this.currentActivity = 0
     this.activityCarouselInterval = null
 
-    this.aroraWs = applicationConfig.apiEnabled === true ? new WebSocketManager(this) : null
-
     this.once('ready', this.ready.bind(this))
   }
 
   private async ready (): Promise<void> {
-    await this.provider.init(this)
+    await this.settingProvider.init(this)
 
     const mainGuildId = process.env.NODE_ENV === 'production'
       ? applicationConfig.productionMainGuildId
@@ -147,7 +101,7 @@ export default class AroraClient<Ready extends boolean = boolean> extends Client
     console.log(`Ready to serve on ${this.guilds.cache.size} servers, for ${this.users.cache.size} users.`)
   }
 
-  public override startActivityCarousel (): Presence | null {
+  public startActivityCarousel (): Presence | null {
     if (this.activityCarouselInterval === null) {
       this.activityCarouselInterval = setInterval(this.nextActivity.bind(this), ACTIVITY_CAROUSEL_INTERVAL).unref()
       return this.nextActivity(0)
@@ -155,14 +109,14 @@ export default class AroraClient<Ready extends boolean = boolean> extends Client
     return null
   }
 
-  public override stopActivityCarousel (): void {
+  public stopActivityCarousel (): void {
     if (this.activityCarouselInterval !== null) {
       clearInterval(this.activityCarouselInterval)
       this.activityCarouselInterval = null
     }
   }
 
-  public override nextActivity (activity?: number): Presence {
+  public nextActivity (activity?: number): Presence {
     if (this.user === null) {
       throw new Error('Can\'t set activity when the client is not logged in.')
     }
@@ -179,7 +133,7 @@ export default class AroraClient<Ready extends boolean = boolean> extends Client
     }
   }
 
-  public override async send (
+  public async send (
     user: PartialTextBasedChannelFields,
     ...args: Parameters<PartialTextBasedChannelFields['send']>
   ): Promise<Message | null> {
@@ -195,7 +149,7 @@ export default class AroraClient<Ready extends boolean = boolean> extends Client
 
   private bindEvent (eventName: keyof ClientEvents): void {
     const handler = this.eventHandlerFactory(eventName)
-    this.on(eventName, handler.handle.bind(handler, this))
+    this.on(eventName, handler.handle.bind(handler))
   }
 }
 

@@ -1,10 +1,12 @@
 import { type CommandInteraction, Formatters } from 'discord.js'
 import type { GuildContext, Tag, TagUpdateOptions } from '../../structures'
 import { SubCommandCommand, type SubCommandCommandOptions } from '../base'
+import { argumentUtil, constants } from '../../utils'
+import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../utils/decorators'
-import { argumentUtil } from '../../utils'
-import { injectable } from 'inversify'
+import type { GuildContextManager } from '../../managers'
 
+const { TYPES } = constants
 const { validators, isObject, typeOf } = argumentUtil
 
 @injectable()
@@ -53,6 +55,10 @@ const { validators, isObject, typeOf } = argumentUtil
   }
 })
 export default class TagsCommand extends SubCommandCommand<TagsCommand> {
+  @inject(TYPES.Manager)
+  @named('GuildContextManager')
+  private readonly guildContexts!: GuildContextManager
+
   public async create (
     interaction: CommandInteraction,
     { name, content }: { name: string, content: string | object }
@@ -60,7 +66,7 @@ export default class TagsCommand extends SubCommandCommand<TagsCommand> {
     if (!interaction.inGuild()) {
       return
     }
-    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
+    const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
     const tag = await context.tags.create(name, content)
 
@@ -71,7 +77,7 @@ export default class TagsCommand extends SubCommandCommand<TagsCommand> {
     interaction: CommandInteraction<'present'>,
     { tag }: { tag: Tag }
   ): Promise<void> {
-    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
+    const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
     await context.tags.delete(tag)
 
@@ -86,7 +92,7 @@ export default class TagsCommand extends SubCommandCommand<TagsCommand> {
       value: string | object
     }
   ): Promise<void> {
-    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
+    const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
     const changes: TagUpdateOptions = {}
     if (key === 'content') {
@@ -130,7 +136,7 @@ export default class TagsCommand extends SubCommandCommand<TagsCommand> {
         return await interaction.reply(`Successfully created alias \`${tagName.name}\` for tag \`${tag.names.cache.first()?.name ?? 'Unknown'}\`.`)
       }
       case 'delete': {
-        const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
+        const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
         const tag = context.tags.resolve(name)
         if (tag === null) {

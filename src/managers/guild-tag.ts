@@ -1,33 +1,34 @@
 import { type GuildContext, Tag, type TagUpdateOptions } from '../structures'
-import BaseManager from './base'
+import { inject, injectable } from 'inversify'
+import { DataManager } from './base'
 import { MessageEmbed } from 'discord.js'
 import type { Repository } from 'typeorm'
 import type { Tag as TagEntity } from '../entities'
 import type { TagNameResolvable } from './tag-tag-name'
 import { constants } from '../utils'
-import container from '../configs/container'
 import { discordService } from '../services'
-import getDecorators from 'inversify-inject-decorators'
+
+const { TYPES } = constants
 
 export type TagResolvable = TagNameResolvable | Tag | number
 
-const { TYPES } = constants
-const { lazyInject } = getDecorators(container)
-
-export default class GuildTagManager extends BaseManager<Tag, TagResolvable> {
-  @lazyInject(TYPES.TagRepository)
+@injectable()
+export default class GuildTagManager extends DataManager<number, Tag, TagResolvable, TagEntity> {
+  @inject(TYPES.TagRepository)
   private readonly tagRepository!: Repository<TagEntity>
 
-  public readonly context: GuildContext
+  public context!: GuildContext
 
-  public constructor (context: GuildContext) {
-    super(context.client, Tag)
+  public constructor () {
+    super(Tag)
+  }
 
+  public override setOptions (context: GuildContext): void {
     this.context = context
   }
 
-  public override _add (data: TagEntity, cache = true): Tag {
-    return super._add(data, cache, { id: data.id, extras: [this.context] })
+  public override add (data: TagEntity): Tag {
+    return super.add(data, { id: data.id, extras: [this.context] })
   }
 
   public async create (name: string, content: string | object): Promise<Tag> {
@@ -57,7 +58,7 @@ export default class GuildTagManager extends BaseManager<Tag, TagResolvable> {
       names: [{ name }]
     }))
 
-    return this._add(newData)
+    return this.add(newData)
   }
 
   public async delete (tag: TagResolvable): Promise<void> {
@@ -109,7 +110,7 @@ export default class GuildTagManager extends BaseManager<Tag, TagResolvable> {
 
     const _tag = this.cache.get(id)
     _tag?.setup(newData)
-    return _tag ?? this._add(newData, false)
+    return _tag ?? this.add(newData)
   }
 
   public override resolve (tag: Tag): Tag

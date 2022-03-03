@@ -1,5 +1,5 @@
 export * from './base'
-export { default as AlwaysType } from './always'
+export { default as AlwaysArgumentType } from './always'
 export { default as BaseArgumentType } from './base'
 export { default as CategoryChannelArgumentType } from './category-channel'
 export { default as ChannelGroupArgumentType } from './channel-group'

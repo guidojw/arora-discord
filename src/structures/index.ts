@@ -1,3 +1,4 @@
+export * from './base'
 export * from './group'
 export * from './guild-context'
 export * from './mixins'

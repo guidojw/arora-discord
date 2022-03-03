@@ -1,11 +1,15 @@
 import { type CommandInteraction, type Message, MessageEmbed, type Role } from 'discord.js'
 import type { GuildContext, RoleMessage } from '../../structures'
 import { SubCommandCommand, type SubCommandCommandOptions } from '../base'
+import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../utils/decorators'
+import type { GuildContextManager } from '../../managers'
 import applicationConfig from '../../configs/application'
+import { constants } from '../../utils'
 import { discordService } from '../../services'
-import { injectable } from 'inversify'
 import lodash from 'lodash'
+
+const { TYPES } = constants
 
 @injectable()
 @ApplyOptions<SubCommandCommandOptions<RoleMessagesCommand>>({
@@ -33,6 +37,10 @@ import lodash from 'lodash'
   }
 })
 export default class RoleMessagesCommand extends SubCommandCommand<RoleMessagesCommand> {
+  @inject(TYPES.Manager)
+  @named('GuildContextManager')
+  private readonly guildContexts!: GuildContextManager
+
   public async create (
     interaction: CommandInteraction<'present'>,
     { role, message, emoji }: {
@@ -41,7 +49,7 @@ export default class RoleMessagesCommand extends SubCommandCommand<RoleMessagesC
       emoji: string
     }
   ): Promise<void> {
-    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
+    const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
     const roleMessage = await context.roleMessages.create({ role, message, emoji })
 
@@ -55,7 +63,7 @@ export default class RoleMessagesCommand extends SubCommandCommand<RoleMessagesC
     interaction: CommandInteraction<'present'>,
     { roleMessage }: { roleMessage: RoleMessage }
   ): Promise<void> {
-    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
+    const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
     await context.roleMessages.delete(roleMessage)
 
@@ -69,7 +77,7 @@ export default class RoleMessagesCommand extends SubCommandCommand<RoleMessagesC
     if (!interaction.inGuild()) {
       return
     }
-    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
+    const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
     if (roleMessage !== null) {
       const embed = new MessageEmbed()

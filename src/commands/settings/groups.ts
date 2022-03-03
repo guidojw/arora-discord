@@ -1,13 +1,15 @@
 import type { ChannelGroup, Group, GuildContext, RoleGroup } from '../../structures'
 import { type CommandInteraction, MessageEmbed, type Role, type TextChannel } from 'discord.js'
 import { SubCommandCommand, type SubCommandCommandOptions } from '../base'
+import { argumentUtil, constants } from '../../utils'
+import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../utils/decorators'
 import type { GroupType } from '../../utils/constants'
+import type { GuildContextManager } from '../../managers'
 import applicationConfig from '../../configs/application'
-import { argumentUtil } from '../../utils'
 import { discordService } from '../../services'
-import { injectable } from 'inversify'
 
+const { TYPES } = constants
 const { validators, noNumber, noWhitespace } = argumentUtil
 
 @injectable()
@@ -66,6 +68,10 @@ const { validators, noNumber, noWhitespace } = argumentUtil
   }
 })
 export default class GroupsCommand extends SubCommandCommand<GroupsCommand> {
+  @inject(TYPES.Manager)
+  @named('GuildContextManager')
+  private readonly guildContexts!: GuildContextManager
+
   public async create (
     interaction: CommandInteraction,
     { name, type }: { name: string, type: GroupType }
@@ -73,7 +79,7 @@ export default class GroupsCommand extends SubCommandCommand<GroupsCommand> {
     if (!interaction.inGuild()) {
       return
     }
-    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
+    const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
     const group = await context.groups.create(name, type)
 
@@ -143,7 +149,7 @@ export default class GroupsCommand extends SubCommandCommand<GroupsCommand> {
     if (!interaction.inGuild()) {
       return
     }
-    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
+    const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
     if (group !== null) {
       const embed = new MessageEmbed()

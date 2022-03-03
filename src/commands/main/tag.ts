@@ -1,11 +1,13 @@
 import { Command, type CommandOptions } from '../base'
 import { type CommandInteraction, type GuildMember, MessageEmbed } from 'discord.js'
 import type { GuildContext, Tag } from '../../structures'
+import { constants, util } from '../../utils'
+import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../utils/decorators'
+import type { GuildContextManager } from '../../managers'
 import applicationConfig from '../../configs/application'
-import { injectable } from 'inversify'
-import { util } from '../../utils'
 
+const { TYPES } = constants
 const { makeCommaSeparatedString } = util
 
 @injectable()
@@ -23,6 +25,10 @@ const { makeCommaSeparatedString } = util
   }
 })
 export default class TagsCommand extends Command {
+  @inject(TYPES.Manager)
+  @named('GuildContextManager')
+  private readonly guildContexts!: GuildContextManager
+
   public async execute (
     interaction: CommandInteraction,
     { tag, who }: { tag: Tag | null, who: GuildMember | null }
@@ -30,7 +36,7 @@ export default class TagsCommand extends Command {
     if (!interaction.inGuild()) {
       return
     }
-    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
+    const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
     if (tag !== null) {
       const memberMention = who?.toString()

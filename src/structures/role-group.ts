@@ -1,16 +1,32 @@
-import type { Client } from 'discord.js'
+import type { BaseManager, GroupRoleManager } from '../managers'
+import { inject, injectable } from 'inversify'
 import Group from './group'
 import type { Group as GroupEntity } from '../entities'
-import GroupRoleManager from '../managers/group-role'
-import type GuildContext from './guild-context'
+import type { GuildContext } from '.'
+import type { Role } from 'discord.js'
+import { constants } from '../utils'
 
+const { TYPES } = constants
+
+@injectable()
 export default class RoleGroup extends Group {
+  @inject(TYPES.ManagerFactory)
+  private readonly managerFactory!: <
+    T extends BaseManager<K, U, unknown>,
+    U extends { id: K },
+    K extends number | string = number | string
+    > (managerName: string) => (...args: T['setOptions'] extends ((...args: infer P) => any) ? P : never[]) => T
+
   public _roles: string[]
 
-  public constructor (client: Client<true>, data: GroupEntity, context: GuildContext) {
-    super(client, data, context)
+  public constructor () {
+    super()
 
     this._roles = []
+  }
+
+  public override setOptions (data: GroupEntity, context: GuildContext): void {
+    super.setOptions(data, context)
 
     this.setup(data)
   }
@@ -24,6 +40,6 @@ export default class RoleGroup extends Group {
   }
 
   public get roles (): GroupRoleManager {
-    return new GroupRoleManager(this)
+    return this.managerFactory<GroupRoleManager, Role>('GroupRoleManager')(this)
   }
 }

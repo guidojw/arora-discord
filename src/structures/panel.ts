@@ -1,13 +1,19 @@
-import { type Client, type Message, MessageEmbed, type TextChannel } from 'discord.js'
+import { type Message, MessageEmbed, type TextChannel } from 'discord.js'
+import type { AbstractConstructor } from '../utils/util'
 import BaseStructure from './base'
 import type GuildContext from './guild-context'
 import type { Panel as PanelEntity } from '../entities'
 import Postable from './mixins/postable'
+import { injectable } from 'inversify'
 
 export interface PanelUpdateOptions { name?: string, content?: object, message?: Message }
 
-export default class Panel extends Postable(BaseStructure) {
-  public readonly context: GuildContext
+@injectable()
+export default class Panel extends Postable<
+AbstractConstructor<BaseStructure<PanelEntity>>,
+PanelEntity
+>(BaseStructure) {
+  public context!: GuildContext
 
   public id!: number
   public name!: string
@@ -15,9 +21,11 @@ export default class Panel extends Postable(BaseStructure) {
   public messageId!: string | null
   public channelId!: string | null
 
-  public constructor (client: Client<true>, data: PanelEntity, context: GuildContext) {
-    super(client)
+  public constructor () {
+    super()
+  }
 
+  public setOptions (data: PanelEntity, context: GuildContext): void {
     this.context = context
 
     this.setup(data)

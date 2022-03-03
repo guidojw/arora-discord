@@ -1,7 +1,6 @@
 import { inject, injectable } from 'inversify'
 import type BaseHandler from '../base'
 import type { ChannelLinkService } from '../../services'
-import type Client from '../client'
 import type { VoiceState } from 'discord.js'
 import { constants } from '../../utils'
 
@@ -12,7 +11,7 @@ export default class VoiceStateUpdateEventHandler implements BaseHandler {
   @inject(TYPES.ChannelLinkService)
   private readonly channelLinkService!: ChannelLinkService
 
-  public async handle (_client: Client, oldState: VoiceState, newState: VoiceState): Promise<void> {
+  public async handle (oldState: VoiceState, newState: VoiceState): Promise<void> {
     if (oldState.channelId !== newState.channelId) {
       const member = newState.member
       if (member === null) {

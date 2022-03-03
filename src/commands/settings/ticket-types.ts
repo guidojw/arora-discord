@@ -1,10 +1,14 @@
 import { type CommandInteraction, type Message, MessageEmbed } from 'discord.js'
 import type { GuildContext, TicketType } from '../../structures'
 import { SubCommandCommand, type SubCommandCommandOptions } from '../base'
+import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../utils/decorators'
+import type { GuildContextManager } from '../../managers'
 import applicationConfig from '../../configs/application'
+import { constants } from '../../utils'
 import { discordService } from '../../services'
-import { injectable } from 'inversify'
+
+const { TYPES } = constants
 
 @injectable()
 @ApplyOptions<SubCommandCommandOptions<TicketTypesCommand>>({
@@ -38,6 +42,10 @@ import { injectable } from 'inversify'
   }
 })
 export default class TicketTypesCommand extends SubCommandCommand<TicketTypesCommand> {
+  @inject(TYPES.Manager)
+  @named('GuildContextManager')
+  private readonly guildContexts!: GuildContextManager
+
   public async create (
     interaction: CommandInteraction,
     { name }: { name: string }
@@ -45,7 +53,7 @@ export default class TicketTypesCommand extends SubCommandCommand<TicketTypesCom
     if (!interaction.inGuild()) {
       return
     }
-    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
+    const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
     const type = await context.ticketTypes.create(name)
 
@@ -56,7 +64,7 @@ export default class TicketTypesCommand extends SubCommandCommand<TicketTypesCom
     interaction: CommandInteraction<'present'>,
     { ticketType }: { ticketType: TicketType }
   ): Promise<void> {
-    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
+    const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
     await context.ticketTypes.delete(ticketType)
 
@@ -71,7 +79,7 @@ export default class TicketTypesCommand extends SubCommandCommand<TicketTypesCom
       message: Message
     }
   ): Promise<void> {
-    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
+    const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
     ticketType = await context.ticketTypes.link(ticketType, message, emoji)
 
@@ -82,7 +90,7 @@ export default class TicketTypesCommand extends SubCommandCommand<TicketTypesCom
     interaction: CommandInteraction<'present'>,
     { ticketType }: { ticketType: TicketType }
   ): Promise<void> {
-    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
+    const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
     ticketType = await context.ticketTypes.unlink(ticketType)
 
@@ -96,7 +104,7 @@ export default class TicketTypesCommand extends SubCommandCommand<TicketTypesCom
     if (!interaction.inGuild()) {
       return
     }
-    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
+    const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
     if (ticketType !== null) {
       const embed = new MessageEmbed()

@@ -1,32 +1,42 @@
 import { type EmojiResolvable, GuildEmoji, type Message } from 'discord.js'
 import { type GuildContext, TicketType, type TicketTypeUpdateOptions } from '../structures'
-import BaseManager from './base'
+import { inject, injectable } from 'inversify'
+import type { AroraClient } from '../client'
+import { DataManager } from './base'
 import type { Repository } from 'typeorm'
 import type { TicketType as TicketTypeEntity } from '../entities'
 import { constants } from '../utils'
-import container from '../configs/container'
 import emojiRegex from 'emoji-regex'
-import getDecorators from 'inversify-inject-decorators'
+
+const { TYPES } = constants
 
 export type TicketTypeResolvable = TicketType | string
 
-const { TYPES } = constants
-const { lazyInject } = getDecorators(container)
+@injectable()
+export default class GuildTicketTypeManager extends DataManager<
+number,
+TicketType,
+TicketTypeResolvable,
+TicketTypeEntity
+> {
+  @inject(TYPES.Client)
+  private readonly client!: AroraClient<true>
 
-export default class GuildTicketTypeManager extends BaseManager<TicketType, TicketTypeResolvable> {
-  @lazyInject(TYPES.TicketTypeRepository)
+  @inject(TYPES.TicketTypeRepository)
   private readonly ticketTypeRepository!: Repository<TicketTypeEntity>
 
-  public readonly context: GuildContext
+  public context!: GuildContext
 
-  public constructor (context: GuildContext) {
-    super(context.client, TicketType)
+  public constructor () {
+    super(TicketType)
+  }
 
+  public override setOptions (context: GuildContext): void {
     this.context = context
   }
 
-  public override _add (data: TicketTypeEntity, cache = true): TicketType {
-    return super._add(data, cache, { id: data.id, extras: [this.context] })
+  public override add (data: TicketTypeEntity): TicketType {
+    return super.add(data, { id: data.id, extras: [this.context] })
   }
 
   public async create (name: string): Promise<TicketType> {
@@ -40,7 +50,7 @@ export default class GuildTicketTypeManager extends BaseManager<TicketType, Tick
       guildId: this.context.id
     }))
 
-    return this._add(newData)
+    return this.add(newData)
   }
 
   public async delete (ticketTypeResolvable: TicketTypeResolvable): Promise<void> {
@@ -94,7 +104,7 @@ export default class GuildTicketTypeManager extends BaseManager<TicketType, Tick
 
     const _ticketType = this.cache.get(id)
     _ticketType?.setup(newData)
-    return _ticketType ?? this._add(newData, false)
+    return _ticketType ?? this.add(newData)
   }
 
   public async link (
@@ -152,7 +162,7 @@ export default class GuildTicketTypeManager extends BaseManager<TicketType, Tick
 
     const _ticketType = this.cache.get(ticketType.id)
     _ticketType?.setup(newData)
-    return _ticketType ?? this._add(newData, false)
+    return _ticketType ?? this.add(newData)
   }
 
   public async unlink (ticketTypeResolvable: TicketTypeResolvable): Promise<TicketType> {
@@ -180,7 +190,7 @@ export default class GuildTicketTypeManager extends BaseManager<TicketType, Tick
 
     const _ticketType = this.cache.get(ticketType.id)
     _ticketType?.setup(newData)
-    return _ticketType ?? this._add(newData, false)
+    return _ticketType ?? this.add(newData)
   }
 
   public override resolve (ticketType: TicketType): TicketType

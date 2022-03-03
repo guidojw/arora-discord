@@ -1,10 +1,12 @@
-import type { Client, Role } from 'discord.js'
 import BaseStructure from './base'
 import type GuildContext from './guild-context'
+import type { Role } from 'discord.js'
 import type { RoleBinding as RoleBindingEntity } from '../entities'
+import { injectable } from 'inversify'
 
-export default class RoleBinding extends BaseStructure {
-  public readonly context: GuildContext
+@injectable()
+export default class RoleBinding extends BaseStructure<RoleBindingEntity> {
+  public context!: GuildContext
 
   public id!: number
   public roleId!: string
@@ -12,9 +14,7 @@ export default class RoleBinding extends BaseStructure {
   public min!: number
   public max!: number | null
 
-  public constructor (client: Client<true>, data: RoleBindingEntity, context: GuildContext) {
-    super(client)
-
+  public setOptions (data: RoleBindingEntity, context: GuildContext): void {
     this.context = context
 
     this.setup(data)

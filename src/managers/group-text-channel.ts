@@ -1,23 +1,23 @@
 import type { Channel as ChannelEntity, Group as GroupEntity } from '../entities'
 import type { ChannelGroup, GuildContext } from '../structures'
 import type { Collection, Snowflake, TextChannel } from 'discord.js'
+import { inject, injectable } from 'inversify'
+import BaseManager from './base'
 import type { Repository } from 'typeorm'
-import type { TextChannelResolvable } from './guild-ticket'
+import type { TextChannelResolvable } from '.'
 import { constants } from '../utils'
-import container from '../configs/container'
-import getDecorators from 'inversify-inject-decorators'
 
 const { TYPES } = constants
-const { lazyInject } = getDecorators(container)
 
-export default class GroupTextChannelManager {
-  @lazyInject(TYPES.GroupRepository)
+@injectable()
+export default class GroupTextChannelManager extends BaseManager<string, TextChannel, TextChannelResolvable> {
+  @inject(TYPES.GroupRepository)
   private readonly groupRepository!: Repository<GroupEntity>
 
-  public readonly group: ChannelGroup
-  public readonly context: GuildContext
+  public group!: ChannelGroup
+  public context!: GuildContext
 
-  public constructor (group: ChannelGroup) {
+  public override setOptions (group: ChannelGroup): void {
     this.group = group
     this.context = group.context
   }

@@ -1,7 +1,12 @@
-import type { AroraClient } from '../client'
+import { inject, injectable } from 'inversify'
 import type { BaseArgumentType } from '../types'
 import type { CommandInteraction } from 'discord.js'
+import type { GuildContextManager } from '../managers'
+import { constants } from '../utils'
 
+const { TYPES } = constants
+
+export type DefaultFunction<T> = ((interaction: CommandInteraction, guildContexts: GuildContextManager) => T)
 export type ValidatorFunction<T> =
 (value: string, interaction: CommandInteraction, arg: Argument<T>) => boolean | string | Promise<boolean | string>
 export type ParserFunction<T> =
@@ -12,7 +17,7 @@ export interface ArgumentOptions<T> {
   name?: string
   type?: string
   required?: boolean
-  default?: string | ((interaction: CommandInteraction) => T)
+  default?: string | DefaultFunction<T>
   validate?: ValidatorFunction<T>
   parse?: ParserFunction<T>
 }
@@ -21,18 +26,20 @@ interface ArgumentResolvedOptions<T> extends Omit<ArgumentOptions<T>, 'type'> {
   type?: BaseArgumentType<any> | Array<BaseArgumentType<any>>
 }
 
+@injectable()
 export default class Argument<T> {
-  public readonly client: AroraClient
-  public readonly key: string
-  public readonly name?: string
-  public readonly type?: BaseArgumentType<T> | Array<BaseArgumentType<T>>
-  public readonly required?: boolean
-  public readonly default?: string | ((interaction: CommandInteraction) => T)
-  public readonly validator?: ValidatorFunction<T>
-  public readonly parser?: ParserFunction<T>
+  @inject(TYPES.ArgumentTypeFactory)
+  private readonly argumentTypeFactory!: (argumentTypeName: string) => BaseArgumentType<any> | undefined
 
-  public constructor (client: AroraClient, options: ArgumentOptions<T>) {
-    this.client = client
+  public key!: string
+  public name?: string
+  public type?: BaseArgumentType<T> | Array<BaseArgumentType<T>>
+  public required?: boolean
+  public default?: string | DefaultFunction<T>
+  public validator?: ValidatorFunction<T>
+  public parser?: ParserFunction<T>
+
+  public setOptions (options: ArgumentOptions<T>): void {
     this.validateOptions(options)
 
     const resolvedOptions = this.resolveOptions(options)
@@ -91,12 +98,12 @@ export default class Argument<T> {
     let resolvedType
     if (typeof options.type !== 'undefined') {
       if (!options.type.includes('|')) {
-        resolvedType = this.client.argumentTypeFactory(options.type)
+        resolvedType = this.argumentTypeFactory(options.type)
       } else {
         resolvedType = []
         const typeNames = options.type.split('|')
         for (const typeName of typeNames) {
-          const type = this.client.argumentTypeFactory(typeName)
+          const type = this.argumentTypeFactory(typeName)
           if (typeof type !== 'undefined') {
             resolvedType.push(type)
           }
@@ -112,13 +119,13 @@ export default class Argument<T> {
   private validateOptions (options: ArgumentOptions<T>): void {
     if (typeof options.type !== 'undefined') {
       if (!options.type.includes('|')) {
-        if (typeof this.client.argumentTypeFactory(options.type) === 'undefined') {
+        if (typeof this.argumentTypeFactory(options.type) === 'undefined') {
           throw new Error(`Argument type "${options.type}" not found.`)
         }
       } else {
         const typeNames = options.type.split('|')
         for (const typeName of typeNames) {
-          if (typeof this.client.argumentTypeFactory(typeName) === 'undefined') {
+          if (typeof this.argumentTypeFactory(typeName) === 'undefined') {
             throw new Error(`Argument type "${typeName}" not found.`)
           }
         }

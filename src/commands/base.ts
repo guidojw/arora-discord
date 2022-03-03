@@ -1,7 +1,11 @@
 import type { AnyFunction, KeyOfType, OverloadedParameters } from '../utils/util'
-import Argument, { type ArgumentOptions } from './argument'
+import type { Argument, ArgumentOptions } from '.'
+import { inject, injectable } from 'inversify'
 import type { AroraClient } from '../client'
 import type { CommandInteraction } from 'discord.js'
+import { constants } from '../utils'
+
+const { TYPES } = constants
 
 interface BaseCommandOptions {
   ownerOwnly?: boolean
@@ -24,7 +28,7 @@ type SubCommandNames<T, U = OverloadedParameters<T>> = {
 
 export interface SubCommandCommandOptions<T extends SubCommandCommand<any>> extends BaseCommandOptions {
   subCommands: {
-    [K in Exclude<KeyOfType<T, AnyFunction>, 'execute'>]: T[K] extends AnyFunction
+    [K in Exclude<KeyOfType<T, AnyFunction>, 'setOptions' | 'execute'>]: T[K] extends AnyFunction
       ? Parameters<T[K]>[1] extends string
         ? { [U in keyof SubCommandNames<T[K]> as SubCommandNames<T[K]>[U]]: SubCommandOptions }
         : SubCommandOptions
@@ -33,24 +37,29 @@ export interface SubCommandCommandOptions<T extends SubCommandCommand<any>> exte
 }
 
 export default abstract class BaseCommand<T extends CommandOptions = BaseCommandOptions> {
-  public readonly client: AroraClient
-  public readonly options: T
+  @inject(TYPES.Client)
+  protected readonly client!: AroraClient
 
-  protected constructor (client: AroraClient<true>, options: T) {
-    this.client = client
+  @inject(TYPES.ArgumentFactory)
+  protected readonly argumentFactory!: (options: ArgumentOptions<any>) => Argument<any>
+
+  public options!: T
+
+  public setOptions (options: T): void {
     this.options = options
   }
 }
 
+@injectable()
 export abstract class Command extends BaseCommand<CommandOptions> {
   public readonly args: Record<string, Argument<any>> = {}
 
-  public constructor (client: AroraClient<true>, options?: CommandOptions) {
-    super(client, options ?? {})
+  public override setOptions (options?: CommandOptions): void {
+    super.setOptions(options ?? {})
 
-    if (typeof options?.command !== 'undefined' && options.command !== true) {
-      for (const argumentOptions of options.command.args) {
-        this.args[argumentOptions.name ?? argumentOptions.key] = new Argument<any>(client, argumentOptions)
+    if (typeof this.options?.command !== 'undefined' && this.options.command !== true) {
+      for (const argumentOptions of this.options.command.args) {
+        this.args[argumentOptions.name ?? argumentOptions.key] = this.argumentFactory(argumentOptions)
       }
     }
   }
@@ -61,14 +70,15 @@ export abstract class Command extends BaseCommand<CommandOptions> {
   ): Promise<void>
 }
 
+@injectable()
 export class SubCommandCommand<T extends SubCommandCommand<any>> extends BaseCommand<SubCommandCommandOptions<T>> {
   public readonly args: Record<string, Record<string, Argument<any> | Record<string, Argument<any>>>> = {}
 
-  public constructor (client: AroraClient<true>, options: SubCommandCommandOptions<T>) {
-    super(client, options)
+  public override setOptions (options: SubCommandCommandOptions<T>): void {
+    super.setOptions(options)
 
     for (const [subCommandName, subCommand] of
-      Object.entries<SubCommandOptions | Record<string, SubCommandOptions> | undefined>(options.subCommands)) {
+      Object.entries<SubCommandOptions | Record<string, SubCommandOptions> | undefined>(this.options.subCommands)) {
       if (typeof subCommand === 'undefined' || subCommand === true) {
         continue
       }
@@ -76,8 +86,7 @@ export class SubCommandCommand<T extends SubCommandCommand<any>> extends BaseCom
       this.args[subCommandName] = {}
       if (Reflect.has(subCommand, 'args')) {
         for (const argumentOptions of (subCommand as Exclude<SubCommandOptions, true>).args) {
-          this.args[subCommandName][argumentOptions.name ?? argumentOptions.key] =
-            new Argument<any>(client, argumentOptions)
+          this.args[subCommandName][argumentOptions.name ?? argumentOptions.key] = this.argumentFactory(argumentOptions)
         }
       } else {
         for (const [subSubCommandName, subSubCommand] of
@@ -88,7 +97,7 @@ export class SubCommandCommand<T extends SubCommandCommand<any>> extends BaseCom
 
           const subSubCommandArgs = (this.args[subCommandName][subSubCommandName] = {}) as Record<string, Argument<any>>
           for (const argumentOptions of subSubCommand.args) {
-            subSubCommandArgs[argumentOptions.name ?? argumentOptions.key] = new Argument<any>(client, argumentOptions)
+            subSubCommandArgs[argumentOptions.name ?? argumentOptions.key] = this.argumentFactory(argumentOptions)
           }
         }
       }

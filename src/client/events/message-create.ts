@@ -1,13 +1,24 @@
 import { ApplicationCommandData, type Message, TextChannel } from 'discord.js'
+import { inject, injectable, named } from 'inversify'
+import type { AroraClient } from '..'
 import type BaseHandler from '../base'
-import type Client from '../client'
 import type { GuildContext } from '../../structures'
-import { injectable } from 'inversify'
+import type { GuildContextManager } from '../../managers'
+import { constants } from '../../utils'
 import { stripIndents } from 'common-tags'
+
+const { TYPES } = constants
 
 @injectable()
 export default class MessageEventHandler implements BaseHandler {
-  public async handle (client: Client, message: Message): Promise<void> {
+  @inject(TYPES.Client)
+  private readonly client!: AroraClient<true>
+
+  @inject(TYPES.Manager)
+  @named('GuildContextManager')
+  private readonly guildContexts!: GuildContextManager
+
+  public async handle (message: Message): Promise<void> {
     if (message.author.bot) {
       return
     }
@@ -15,16 +26,16 @@ export default class MessageEventHandler implements BaseHandler {
     if (guild === null) {
       return
     }
-    const context = client.guildContexts.resolve(guild) as GuildContext
+    const context = this.guildContexts.resolve(guild) as GuildContext
 
     if ((process.env.NODE_ENV ?? 'development') === 'development') {
-      if (client.application?.owner === null) {
-        await client.application?.fetch()
+      if (this.client.application?.owner === null) {
+        await this.client.application?.fetch()
       }
-      if (message.content.toLowerCase() === '!deploy' && message.author.id === client.application?.owner?.id) {
+      if (message.content.toLowerCase() === '!deploy' && message.author.id === this.client.application?.owner?.id) {
         const interactions = await import('../../interactions')
         await guild.commands.set(Object.values(interactions) as ApplicationCommandData[])
-        await client.send(message.channel, 'Successfully deployed commands.')
+        await this.client.send(message.channel, 'Successfully deployed commands.')
       }
     }
 

@@ -1,5 +1,5 @@
+import type { BaseManager, TextChannelResolvable, TicketGuildMemberManager } from '../managers'
 import {
-  type Client,
   Collection,
   Constants,
   type GuildMember,
@@ -9,17 +9,21 @@ import {
   type PartialGuildMember,
   type TextChannel
 } from 'discord.js'
+import type { GuildContext, TicketType } from '.'
+import { constants, timeUtil, util } from '../utils'
 import { discordService, userService, verificationService } from '../services'
-import { timeUtil, util } from '../utils'
+import { inject, injectable } from 'inversify'
+import type { AroraClient } from '../client'
 import BaseStructure from './base'
-import type GuildContext from './guild-context'
-import type { TextChannelResolvable } from '../managers'
 import type { Ticket as TicketEntity } from '../entities'
-import TicketGuildMemberManager from '../managers/ticket-guild-member'
-import type TicketType from './ticket-type'
 import applicationConfig from '../configs/application'
 import pluralize from 'pluralize'
 import { stripIndents } from 'common-tags'
+
+const { PartialTypes } = Constants
+const { TYPES } = constants
+const { getDate, getTime } = timeUtil
+const { makeCommaSeparatedString } = util
 
 export interface NewTicket extends Ticket {
   authorId: string
@@ -30,12 +34,19 @@ export interface NewTicket extends Ticket {
 
 export interface TicketUpdateOptions { channel?: TextChannelResolvable }
 
-const { PartialTypes } = Constants
-const { getDate, getTime } = timeUtil
-const { makeCommaSeparatedString } = util
+@injectable()
+export default class Ticket extends BaseStructure<TicketEntity> {
+  @inject(TYPES.Client)
+  private readonly client!: AroraClient<true>
 
-export default class Ticket extends BaseStructure {
-  public readonly context: GuildContext
+  @inject(TYPES.ManagerFactory)
+  private readonly managerFactory!: <
+    T extends BaseManager<K, U, unknown>,
+    U extends { id: K },
+    K extends number | string = number | string
+    > (managerName: string) => (...args: T['setOptions'] extends ((...args: infer P) => any) ? P : never[]) => T
+
+  public context!: GuildContext
 
   public id!: number
   public channelId!: string
@@ -45,13 +56,16 @@ export default class Ticket extends BaseStructure {
   public _moderators: string[]
   public timeout: NodeJS.Timeout | null
 
-  public constructor (client: Client<true>, data: TicketEntity, context: GuildContext) {
-    super(client)
+  public constructor () {
+    super()
 
-    this.context = context
     this._moderators = []
 
     this.timeout = null
+  }
+
+  public setOptions (data: TicketEntity, context: GuildContext): void {
+    this.context = context
 
     this.setup(data)
   }
@@ -87,7 +101,7 @@ export default class Ticket extends BaseStructure {
   }
 
   public get moderators (): TicketGuildMemberManager {
-    return new TicketGuildMemberManager(this)
+    return this.managerFactory<TicketGuildMemberManager, GuildMember>('TicketGuildMemberManager')(this)
   }
 
   public async populateChannel (): Promise<void> {

@@ -1,33 +1,38 @@
 import { type GuildContext, Panel, type PanelUpdateOptions } from '../structures'
-import BaseManager from './base'
+import { inject, injectable } from 'inversify'
+import type { AroraClient } from '../client'
+import { DataManager } from './base'
 import { MessageEmbed } from 'discord.js'
 import type { Panel as PanelEntity } from '../entities'
 import type { Repository } from 'typeorm'
 import type { TextChannelResolvable } from './guild-ticket'
 import { constants } from '../utils'
-import container from '../configs/container'
 import { discordService } from '../services'
-import getDecorators from 'inversify-inject-decorators'
+
+const { TYPES } = constants
 
 export type PanelResolvable = string | Panel | number
 
-const { TYPES } = constants
-const { lazyInject } = getDecorators(container)
+@injectable()
+export default class GuildPanelManager extends DataManager<number, Panel, PanelResolvable, PanelEntity> {
+  @inject(TYPES.Client)
+  private readonly client!: AroraClient<true>
 
-export default class GuildPanelManager extends BaseManager<Panel, PanelResolvable> {
-  @lazyInject(TYPES.PanelRepository)
+  @inject(TYPES.PanelRepository)
   private readonly panelRepository!: Repository<PanelEntity>
 
-  public readonly context: GuildContext
+  public context!: GuildContext
 
-  public constructor (context: GuildContext) {
-    super(context.client, Panel)
+  public constructor () {
+    super(Panel)
+  }
 
+  public override setOptions (context: GuildContext): void {
     this.context = context
   }
 
-  public override _add (data: PanelEntity, cache = true): Panel {
-    return super._add(data, cache, { id: data.id, extras: [this.context] })
+  public override add (data: PanelEntity): Panel {
+    return super.add(data, { id: data.id, extras: [this.context] })
   }
 
   public async create (name: string, content: object): Promise<Panel> {
@@ -46,7 +51,7 @@ export default class GuildPanelManager extends BaseManager<Panel, PanelResolvabl
       name
     }))
 
-    return this._add(newData)
+    return this.add(newData)
   }
 
   public async delete (panel: PanelResolvable): Promise<void> {
@@ -132,7 +137,7 @@ export default class GuildPanelManager extends BaseManager<Panel, PanelResolvabl
 
     const _panel = this.cache.get(panel.id)
     _panel?.setup(newData)
-    return _panel ?? this._add(newData, false)
+    return _panel ?? this.add(newData)
   }
 
   public async post (panelResolvable: PanelResolvable, channelResolvable?: TextChannelResolvable): Promise<Panel> {
@@ -174,7 +179,7 @@ export default class GuildPanelManager extends BaseManager<Panel, PanelResolvabl
 
     const _panel = this.cache.get(panel.id)
     _panel?.setup(newData)
-    return _panel ?? this._add(newData, false)
+    return _panel ?? this.add(newData)
   }
 
   public override resolve (panel: Panel): Panel

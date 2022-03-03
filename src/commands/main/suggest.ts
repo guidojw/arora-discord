@@ -1,10 +1,12 @@
 import { Command, type CommandOptions } from '../base'
 import { type CommandInteraction, type MessageAttachment, MessageEmbed } from 'discord.js'
+import { argumentUtil, constants } from '../../utils'
+import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../utils/decorators'
 import type { GuildContext } from '../../structures'
-import { argumentUtil } from '../../utils'
-import { injectable } from 'inversify'
+import type { GuildContextManager } from '../../managers'
 
+const { TYPES } = constants
 const { validators, noTags } = argumentUtil
 
 @injectable()
@@ -20,6 +22,10 @@ const { validators, noTags } = argumentUtil
   }
 })
 export default class SuggestCommand extends Command {
+  @inject(TYPES.Manager)
+  @named('GuildContextManager')
+  private readonly guildContexts!: GuildContextManager
+
   public async execute (
     interaction: CommandInteraction,
     { suggestion, attachment }: { suggestion: string, attachment: MessageAttachment | null }
@@ -27,7 +33,7 @@ export default class SuggestCommand extends Command {
     if (!interaction.inGuild()) {
       return
     }
-    const context = this.client.guildContexts.resolve(interaction.guildId) as GuildContext
+    const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
     if (context.suggestionsChannel === null) {
       return await interaction.reply({ content: 'This server has no suggestionsChannel set yet.', ephemeral: true })
