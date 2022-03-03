@@ -31,7 +31,7 @@ const { guildSettingTransformer, parseEnum } = argumentUtil
         },
         {
           key: 'value',
-          type: 'category-channel|text-channel|always',
+          type: 'category-channel|text-channel|integer|boolean|always',
           required: false
         }
       ]

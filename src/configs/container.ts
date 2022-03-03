@@ -9,7 +9,8 @@ import { Argument, type ArgumentOptions, type BaseCommand } from '../commands'
 import {
   AroraClient,
   type BaseHandler,
-  Dispatcher, SettingProvider,
+  Dispatcher,
+  SettingProvider,
   WebSocketManager,
   eventHandlers,
   packetHandlers
@@ -53,6 +54,8 @@ bind<interfaces.Factory<Argument<unknown>>>(TYPES.ArgumentFactory)
 // Argument Types
 bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.AlwaysArgumentType)
   .whenTargetTagged('argumentType', 'always')
+bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.BooleanArgumentType)
+  .whenTargetTagged('argumentType', 'boolean')
 bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.CategoryChannelArgumentType)
   .whenTargetTagged('argumentType', 'category-channel')
 bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.ChannelGroupArgumentType)
@@ -63,6 +66,8 @@ bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.DefaultEmojiArg
   .whenTargetTagged('argumentType', 'default-emoji')
 bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.GroupArgumentType)
   .whenTargetTagged('argumentType', 'group')
+bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.IntegerArgumentType)
+  .whenTargetTagged('argumentType', 'integer')
 bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.JsonObjectArgumentType)
   .whenTargetTagged('argumentType', 'json-object')
 bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.MessageArgumentType)
