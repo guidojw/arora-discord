@@ -13,7 +13,7 @@ export type GroupResolvable = string | Group | number
 @injectable()
 export default class GuildGroupManager extends DataManager<number, Group, GroupResolvable, GroupEntity> {
   @inject(TYPES.StructureFactory)
-  private readonly groupFactory!: (structureName: string) =>
+  private readonly groupFactory!: (structureName: `${keyof typeof GroupType}Group`) =>
   (...args: Parameters<ChannelGroup['setOptions'] | RoleGroup['setOptions']>) => ChannelGroup | RoleGroup
 
   @inject(TYPES.GroupRepository)
