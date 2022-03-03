@@ -1,9 +1,9 @@
-import type { CachedManager, Collection, CommandInteraction } from 'discord.js'
+import type { Collection, CommandInteraction } from 'discord.js'
+import type { DataManager, GuildContextManager } from '../managers'
 import type { GuildContext, IdentifiableStructure } from '../structures'
 import { inject, injectable, named, unmanaged } from 'inversify'
 import type { Argument } from '../interactions/application-commands'
 import type { Constructor } from '../utils/util'
-import type { GuildContextManager } from '../managers'
 import type { IdentifiableEntity } from '../entities'
 import { constants } from '../utils'
 import lodash from 'lodash'
@@ -57,7 +57,7 @@ export class BaseStructureArgumentType<
     }
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
-    const manager = context[this.managerName as keyof typeof context] as unknown as CachedManager<number, any, any>
+    const manager = context[this.managerName as keyof typeof context] as unknown as DataManager<number, T, unknown, U>
     const id = parseInt(value)
     if (!isNaN(id)) {
       const structure = manager.cache.get(id)
@@ -82,7 +82,7 @@ export class BaseStructureArgumentType<
     }
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
-    const manager = context[this.managerName as keyof typeof context] as unknown as CachedManager<number, any, any>
+    const manager = context[this.managerName as keyof typeof context] as unknown as DataManager<number, T, unknown, U>
     const id = parseInt(value)
     if (!isNaN(id)) {
       return manager.cache.get(id) ?? null
@@ -93,20 +93,20 @@ export class BaseStructureArgumentType<
       return null
     }
     if (structures.size === 1) {
-      return structures.first()
+      return structures.first() as T
     }
     const exactStructures = structures.filter(this.filterExact(search))
     if (exactStructures.size === 1) {
-      return exactStructures.first()
+      return exactStructures.first() as T
     }
     return null
   }
 
-  public filterExact (search: string): (structure: T) => boolean {
+  protected filterExact (search: string): (structure: T) => boolean {
     return structure => structure instanceof this.holds && structure.toString().toLowerCase() === search
   }
 
-  public filterInexact (search: string): (structure: T) => boolean {
+  protected filterInexact (search: string): (structure: T) => boolean {
     return structure => structure instanceof this.holds && structure.toString().toLowerCase().includes(search)
   }
 }

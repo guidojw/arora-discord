@@ -7,12 +7,12 @@ export default class BooleanArgumentType extends BaseArgumentType<boolean> {
   private readonly falsy = ['false', 'f', 'no', 'n', 'off', 'disable', 'disabled', '0', '-']
 
   public validate (value: string): boolean {
-    const lowerCaseValue = value.toLowerCase()
-    return this.truthy.includes(lowerCaseValue) || this.falsy.includes(lowerCaseValue)
+    const search = value.toLowerCase()
+    return this.truthy.includes(search) || this.falsy.includes(search)
   }
 
   public parse (value: string): boolean {
-    const lowerCaseValue = value.toLowerCase()
-    return this.truthy.includes(lowerCaseValue)
+    const search = value.toLowerCase()
+    return this.truthy.includes(search)
   }
 }

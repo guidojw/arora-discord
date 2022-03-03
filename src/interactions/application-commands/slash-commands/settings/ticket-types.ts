@@ -23,7 +23,7 @@ const { TYPES } = constants
     link: {
       args: [
         { key: 'id', name: 'ticketType', type: 'ticket-type' },
-        { key: 'emoji', type: 'default-emoji' },
+        { key: 'emoji', type: 'custom-emoji|default-emoji' },
         { key: 'message', type: 'message' }
       ]
     },

@@ -5,7 +5,7 @@ import { injectable } from 'inversify'
 const { validTime } = argumentUtil
 
 @injectable()
-export default class extends BaseArgumentType<string> {
+export default class TimeArgumentType extends BaseArgumentType<string> {
   public validate (value: string): boolean {
     return validTime(value)
   }

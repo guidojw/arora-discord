@@ -6,7 +6,7 @@ const messageUrlRegex = /^https:\/\/discord.com\/channels\/([0-9]+|@me)\/[0-9]+\
 const endpointUrl = 'https://discord.com/channels/'
 
 @injectable()
-export default class extends BaseArgumentType<Message> {
+export default class MessageArgumentType extends BaseArgumentType<Message> {
   public async validate (value: string, interaction: CommandInteraction): Promise<boolean> {
     const match = value.match(messageUrlRegex)
     if (match === null) {

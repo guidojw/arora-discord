@@ -9,11 +9,11 @@ export default class TagArgumentType extends BaseStructureArgumentType<Tag, TagE
     super(Tag)
   }
 
-  public override filterExact (search: string): (structure: BaseStructure<TagEntity>) => boolean {
+  protected override filterExact (search: string): (structure: BaseStructure<TagEntity>) => boolean {
     return structure => structure instanceof this.holds && structure.names.resolve(search) !== null
   }
 
-  public override filterInexact (search: string): (structure: BaseStructure<TagEntity>) => boolean {
+  protected override filterInexact (search: string): (structure: BaseStructure<TagEntity>) => boolean {
     return structure => structure instanceof this.holds && structure.names.cache.some(tagName => (
       tagName.name.toLowerCase().includes(search)
     ))

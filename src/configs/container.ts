@@ -61,6 +61,8 @@ bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.CategoryChannel
   .whenTargetTagged('argumentType', 'category-channel')
 bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.ChannelGroupArgumentType)
   .whenTargetTagged('argumentType', 'channel-group')
+bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.CustomEmojiArgumentType)
+  .whenTargetTagged('argumentType', 'custom-emoji')
 bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.DateArgumentType)
   .whenTargetTagged('argumentType', 'date')
 bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.DefaultEmojiArgumentType)

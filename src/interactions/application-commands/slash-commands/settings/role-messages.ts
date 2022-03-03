@@ -19,7 +19,7 @@ const { TYPES } = constants
       args: [
         { key: 'role' },
         { key: 'message', type: 'message' },
-        { key: 'emoji', type: 'default-emoji' }
+        { key: 'emoji', type: 'custom-emoji|default-emoji' }
       ]
     },
     delete: {

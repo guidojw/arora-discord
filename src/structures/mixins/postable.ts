@@ -45,7 +45,7 @@ export default function Postable<T extends AbstractConstructor<BaseStructure<U>>
         ? this.channel.messages.cache.get(this.messageId) ??
         (this.client.options.partials?.includes(PartialTypes.MESSAGE) === true
           // @ts-expect-error
-          ? this.channel.messages._add({ id: this.messageId })
+          ? this.channel.messages._add({ id: this.messageId, channel_id: this.channelId })
           : null)
         : null
     }

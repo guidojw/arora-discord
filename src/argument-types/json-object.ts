@@ -2,7 +2,7 @@ import BaseArgumentType from './base'
 import { injectable } from 'inversify'
 
 @injectable()
-export default class extends BaseArgumentType<object> {
+export default class JsonObjectArgumentType extends BaseArgumentType<object> {
   public validate (value: string): boolean {
     try {
       JSON.parse(value)

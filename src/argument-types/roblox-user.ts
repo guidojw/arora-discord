@@ -6,7 +6,7 @@ import { injectable } from 'inversify'
 export interface RobloxUser { id: number, username: string | null }
 
 @injectable()
-export default class extends BaseArgumentType<RobloxUser> {
+export default class RobloxUserArgumentType extends BaseArgumentType<RobloxUser> {
   private readonly cache: Map<string, RobloxUser> = new Map()
 
   public async validate (
