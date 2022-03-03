@@ -23,7 +23,7 @@ export abstract class PostableProperties {
 
 export default function Postable<T extends AbstractConstructor<BaseStructure<U>>, U extends IdentifiableEntity> (
   base: T
-): T & AbstractConstructor<PostableProperties> {
+): AbstractConstructor<PostableProperties> & T {
   @injectable()
   abstract class Postable extends base {
     @inject(TYPES.Client)

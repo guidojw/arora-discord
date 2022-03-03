@@ -32,8 +32,8 @@ export default class MessageEventHandler implements BaseHandler {
         await this.client.application?.fetch()
       }
       if (message.content.toLowerCase() === '!deploy' && message.author.id === this.client.application?.owner?.id) {
-        const interactions = await import('../../interactions')
-        await guild.commands.set(Object.values(interactions) as ApplicationCommandData[])
+        const applicationCommands = await import('../../interactions/data/application-commands')
+        await guild.commands.set(Object.values(applicationCommands) as ApplicationCommandData[])
         await this.client.send(message.channel, 'Successfully deployed commands.')
       }
     }

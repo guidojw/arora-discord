@@ -1,4 +1,9 @@
-import { type Argument, type BaseCommand, Command, SubCommandCommand } from '../commands'
+import {
+  type Argument,
+  type BaseCommand,
+  Command,
+  SubCommandCommand
+} from '../interactions/application-commands/slash-commands'
 import type { CommandInteraction, CommandInteractionOption, Interaction } from 'discord.js'
 import { inject, injectable, named } from 'inversify'
 import type { GuildContextManager } from '../managers'

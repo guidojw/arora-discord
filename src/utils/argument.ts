@@ -1,4 +1,4 @@
-import type { Argument, ParserFunction, ValidatorFunction } from '../commands'
+import type { Argument, ParserFunction, ValidatorFunction } from '../interactions/application-commands'
 import { type CommandInteraction, MessageMentions } from 'discord.js'
 import { type Enum, getEnumKeys } from './util'
 import { getDateInfo } from './time'

@@ -2,7 +2,7 @@ import { type Constructor, createClassDecorator } from './util'
 import { type ValidationArguments, type ValidationOptions, registerDecorator } from 'class-validator'
 
 /**
- * Applies given options to the class' constructor.
+ * Applies given options to the class.
  */
 export function ApplyOptions<T extends object> (options: T): ClassDecorator {
   return createClassDecorator((target: Constructor<any>) => (

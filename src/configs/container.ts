@@ -1,11 +1,10 @@
-import * as argumentTypes from '../types'
-import * as commands from '../commands'
+import * as argumentTypes from '../argument-types'
 import * as entities from '../entities'
 import * as jobs from '../jobs'
 import * as managers from '../managers'
 import * as services from '../services'
 import * as structures from '../structures'
-import { Argument, type ArgumentOptions, type BaseCommand } from '../commands'
+import { Argument, type ArgumentOptions, type BaseCommand } from '../interactions/application-commands/slash-commands'
 import {
   AroraClient,
   type BaseHandler,
@@ -17,8 +16,9 @@ import {
 } from '../client'
 import { Container, type interfaces } from 'inversify'
 import { type Repository, getRepository } from 'typeorm'
-import type { BaseArgumentType } from '../types'
+import type { BaseArgumentType } from '../argument-types'
 import type { BaseJob } from '../jobs'
+import { applicationCommands } from '../interactions'
 import applicationConfig from '../configs/application'
 import { constants } from '../utils'
 
@@ -101,64 +101,64 @@ bind<interfaces.Factory<BaseArgumentType<any>>>(TYPES.ArgumentTypeFactory).toFac
 )
 
 // Commands
-bind<BaseCommand>(TYPES.Command).to(commands.BansCommand)
+bind<BaseCommand>(TYPES.Command).to(applicationCommands.BansCommand)
   .whenTargetTagged('command', 'bans')
-bind<BaseCommand>(TYPES.Command).to(commands.DemoteCommand)
+bind<BaseCommand>(TYPES.Command).to(applicationCommands.DemoteCommand)
   .whenTargetTagged('command', 'demote')
-bind<BaseCommand>(TYPES.Command).to(commands.ExilesCommand)
+bind<BaseCommand>(TYPES.Command).to(applicationCommands.ExilesCommand)
   .whenTargetTagged('command', 'exiles')
-bind<BaseCommand>(TYPES.Command).to(commands.PersistentRolesCommand)
+bind<BaseCommand>(TYPES.Command).to(applicationCommands.PersistentRolesCommand)
   .whenTargetTagged('command', 'persistentroles')
-bind<BaseCommand>(TYPES.Command).to(commands.PromoteCommand)
+bind<BaseCommand>(TYPES.Command).to(applicationCommands.PromoteCommand)
   .whenTargetTagged('command', 'promote')
-bind<BaseCommand>(TYPES.Command).to(commands.ShoutCommand)
+bind<BaseCommand>(TYPES.Command).to(applicationCommands.ShoutCommand)
   .whenTargetTagged('command', 'shout')
-bind<BaseCommand>(TYPES.Command).to(commands.TrainingsCommand)
+bind<BaseCommand>(TYPES.Command).to(applicationCommands.TrainingsCommand)
   .whenTargetTagged('command', 'trainings')
 
-bind<BaseCommand>(TYPES.Command).to(commands.RestartCommand)
+bind<BaseCommand>(TYPES.Command).to(applicationCommands.RestartCommand)
   .whenTargetTagged('command', 'restart')
-bind<BaseCommand>(TYPES.Command).to(commands.StatusCommand)
+bind<BaseCommand>(TYPES.Command).to(applicationCommands.StatusCommand)
   .whenTargetTagged('command', 'status')
 
-bind<BaseCommand>(TYPES.Command).to(commands.BoostInfoCommand)
+bind<BaseCommand>(TYPES.Command).to(applicationCommands.BoostInfoCommand)
   .whenTargetTagged('command', 'boostinfo')
-bind<BaseCommand>(TYPES.Command).to(commands.DeleteSuggestionCommand)
+bind<BaseCommand>(TYPES.Command).to(applicationCommands.DeleteSuggestionCommand)
   .whenTargetTagged('command', 'deletesuggestion')
-bind<BaseCommand>(TYPES.Command).to(commands.GetShoutCommand)
+bind<BaseCommand>(TYPES.Command).to(applicationCommands.GetShoutCommand)
   .whenTargetTagged('command', 'getshout')
-bind<BaseCommand>(TYPES.Command).to(commands.MemberCountCommand)
+bind<BaseCommand>(TYPES.Command).to(applicationCommands.MemberCountCommand)
   .whenTargetTagged('command', 'membercount')
-bind<BaseCommand>(TYPES.Command).to(commands.PollCommand)
+bind<BaseCommand>(TYPES.Command).to(applicationCommands.PollCommand)
   .whenTargetTagged('command', 'poll')
-bind<BaseCommand>(TYPES.Command).to(commands.SuggestCommand)
+bind<BaseCommand>(TYPES.Command).to(applicationCommands.SuggestCommand)
   .whenTargetTagged('command', 'suggest')
-bind<BaseCommand>(TYPES.Command).to(commands.TagCommand)
+bind<BaseCommand>(TYPES.Command).to(applicationCommands.TagCommand)
   .whenTargetTagged('command', 'tag')
-bind<BaseCommand>(TYPES.Command).to(commands.WhoIsCommand)
+bind<BaseCommand>(TYPES.Command).to(applicationCommands.WhoIsCommand)
   .whenTargetTagged('command', 'whois')
 
-bind<BaseCommand>(TYPES.Command).to(commands.ChannelLinksCommand)
+bind<BaseCommand>(TYPES.Command).to(applicationCommands.ChannelLinksCommand)
   .whenTargetTagged('command', 'channellinks')
-bind<BaseCommand>(TYPES.Command).to(commands.CloseTicketCommand)
+bind<BaseCommand>(TYPES.Command).to(applicationCommands.CloseTicketCommand)
   .whenTargetTagged('command', 'closeticket')
-bind<BaseCommand>(TYPES.Command).to(commands.GroupsCommand)
+bind<BaseCommand>(TYPES.Command).to(applicationCommands.GroupsCommand)
   .whenTargetTagged('command', 'groups')
-bind<BaseCommand>(TYPES.Command).to(commands.PanelsCommand)
+bind<BaseCommand>(TYPES.Command).to(applicationCommands.PanelsCommand)
   .whenTargetTagged('command', 'panels')
-bind<BaseCommand>(TYPES.Command).to(commands.RoleBindingsCommand)
+bind<BaseCommand>(TYPES.Command).to(applicationCommands.RoleBindingsCommand)
   .whenTargetTagged('command', 'rolebindings')
-bind<BaseCommand>(TYPES.Command).to(commands.RoleMessagesCommand)
+bind<BaseCommand>(TYPES.Command).to(applicationCommands.RoleMessagesCommand)
   .whenTargetTagged('command', 'rolemessages')
-bind<BaseCommand>(TYPES.Command).to(commands.SetActivityCommand)
+bind<BaseCommand>(TYPES.Command).to(applicationCommands.SetActivityCommand)
   .whenTargetTagged('command', 'setactivity')
-bind<BaseCommand>(TYPES.Command).to(commands.SettingsCommand)
+bind<BaseCommand>(TYPES.Command).to(applicationCommands.SettingsCommand)
   .whenTargetTagged('command', 'settings')
-bind<BaseCommand>(TYPES.Command).to(commands.TagsCommand)
+bind<BaseCommand>(TYPES.Command).to(applicationCommands.TagsCommand)
   .whenTargetTagged('command', 'tags')
-bind<BaseCommand>(TYPES.Command).to(commands.TicketTypesCommand)
+bind<BaseCommand>(TYPES.Command).to(applicationCommands.TicketTypesCommand)
   .whenTargetTagged('command', 'tickettypes')
-bind<BaseCommand>(TYPES.Command).to(commands.ToggleSupportCommand)
+bind<BaseCommand>(TYPES.Command).to(applicationCommands.ToggleSupportCommand)
   .whenTargetTagged('command', 'togglesupport')
 
 bind<interfaces.Factory<BaseCommand>>(TYPES.CommandFactory).toFactory<BaseCommand, [string]>(
