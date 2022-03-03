@@ -1,5 +1,5 @@
 import { inject, injectable } from 'inversify'
-import type BaseHandler from '../base'
+import type { BaseHandler } from '..'
 import type { Message as DiscordMessage } from 'discord.js'
 import type { Message } from '../../entities'
 import { Repository } from 'typeorm'

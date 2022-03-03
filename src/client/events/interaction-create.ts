@@ -1,6 +1,5 @@
+import type { BaseHandler, Dispatcher } from '..'
 import { inject, injectable } from 'inversify'
-import type BaseHandler from '../base'
-import type Dispatcher from '../dispatcher'
 import type { Interaction } from 'discord.js'
 import { constants } from '../../utils'
 

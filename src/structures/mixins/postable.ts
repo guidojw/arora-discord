@@ -1,9 +1,8 @@
 import type { AbstractConstructor, Mixin } from '../../utils/util'
+import type { BaseStructure, GuildContext } from '..'
 import { Constants, type Message, type TextChannel } from 'discord.js'
 import { inject, injectable } from 'inversify'
 import type { AroraClient } from '../../client'
-import type BaseStructure from '../base'
-import type GuildContext from '../guild-context'
 import type { IdentifiableEntity } from '../../entities'
 import { constants } from '../../utils'
 

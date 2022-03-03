@@ -1,7 +1,7 @@
 import { type GuildMember, MessageEmbed } from 'discord.js'
 import { constants, util } from '../../utils'
 import { inject, injectable, named } from 'inversify'
-import type BaseHandler from '../base'
+import type { BaseHandler } from '..'
 import type { GuildContext } from '../../structures'
 import type { GuildContextManager } from '../../managers'
 import type { PersistentRoleService } from '../../services'

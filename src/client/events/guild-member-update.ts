@@ -1,6 +1,6 @@
 import type { GuildMember, Role } from 'discord.js'
 import { inject, injectable } from 'inversify'
-import type BaseHandler from '../base'
+import type { BaseHandler } from '..'
 import type { PersistentRoleService } from '../../services'
 import { constants } from '../../utils'
 

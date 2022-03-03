@@ -1,5 +1,5 @@
 import { inject, injectable, named } from 'inversify'
-import type BaseHandler from '../../base'
+import type { BaseHandler } from '../..'
 import type { GuildContextManager } from '../../../managers'
 import { constants } from '../../../utils'
 import { userService } from '../../../services'

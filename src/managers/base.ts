@@ -9,7 +9,8 @@ const { TYPES } = constants
 
 @injectable()
 export default abstract class BaseManager<K extends number | string, Holds extends { id: K }, R> {
-  public abstract cache: Collection<K, Holds>
+  public abstract readonly cache: Collection<K, Holds>
+
   public readonly holds: Constructor<Holds>
 
   public constructor (holds: Constructor<Holds>) {

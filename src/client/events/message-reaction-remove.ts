@@ -1,6 +1,6 @@
 import type { MessageReaction, User } from 'discord.js'
 import { inject, injectable, named } from 'inversify'
-import type BaseHandler from '../base'
+import type { BaseHandler } from '..'
 import type { GuildContext } from '../../structures'
 import type { GuildContextManager } from '../../managers'
 import { constants } from '../../utils'

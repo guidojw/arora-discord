@@ -2,7 +2,6 @@ import type { BaseHandler, SettingProvider, WebSocketManager } from '.'
 import {
   Client,
   type ClientEvents,
-  type ClientOptions,
   Constants,
   DiscordAPIError,
   type Guild,
@@ -51,25 +50,13 @@ export default class AroraClient<Ready extends boolean = boolean> extends Client
   @optional()
   private readonly aroraWs?: WebSocketManager
 
-  public mainGuild: Guild | null
+  public mainGuild: Guild | null = null
 
-  private currentActivity: number
-  private activityCarouselInterval: NodeJS.Timeout | null
+  private currentActivity: number = 0
+  private activityCarouselInterval: NodeJS.Timeout | null = null
 
   public constructor () {
-    const options: ClientOptions = { intents: [] }
-    options.intents = new Intents(options.intents)
-    options.intents.add(...REQUIRED_INTENTS)
-    options.partials = [...new Set(
-      ...(options.partials ?? []),
-      ...REQUIRED_PARTIALS
-    )] as PartialType[]
-    super(options)
-
-    this.mainGuild = null
-
-    this.currentActivity = 0
-    this.activityCarouselInterval = null
+    super({ intents: REQUIRED_INTENTS, partials: REQUIRED_PARTIALS })
 
     this.once('ready', this.ready.bind(this))
   }

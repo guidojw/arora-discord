@@ -1,5 +1,5 @@
 import { inject, injectable } from 'inversify'
-import type BaseHandler from '../base'
+import type { BaseHandler } from '..'
 import type { Guild } from 'discord.js'
 import type SettingProvider from '../setting-provider'
 import { constants } from '../../utils'

@@ -1,5 +1,5 @@
 import { inject, injectable } from 'inversify'
-import type BaseHandler from '../base'
+import type { BaseHandler } from '..'
 import type { ChannelLinkService } from '../../services'
 import type { VoiceState } from 'discord.js'
 import { constants } from '../../utils'

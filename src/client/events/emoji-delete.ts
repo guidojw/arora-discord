@@ -1,5 +1,5 @@
 import { inject, injectable } from 'inversify'
-import type BaseHandler from '../base'
+import type { BaseHandler } from '..'
 import type { Emoji } from '../../entities'
 import type { GuildEmoji } from 'discord.js'
 import { Repository } from 'typeorm'
