@@ -1,10 +1,10 @@
-import type { BaseManager, TagTagNameManager } from '../managers'
 import type { GuildContext, TagName } from '.'
+import { type ManagerFactory, constants } from '../utils'
 import { inject, injectable } from 'inversify'
 import BaseStructure from './base'
 import { MessageEmbed } from 'discord.js'
 import type { Tag as TagEntity } from '../entities'
-import { constants } from '../utils'
+import type { TagTagNameManager } from '../managers'
 
 const { TYPES } = constants
 
@@ -19,13 +19,7 @@ export default class Tag extends BaseStructure<TagEntity> {
   public id!: number
   public _content!: string
 
-  public constructor (
-  @inject(TYPES.ManagerFactory) managerFactory: <
-    T extends BaseManager<K, U, unknown>,
-    U extends { id: K },
-    K extends number | string = number | string
-    > (managerName: string) => (...args: T['setOptions'] extends ((...args: infer P) => any) ? P : never[]) => T
-  ) {
+  public constructor (@inject(TYPES.ManagerFactory) managerFactory: ManagerFactory) {
     super()
 
     this.names = managerFactory<TagTagNameManager, TagName>('TagTagNameManager')(this)

@@ -1,14 +1,3 @@
-import type {
-  BaseManager,
-  GuildContextManager,
-  GuildGroupManager,
-  GuildPanelManager,
-  GuildRoleBindingManager,
-  GuildRoleMessageManager,
-  GuildTagManager,
-  GuildTicketManager,
-  GuildTicketTypeManager
-} from '../managers'
 import {
   type CategoryChannel,
   type CategoryChannelResolvable,
@@ -26,13 +15,23 @@ import {
   type User
 } from 'discord.js'
 import type { Group, Panel, RoleBinding, RoleMessage, Tag, Ticket, TicketType } from '.'
+import type {
+  GuildContextManager,
+  GuildGroupManager,
+  GuildPanelManager,
+  GuildRoleBindingManager,
+  GuildRoleMessageManager,
+  GuildTagManager,
+  GuildTicketManager,
+  GuildTicketTypeManager
+} from '../managers'
+import { type ManagerFactory, constants } from '../utils'
 import { inject, injectable, named } from 'inversify'
 import type { BaseJob } from '../jobs'
 import BaseStructure from './base'
 import type { Guild as GuildEntity } from '../entities'
 import type { VerificationProvider } from '../utils/constants'
 import applicationConfig from '../configs/application'
-import { constants } from '../utils'
 import cron from 'node-cron'
 import cronConfig from '../configs/cron'
 
@@ -83,13 +82,7 @@ export default class GuildContext extends BaseStructure<GuildEntity> {
   public ticketsCategoryId!: Snowflake | null
   public verificationPreference!: VerificationProvider
 
-  public constructor (
-  @inject(TYPES.ManagerFactory) managerFactory: <
-    T extends BaseManager<K, U, unknown>,
-    U extends { id: K },
-    K extends number | string = number | string
-    > (managerName: string) => (...args: T['setOptions'] extends ((...args: infer P) => any) ? P : never[]) => T
-  ) {
+  public constructor (@inject(TYPES.ManagerFactory) managerFactory: ManagerFactory) {
     super()
 
     this.groups = managerFactory<GuildGroupManager, Group>('GuildGroupManager')(this)
