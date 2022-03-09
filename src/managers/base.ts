@@ -1,9 +1,8 @@
-import type { Constructor, Tail } from '../utils/util'
+import { type Constructor, type Tail, constants } from '../utils'
 import { inject, injectable } from 'inversify'
 import { Collection } from 'discord.js'
 import type { IdentifiableEntity } from '../entities'
 import type { IdentifiableStructure } from '../structures'
-import { constants } from '../utils'
 
 const { TYPES } = constants
 

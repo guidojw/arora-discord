@@ -1,5 +1,6 @@
-import { type Constructor, createClassDecorator } from './util'
 import { type ValidationArguments, type ValidationOptions, registerDecorator } from 'class-validator'
+import type { Constructor } from '.'
+import { createClassDecorator } from './util'
 
 /**
  * Applies given options to the class.

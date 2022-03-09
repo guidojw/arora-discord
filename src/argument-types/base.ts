@@ -1,11 +1,10 @@
 import type { Collection, CommandInteraction } from 'discord.js'
+import { type Constructor, constants } from '../utils'
 import type { DataManager, GuildContextManager } from '../managers'
 import type { GuildContext, IdentifiableStructure } from '../structures'
 import { inject, injectable, named, unmanaged } from 'inversify'
 import type { Argument } from '../interactions/application-commands'
-import type { Constructor } from '../utils/util'
 import type { IdentifiableEntity } from '../entities'
-import { constants } from '../utils'
 import lodash from 'lodash'
 import pluralize from 'pluralize'
 

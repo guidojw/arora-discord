@@ -1,5 +1,5 @@
 import type { GuildEmoji, Message } from 'discord.js'
-import type { AbstractConstructor } from '../utils/util'
+import type { AbstractConstructor } from '../utils'
 import BaseStructure from './base'
 import type { GuildContext } from '.'
 import { Postable } from './mixins'

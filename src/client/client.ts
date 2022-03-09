@@ -1,3 +1,4 @@
+import { type AnyFunction, constants } from '../utils'
 import type { BaseHandler, SettingProvider, WebSocketManager } from '.'
 import {
   Client,
@@ -12,9 +13,7 @@ import {
   type Presence
 } from 'discord.js'
 import { decorate, inject, injectable, optional } from 'inversify'
-import type { AnyFunction } from '../utils/util'
 import applicationConfig from '../configs/application'
-import { constants } from '../utils'
 
 const { PartialTypes } = Constants
 const { TYPES } = constants

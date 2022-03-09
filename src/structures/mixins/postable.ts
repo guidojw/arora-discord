@@ -1,10 +1,9 @@
-import type { AbstractConstructor, Mixin } from '../../utils/util'
+import { type AbstractConstructor, type Mixin, constants } from '../../utils'
 import type { BaseStructure, GuildContext } from '..'
 import { Constants, type Message, type TextChannel } from 'discord.js'
 import { inject, injectable } from 'inversify'
 import type { AroraClient } from '../../client'
 import type { IdentifiableEntity } from '../../entities'
-import { constants } from '../../utils'
 
 const { PartialTypes } = Constants
 const { TYPES } = constants

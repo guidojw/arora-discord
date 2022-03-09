@@ -1,7 +1,8 @@
 import type { Argument, ParserFunction, ValidatorFunction } from '../interactions/application-commands'
 import { type CommandInteraction, MessageMentions } from 'discord.js'
-import { type Enum, getEnumKeys } from './util'
+import type { Enum } from '.'
 import { getDateInfo } from './time'
+import { getEnumKeys } from './util'
 
 type ValidatorTest =
 ((val: string, interaction: CommandInteraction, arg: Argument<any>) => boolean | Promise<boolean>)

@@ -1,4 +1,3 @@
-import type { BaseManager, TicketGuildMemberManager } from '../managers'
 import {
   Collection,
   Constants,
@@ -11,12 +10,13 @@ import {
   type TextChannelResolvable
 } from 'discord.js'
 import type { GuildContext, TicketType } from '.'
-import { constants, timeUtil, util } from '../utils'
+import { type ManagerFactory, constants, timeUtil, util } from '../utils'
 import { discordService, userService, verificationService } from '../services'
 import { inject, injectable } from 'inversify'
 import type { AroraClient } from '../client'
 import BaseStructure from './base'
 import type { Ticket as TicketEntity } from '../entities'
+import type { TicketGuildMemberManager } from '../managers'
 import applicationConfig from '../configs/application'
 import pluralize from 'pluralize'
 import { stripIndents } from 'common-tags'
@@ -41,11 +41,7 @@ export default class Ticket extends BaseStructure<TicketEntity> {
   private readonly client!: AroraClient<true>
 
   @inject(TYPES.ManagerFactory)
-  private readonly managerFactory!: <
-    T extends BaseManager<K, U, unknown>,
-    U extends { id: K },
-    K extends number | string = number | string
-    > (managerName: string) => (...args: T['setOptions'] extends ((...args: infer P) => any) ? P : never[]) => T
+  private readonly managerFactory!: ManagerFactory
 
   public context!: GuildContext
 
