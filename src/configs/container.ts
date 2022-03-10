@@ -164,11 +164,11 @@ bind<BaseCommand>(TYPES.Command).to(applicationCommands.TicketTypesCommand)
 bind<BaseCommand>(TYPES.Command).to(applicationCommands.ToggleSupportCommand)
   .whenTargetTagged('command', 'togglesupport')
 
-bind<interfaces.Factory<BaseCommand>>(TYPES.CommandFactory).toFactory<BaseCommand, [string]>(
+bind<interfaces.Factory<BaseCommand>>(TYPES.CommandFactory).toFactory<BaseCommand | undefined, [string]>(
   (context: interfaces.Context) => {
     return (commandName: string) => {
-      const command = context.container.getTagged<BaseCommand>(TYPES.Command, 'command', commandName)
-      command.setOptions(Reflect.getMetadata('options', command.constructor))
+      const command = context.container.getTagged<BaseCommand | undefined>(TYPES.Command, 'command', commandName)
+      command?.setOptions(Reflect.getMetadata('options', command.constructor))
       return command
     }
   }
