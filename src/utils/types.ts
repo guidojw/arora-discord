@@ -1,4 +1,5 @@
 import type { BaseManager } from '../managers'
+import type { interfaces } from 'inversify'
 
 export type Constructor<T = {}> = new (...args: any[]) => T
 export type AbstractConstructor<T = {}> = abstract new (...args: any[]) => T
@@ -50,4 +51,5 @@ export type ManagerFactory = <
   T extends BaseManager<K, U, unknown>,
   U extends { id: K },
   K extends number | string = number | string
-  > (managerName: string) => (...args: T['setOptions'] extends ((...args: infer P) => unknown) ? P : never[]) => T
+  > (managerName: string) =>
+  interfaces.SimpleFactory<T, T['setOptions'] extends ((...args: infer P) => unknown) ? P : never[]>

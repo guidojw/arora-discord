@@ -12,7 +12,7 @@ import {
   type PartialTypes as PartialType,
   type Presence
 } from 'discord.js'
-import { decorate, inject, injectable, optional } from 'inversify'
+import { decorate, inject, injectable, type interfaces, optional } from 'inversify'
 import applicationConfig from '../configs/application'
 
 const { PartialTypes } = Constants
@@ -40,7 +40,7 @@ decorate(injectable(), Client)
 @injectable()
 export default class AroraClient<Ready extends boolean = boolean> extends Client<Ready> {
   @inject(TYPES.EventHandlerFactory)
-  private readonly eventHandlerFactory!: (eventName: string) => BaseHandler
+  private readonly eventHandlerFactory!: interfaces.AutoNamedFactory<BaseHandler>
 
   @inject(TYPES.SettingProvider)
   private readonly settingProvider!: SettingProvider

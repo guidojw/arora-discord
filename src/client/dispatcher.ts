@@ -5,7 +5,7 @@ import {
   SubCommandCommand
 } from '../interactions/application-commands'
 import type { CommandInteraction, CommandInteractionOption, Interaction } from 'discord.js'
-import { inject, injectable, named } from 'inversify'
+import { inject, injectable, type interfaces, named } from 'inversify'
 import type { GuildContextManager } from '../managers'
 import applicationConfig from '../configs/application'
 import { constants } from '../utils'
@@ -15,7 +15,7 @@ const { TYPES } = constants
 @injectable()
 export default class Dispatcher {
   @inject(TYPES.CommandFactory)
-  private readonly commandFactory!: (commandName: string) => BaseCommand | undefined
+  private readonly commandFactory!: interfaces.AutoNamedFactory<BaseCommand | undefined>
 
   @inject(TYPES.Manager)
   @named('GuildContextManager')

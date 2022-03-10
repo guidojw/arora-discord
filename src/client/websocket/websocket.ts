@@ -1,4 +1,4 @@
-import { inject, injectable } from 'inversify'
+import { inject, injectable, type interfaces } from 'inversify'
 import type { BaseHandler } from '..'
 import WebSocket from 'ws'
 import { constants } from '../../utils'
@@ -16,7 +16,7 @@ export interface Packet {
 @injectable()
 export default class WebSocketManager {
   @inject(TYPES.PacketHandlerFactory)
-  private readonly packetHandlerFactory!: (eventName: string) => BaseHandler
+  private readonly packetHandlerFactory!: interfaces.AutoNamedFactory<BaseHandler>
 
   private readonly host: string
   private connection: WebSocket | null

@@ -218,13 +218,7 @@ bind<BaseJob>(TYPES.Job).to(jobs.HealthCheckJob)
 bind<BaseJob>(TYPES.Job).to(jobs.PremiumMembersReportJob)
   .whenTargetNamed('premiumMembersReport')
 
-bind<interfaces.Factory<BaseJob>>(TYPES.JobFactory).toFactory<BaseJob, [string]>(
-  (context: interfaces.Context) => {
-    return (jobName: string) => {
-      return context.container.getNamed<BaseJob>(TYPES.Job, jobName)
-    }
-  }
-)
+bind<interfaces.AutoNamedFactory<BaseJob>>(TYPES.JobFactory).toAutoNamedFactory<BaseJob>(TYPES.Job)
 
 // Packet Handlers
 bind<BaseHandler>(TYPES.Handler).to(packetHandlers.RankChangePacketHandler)

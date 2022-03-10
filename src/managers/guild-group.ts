@@ -1,5 +1,5 @@
 import { type ChannelGroup, Group, type GroupUpdateOptions, type GuildContext, type RoleGroup } from '../structures'
-import { inject, injectable } from 'inversify'
+import { inject, injectable, type interfaces } from 'inversify'
 import { DataManager } from './base'
 import type { Group as GroupEntity } from '../entities'
 import { GroupType } from '../utils/constants'
@@ -13,8 +13,11 @@ export type GroupResolvable = string | Group | number
 @injectable()
 export default class GuildGroupManager extends DataManager<number, Group, GroupResolvable, GroupEntity> {
   @inject(TYPES.StructureFactory)
-  private readonly groupFactory!: (structureName: `${keyof typeof GroupType}Group`) =>
-  (...args: Parameters<ChannelGroup['setOptions'] | RoleGroup['setOptions']>) => ChannelGroup | RoleGroup
+  private readonly groupFactory!: interfaces.MultiFactory<
+  ChannelGroup | RoleGroup,
+  [`${keyof typeof GroupType}Group`],
+  Parameters<ChannelGroup['setOptions'] | RoleGroup['setOptions']>
+  >
 
   @inject(TYPES.GroupRepository)
   private readonly groupRepository!: Repository<GroupEntity>

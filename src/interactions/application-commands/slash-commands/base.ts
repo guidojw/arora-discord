@@ -1,6 +1,6 @@
 import { type AnyFunction, type KeyOfType, type OverloadedParameters, constants } from '../../../utils'
 import type { Argument, ArgumentOptions } from '.'
-import { inject, injectable } from 'inversify'
+import { inject, injectable, type interfaces } from 'inversify'
 import type { AroraClient } from '../../../client'
 import type { CommandInteraction } from 'discord.js'
 
@@ -40,7 +40,7 @@ export default abstract class BaseCommand<T extends CommandOptions = BaseCommand
   protected readonly client!: AroraClient
 
   @inject(TYPES.ArgumentFactory)
-  protected readonly argumentFactory!: (options: ArgumentOptions<any>) => Argument<any>
+  protected readonly argumentFactory!: interfaces.SimpleFactory<Argument<any>, [ArgumentOptions<any>]>
 
   public options!: T
 

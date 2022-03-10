@@ -1,5 +1,5 @@
 import { type Constructor, type Tail, constants } from '../utils'
-import { inject, injectable } from 'inversify'
+import { inject, injectable, type interfaces } from 'inversify'
 import { Collection } from 'discord.js'
 import type { IdentifiableEntity } from '../entities'
 import type { IdentifiableStructure } from '../structures'
@@ -56,7 +56,7 @@ export class DataManager<
   U extends IdentifiableEntity
 > extends BaseManager<K, Holds, R> {
   @inject(TYPES.StructureFactory)
-  private readonly structureFactory!: (structureName: string) => (...args: Parameters<Holds['setOptions']>) => Holds
+  private readonly structureFactory!: interfaces.MultiFactory<Holds, [string], Parameters<Holds['setOptions']>>
 
   public readonly cache: Collection<K, Holds> = new Collection()
 

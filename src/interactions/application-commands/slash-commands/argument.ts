@@ -1,4 +1,4 @@
-import { inject, injectable } from 'inversify'
+import { inject, injectable, type interfaces } from 'inversify'
 import type { BaseArgumentType } from '../../../argument-types'
 import type { CommandInteraction } from 'discord.js'
 import type { GuildContextManager } from '../../../managers'
@@ -29,7 +29,7 @@ interface ArgumentResolvedOptions<T> extends Omit<ArgumentOptions<T>, 'type'> {
 @injectable()
 export default class Argument<T> {
   @inject(TYPES.ArgumentTypeFactory)
-  private readonly argumentTypeFactory!: (argumentTypeName: string) => BaseArgumentType<any> | undefined
+  private readonly argumentTypeFactory!: interfaces.AutoNamedFactory<BaseArgumentType<any> | undefined>
 
   public key!: string
   public name?: string

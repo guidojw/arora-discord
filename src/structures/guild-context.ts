@@ -26,7 +26,7 @@ import type {
   GuildTicketTypeManager
 } from '../managers'
 import { type ManagerFactory, constants } from '../utils'
-import { inject, injectable, named } from 'inversify'
+import { inject, injectable, type interfaces, named } from 'inversify'
 import type { BaseJob } from '../jobs'
 import BaseStructure from './base'
 import type { Guild as GuildEntity } from '../entities'
@@ -59,7 +59,7 @@ export default class GuildContext extends BaseStructure<GuildEntity> {
   private readonly guildContexts!: GuildContextManager
 
   @inject(TYPES.JobFactory)
-  public readonly jobFactory!: (jobName: string) => BaseJob
+  public readonly jobFactory!: interfaces.AutoNamedFactory<BaseJob>
 
   public readonly groups: GuildGroupManager
   public readonly panels: GuildPanelManager
