@@ -7,6 +7,7 @@ on:
   workflow_call:
     inputs:
       sha:
+        description: The commit SHA to run the workflow on
         required: false
         type: string
 
@@ -41,7 +42,13 @@ jobs:
 
       - name: Add problem matchers
         run: |
+          echo '::add-matcher::.github/problem-matchers/actionlint.json'
           echo '::add-matcher::.github/problem-matchers/eslint-stylish.json'
+
+      - name: Download actionlint
+        id: download_actionlint
+        run: |
+          bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
 
       - name: Load test image
         uses: guidojw/actions/load-docker-image@2b1dea8cbd9e44491c269e771b75636026caf8ca # tag=v1.1.0
@@ -50,4 +57,8 @@ jobs:
 
       - name: Lint
         run: |
-          docker run app yarn lint
+          EXIT_STATUS=0
+          ${{ steps.download_actionlint.outputs.executable }} -shellcheck= -pyflakes= \
+          -ignore 'property "app_private_key" is not defined' || EXIT_STATUS=$?
+          docker run app yarn lint || EXIT_STATUS=$?
+          exit $EXIT_STATUS

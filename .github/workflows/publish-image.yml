@@ -6,10 +6,12 @@ on:
   workflow_call:
     inputs:
       sha:
+        description: The commit SHA to run the workflow on
         required: false
         type: string
     secrets:
       sentry_auth_token:
+        description: The Sentry integration's token
         required: true
   workflow_dispatch:
 
