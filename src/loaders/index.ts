@@ -35,7 +35,7 @@ export async function init (): Promise<AroraClient> {
       Promise.resolve(healthCheckJob.run('main')).catch(console.error)
     }
   )
-  
+
   const client = container.get<AroraClient>(TYPES.Client)
   try {
     await client.login(process.env.DISCORD_TOKEN)
