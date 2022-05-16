@@ -23,7 +23,7 @@ export default class WebSocketManager {
   private pingTimeout: NodeJS.Timeout | null
 
   public constructor () {
-    this.host = 'ws://127.0.0.1'
+    this.host = process.env.WS_HOST ?? 'ws://127.0.0.1'
     this.connection = null
     this.pingTimeout = null
   }
