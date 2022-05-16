@@ -144,7 +144,7 @@ jobs:
         env:
           STAGE: ${{ needs.metadata.outputs.stage }}
         with:
-          host: guidojw.nl
+          host: ${{ secrets.SSH_HOST }}
           username: github-actions
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           envs: PROJECT_NAME,STAGE
