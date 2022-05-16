@@ -46,7 +46,6 @@ jobs:
           echo '::add-matcher::.github/problem-matchers/eslint-stylish.json'
 
       - name: Download actionlint
-        id: download_actionlint
         run: |
           bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
 
@@ -58,7 +57,6 @@ jobs:
       - name: Lint
         run: |
           EXIT_STATUS=0
-          ${{ steps.download_actionlint.outputs.executable }} -shellcheck= -pyflakes= \
-          -ignore 'property "app_private_key" is not defined' || EXIT_STATUS=$?
+          ./actionlint -ignore 'property "app_private_key" is not defined' -ignore 'SC2153:' || EXIT_STATUS=$?
           docker run app yarn lint || EXIT_STATUS=$?
           exit $EXIT_STATUS
