@@ -37,7 +37,13 @@ export async function init (): Promise<AroraClient> {
   )
 
   const client = container.get<AroraClient>(TYPES.Client)
-  await client.login(process.env.DISCORD_TOKEN)
+  try {
+    await client.login(process.env.DISCORD_TOKEN)
+  } catch (err) {
+    console.error(err)
+    client.destroy()
+    process.exit(1)
+  }
 
   return client
 }
