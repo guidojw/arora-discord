@@ -2,9 +2,7 @@ import type { RESTPutAPIApplicationCommandsJSONBody } from 'discord-api-types/v1
 
 const statusCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'status',
-  description: 'Posts the bot\'s system statuses',
-  default_member_permissions: '0',
-  dm_permission: false
+  description: 'Posts the bot\'s system statuses'
 }
 
 export default statusCommand
