@@ -733,7 +733,7 @@ __metadata:
     eslint-plugin-import: ^2.25.3
     eslint-plugin-node: ^11.1.0
     eslint-plugin-promise: ^6.0.0
-    eslint-plugin-unicorn: ^41.0.0
+    eslint-plugin-unicorn: ^42.0.0
     inversify: ^6.0.1
     lodash: ^4.17.21
     node-cron: ^3.0.0
@@ -1524,9 +1524,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-unicorn@npm:^41.0.0":
-  version: 41.0.0
-  resolution: "eslint-plugin-unicorn@npm:41.0.0"
+"eslint-plugin-unicorn@npm:^42.0.0":
+  version: 42.0.0
+  resolution: "eslint-plugin-unicorn@npm:42.0.0"
   dependencies:
     "@babel/helper-validator-identifier": ^7.15.7
     ci-info: ^3.3.0
@@ -1544,7 +1544,7 @@ __metadata:
     strip-indent: ^3.0.0
   peerDependencies:
     eslint: ">=8.8.0"
-  checksum: 661d572b244f9f61121806cb0b9b4914f37e978089633e8b401d95b736f5acb9ed70f398de9cebcdbb1456961e7360c2b196483a793f6f1613c2a4989a298488
+  checksum: 03757cbf417d39691fe04048ac9352585162a4dd68c2f26f5bc0956409625c7c4841487f0fa623e0d6dd5ff9cc3e758b74e4d170e3b0a877bbd0114995310058
   languageName: node
   linkType: hard
 
@@ -4006,7 +4006,7 @@ __metadata:
 
 "typescript@patch:typescript@^4.5.3#~builtin<compat/typescript>":
   version: 4.5.3
-  resolution: "typescript@patch:typescript@npm%3A4.5.3#~builtin<compat/typescript>::version=4.5.3&hash=bda367"
+  resolution: "typescript@patch:typescript@npm%3A4.5.3#~builtin<compat/typescript>::version=4.5.3&hash=7ad353"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
