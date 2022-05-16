@@ -1,41 +1,47 @@
-import { Group, type GroupUpdateOptions } from '../structures'
-import BaseManager from './base'
+import { type ChannelGroup, Group, type GroupUpdateOptions, type GuildContext, type RoleGroup } from '../structures'
+import { inject, injectable, type interfaces } from 'inversify'
+import { DataManager } from './base'
 import type { Group as GroupEntity } from '../entities'
-import type { GroupType } from '../util/constants'
-import type { Guild } from 'discord.js'
-import { Repository } from 'typeorm'
-import { constants } from '../util'
-import container from '../configs/container'
-import getDecorators from 'inversify-inject-decorators'
+import { GroupType } from '../utils/constants'
+import type { Repository } from 'typeorm'
+import { constants } from '../utils'
+
+const { TYPES } = constants
 
 export type GroupResolvable = string | Group | number
 
-const { TYPES } = constants
-const { lazyInject } = getDecorators(container)
+@injectable()
+export default class GuildGroupManager extends DataManager<number, Group, GroupResolvable, GroupEntity> {
+  @inject(TYPES.StructureFactory)
+  private readonly groupFactory!: interfaces.MultiFactory<
+  ChannelGroup | RoleGroup,
+  [`${keyof typeof GroupType}Group`],
+  Parameters<ChannelGroup['setOptions'] | RoleGroup['setOptions']>
+  >
 
-export default class GuildGroupManager extends BaseManager<Group, GroupResolvable> {
-  @lazyInject(TYPES.GroupRepository)
+  @inject(TYPES.GroupRepository)
   private readonly groupRepository!: Repository<GroupEntity>
 
-  public readonly guild: Guild
+  public context!: GuildContext
 
-  public constructor (guild: Guild, iterable?: Iterable<GroupEntity>) {
-    // @ts-expect-error
-    super(guild.client, iterable, Group)
-
-    this.guild = guild
+  public constructor () {
+    super(Group)
   }
 
-  public override add (data: GroupEntity, cache = true): Group {
+  public override setOptions (context: GuildContext): void {
+    this.context = context
+  }
+
+  public override add (data: GroupEntity): Group {
     const existing = this.cache.get(data.id)
     if (typeof existing !== 'undefined') {
       return existing
     }
 
-    const group = Group.create(this.client, data, this.guild)
-    if (cache) {
-      this.cache.set(group.id, group)
-    }
+    const group = this.groupFactory(data.type === GroupType.Channel ? 'ChannelGroup' : 'RoleGroup')(
+      data, this.context
+    )
+    this.cache.set(group.id, group)
     return group
   }
 
@@ -45,7 +51,7 @@ export default class GuildGroupManager extends BaseManager<Group, GroupResolvabl
     }
 
     const group = await this.groupRepository.save(this.groupRepository.create({
-      guildId: this.guild.id,
+      guildId: this.context.id,
       name,
       type
     }))
@@ -73,7 +79,7 @@ export default class GuildGroupManager extends BaseManager<Group, GroupResolvabl
     group: GroupResolvable,
     data: GroupUpdateOptions
   ): Promise<Group> {
-    const id = this.resolveID(group)
+    const id = this.resolveId(group)
     if (id === null) {
       throw new Error('Invalid group.')
     }
@@ -90,15 +96,17 @@ export default class GuildGroupManager extends BaseManager<Group, GroupResolvabl
     }
 
     const newData = await this.groupRepository.save(this.groupRepository.create({
-      id,
-      ...changes
+      ...changes,
+      id
     }))
 
     const _group = this.cache.get(id)
     _group?.setup(newData)
-    return _group ?? this.add(newData, false)
+    return _group ?? this.add(newData)
   }
 
+  public override resolve (group: Group): Group
+  public override resolve (group: GroupResolvable): Group | null
   public override resolve (group: GroupResolvable): Group | null {
     if (typeof group === 'string') {
       group = group.toLowerCase()
@@ -107,11 +115,12 @@ export default class GuildGroupManager extends BaseManager<Group, GroupResolvabl
     return super.resolve(group)
   }
 
-  public override resolveID (group: GroupResolvable): number | null {
+  public override resolveId (group: number): number
+  public override resolveId (group: GroupResolvable): number | null
+  public override resolveId (group: GroupResolvable): number | null {
     if (typeof group === 'string') {
-      group = group.toLowerCase()
-      return this.cache.find(otherGroup => otherGroup.name.toLowerCase() === group)?.id ?? null
+      return this.resolve(group)?.id ?? null
     }
-    return super.resolveID(group)
+    return super.resolveId(group)
   }
 }

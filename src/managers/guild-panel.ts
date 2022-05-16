@@ -1,34 +1,37 @@
-import { type Guild, MessageEmbed } from 'discord.js'
-import { Panel, type PanelUpdateOptions } from '../structures'
-import BaseManager from './base'
+import { type GuildContext, Panel, type PanelUpdateOptions } from '../structures'
+import { MessageEmbed, type TextChannelResolvable } from 'discord.js'
+import { inject, injectable } from 'inversify'
+import type { AroraClient } from '../client'
+import { DataManager } from './base'
 import type { Panel as PanelEntity } from '../entities'
-import { Repository } from 'typeorm'
-import type { TextChannelResolvable } from './guild-ticket'
-import { constants } from '../util'
-import container from '../configs/container'
+import type { Repository } from 'typeorm'
+import { constants } from '../utils'
 import { discordService } from '../services'
-import getDecorators from 'inversify-inject-decorators'
+
+const { TYPES } = constants
 
 export type PanelResolvable = string | Panel | number
 
-const { TYPES } = constants
-const { lazyInject } = getDecorators(container)
+@injectable()
+export default class GuildPanelManager extends DataManager<number, Panel, PanelResolvable, PanelEntity> {
+  @inject(TYPES.Client)
+  private readonly client!: AroraClient<true>
 
-export default class GuildPanelManager extends BaseManager<Panel, PanelResolvable> {
-  @lazyInject(TYPES.PanelRepository)
+  @inject(TYPES.PanelRepository)
   private readonly panelRepository!: Repository<PanelEntity>
 
-  public readonly guild: Guild
+  public context!: GuildContext
 
-  public constructor (guild: Guild, iterable?: Iterable<PanelEntity>) {
-    // @ts-expect-error
-    super(guild.client, iterable, Panel)
-
-    this.guild = guild
+  public constructor () {
+    super(Panel)
   }
 
-  public override add (data: PanelEntity, cache = true): Panel {
-    return super.add(data, cache, { id: data.id, extras: [this.guild] })
+  public override setOptions (context: GuildContext): void {
+    this.context = context
+  }
+
+  public override add (data: PanelEntity): Panel {
+    return super.add(data, { id: data.id, extras: [this.context] })
   }
 
   public async create (name: string, content: object): Promise<Panel> {
@@ -43,7 +46,7 @@ export default class GuildPanelManager extends BaseManager<Panel, PanelResolvabl
 
     const newData = await this.panelRepository.save(this.panelRepository.create({
       content: JSON.stringify(embed.toJSON()),
-      guildId: this.guild.id,
+      guildId: this.context.id,
       name
     }))
 
@@ -51,7 +54,7 @@ export default class GuildPanelManager extends BaseManager<Panel, PanelResolvabl
   }
 
   public async delete (panel: PanelResolvable): Promise<void> {
-    const id = this.resolveID(panel)
+    const id = this.resolveId(panel)
     if (id === null) {
       throw new Error('Invalid panel.')
     }
@@ -95,7 +98,7 @@ export default class GuildPanelManager extends BaseManager<Panel, PanelResolvabl
         if (panel.message.partial) {
           await panel.message.fetch()
         }
-        await panel.message.edit(embed)
+        await panel.message.edit({ embeds: [embed] })
       }
     }
     if (typeof data.message !== 'undefined') {
@@ -107,22 +110,22 @@ export default class GuildPanelManager extends BaseManager<Panel, PanelResolvabl
       } catch {
         throw new Error('Invalid message.')
       }
-      if (message.author.id !== this.client.user?.id) {
-        throw new Error(`Can only update message to messages posted by ${this.client.user?.toString() ?? 'Arora'}.`)
+      if (message.author.id !== this.client.user.id) {
+        throw new Error(`Can only update message to messages posted by ${this.client.user.toString()}.`)
       }
       if (this.cache.some(otherPanel => otherPanel.messageId === message.id)) {
         throw new Error('Another panel is already posted in that message.')
       }
       changes.messageId = message.id
       options.channelId = message.channel.id
-      options.guildId = this.guild.id
+      options.guildId = this.context.id
 
-      await message.edit('', panel.embed)
+      await message.edit({ content: null, embeds: [panel.embed] })
     }
 
     await this.panelRepository.save(this.panelRepository.create({
-      id: panel.id,
-      ...changes
+      ...changes,
+      id: panel.id
     }), {
       data: options
     })
@@ -133,7 +136,7 @@ export default class GuildPanelManager extends BaseManager<Panel, PanelResolvabl
 
     const _panel = this.cache.get(panel.id)
     _panel?.setup(newData)
-    return _panel ?? this.add(newData, false)
+    return _panel ?? this.add(newData)
   }
 
   public async post (panelResolvable: PanelResolvable, channelResolvable?: TextChannelResolvable): Promise<Panel> {
@@ -146,7 +149,7 @@ export default class GuildPanelManager extends BaseManager<Panel, PanelResolvabl
     }
     let channel
     if (typeof channelResolvable !== 'undefined') {
-      channel = this.guild.channels.resolve(channelResolvable)
+      channel = this.context.guild.channels.resolve(channelResolvable)
       if (channel === null || !channel.isText()) {
         throw new Error('Invalid channel.')
       }
@@ -156,16 +159,16 @@ export default class GuildPanelManager extends BaseManager<Panel, PanelResolvabl
       messageId: null
     }
     if (typeof channel !== 'undefined') {
-      const message = await channel.send(panel.embed)
+      const message = await channel.send({ embeds: [panel.embed] })
       data.messageId = message.id
     }
     await this.panelRepository.save(this.panelRepository.create({
-      id: panel.id,
-      ...data
+      ...data,
+      id: panel.id
     }), {
       data: {
         channelId: channel?.id ?? null,
-        guildId: this.guild.id
+        guildId: this.context.id
       }
     })
     const newData = await this.panelRepository.findOne(
@@ -175,9 +178,11 @@ export default class GuildPanelManager extends BaseManager<Panel, PanelResolvabl
 
     const _panel = this.cache.get(panel.id)
     _panel?.setup(newData)
-    return _panel ?? this.add(newData, false)
+    return _panel ?? this.add(newData)
   }
 
+  public override resolve (panel: Panel): Panel
+  public override resolve (panel: PanelResolvable): Panel | null
   public override resolve (panel: PanelResolvable): Panel | null {
     if (typeof panel === 'string') {
       panel = panel.toLowerCase()
@@ -186,11 +191,12 @@ export default class GuildPanelManager extends BaseManager<Panel, PanelResolvabl
     return super.resolve(panel)
   }
 
-  public override resolveID (panel: PanelResolvable): number | null {
+  public override resolveId (panel: number): number
+  public override resolveId (panel: PanelResolvable): number | null
+  public override resolveId (panel: PanelResolvable): number | null {
     if (typeof panel === 'string') {
-      panel = panel.toLowerCase()
-      return this.cache.find(otherPanel => otherPanel.name.toLowerCase() === panel)?.id ?? null
+      return this.resolve(panel)?.id ?? null
     }
-    return super.resolveID(panel)
+    return super.resolveId(panel)
   }
 }

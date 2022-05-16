@@ -4,7 +4,7 @@ import { IsNotEmpty, ValidateIf } from 'class-validator'
 import Guild from './guild'
 import Message from './message'
 import Role from './role'
-import { decorators } from '../util'
+import { decorators } from '../utils'
 
 const { Xor } = decorators
 

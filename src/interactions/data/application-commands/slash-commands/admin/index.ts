@@ -1,0 +1,7 @@
+export { default as bansCommand } from './bans'
+export { default as demoteCommand } from './demote'
+export { default as exilesCommand } from './exiles'
+export { default as persistentRolesCommand } from './persistent-roles'
+export { default as promoteCommand } from './promote'
+export { default as shoutCommand } from './shout'
+export { default as trainingsCommand } from './trainings'

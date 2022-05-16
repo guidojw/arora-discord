@@ -1,60 +1,63 @@
+import { type GuildContext, Ticket, type TicketUpdateOptions } from '../structures'
 import {
-  type Guild,
   GuildEmoji,
   type GuildMemberResolvable,
   MessageEmbed,
   type MessageReaction,
-  type Snowflake,
   TextChannel,
+  type TextChannelResolvable,
   type User
 } from 'discord.js'
-import { Ticket, type TicketUpdateOptions } from '../structures'
-import BaseManager from './base'
-import { Repository } from 'typeorm'
+import { inject, injectable } from 'inversify'
+import type { AroraClient } from '../client'
+import { DataManager } from './base'
+import type { Repository } from 'typeorm'
 import type { Ticket as TicketEntity } from '../entities'
 import type { TicketTypeResolvable } from './guild-ticket-type'
-import { constants } from '../util'
-import container from '../configs/container'
-import getDecorators from 'inversify-inject-decorators'
-
-export type TextChannelResolvable = TextChannel | Snowflake
-export type TicketResolvable = TextChannelResolvable | GuildMemberResolvable | Ticket | number
+import { constants } from '../utils'
 
 const { TYPES } = constants
-const { lazyInject } = getDecorators(container)
 
-const TICKETS_INTERVAL = 60 * 1000
-const SUBMISSION_TIME = 30 * 60 * 1000
+const TICKETS_INTERVAL = 60_000
+const SUBMISSION_TIME = 3_600_000
 
-export default class GuildTicketManager extends BaseManager<Ticket, TicketResolvable> {
-  @lazyInject(TYPES.TicketRepository)
+export type TicketResolvable = TextChannelResolvable | GuildMemberResolvable | Ticket | number
+
+@injectable()
+export default class GuildTicketManager extends DataManager<number, Ticket, TicketResolvable, TicketEntity> {
+  @inject(TYPES.Client)
+  private readonly client!: AroraClient<true>
+
+  @inject(TYPES.TicketRepository)
   private readonly ticketRepository!: Repository<TicketEntity>
 
-  public readonly guild: Guild
+  public context!: GuildContext
+
   public readonly debounces: Map<string, true>
 
-  public constructor (guild: Guild, iterable?: Iterable<TicketEntity>) {
-    // @ts-expect-error
-    super(guild.client, iterable, Ticket)
-
-    this.guild = guild
+  public constructor () {
+    super(Ticket)
 
     this.debounces = new Map()
   }
 
-  public override add (data: TicketEntity, cache = true): Ticket {
-    return super.add(data, cache, { id: data.id, extras: [this.guild] })
+  public override setOptions (context: GuildContext): void {
+    this.context = context
+  }
+
+  public override add (data: TicketEntity): Ticket {
+    return super.add(data, { id: data.id, extras: [this.context] })
   }
 
   public async create ({ author: authorResolvable, ticketType: ticketTypeResolvable }: {
     author: GuildMemberResolvable
     ticketType: TicketTypeResolvable
   }): Promise<Ticket> {
-    const author = this.guild.members.resolve(authorResolvable)
+    const author = this.context.guild.members.resolve(authorResolvable)
     if (author === null) {
       throw new Error('Invalid author.')
     }
-    const ticketType = this.guild.ticketTypes.resolve(ticketTypeResolvable)
+    const ticketType = this.context.ticketTypes.resolve(ticketTypeResolvable)
     if (ticketType === null) {
       throw new Error('Invalid ticket type.')
     }
@@ -62,15 +65,18 @@ export default class GuildTicketManager extends BaseManager<Ticket, TicketResolv
     const channelName = `${ticketType.name}-${author.user.tag}`
     let channel
     try {
-      channel = await this.guild.channels.create(channelName, { parent: this.guild.ticketsCategory ?? undefined })
-      await channel.updateOverwrite(author, { VIEW_CHANNEL: true })
+      channel = await this.context.guild.channels.create(
+        channelName,
+        { parent: this.context.ticketsCategory ?? undefined }
+      )
+      await channel.permissionOverwrites.edit(author, { VIEW_CHANNEL: true })
     } catch (err) {
       await channel?.delete()
       throw err
     }
 
     const id = (await this.ticketRepository.save(this.ticketRepository.create({
-      guildId: this.guild.id,
+      guildId: this.context.id,
       channelId: channel.id,
       typeId: ticketType.id
     }), {
@@ -82,7 +88,7 @@ export default class GuildTicketManager extends BaseManager<Ticket, TicketResolv
     ) as TicketEntity
     const ticket = this.add(newData)
 
-    await this.guild.log(
+    await this.context.log(
       author.user,
       // eslint-disable-next-line @typescript-eslint/no-base-to-string
       `${ticket.author?.toString() ?? 'Unknown'} **opened ticket** \`${ticket.id}\` **in** ${ticket.channel.toString()}`,
@@ -93,7 +99,7 @@ export default class GuildTicketManager extends BaseManager<Ticket, TicketResolv
   }
 
   public async delete (ticket: TicketResolvable): Promise<void> {
-    const id = this.resolveID(ticket)
+    const id = this.resolveId(ticket)
     if (id === null) {
       throw new Error('Invalid ticket.')
     }
@@ -109,7 +115,7 @@ export default class GuildTicketManager extends BaseManager<Ticket, TicketResolv
     ticket: TicketResolvable,
     data: TicketUpdateOptions
   ): Promise<Ticket> {
-    const id = this.resolveID(ticket)
+    const id = this.resolveId(ticket)
     if (id === null) {
       throw new Error('Invalid ticket.')
     }
@@ -119,7 +125,7 @@ export default class GuildTicketManager extends BaseManager<Ticket, TicketResolv
 
     const changes: Partial<TicketEntity> = {}
     if (typeof data.channel !== 'undefined') {
-      const channel = this.guild.channels.resolve(data.channel)
+      const channel = this.context.guild.channels.resolve(data.channel)
       if (channel === null || !(channel instanceof TextChannel)) {
         throw new Error('Invalid channel.')
       }
@@ -127,8 +133,8 @@ export default class GuildTicketManager extends BaseManager<Ticket, TicketResolv
     }
 
     await this.ticketRepository.save(this.ticketRepository.create({
-      id,
-      ...changes
+      ...changes,
+      id
     }))
     const newData = await this.ticketRepository.findOne(
       id,
@@ -137,11 +143,11 @@ export default class GuildTicketManager extends BaseManager<Ticket, TicketResolv
 
     const _ticket = this.cache.get(id)
     _ticket?.setup(newData)
-    return _ticket ?? this.add(newData, false)
+    return _ticket ?? this.add(newData)
   }
 
   public async onMessageReactionAdd (reaction: MessageReaction, user: User): Promise<void> {
-    const ticketType = this.guild.ticketTypes.cache.find(ticketType => (
+    const ticketType = this.context.ticketTypes.cache.find(ticketType => (
       ticketType.message?.id === reaction.message.id && ticketType.emoji !== null &&
       (reaction.emoji instanceof GuildEmoji
         ? ticketType.emoji instanceof GuildEmoji && reaction.emoji.id === ticketType.emojiId
@@ -152,71 +158,63 @@ export default class GuildTicketManager extends BaseManager<Ticket, TicketResolv
 
       if (!this.debounces.has(user.id)) {
         this.debounces.set(user.id, true)
-        this.client.setTimeout(this.debounces.delete.bind(this.debounces, user.id), TICKETS_INTERVAL)
+        setTimeout(this.debounces.delete.bind(this.debounces, user.id), TICKETS_INTERVAL).unref()
 
         if (this.resolve(user) === null) {
-          if (!this.guild.supportEnabled) {
+          if (!this.context.supportEnabled) {
             const embed = new MessageEmbed()
               .setColor(0xff0000)
-              .setAuthor(this.client.user?.username ?? 'Arora', this.client.user?.displayAvatarURL())
-              .setTitle(`Welcome to ${this.guild.name} Support`)
-              .setDescription(`We are currently closed. Check the ${this.guild.name} server for more information.`)
-            await this.client.send(user, embed)
+              .setAuthor({ name: this.client.user.username, iconURL: this.client.user.displayAvatarURL() })
+              .setTitle(`Welcome to ${this.context.guild.name} Support`)
+              .setDescription(`We are currently closed. Check the ${this.context.guild.name} server for more information.`)
+            await this.client.send(user, { embeds: [embed] })
             return
           }
 
           const ticket = await this.create({ author: user, ticketType })
           await ticket.populateChannel()
-          // eslint-disable-next-line @typescript-eslint/no-misused-promises
-          ticket.timeout = this.client.setTimeout(ticket.close.bind(ticket, 'Timeout: ticket closed'), SUBMISSION_TIME)
+          ticket.timeout = setTimeout(() => {
+            ticket.close('Timeout: ticket closed', false).catch(console.error)
+          }, SUBMISSION_TIME).unref()
         } else {
           const embed = new MessageEmbed()
             .setColor(0xff0000)
             .setTitle('Couldn\'t make ticket')
             .setDescription('You already have an open ticket.')
-          await this.client.send(user, embed)
+          await this.client.send(user, { embeds: [embed] })
         }
       }
     }
   }
 
-  public override resolve (ticketResolvable: TicketResolvable): Ticket | null {
-    if (typeof ticketResolvable === 'number' || ticketResolvable instanceof Ticket) {
-      return super.resolve(ticketResolvable)
+  public override resolve (ticket: Ticket): Ticket
+  public override resolve (ticket: TicketResolvable): Ticket | null
+  public override resolve (ticket: TicketResolvable): Ticket | null {
+    if (typeof ticket === 'number' || ticket instanceof Ticket) {
+      return super.resolve(ticket)
     }
-    if (typeof ticketResolvable === 'string' || ticketResolvable instanceof TextChannel) {
-      const channel = this.guild.channels.resolve(ticketResolvable)
+    if (typeof ticket === 'string' || ticket instanceof TextChannel) {
+      const channel = this.context.guild.channels.resolve(ticket)
       if (channel !== null) {
-        return this.cache.find(ticket => ticket.channelId === channel.id) ?? null
+        return this.cache.find(otherTicket => otherTicket.channelId === channel.id) ?? null
       }
-      if (ticketResolvable instanceof TextChannel) {
+      if (ticket instanceof TextChannel) {
         return null
       }
     }
-    const member = this.guild.members.resolve(ticketResolvable)
+    const member = this.context.guild.members.resolve(ticket)
     if (member !== null) {
-      return this.cache.find(ticket => ticket.authorId === member.id) ?? null
+      return this.cache.find(otherTicket => otherTicket.authorId === member.id) ?? null
     }
     return null
   }
 
-  public override resolveID (ticketResolvable: TicketResolvable): number | null {
-    if (typeof ticketResolvable === 'number' || ticketResolvable instanceof Ticket) {
-      return super.resolve(ticketResolvable)?.id ?? null
+  public override resolveId (ticket: number): number
+  public override resolveId (ticket: TicketResolvable): number | null
+  public override resolveId (ticket: TicketResolvable): number | null {
+    if (!(typeof ticket === 'number' || ticket instanceof Ticket)) {
+      return this.resolve(ticket)?.id ?? null
     }
-    if (typeof ticketResolvable === 'string' || ticketResolvable instanceof TextChannel) {
-      const channel = this.guild.channels.resolve(ticketResolvable)
-      if (channel !== null) {
-        return this.cache.find(ticket => ticket.channelId === channel.id)?.id ?? null
-      }
-      if (ticketResolvable instanceof TextChannel) {
-        return null
-      }
-    }
-    const member = this.guild.members.resolve(ticketResolvable)
-    if (member !== null) {
-      return this.cache.find(ticket => ticket.authorId === member.id)?.id ?? null
-    }
-    return null
+    return super.resolveId(ticket)
   }
 }
