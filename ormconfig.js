@@ -7,15 +7,9 @@ const baseConfig = {
   port: 5432,
   username: process.env.POSTGRES_USER,
   password: process.env.POSTGRES_PASSWORD,
-  entities: [
-    'dist/entities/**/*.js'
-  ],
-  migrations: [
-    'dist/migrations/**/*.js'
-  ],
-  subscribers: [
-    'dist/subscribers/**/*.js'
-  ],
+  entities: ['dist/entities/**/*.js'],
+  migrations: ['dist/migrations/**/*.js'],
+  subscribers: ['dist/subscribers/**/*.js'],
   cli: {
     entitiesDir: 'src/entities',
     migrationsDir: 'src/migrations',

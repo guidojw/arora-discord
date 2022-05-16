@@ -1,14 +1,15 @@
 import BaseStructure from './base'
-import type { Client } from 'discord.js'
-import type Tag from './tag'
+import type { Tag } from '.'
 import type { TagName as TagNameEntity } from '../entities'
+import { injectable } from 'inversify'
 
-export default class TagName extends BaseStructure {
-  public readonly tag: Tag
+@injectable()
+export default class TagName extends BaseStructure<TagNameEntity> {
+  public tag!: Tag
+
   public name!: string
 
-  public constructor (client: Client, data: TagNameEntity, tag: Tag) {
-    super(client)
+  public setOptions (data: TagNameEntity, tag: Tag): void {
     this.tag = tag
 
     this.setup(data)
@@ -16,6 +17,10 @@ export default class TagName extends BaseStructure {
 
   public setup (data: TagNameEntity): void {
     this.name = data.name
+  }
+
+  public get id (): string {
+    return this.name
   }
 
   public async delete (): Promise<void> {

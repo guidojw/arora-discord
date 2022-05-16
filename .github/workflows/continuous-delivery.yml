@@ -37,7 +37,7 @@ jobs:
       stage: ${{ steps.get_metadata.outputs.stage }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # renovate: tag=v2.4.0
+        uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3.0.2
 
       - name: Get metadata
         id: get_metadata
@@ -82,7 +82,7 @@ jobs:
 
       - name: Checkout code
         if: fromJSON(needs.metadata.outputs.has_diff)
-        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # renovate: tag=v2.4.0
+        uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3.0.2
 
       - name: Run merge
         if: fromJSON(needs.metadata.outputs.has_diff)
@@ -128,20 +128,19 @@ jobs:
       ((github.event.inputs.merge != 'y' || !fromJSON(needs.metadata.outputs.has_diff)) && !cancelled()))
     steps:
       - name: Checkout code
-        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # renovate: tag=v2.4.0
+        uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3.0.2
         with:
           ref: ${{ needs.merge.outputs.sha }}
 
       - name: Start deployment
-        uses: bobheadxi/deployments@f235d02c2daaaa84c710d013c7d39f7f0f8bf298 # renovate: tag=v0.6.2
+        uses: bobheadxi/deployments@11bd6447913c3ffeedb5552bcf6890d1668d9732 # tag=v1.2.0
         id: start_deployment
         with:
           step: start
-          token: ${{ secrets.GITHUB_TOKEN }}
           env: ${{ needs.metadata.outputs.stage }}
 
       - name: Deploy
-        uses: appleboy/ssh-action@1d1b21ca96111b1eb4c03c21c14ebb971d2200f6 # renovate: tag=v0.1.4
+        uses: appleboy/ssh-action@1d1b21ca96111b1eb4c03c21c14ebb971d2200f6 # tag=v0.1.4
         env:
           STAGE: ${{ needs.metadata.outputs.stage }}
         with:
@@ -153,10 +152,11 @@ jobs:
             cd /opt/docker/$PROJECT_NAME/$STAGE
             docker-compose pull
             docker-compose run --rm app yarn run typeorm migration:run
+            docker-compose run --rm app node bin/update-commands.js
             docker-compose up -d
 
       - name: Finalize Sentry release
-        uses: getsentry/action-release@744e4b262278339b79fb39c8922efcae71e98e39 # renovate: tag=v1.1.6
+        uses: getsentry/action-release@744e4b262278339b79fb39c8922efcae71e98e39 # tag=v1.1.6
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_PROJECT: ${{ env.PROJECT_NAME }}
@@ -166,13 +166,13 @@ jobs:
           set_commits: skip
 
       - name: Finish deployment
-        uses: bobheadxi/deployments@f235d02c2daaaa84c710d013c7d39f7f0f8bf298 # renovate: tag=v0.6.2
+        uses: bobheadxi/deployments@11bd6447913c3ffeedb5552bcf6890d1668d9732 # tag=v1.2.0
         if: steps.start_deployment.conclusion == 'success' && always()
         with:
           step: finish
-          token: ${{ secrets.GITHUB_TOKEN }}
           status: ${{ job.status }}
           deployment_id: ${{ steps.start_deployment.outputs.deployment_id }}
+          env: ${{ needs.metadata.outputs.stage }}
 
   update_check_run:
     name: Update Check Run
@@ -194,7 +194,7 @@ jobs:
           done
 
       - name: Update Continuous Delivery check run
-        uses: guidojw/actions/update-check-run@2b1dea8cbd9e44491c269e771b75636026caf8ca # renovate: tag=v1.1.0
+        uses: guidojw/actions/update-check-run@2b1dea8cbd9e44491c269e771b75636026caf8ca # tag=v1.1.0
         with:
           app_id: ${{ env.APP_ID }}
           private_key: ${{ secrets.APP_PRIVATE_KEY }}

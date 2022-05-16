@@ -1,38 +1,42 @@
-import {
-  type EmojiResolvable,
-  type Guild,
-  GuildEmoji,
-  type Message
-} from 'discord.js'
-import { TicketType, type TicketTypeUpdateOptions } from '../structures'
-import BaseManager from './base'
-import type { CommandoClient } from 'discord.js-commando'
-import { Repository } from 'typeorm'
+import { type EmojiResolvable, GuildEmoji, type Message } from 'discord.js'
+import { type GuildContext, TicketType, type TicketTypeUpdateOptions } from '../structures'
+import { inject, injectable } from 'inversify'
+import type { AroraClient } from '../client'
+import { DataManager } from './base'
+import type { Repository } from 'typeorm'
 import type { TicketType as TicketTypeEntity } from '../entities'
-import { constants } from '../util'
-import container from '../configs/container'
-import getDecorators from 'inversify-inject-decorators'
+import { constants } from '../utils'
+import emojiRegex from 'emoji-regex'
+
+const { TYPES } = constants
 
 export type TicketTypeResolvable = TicketType | string
 
-const { TYPES } = constants
-const { lazyInject } = getDecorators(container)
+@injectable()
+export default class GuildTicketTypeManager extends DataManager<
+number,
+TicketType,
+TicketTypeResolvable,
+TicketTypeEntity
+> {
+  @inject(TYPES.Client)
+  private readonly client!: AroraClient<true>
 
-export default class GuildTicketTypeManager extends BaseManager<TicketType, TicketTypeResolvable> {
-  @lazyInject(TYPES.TicketTypeRepository)
+  @inject(TYPES.TicketTypeRepository)
   private readonly ticketTypeRepository!: Repository<TicketTypeEntity>
 
-  public readonly guild: Guild
+  public context!: GuildContext
 
-  public constructor (guild: Guild, iterable?: Iterable<TicketType>) {
-    // @ts-expect-error
-    super(guild.client, iterable, TicketType)
-
-    this.guild = guild
+  public constructor () {
+    super(TicketType)
   }
 
-  public override add (data: TicketTypeEntity, cache = true): TicketType {
-    return super.add(data, cache, { id: data.id, extras: [this.guild] })
+  public override setOptions (context: GuildContext): void {
+    this.context = context
+  }
+
+  public override add (data: TicketTypeEntity): TicketType {
+    return super.add(data, { id: data.id, extras: [this.context] })
   }
 
   public async create (name: string): Promise<TicketType> {
@@ -43,7 +47,7 @@ export default class GuildTicketTypeManager extends BaseManager<TicketType, Tick
 
     const newData = await this.ticketTypeRepository.save(this.ticketTypeRepository.create({
       name,
-      guildId: this.guild.id
+      guildId: this.context.id
     }))
 
     return this.add(newData)
@@ -62,7 +66,7 @@ export default class GuildTicketTypeManager extends BaseManager<TicketType, Tick
       if (ticketType.message.partial) {
         await ticketType.message.fetch()
       }
-      await ticketType.message.reactions.resolve(ticketType.emojiId)?.users.remove(this.client.user ?? undefined)
+      await ticketType.message.reactions.resolve(ticketType.emojiId)?.users.remove(this.client.user)
     }
 
     await this.ticketTypeRepository.delete(ticketType.id)
@@ -73,7 +77,7 @@ export default class GuildTicketTypeManager extends BaseManager<TicketType, Tick
     ticketTypeResolvable: TicketTypeResolvable,
     data: TicketTypeUpdateOptions
   ): Promise<TicketType> {
-    const id = this.resolveID(ticketTypeResolvable)
+    const id = this.resolveId(ticketTypeResolvable)
     if (id === null) {
       throw new Error('Invalid ticket type.')
     }
@@ -90,8 +94,8 @@ export default class GuildTicketTypeManager extends BaseManager<TicketType, Tick
     }
 
     await this.ticketTypeRepository.save(this.ticketTypeRepository.create({
-      id,
-      ...changes
+      ...changes,
+      id
     }))
     const newData = await this.ticketTypeRepository.findOne(
       id,
@@ -100,7 +104,7 @@ export default class GuildTicketTypeManager extends BaseManager<TicketType, Tick
 
     const _ticketType = this.cache.get(id)
     _ticketType?.setup(newData)
-    return _ticketType ?? this.add(newData, false)
+    return _ticketType ?? this.add(newData)
   }
 
   public async link (
@@ -124,12 +128,10 @@ export default class GuildTicketTypeManager extends BaseManager<TicketType, Tick
     }
     let emoji
     if (typeof emojiResolvable === 'string') {
-      const valid = await (this.client as CommandoClient).registry.types.get('default-emoji')
-        // @ts-expect-error
-        ?.validate(emojiResolvable, null, {})
-      emoji = valid !== true ? null : emojiResolvable
+      const valid = new RegExp(`^(?:${emojiRegex().source})$`).test(emojiResolvable)
+      emoji = valid ? emojiResolvable : null
     } else {
-      emoji = this.guild.emojis.resolve(emojiResolvable)
+      emoji = this.context.guild.emojis.resolve(emojiResolvable)
     }
     if (emoji === null) {
       throw new Error('Invalid emoji.')
@@ -139,7 +141,7 @@ export default class GuildTicketTypeManager extends BaseManager<TicketType, Tick
       if (ticketType.message.partial) {
         await ticketType.message.fetch()
       }
-      await ticketType.message.reactions.resolve(ticketType.emojiId)?.users.remove(this.client.user ?? undefined)
+      await ticketType.message.reactions.resolve(ticketType.emojiId)?.users.remove(this.client.user)
     }
     await message.react(emoji)
     await this.ticketTypeRepository.save(this.ticketTypeRepository.create({
@@ -150,7 +152,7 @@ export default class GuildTicketTypeManager extends BaseManager<TicketType, Tick
     }), {
       data: {
         channelId: message.channel.id,
-        guildId: this.guild.id
+        guildId: this.context.id
       }
     })
     const newData = await this.ticketTypeRepository.findOne(
@@ -160,7 +162,7 @@ export default class GuildTicketTypeManager extends BaseManager<TicketType, Tick
 
     const _ticketType = this.cache.get(ticketType.id)
     _ticketType?.setup(newData)
-    return _ticketType ?? this.add(newData, false)
+    return _ticketType ?? this.add(newData)
   }
 
   public async unlink (ticketTypeResolvable: TicketTypeResolvable): Promise<TicketType> {
@@ -176,7 +178,7 @@ export default class GuildTicketTypeManager extends BaseManager<TicketType, Tick
       if (ticketType.message.partial) {
         await ticketType.message.fetch()
       }
-      await ticketType.message.reactions.resolve(ticketType.emojiId)?.users.remove(this.client.user ?? undefined)
+      await ticketType.message.reactions.resolve(ticketType.emojiId)?.users.remove(this.client.user)
     }
     await this.ticketTypeRepository.save(this.ticketTypeRepository.create({
       id: ticketType.id,
@@ -188,26 +190,27 @@ export default class GuildTicketTypeManager extends BaseManager<TicketType, Tick
 
     const _ticketType = this.cache.get(ticketType.id)
     _ticketType?.setup(newData)
-    return _ticketType ?? this.add(newData, false)
+    return _ticketType ?? this.add(newData)
   }
 
-  public override resolve (type: TicketTypeResolvable): TicketType | null {
-    if (typeof type === 'string') {
-      type = type.toLowerCase().replace(/\s/g, '')
+  public override resolve (ticketType: TicketType): TicketType
+  public override resolve (ticketType: TicketTypeResolvable): TicketType | null
+  public override resolve (ticketType: TicketTypeResolvable): TicketType | null {
+    if (typeof ticketType === 'string') {
+      ticketType = ticketType.toLowerCase().replace(/\s/g, '')
       return this.cache.find(otherType => (
-        otherType.name.toLowerCase().replace(/\s/g, '') === type
+        otherType.name.toLowerCase().replace(/\s/g, '') === ticketType
       )) ?? null
     }
-    return super.resolve(type)
+    return super.resolve(ticketType)
   }
 
-  public override resolveID (type: TicketTypeResolvable): number | null {
-    if (typeof type === 'string') {
-      type = type.toLowerCase().replace(/\s/g, '')
-      return this.cache.find(otherType => (
-        otherType.name.toLowerCase().replace(/\s/g, '') === type
-      ))?.id ?? null
+  public override resolveId (ticketType: number): number
+  public override resolveId (ticketType: TicketTypeResolvable): number | null
+  public override resolveId (ticketType: number | TicketTypeResolvable): number | null {
+    if (typeof ticketType === 'string') {
+      return this.resolve(ticketType)?.id ?? null
     }
-    return super.resolveID(type)
+    return super.resolveId(ticketType)
   }
 }

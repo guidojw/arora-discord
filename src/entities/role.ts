@@ -2,7 +2,6 @@ import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, PrimaryCo
 import Group from './group'
 import Guild from './guild'
 import Member from './member'
-import Permission from './permission'
 import RoleBinding from './role-binding'
 import RoleMessage from './role-message'
 
@@ -29,7 +28,4 @@ export default class Role {
 
   @ManyToMany(() => Member, member => member.roles)
   public members?: Member[]
-
-  @OneToMany(() => Permission, permission => permission.role)
-  public permissions?: Permission[]
 }

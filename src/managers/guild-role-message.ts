@@ -1,39 +1,42 @@
-import {
-  type EmojiResolvable,
-  type Guild,
-  GuildEmoji,
-  type Message,
-  type RoleResolvable
-} from 'discord.js'
-import BaseManager from './base'
-import type { CommandoClient } from 'discord.js-commando'
-import { Repository } from 'typeorm'
-import { RoleMessage } from '../structures'
+import { type EmojiResolvable, GuildEmoji, type Message, type RoleResolvable } from 'discord.js'
+import { type GuildContext, RoleMessage } from '../structures'
+import { inject, injectable } from 'inversify'
+import type { AroraClient } from '../client'
+import { DataManager } from './base'
+import type { Repository } from 'typeorm'
 import type { RoleMessage as RoleMessageEntity } from '../entities'
-import { constants } from '../util'
-import container from '../configs/container'
-import getDecorators from 'inversify-inject-decorators'
+import { constants } from '../utils'
+import emojiRegex from 'emoji-regex'
+
+const { TYPES } = constants
 
 export type RoleMessageResolvable = RoleMessage | number
 
-const { TYPES } = constants
-const { lazyInject } = getDecorators(container)
+@injectable()
+export default class GuildRoleMessageManager extends DataManager<
+number,
+RoleMessage,
+RoleMessageResolvable,
+RoleMessageEntity
+> {
+  @inject(TYPES.Client)
+  private readonly client!: AroraClient<true>
 
-export default class GuildRoleMessageManager extends BaseManager<RoleMessage, RoleMessageResolvable> {
-  @lazyInject(TYPES.RoleMessageRepository)
+  @inject(TYPES.RoleMessageRepository)
   private readonly roleMessageRepository!: Repository<RoleMessageEntity>
 
-  public readonly guild: Guild
+  public context!: GuildContext
 
-  public constructor (guild: Guild, iterable?: Iterable<RoleMessageEntity>) {
-    // @ts-expect-error
-    super(guild.client, iterable, RoleMessage)
-
-    this.guild = guild
+  public constructor () {
+    super(RoleMessage)
   }
 
-  public override add (data: RoleMessageEntity, cache = true): RoleMessage {
-    return super.add(data, cache, { id: data.id, extras: [this.guild] })
+  public override setOptions (context: GuildContext): void {
+    this.context = context
+  }
+
+  public override add (data: RoleMessageEntity): RoleMessage {
+    return super.add(data, { id: data.id, extras: [this.context] })
   }
 
   public async create ({ role: roleResolvable, message, emoji: emojiResolvable }: {
@@ -41,7 +44,7 @@ export default class GuildRoleMessageManager extends BaseManager<RoleMessage, Ro
     message: Message
     emoji: EmojiResolvable
   }): Promise<RoleMessage> {
-    const role = this.guild.roles.resolve(roleResolvable)
+    const role = this.context.guild.roles.resolve(roleResolvable)
     if (role === null) {
       throw new Error('Invalid role.')
     }
@@ -54,12 +57,10 @@ export default class GuildRoleMessageManager extends BaseManager<RoleMessage, Ro
     }
     let emoji: string | GuildEmoji | null
     if (typeof emojiResolvable === 'string') {
-      const valid = await (this.client as CommandoClient).registry.types.get('default-emoji')
-        // @ts-expect-error
-        ?.validate(emojiResolvable, null, {})
-      emoji = valid !== true ? null : emojiResolvable
+      const valid = new RegExp(`^(?:${emojiRegex().source})$`).test(emojiResolvable)
+      emoji = valid ? emojiResolvable : null
     } else {
-      emoji = this.guild.emojis.resolve(emojiResolvable)
+      emoji = this.context.guild.emojis.resolve(emojiResolvable)
     }
     if (emoji === null) {
       throw new Error('Invalid emoji.')
@@ -78,7 +79,7 @@ export default class GuildRoleMessageManager extends BaseManager<RoleMessage, Ro
       messageId: message.id,
       emojiId: emoji instanceof GuildEmoji ? emoji.id : null,
       emoji: !(emoji instanceof GuildEmoji) ? emoji : null,
-      guildId: this.guild.id
+      guildId: this.context.id
     }), {
       data: { channelId: message.channel.id }
     })).id
@@ -103,7 +104,7 @@ export default class GuildRoleMessageManager extends BaseManager<RoleMessage, Ro
       if (roleMessage.message.partial) {
         await roleMessage.message.fetch()
       }
-      await roleMessage.message.reactions.resolve(roleMessage.emojiId)?.users.remove(this.client.user ?? undefined)
+      await roleMessage.message.reactions.resolve(roleMessage.emojiId)?.users.remove(this.client.user)
     }
 
     await this.roleMessageRepository.delete(roleMessage.id)

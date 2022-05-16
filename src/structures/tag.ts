@@ -1,21 +1,32 @@
-import { type Client, type Guild, MessageEmbed } from 'discord.js'
+import type { GuildContext, TagName } from '.'
+import { type ManagerFactory, constants } from '../utils'
+import { inject, injectable } from 'inversify'
 import BaseStructure from './base'
+import { MessageEmbed } from 'discord.js'
 import type { Tag as TagEntity } from '../entities'
-import TagTagNameManager from '../managers/tag-tag-name'
+import type { TagTagNameManager } from '../managers'
+
+const { TYPES } = constants
 
 export interface TagUpdateOptions { content?: string | object }
 
-export default class Tag extends BaseStructure {
-  public readonly guild: Guild
+@injectable()
+export default class Tag extends BaseStructure<TagEntity> {
+  public context!: GuildContext
+
   public readonly names: TagTagNameManager
+
   public id!: number
   public _content!: string
 
-  public constructor (client: Client, data: TagEntity, guild: Guild) {
-    super(client)
+  public constructor (@inject(TYPES.ManagerFactory) managerFactory: ManagerFactory) {
+    super()
 
-    this.guild = guild
-    this.names = new TagTagNameManager(this)
+    this.names = managerFactory<TagTagNameManager, TagName>('TagTagNameManager')(this)
+  }
+
+  public setOptions (data: TagEntity, context: GuildContext): void {
+    this.context = context
 
     this.setup(data)
   }
@@ -40,11 +51,11 @@ export default class Tag extends BaseStructure {
   }
 
   public async update (data: TagUpdateOptions): Promise<Tag> {
-    return await this.guild.tags.update(this, data)
+    return await this.context.tags.update(this, data)
   }
 
   public async delete (): Promise<void> {
-    return await this.guild.tags.delete(this)
+    return await this.context.tags.delete(this)
   }
 
   public override toString (): string {
