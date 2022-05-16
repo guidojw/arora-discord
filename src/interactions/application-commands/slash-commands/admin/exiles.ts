@@ -44,7 +44,7 @@ export default class ExilesCommand extends SubCommandCommand<ExilesCommand> {
   private readonly guildContexts!: GuildContextManager
 
   public async create (
-    interaction: CommandInteraction<'present'>,
+    interaction: CommandInteraction<'raw' | 'cached'>,
     { user, reason }: { user: RobloxUser, reason: string }
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
@@ -67,7 +67,7 @@ export default class ExilesCommand extends SubCommandCommand<ExilesCommand> {
   }
 
   public async delete (
-    interaction: CommandInteraction<'present'>,
+    interaction: CommandInteraction<'raw' | 'cached'>,
     { user, reason }: { user: RobloxUser, reason: string }
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
@@ -89,7 +89,7 @@ export default class ExilesCommand extends SubCommandCommand<ExilesCommand> {
   }
 
   public async list (
-    interaction: CommandInteraction<'present'>,
+    interaction: CommandInteraction<'raw' | 'cached'>,
     { user }: { user: RobloxUser | null }
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }

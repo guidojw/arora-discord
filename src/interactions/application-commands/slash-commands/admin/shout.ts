@@ -32,7 +32,7 @@ export default class ShoutCommand extends Command {
   private readonly guildContexts!: GuildContextManager
 
   public async execute (
-    interaction: CommandInteraction<'present'>,
+    interaction: CommandInteraction<'raw' | 'cached'>,
     { message }: { message: string | null }
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }

@@ -22,7 +22,7 @@ export default class GetShoutCommand extends Command {
   @named('GuildContextManager')
   private readonly guildContexts!: GuildContextManager
 
-  public async execute (interaction: CommandInteraction<'present'>): Promise<void> {
+  public async execute (interaction: CommandInteraction<'raw' | 'cached'>): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
 
     const shout: GetGroupStatus | '' = (await applicationAdapter('GET', `v1/groups/${context.robloxGroupId}/status`)).data

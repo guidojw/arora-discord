@@ -34,7 +34,7 @@ export default class PersistentRolesCommand extends SubCommandCommand<Persistent
   private readonly persistentRoleService!: PersistentRoleService
 
   public async persist (
-    interaction: CommandInteraction<'present'>,
+    interaction: CommandInteraction<'raw' | 'cached'>,
     { member, role }: { member: GuildMember, role: Role }
   ): Promise<void> {
     await this.persistentRoleService.persistRole(member, role)
@@ -46,7 +46,7 @@ export default class PersistentRolesCommand extends SubCommandCommand<Persistent
   }
 
   public async unpersist (
-    interaction: CommandInteraction<'present'>,
+    interaction: CommandInteraction<'raw' | 'cached'>,
     { member, role }: { member: GuildMember, role: Role }
   ): Promise<void> {
     await this.persistentRoleService.unpersistRole(member, role)
@@ -58,7 +58,7 @@ export default class PersistentRolesCommand extends SubCommandCommand<Persistent
   }
 
   public async list (
-    interaction: CommandInteraction<'present'>,
+    interaction: CommandInteraction<'raw' | 'cached'>,
     { member }: { member: GuildMember }
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext

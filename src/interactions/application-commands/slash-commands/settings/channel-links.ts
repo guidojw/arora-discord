@@ -40,7 +40,7 @@ export default class ChannelLinksCommand extends SubCommandCommand<ChannelLinksC
   private readonly guildContexts!: GuildContextManager
 
   public async link (
-    interaction: CommandInteraction<'present'>,
+    interaction: CommandInteraction<'raw' | 'cached'>,
     { fromChannel, toChannel }: {
       fromChannel: VoiceChannel
       toChannel: TextChannel
@@ -53,7 +53,7 @@ export default class ChannelLinksCommand extends SubCommandCommand<ChannelLinksC
   }
 
   public async unlink (
-    interaction: CommandInteraction<'present'>,
+    interaction: CommandInteraction<'raw' | 'cached'>,
     { fromChannel, toChannel }: {
       fromChannel: VoiceChannel
       toChannel: TextChannel
@@ -66,7 +66,7 @@ export default class ChannelLinksCommand extends SubCommandCommand<ChannelLinksC
   }
 
   public async list (
-    interaction: CommandInteraction<'present'>,
+    interaction: CommandInteraction<'raw' | 'cached'>,
     { channel }: { channel: VoiceChannel }
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext

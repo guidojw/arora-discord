@@ -43,7 +43,7 @@ export default class RoleMessagesCommand extends SubCommandCommand<RoleMessagesC
   private readonly guildContexts!: GuildContextManager
 
   public async create (
-    interaction: CommandInteraction<'present'>,
+    interaction: CommandInteraction<'raw' | 'cached'>,
     { role, message, emoji }: {
       role: Role
       message: Message
@@ -61,7 +61,7 @@ export default class RoleMessagesCommand extends SubCommandCommand<RoleMessagesC
   }
 
   public async delete (
-    interaction: CommandInteraction<'present'>,
+    interaction: CommandInteraction<'raw' | 'cached'>,
     { roleMessage }: { roleMessage: RoleMessage }
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext

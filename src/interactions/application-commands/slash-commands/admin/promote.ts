@@ -27,7 +27,7 @@ export default class PromoteCommand extends Command {
   private readonly guildContexts!: GuildContextManager
 
   public async execute (
-    interaction: CommandInteraction<'present'>,
+    interaction: CommandInteraction<'raw' | 'cached'>,
     { user }: { user: RobloxUser }
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }

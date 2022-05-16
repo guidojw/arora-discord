@@ -74,7 +74,7 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
   private readonly guildContexts!: GuildContextManager
 
   public async create (
-    interaction: CommandInteraction<'present'>,
+    interaction: CommandInteraction<'raw' | 'cached'>,
     { user, duration, reason }: {
       user: RobloxUser
       duration: number | null
@@ -102,7 +102,7 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
   }
 
   public async delete (
-    interaction: CommandInteraction<'present'>,
+    interaction: CommandInteraction<'raw' | 'cached'>,
     { user, reason }: { user: RobloxUser, reason: string }
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
@@ -124,7 +124,7 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
   }
 
   public async edit (
-    interaction: CommandInteraction<'present'>,
+    interaction: CommandInteraction<'raw' | 'cached'>,
     { user, key, value }: {
       user: RobloxUser
       key: string
@@ -153,7 +153,7 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
   }
 
   public async extend (
-    interaction: CommandInteraction<'present'>,
+    interaction: CommandInteraction<'raw' | 'cached'>,
     { user, days, reason }: {
       user: RobloxUser
       days: number
@@ -180,7 +180,7 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
   }
 
   public async list (
-    interaction: CommandInteraction<'present'>,
+    interaction: CommandInteraction<'raw' | 'cached'>,
     { user }: { user: RobloxUser | null }
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }

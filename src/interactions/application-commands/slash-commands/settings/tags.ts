@@ -75,7 +75,7 @@ export default class TagsCommand extends SubCommandCommand<TagsCommand> {
   }
 
   public async delete (
-    interaction: CommandInteraction<'present'>,
+    interaction: CommandInteraction<'raw' | 'cached'>,
     { tag }: { tag: Tag }
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
@@ -86,7 +86,7 @@ export default class TagsCommand extends SubCommandCommand<TagsCommand> {
   }
 
   public async edit (
-    interaction: CommandInteraction<'present'>,
+    interaction: CommandInteraction<'raw' | 'cached'>,
     { tag, key, value }: {
       tag: Tag
       key: string
@@ -112,17 +112,17 @@ export default class TagsCommand extends SubCommandCommand<TagsCommand> {
   }
 
   public aliases (
-    interaction: CommandInteraction<'present'>,
+    interaction: CommandInteraction<'raw' | 'cached'>,
     subCommand: 'create',
     { tag, name }: { tag: Tag, name: string }
   ): Promise<void>
   public aliases (
-    interaction: CommandInteraction<'present'>,
+    interaction: CommandInteraction<'raw' | 'cached'>,
     subCommand: 'delete',
     { name }: { name: string }
   ): Promise<void>
   public async aliases (
-    interaction: CommandInteraction<'present'>,
+    interaction: CommandInteraction<'raw' | 'cached'>,
     subCommand: 'create' | 'delete',
     { tag, name }: { tag?: Tag, name: string }
   ): Promise<void> {
@@ -152,7 +152,7 @@ export default class TagsCommand extends SubCommandCommand<TagsCommand> {
   }
 
   public async raw (
-    interaction: CommandInteraction<'present'>,
+    interaction: CommandInteraction<'raw' | 'cached'>,
     { tag }: { tag: Tag }
   ): Promise<void> {
     await interaction.reply({

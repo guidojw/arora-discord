@@ -30,7 +30,7 @@ export default class InteractionCreateEventHandler implements BaseHandler {
         )
       }
     } catch (err: any) {
-      if (interaction.isCommand() && !interaction.replied) {
+      if (interaction.isRepliable() && !interaction.replied) {
         return await interaction.reply({
           content: err.toString(),
           ephemeral: true

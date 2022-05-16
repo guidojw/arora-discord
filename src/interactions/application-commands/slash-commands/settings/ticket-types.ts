@@ -62,7 +62,7 @@ export default class TicketTypesCommand extends SubCommandCommand<TicketTypesCom
   }
 
   public async delete (
-    interaction: CommandInteraction<'present'>,
+    interaction: CommandInteraction<'raw' | 'cached'>,
     { ticketType }: { ticketType: TicketType }
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
@@ -73,7 +73,7 @@ export default class TicketTypesCommand extends SubCommandCommand<TicketTypesCom
   }
 
   public async link (
-    interaction: CommandInteraction<'present'>,
+    interaction: CommandInteraction<'raw' | 'cached'>,
     { ticketType, emoji, message }: {
       ticketType: TicketType
       emoji: string
@@ -88,7 +88,7 @@ export default class TicketTypesCommand extends SubCommandCommand<TicketTypesCom
   }
 
   public async unlink (
-    interaction: CommandInteraction<'present'>,
+    interaction: CommandInteraction<'raw' | 'cached'>,
     { ticketType }: { ticketType: TicketType }
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext

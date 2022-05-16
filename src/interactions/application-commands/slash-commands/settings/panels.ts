@@ -83,7 +83,7 @@ export default class PanelsCommand extends SubCommandCommand<PanelsCommand> {
   }
 
   public async delete (
-    interaction: CommandInteraction<'present'>,
+    interaction: CommandInteraction<'raw' | 'cached'>,
     { panel }: { panel: Panel }
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
@@ -94,7 +94,7 @@ export default class PanelsCommand extends SubCommandCommand<PanelsCommand> {
   }
 
   public async edit (
-    interaction: CommandInteraction<'present'>,
+    interaction: CommandInteraction<'raw' | 'cached'>,
     { panel, key, value }: {
       panel: Panel
       key: string
@@ -124,7 +124,7 @@ export default class PanelsCommand extends SubCommandCommand<PanelsCommand> {
   }
 
   public async post (
-    interaction: CommandInteraction<'present'>,
+    interaction: CommandInteraction<'raw' | 'cached'>,
     { panel, channel }: {
       panel: Panel
       channel: TextChannel | null
@@ -167,7 +167,7 @@ export default class PanelsCommand extends SubCommandCommand<PanelsCommand> {
   }
 
   public async raw (
-    interaction: CommandInteraction<'present'>,
+    interaction: CommandInteraction<'raw' | 'cached'>,
     { panel }: { panel: Panel }
   ): Promise<void> {
     await interaction.reply({

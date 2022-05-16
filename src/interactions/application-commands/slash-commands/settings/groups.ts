@@ -88,7 +88,7 @@ export default class GroupsCommand extends SubCommandCommand<GroupsCommand> {
   }
 
   public async delete (
-    interaction: CommandInteraction<'present'>,
+    interaction: CommandInteraction<'raw' | 'cached'>,
     { group }: { group: Group }
   ): Promise<void> {
     await group.delete()
@@ -97,7 +97,7 @@ export default class GroupsCommand extends SubCommandCommand<GroupsCommand> {
   }
 
   public async channels (
-    interaction: CommandInteraction<'present'>,
+    interaction: CommandInteraction<'raw' | 'cached'>,
     subCommand: 'add' | 'remove',
     { group, channel }: { group: ChannelGroup, channel: TextChannel }
   ): Promise<void> {
@@ -118,7 +118,7 @@ export default class GroupsCommand extends SubCommandCommand<GroupsCommand> {
   }
 
   public async roles (
-    interaction: CommandInteraction<'present'>,
+    interaction: CommandInteraction<'raw' | 'cached'>,
     subCommand: 'add' | 'remove',
     { group, role }: { group: RoleGroup, role: Role }
   ): Promise<void> {

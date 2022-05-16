@@ -44,7 +44,7 @@ export default class RoleBindingsCommand extends SubCommandCommand<RoleBindingsC
   private readonly guildContexts!: GuildContextManager
 
   public async create (
-    interaction: CommandInteraction<'present'>,
+    interaction: CommandInteraction<'raw' | 'cached'>,
     { role, min, max }: {
       role: Role
       min: number
@@ -62,7 +62,7 @@ export default class RoleBindingsCommand extends SubCommandCommand<RoleBindingsC
   }
 
   public async delete (
-    interaction: CommandInteraction<'present'>,
+    interaction: CommandInteraction<'raw' | 'cached'>,
     { roleBinding }: { roleBinding: RoleBinding }
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
@@ -73,7 +73,7 @@ export default class RoleBindingsCommand extends SubCommandCommand<RoleBindingsC
   }
 
   public async list (
-    interaction: CommandInteraction<'present'>,
+    interaction: CommandInteraction<'raw' | 'cached'>,
     { roleBinding }: { roleBinding: RoleBinding | null }
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
