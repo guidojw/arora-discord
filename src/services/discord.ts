@@ -15,15 +15,15 @@ export async function prompt (
   message: Message,
   options: Array<GuildEmoji | string>
 ): Promise<GuildEmoji | ReactionEmoji | null> {
-  const userId = message.client.users.resolveID(user)
+  const userId = message.client.users.resolveId(user)
   if (userId === null) {
     throw new Error('Invalid user.')
   }
 
   const filter = (reaction: MessageReaction, user: User): boolean => (
-    options.includes(reaction.emoji.name) && user.id === userId
+    reaction.emoji.name !== null && options.includes(reaction.emoji.name) && user.id === userId
   )
-  const collector = message.createReactionCollector(filter, { time: REACTION_COLLECTOR_TIME })
+  const collector = message.createReactionCollector({ filter, time: REACTION_COLLECTOR_TIME })
   const promise: Promise<GuildEmoji | ReactionEmoji | null> = new Promise(resolve => {
     collector.on('end', collected => {
       const reaction = collected.first()
@@ -71,7 +71,7 @@ export function getListEmbeds<T, D extends any[]> (
   return embeds
 }
 
-export function validateEmbed (embed: MessageEmbed): boolean | string {
+export function validateEmbed (embed: MessageEmbed): string | true {
   if (embed.length > 6000) {
     return 'Embed length is too big.'
   } else if ((embed.title?.length ?? 0) > 256) {

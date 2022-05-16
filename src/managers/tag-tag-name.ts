@@ -1,48 +1,42 @@
-import { BaseManager as DiscordBaseManager, type Guild } from 'discord.js'
+import { type GuildContext, type Tag, TagName } from '../structures'
 import type { Tag as TagEntity, TagName as TagNameEntity } from '../entities'
-import type { CommandoClient } from 'discord.js-commando'
-import { Repository } from 'typeorm'
-import type { Tag } from '../structures'
-import TagName from '../structures/tag-name'
-import { constants } from '../util'
-import container from '../configs/container'
-import getDecorators from 'inversify-inject-decorators'
+import { inject, injectable } from 'inversify'
+import { DataManager } from './base'
+import type { Repository } from 'typeorm'
+import { constants } from '../utils'
+
+const { TYPES } = constants
 
 export type TagNameResolvable = TagName | string
 
-const { TYPES } = constants
-const { lazyInject } = getDecorators(container)
-
-export default class TagTagNameManager extends DiscordBaseManager<string, TagName, TagNameResolvable> {
-  @lazyInject(TYPES.TagRepository)
-  private readonly tagRepository!: Repository<TagEntity>
-
-  @lazyInject(TYPES.TagNameRepository)
+@injectable()
+export default class TagTagNameManager extends DataManager<string, TagName, TagNameResolvable, TagNameEntity> {
+  @inject(TYPES.TagNameRepository)
   private readonly tagNameRepository!: Repository<TagNameEntity>
 
-  public readonly tag: Tag
-  public readonly guild: Guild
+  @inject(TYPES.TagRepository)
+  private readonly tagRepository!: Repository<TagEntity>
 
-  public constructor (tag: Tag, iterable?: Iterable<TagNameEntity>) {
-    // @ts-expect-error
-    super(tag.guild.client, iterable, TagName)
+  public tag!: Tag
+  public context!: GuildContext
 
-    this.tag = tag
-    this.guild = tag.guild
+  public constructor () {
+    super(TagName)
   }
 
-  public override add (data: TagNameEntity, cache = true): TagName {
-    return super.add(data, cache, { id: data.name, extras: [this.tag] })
+  public override setOptions (tag: Tag): void {
+    this.tag = tag
+    this.context = tag.context
+  }
+
+  public override add (data: TagNameEntity): TagName {
+    return super.add(data, { id: data.name, extras: [this.tag] })
   }
 
   public async create (name: string): Promise<TagName> {
     name = name.toLowerCase()
-    if (this.guild.tags.resolve(name) !== null) {
+    if (this.context.tags.resolve(name) !== null) {
       throw new Error('A tag with that name already exists.')
-    }
-    if (name === 'all' || (this.client as CommandoClient).registry.commands.some(command => command.name === name ||
-        command.aliases.includes(name))) {
-      throw new Error('Not allowed, name is reserved.')
     }
 
     const tagNameData = await this.tagNameRepository.save(this.tagNameRepository.create({ name, tagId: this.tag.id }))
@@ -57,7 +51,7 @@ export default class TagTagNameManager extends DiscordBaseManager<string, TagNam
   }
 
   public async delete (tagNameResolvable: TagNameResolvable): Promise<void> {
-    const id = this.resolveID(tagNameResolvable)
+    const id = this.resolveId(tagNameResolvable)
     if (id === null) {
       throw new Error('Invalid name.')
     }
@@ -72,22 +66,24 @@ export default class TagTagNameManager extends DiscordBaseManager<string, TagNam
     this.cache.delete(id)
   }
 
-  public override resolve (tagNameResolvable: TagNameResolvable): TagName | null {
-    if (typeof tagNameResolvable === 'string') {
-      tagNameResolvable = tagNameResolvable.toLowerCase()
-      return this.cache.find(otherTagName => otherTagName.name.toLowerCase() === tagNameResolvable) ?? null
+  public override resolve (tagName: TagName): TagName
+  public override resolve (tagName: TagNameResolvable): TagName | null
+  public override resolve (tagName: TagNameResolvable): TagName | null {
+    if (typeof tagName === 'string') {
+      tagName = tagName.toLowerCase()
+      return this.cache.find(otherTagName => otherTagName.name.toLowerCase() === tagName) ?? null
     }
-    return super.resolve(tagNameResolvable)
+    return super.resolve(tagName)
   }
 
-  public override resolveID (tagNameResolvable: TagNameResolvable): string | null {
-    if (tagNameResolvable instanceof this.holds) {
-      return tagNameResolvable.name
+  public override resolveId (tagName: string): string
+  public override resolveId (tagName: TagNameResolvable): string | null
+  public override resolveId (tagName: TagNameResolvable): string | null {
+    if (tagName instanceof this.holds) {
+      return tagName.name
     }
-    if (typeof tagNameResolvable === 'string') {
-      tagNameResolvable = tagNameResolvable.toLowerCase()
-      return this.cache.find(otherTagName => otherTagName.name.toLowerCase() === tagNameResolvable)?.name ??
-        tagNameResolvable
+    if (typeof tagName === 'string') {
+      return this.resolve(tagName)?.name ?? tagName
     }
     return null
   }

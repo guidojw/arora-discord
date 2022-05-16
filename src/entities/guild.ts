@@ -1,9 +1,7 @@
 import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryColumn } from 'typeorm'
-import { IsNotEmpty, ValidateIf } from 'class-validator'
 import Channel from './channel'
 import Emoji from './emoji'
 import Group from './group'
-import GuildCommand from './guild-command'
 import Member from './member'
 import Message from './message'
 import Panel from './panel'
@@ -13,17 +11,12 @@ import RoleMessage from './role-message'
 import Tag from './tag'
 import Ticket from './ticket'
 import TicketType from './ticket-type'
-import { VerificationProvider } from '../util/constants'
+import { VerificationProvider } from '../utils/constants'
 
 @Entity('guilds')
 export default class Guild {
   @PrimaryColumn({ type: 'bigint' })
   public id!: string
-
-  @Column('varchar', { name: 'command_prefix', nullable: true, length: 255 })
-  @ValidateIf(guild => guild.commandPrefix != null)
-  @IsNotEmpty()
-  public commandPrefix?: string | null
 
   @Column('int', { name: 'primary_color', nullable: true })
   public primaryColor?: number | null
@@ -59,9 +52,6 @@ export default class Guild {
 
   @Column('bigint', { name: 'tickets_category_id', nullable: true })
   public ticketsCategoryId?: string | null
-
-  @OneToMany(() => GuildCommand, guildCommand => guildCommand.guild)
-  public guildCommands?: GuildCommand[]
 
   @OneToMany(() => Tag, tag => tag.guild)
   public tags?: Tag[]

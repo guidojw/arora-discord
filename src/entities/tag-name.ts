@@ -15,4 +15,8 @@ export default class TagName {
   @ManyToOne(() => Tag, tag => tag.names, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'tag_id' })
   public tag?: Tag
+
+  public get id (): string {
+    return this.name
+  }
 }

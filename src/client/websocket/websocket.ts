@@ -1,23 +1,29 @@
-import type Client from '../client'
+import { inject, injectable, type interfaces } from 'inversify'
+import type { BaseHandler } from '..'
 import WebSocket from 'ws'
+import { constants } from '../../utils'
+
+const { TYPES } = constants
+
+const RECONNECT_TIMEOUT = 30_000
+const PING_TIMEOUT = 30_000 + 1000
 
 export interface Packet {
   event: string
   data?: any
 }
 
-const RECONNECT_TIMEOUT = 30 * 1000
-const PING_TIMEOUT = 30 * 1000 + 1000
-
+@injectable()
 export default class WebSocketManager {
-  public readonly client: Client
+  @inject(TYPES.PacketHandlerFactory)
+  private readonly packetHandlerFactory!: interfaces.AutoNamedFactory<BaseHandler>
+
   private readonly host: string
   private connection: WebSocket | null
   private pingTimeout: NodeJS.Timeout | null
 
-  public constructor (client: Client, host = process.env.WS_HOST) {
-    this.client = client
-    this.host = host ?? 'ws://127.0.0.1'
+  public constructor () {
+    this.host = 'ws://127.0.0.1'
     this.connection = null
     this.pingTimeout = null
   }
@@ -51,9 +57,9 @@ export default class WebSocketManager {
   private onClose (): void {
     console.log('Disconnected!')
     if (this.pingTimeout !== null) {
-      this.client.clearTimeout(this.pingTimeout)
+      clearTimeout(this.pingTimeout)
     }
-    this.client.setTimeout(this.connect.bind(this), RECONNECT_TIMEOUT)
+    setTimeout(this.connect.bind(this), RECONNECT_TIMEOUT).unref()
   }
 
   private onPing (): void {
@@ -62,13 +68,12 @@ export default class WebSocketManager {
 
   private heartbeat (): void {
     if (this.pingTimeout !== null) {
-      this.client.clearTimeout(this.pingTimeout)
+      clearTimeout(this.pingTimeout)
     }
-    this.pingTimeout = this.client.setTimeout(() => this.connection?.terminate(), PING_TIMEOUT)
+    this.pingTimeout = setTimeout(() => this.connection?.terminate(), PING_TIMEOUT).unref()
   }
 
   private handlePacket (packet: Packet): void {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    this.client.packetHandlerFactory(packet.event).handle(this.client, packet)
+    Promise.resolve(this.packetHandlerFactory(packet.event).handle(packet)).catch(console.error)
   }
 }
