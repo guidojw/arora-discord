@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionType, type RESTPutAPIApplicationCommandsJSONBody } from 'discord-api-types/v9'
+import { ApplicationCommandOptionType, type RESTPutAPIApplicationCommandsJSONBody } from 'discord-api-types/v10'
 import { argumentUtil, constants, util } from '../../../../../utils'
 
 const { GuildSetting } = constants

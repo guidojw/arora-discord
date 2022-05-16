@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionType, type RESTPutAPIApplicationCommandsJSONBody } from 'discord-api-types/v9'
+import { ApplicationCommandOptionType, type RESTPutAPIApplicationCommandsJSONBody } from 'discord-api-types/v10'
 
 const persistentRolesCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'persistentroles',

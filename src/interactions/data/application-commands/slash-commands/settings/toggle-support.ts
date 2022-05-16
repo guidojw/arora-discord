@@ -1,4 +1,4 @@
-import type { RESTPutAPIApplicationCommandsJSONBody } from 'discord-api-types/v9'
+import type { RESTPutAPIApplicationCommandsJSONBody } from 'discord-api-types/v10'
 
 const toggleSupportCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'togglesupport',
