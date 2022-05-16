@@ -8,7 +8,7 @@ const { Routes } = require('discord-api-types/v10')
 const applicationCommands = require('../dist/interactions/data/application-commands')
 
 async function updateCommands () {
-  const rest = new REST({ version: '9' }).setToken(process.env.DISCORD_TOKEN)
+  const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN)
   const application = await rest.get(Routes.oauth2CurrentApplication())
   await rest.put(Routes.applicationCommands(application.id), { body: Object.values(applicationCommands) })
 }
