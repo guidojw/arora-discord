@@ -1,35 +1,4 @@
 {
-  "extends": ["config:base", ":preserveSemverRanges", ":disableDependencyDashboard", "helpers:pinGitHubActionDigests"],
-  "labels": ["dependencies"],
-  "rangeStrategy": "bump",
-  "packageRules": [
-    {
-      "matchManagers": ["npm"],
-      "matchPackagePatterns": ["*"],
-      "matchUpdateTypes": ["minor", "patch"],
-      "excludePackageNames": ["yarn"],
-      "groupName": "all non-major dependencies",
-      "groupSlug": "all-minor-patch"
-    },
-    {
-      "matchManagers": ["npm"],
-      "matchDepTypes": ["engines"],
-      "enabled": false
-    },
-    {
-      "matchManagers": ["dockerfile", "nvm"],
-      "groupName": "Node.js",
-      "groupSlug": "nodejs",
-      "ignoreUnstable": false
-    },
-    {
-      "matchManagers": ["dockerfile", "nvm"],
-      "matchUpdateTypes": ["minor", "patch"],
-      "groupName": "Node.js (non-major)",
-      "groupSlug": "nodejs"
-    }
-  ],
-  "docker-compose": {
-    "enabled": false
-  }
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["github>guidojw/.github"]
 }
