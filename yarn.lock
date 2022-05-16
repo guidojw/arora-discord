@@ -693,7 +693,7 @@ __metadata:
     axios: ^0.26.0
     class-validator: ^0.13.2
     common-tags: ^1.8.2
-    discord-api-types: ^0.27.2
+    discord-api-types: ^0.33.0
     discord.js: ^13.6.0
     dotenv: ^16.0.0
     emoji-regex: ^10.0.0
@@ -1167,10 +1167,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"discord-api-types@npm:^0.27.2":
-  version: 0.27.2
-  resolution: "discord-api-types@npm:0.27.2"
-  checksum: 3849f7975d4d654481609535b6d778856f4af770f4ab8b9b216ee610ffd31b8a0deb2e0b0a7b881490632597a0d2412e84d06bfd268bceb24d01bd1b000bb50a
+"discord-api-types@npm:^0.33.0":
+  version: 0.33.0
+  resolution: "discord-api-types@npm:0.33.0"
+  checksum: 8ae2c7e36c34e1d250acab18f8d2941be6135b4e08e48f9c0f584b23a59e8b310ec33f78a46e4aa8294639ec0b5703162f1895eb0f446c70559ae4e69cd26b16
   languageName: node
   linkType: hard
 
