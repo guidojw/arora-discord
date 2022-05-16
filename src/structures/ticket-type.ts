@@ -1,12 +1,20 @@
-import type { Client, Guild, GuildEmoji, Message } from 'discord.js'
+import type { GuildEmoji, Message } from 'discord.js'
+import type { AbstractConstructor } from '../utils'
 import BaseStructure from './base'
-import Postable from './mixins/postable'
+import type { GuildContext } from '.'
+import { Postable } from './mixins'
 import type { TicketType as TicketTypeEntity } from '../entities'
+import { injectable } from 'inversify'
 
 export interface TicketTypeUpdateOptions { name?: string }
 
-export default class TicketType extends Postable(BaseStructure) {
-  public guild: Guild
+@injectable()
+export default class TicketType extends Postable<
+AbstractConstructor<BaseStructure<TicketTypeEntity>>,
+TicketTypeEntity
+>(BaseStructure) {
+  public context!: GuildContext
+
   public id!: number
   public name!: string
   public messageId!: string | null
@@ -15,10 +23,8 @@ export default class TicketType extends Postable(BaseStructure) {
   private _emoji!: string | null
   private _emojiId!: string | null
 
-  public constructor (client: Client, data: TicketTypeEntity, guild: Guild) {
-    super(client)
-
-    this.guild = guild
+  public setOptions (data: TicketTypeEntity, context: GuildContext): void {
+    this.context = context
 
     this.setup(data)
   }
@@ -34,7 +40,7 @@ export default class TicketType extends Postable(BaseStructure) {
 
   public get emoji (): GuildEmoji | string | null {
     return this._emojiId !== null
-      ? this.guild.emojis.cache.get(this._emojiId) ?? null
+      ? this.context.guild.emojis.cache.get(this._emojiId) ?? null
       : this._emoji
   }
 
@@ -43,15 +49,15 @@ export default class TicketType extends Postable(BaseStructure) {
   }
 
   public async update (data: TicketTypeUpdateOptions): Promise<TicketType> {
-    return await this.guild.ticketTypes.update(this, data)
+    return await this.context.ticketTypes.update(this, data)
   }
 
   public async delete (): Promise<void> {
-    return await this.guild.ticketTypes.delete(this)
+    return await this.context.ticketTypes.delete(this)
   }
 
   public async link (message: Message, emoji: GuildEmoji): Promise<TicketType> {
-    return await this.guild.ticketTypes.link(this, message, emoji)
+    return await this.context.ticketTypes.link(this, message, emoji)
   }
 
   public override toString (): string {

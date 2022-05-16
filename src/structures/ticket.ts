@@ -1,25 +1,30 @@
 import {
-  type Client,
   Collection,
   Constants,
-  type Guild,
   type GuildMember,
   type Message,
   MessageAttachment,
   MessageEmbed,
   type PartialGuildMember,
-  type TextChannel
+  type TextChannel,
+  type TextChannelResolvable
 } from 'discord.js'
-import { discordService, userService } from '../services'
-import { timeUtil, util } from '../util'
+import type { GuildContext, TicketType } from '.'
+import { type ManagerFactory, constants, timeUtil, util } from '../utils'
+import { discordService, userService, verificationService } from '../services'
+import { inject, injectable } from 'inversify'
+import type { AroraClient } from '../client'
 import BaseStructure from './base'
-import type { TextChannelResolvable } from '../managers'
 import type { Ticket as TicketEntity } from '../entities'
-import TicketGuildMemberManager from '../managers/ticket-guild-member'
-import type TicketType from './ticket-type'
+import type { TicketGuildMemberManager } from '../managers'
 import applicationConfig from '../configs/application'
 import pluralize from 'pluralize'
 import { stripIndents } from 'common-tags'
+
+const { PartialTypes } = Constants
+const { TYPES } = constants
+const { getDate, getTime } = timeUtil
+const { makeCommaSeparatedString } = util
 
 export interface NewTicket extends Ticket {
   authorId: string
@@ -30,12 +35,16 @@ export interface NewTicket extends Ticket {
 
 export interface TicketUpdateOptions { channel?: TextChannelResolvable }
 
-const { PartialTypes } = Constants
-const { getDate, getTime } = timeUtil
-const { makeCommaSeparatedString } = util
+@injectable()
+export default class Ticket extends BaseStructure<TicketEntity> {
+  @inject(TYPES.Client)
+  private readonly client!: AroraClient<true>
 
-export default class Ticket extends BaseStructure {
-  public readonly guild: Guild
+  @inject(TYPES.ManagerFactory)
+  private readonly managerFactory!: ManagerFactory
+
+  public context!: GuildContext
+
   public id!: number
   public channelId!: string
   public guildId!: string
@@ -44,13 +53,16 @@ export default class Ticket extends BaseStructure {
   public _moderators: string[]
   public timeout: NodeJS.Timeout | null
 
-  public constructor (client: Client, data: TicketEntity, guild: Guild) {
-    super(client)
+  public constructor () {
+    super()
 
-    this.guild = guild
     this._moderators = []
 
     this.timeout = null
+  }
+
+  public setOptions (data: TicketEntity, context: GuildContext): void {
+    this.context = context
 
     this.setup(data)
   }
@@ -69,23 +81,24 @@ export default class Ticket extends BaseStructure {
 
   public get author (): GuildMember | PartialGuildMember | null {
     return this.authorId !== null
-      ? this.guild.members.cache.get(this.authorId) ??
+      ? this.context.guild.members.cache.get(this.authorId) ??
       (this.client.options.partials?.includes(PartialTypes.GUILD_MEMBER) === true
-        ? this.guild.members.add({ user: { id: this.authorId } })
+        // @ts-expect-error
+        ? this.context.guild.members._add({ user: { id: this.authorId } })
         : null)
       : null
   }
 
   public get channel (): TextChannel {
-    return this.guild.channels.cache.get(this.channelId) as TextChannel
+    return this.context.guild.channels.cache.get(this.channelId) as TextChannel
   }
 
   public get type (): TicketType | null {
-    return this.typeId !== null ? this.guild.ticketTypes.cache.get(this.typeId) ?? null : null
+    return this.typeId !== null ? this.context.ticketTypes.cache.get(this.typeId) ?? null : null
   }
 
   public get moderators (): TicketGuildMemberManager {
-    return new TicketGuildMemberManager(this)
+    return this.managerFactory<TicketGuildMemberManager, GuildMember>('TicketGuildMemberManager')(this)
   }
 
   public async populateChannel (): Promise<void> {
@@ -98,52 +111,52 @@ export default class Ticket extends BaseStructure {
     const readableDate = getDate(date)
     const readableTime = getTime(date)
     const ticketInfoEmbed = new MessageEmbed()
-      .setColor(this.guild.primaryColor ?? applicationConfig.defaultColor)
+      .setColor(this.context.primaryColor ?? applicationConfig.defaultColor)
       .setTitle('Ticket Information')
       .setDescription(stripIndents`
       Username: \`${robloxUsername ?? 'unknown'}\`
       User ID: \`${robloxId ?? 'unknown'}\`
       Start time: \`${readableDate} ${readableTime}\`
       `)
-      .setFooter(`Ticket ID: ${this.id} | ${this.type.name}`)
-    await this.channel?.send(this.author.toString(), ticketInfoEmbed)
+      .setFooter({ text: `Ticket ID: ${this.id} | ${this.type.name}` })
+    await this.channel?.send({ content: this.author.toString(), embeds: [ticketInfoEmbed] })
 
-    const additionalInfoPanel = this.guild.panels.resolve('additionalTicketInfoPanel')
+    const additionalInfoPanel = this.context.panels.resolve('additionalTicketInfoPanel')
     if (additionalInfoPanel !== null) {
-      await this.channel?.send(additionalInfoPanel.embed)
+      await this.channel?.send({ embeds: [additionalInfoPanel.embed] })
     }
   }
 
   public async close (message: string, success: boolean, color?: number): Promise<void> {
-    if (this.guild.ticketArchivesChannel !== null) {
-      await this.guild.ticketArchivesChannel.send(await this.fetchArchiveAttachment())
+    if (this.context.ticketArchivesChannel !== null) {
+      await this.context.ticketArchivesChannel.send({ files: [await this.fetchArchiveAttachment()] })
     }
     await this.channel.delete()
 
     if (this.author !== null) {
       const embed = new MessageEmbed()
         .setColor(color ?? (success ? 0x00ff00 : 0xff0000))
-        .setAuthor(this.client.user?.username, this.client.user?.displayAvatarURL())
+        .setAuthor({ name: this.client.user.username, iconURL: this.client.user.displayAvatarURL() })
         .setTitle(message)
-      const sent = await this.client.send(this.author, embed) !== null
+      const sent = await this.client.send(this.author, { embeds: [embed] }) !== null
 
-      if (sent && success && this.guild.ratingsChannel !== null) {
+      if (sent && success && this.context.ratingsChannel !== null) {
         const rating = await this.requestRating()
         if (rating !== null) {
           await this.logRating(rating)
 
           const embed = new MessageEmbed()
-            .setColor(this.guild.primaryColor ?? applicationConfig.defaultColor)
-            .setAuthor(this.client.user?.username, this.client.user?.displayAvatarURL())
+            .setColor(this.context.primaryColor ?? applicationConfig.defaultColor)
+            .setAuthor({ name: this.client.user.username, iconURL: this.client.user.displayAvatarURL() })
             .setTitle('Rating submitted')
             .setDescription('Thank you!')
-          await this.client.send(this.author, embed)
+          await this.client.send(this.author, { embeds: [embed] })
         } else {
           const embed = new MessageEmbed()
-            .setColor(this.guild.primaryColor ?? applicationConfig.defaultColor)
-            .setAuthor(this.client.user?.username, this.client.user?.displayAvatarURL())
+            .setColor(this.context.primaryColor ?? applicationConfig.defaultColor)
+            .setAuthor({ name: this.client.user.username, iconURL: this.client.user.displayAvatarURL() })
             .setTitle('No rating submitted')
-          await this.client.send(this.author, embed)
+          await this.client.send(this.author, { embeds: [embed] })
         }
       }
     }
@@ -157,10 +170,10 @@ export default class Ticket extends BaseStructure {
     }
 
     const embed = new MessageEmbed()
-      .setColor(this.guild.primaryColor ?? applicationConfig.defaultColor)
-      .setAuthor(this.client.user?.username, this.client.user?.displayAvatarURL())
+      .setColor(this.context.primaryColor ?? applicationConfig.defaultColor)
+      .setAuthor({ name: this.client.user.username, iconURL: this.client.user.displayAvatarURL() })
       .setTitle('How would you rate the support you received?')
-    const message = await this.client.send(this.author, embed) as Message | null
+    const message = await this.client.send(this.author, { embeds: [embed] })
 
     if (message !== null) {
       const options = []
@@ -169,13 +182,13 @@ export default class Ticket extends BaseStructure {
       }
 
       const rating = await discordService.prompt(this.author as GuildMember, message, options)
-      return rating?.name.substring(0, 1) ?? null
+      return rating?.name?.substring(0, 1) ?? null
     }
     return null
   }
 
   public async logRating (rating: string): Promise<Message | null> {
-    if (this.guild.ratingsChannel === null) {
+    if (this.context.ratingsChannel === null) {
       return null
     }
 
@@ -191,15 +204,18 @@ export default class Ticket extends BaseStructure {
     }
 
     const embed = new MessageEmbed()
-      .setColor(this.guild.primaryColor ?? applicationConfig.defaultColor)
-      .setAuthor(this.author?.user?.tag ?? this.authorId ?? 'unknown', this.author?.user?.displayAvatarURL())
+      .setColor(this.context.primaryColor ?? applicationConfig.defaultColor)
+      .setAuthor({
+        name: this.author?.user?.tag ?? this.authorId ?? 'unknown',
+        iconURL: this.author?.user?.displayAvatarURL()
+      })
       .setTitle('Ticket Rating')
       .setDescription(stripIndents`
       ${pluralize('Moderator', this.moderators.cache.size)}: ${moderatorsString}
       Rating: **${rating}**
       `)
-      .setFooter(`Ticket ID: ${this.id}`)
-    return await this.guild.ratingsChannel.send(embed)
+      .setFooter({ text: `Ticket ID: ${this.id}` })
+    return await this.context.ratingsChannel.send({ embeds: [embed] })
   }
 
   public async fetchArchiveAttachment (): Promise<MessageAttachment> {
@@ -224,8 +240,10 @@ export default class Ticket extends BaseStructure {
 
     const messages = await this.fetchMessages()
     const firstMessage = messages.first()
-    if (typeof firstMessage !== 'undefined' &&
-      (firstMessage.author.id !== this.client.user?.id || firstMessage.content !== this.author?.toString())) {
+    if (
+      typeof firstMessage !== 'undefined' &&
+      (firstMessage.author.id !== this.client.user.id || firstMessage.content !== this.author?.toString())
+    ) {
       output += '...\n\n'
       output += '='.repeat(100) + '\n\n'
     }
@@ -254,12 +272,17 @@ export default class Ticket extends BaseStructure {
   public async fetchAuthorData (): Promise<{ robloxId: number | null, robloxUsername: string | null }> {
     let robloxId = null
     let robloxUsername = null
-    try {
-      robloxId = this.author?.robloxId ?? (await this.author?.fetchVerificationData())?.robloxId ?? null
-      robloxUsername = this.author?.robloxUsername ?? (robloxId !== null
-        ? (await userService.getUser(robloxId)).name
-        : null)
-    } catch {}
+    if (this.author !== null) {
+      try {
+        const verificationData = await verificationService.fetchVerificationData(this.author.id)
+        if (verificationData !== null) {
+          robloxId = verificationData.robloxId
+          robloxUsername = robloxId !== null
+            ? (await userService.getUser(robloxId)).name
+            : null
+        }
+      } catch {}
+    }
     return { robloxId, robloxUsername }
   }
 
@@ -275,11 +298,11 @@ export default class Ticket extends BaseStructure {
   }
 
   public async update (data: TicketUpdateOptions): Promise<Ticket> {
-    return await this.guild.tickets.update(this, data)
+    return await this.context.tickets.update(this, data)
   }
 
   public async delete (): Promise<void> {
-    return await this.guild.tickets.delete(this)
+    return await this.context.tickets.delete(this)
   }
 
   public async onMessage (message: Message): Promise<void> {
@@ -288,7 +311,7 @@ export default class Ticket extends BaseStructure {
     }
     if (message.member.id === this.authorId) {
       if (this.timeout !== null) {
-        this.client.clearTimeout(this.timeout)
+        clearTimeout(this.timeout)
         this.timeout = null
       }
     } else {

@@ -1,15 +1,28 @@
-import type { Client, Guild } from 'discord.js'
+import { type ManagerFactory, constants } from '../utils'
+import { inject, injectable } from 'inversify'
 import Group from './group'
 import type { Group as GroupEntity } from '../entities'
-import GroupTextChannelManager from '../managers/group-text-channel'
+import type { GroupTextChannelManager } from '../managers'
+import type { GuildContext } from '.'
+import type { TextChannel } from 'discord.js'
 
+const { TYPES } = constants
+
+@injectable()
 export default class ChannelGroup extends Group {
+  @inject(TYPES.ManagerFactory)
+  private readonly managerFactory!: ManagerFactory
+
   public _channels: string[]
 
-  public constructor (client: Client, data: GroupEntity, guild: Guild) {
-    super(client, data, guild)
+  public constructor () {
+    super()
 
     this._channels = []
+  }
+
+  public override setOptions (data: GroupEntity, context: GuildContext): void {
+    super.setOptions(data, context)
 
     this.setup(data)
   }
@@ -23,6 +36,6 @@ export default class ChannelGroup extends Group {
   }
 
   public get channels (): GroupTextChannelManager {
-    return new GroupTextChannelManager(this)
+    return this.managerFactory<GroupTextChannelManager, TextChannel>('GroupTextChannelManager')(this)
   }
 }

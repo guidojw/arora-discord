@@ -1,10 +1,18 @@
-import type { Client, Guild, GuildEmoji, Role } from 'discord.js'
+import type { GuildEmoji, Role } from 'discord.js'
+import type { AbstractConstructor } from '../utils'
 import BaseStructure from './base'
-import Postable from './mixins/postable'
+import type { GuildContext } from '.'
+import { Postable } from './mixins'
 import type { RoleMessage as RoleMessageEntity } from '../entities'
+import { injectable } from 'inversify'
 
-export default class RoleMessage extends Postable(BaseStructure) {
-  public readonly guild: Guild
+@injectable()
+export default class RoleMessage extends Postable<
+AbstractConstructor<BaseStructure<RoleMessageEntity>>,
+RoleMessageEntity
+>(BaseStructure) {
+  public context!: GuildContext
+
   public id!: number
   public roleId!: string
   public messageId!: string | null
@@ -13,10 +21,8 @@ export default class RoleMessage extends Postable(BaseStructure) {
   private _emoji!: string | null
   private _emojiId!: string | null
 
-  public constructor (client: Client, data: RoleMessageEntity, guild: Guild) {
-    super(client)
-
-    this.guild = guild
+  public setOptions (data: RoleMessageEntity, context: GuildContext): void {
+    this.context = context
 
     this.setup(data)
   }
@@ -32,7 +38,7 @@ export default class RoleMessage extends Postable(BaseStructure) {
 
   public get emoji (): GuildEmoji | string | null {
     return this._emojiId !== null
-      ? this.guild.emojis.cache.get(this._emojiId) ?? null
+      ? this.context.guild.emojis.cache.get(this._emojiId) ?? null
       : this._emoji
   }
 
@@ -41,10 +47,10 @@ export default class RoleMessage extends Postable(BaseStructure) {
   }
 
   public get role (): Role | null {
-    return this.guild.roles.cache.get(this.roleId) ?? null
+    return this.context.guild.roles.cache.get(this.roleId) ?? null
   }
 
   public async delete (): Promise<void> {
-    return await this.guild.roleMessages.delete(this)
+    return await this.context.roleMessages.delete(this)
   }
 }

@@ -1,8 +1,8 @@
 import * as Sentry from '@sentry/node'
-import { AroraClient } from '../client'
+import type { AroraClient } from '../client'
 import type { BaseJob } from '../jobs'
 import { RewriteFrames } from '@sentry/integrations'
-import { constants } from '../util'
+import { constants } from '../utils'
 import container from '../configs/container'
 import { createConnection } from 'typeorm'
 import cron from 'node-cron'
@@ -31,11 +31,12 @@ export async function init (): Promise<AroraClient> {
   const healthCheckJob = jobFactory(healthCheckJobConfig.name)
   cron.schedule(
     healthCheckJobConfig.expression,
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    healthCheckJob.run.bind(healthCheckJob.run, 'main')
+    () => {
+      Promise.resolve(healthCheckJob.run('main')).catch(console.error)
+    }
   )
 
-  const client = new AroraClient({ commandEditableDuration: 0 })
+  const client = container.get<AroraClient>(TYPES.Client)
   await client.login(process.env.DISCORD_TOKEN)
 
   return client

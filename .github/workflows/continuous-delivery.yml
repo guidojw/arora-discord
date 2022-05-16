@@ -153,6 +153,7 @@ jobs:
             cd /opt/docker/$PROJECT_NAME/$STAGE
             docker-compose pull
             docker-compose run --rm app yarn run typeorm migration:run
+            docker-compose run --rm app node bin/update-commands.js
             docker-compose up -d
 
       - name: Finalize Sentry release

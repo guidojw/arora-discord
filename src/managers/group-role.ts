@@ -1,32 +1,32 @@
-import type { Collection, Guild, Role, RoleResolvable, Snowflake } from 'discord.js'
+import type { Collection, Role, RoleResolvable, Snowflake } from 'discord.js'
 import type { Group as GroupEntity, Role as RoleEntity } from '../entities'
-import { Repository } from 'typeorm'
-import type { RoleGroup } from '../structures'
-import { constants } from '../util'
-import container from '../configs/container'
-import getDecorators from 'inversify-inject-decorators'
+import type { GuildContext, RoleGroup } from '../structures'
+import { inject, injectable } from 'inversify'
+import BaseManager from './base'
+import type { Repository } from 'typeorm'
+import { constants } from '../utils'
 
 const { TYPES } = constants
-const { lazyInject } = getDecorators(container)
 
-export default class GroupRoleManager {
-  @lazyInject(TYPES.GroupRepository)
+@injectable()
+export default class GroupRoleManager extends BaseManager<string, Role, RoleResolvable> {
+  @inject(TYPES.GroupRepository)
   private readonly groupRepository!: Repository<GroupEntity>
 
-  public readonly group: RoleGroup
-  public readonly guild: Guild
+  public group!: RoleGroup
+  public context!: GuildContext
 
-  public constructor (group: RoleGroup) {
+  public override setOptions (group: RoleGroup): void {
     this.group = group
-    this.guild = group.guild
+    this.context = group.context
   }
 
   public get cache (): Collection<Snowflake, Role> {
-    return this.guild.roles.cache.filter(role => this.group._roles.includes(role.id))
+    return this.context.guild.roles.cache.filter(role => this.group._roles.includes(role.id))
   }
 
   public async add (roleResolvable: RoleResolvable): Promise<RoleGroup> {
-    const role = this.guild.roles.resolve(roleResolvable)
+    const role = this.context.guild.roles.resolve(roleResolvable)
     if (role === null) {
       throw new Error('Invalid role.')
     }
@@ -38,7 +38,7 @@ export default class GroupRoleManager {
       this.group.id,
       { relations: ['channels', 'roles'] }
     ) as GroupEntity & { roles: RoleEntity[] }
-    group.roles.push({ id: role.id, guildId: this.guild.id })
+    group.roles.push({ id: role.id, guildId: this.context.id })
     await this.groupRepository.save(group)
     this.group.setup(group)
 
@@ -46,7 +46,7 @@ export default class GroupRoleManager {
   }
 
   public async remove (role: RoleResolvable): Promise<RoleGroup> {
-    const id = this.guild.roles.resolveID(role)
+    const id = this.context.guild.roles.resolveId(role)
     if (id === null) {
       throw new Error('Invalid role.')
     }

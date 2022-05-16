@@ -1,22 +1,32 @@
-import { type Client, type Guild, type Message, MessageEmbed, type TextChannel } from 'discord.js'
+import { type Message, MessageEmbed, type TextChannel } from 'discord.js'
+import type { AbstractConstructor } from '../utils'
 import BaseStructure from './base'
+import type { GuildContext } from '.'
 import type { Panel as PanelEntity } from '../entities'
-import Postable from './mixins/postable'
+import { Postable } from './mixins'
+import { injectable } from 'inversify'
 
 export interface PanelUpdateOptions { name?: string, content?: object, message?: Message }
 
-export default class Panel extends Postable(BaseStructure) {
-  public readonly guild: Guild
+@injectable()
+export default class Panel extends Postable<
+AbstractConstructor<BaseStructure<PanelEntity>>,
+PanelEntity
+>(BaseStructure) {
+  public context!: GuildContext
+
   public id!: number
   public name!: string
   public content!: string
   public messageId!: string | null
   public channelId!: string | null
 
-  public constructor (client: Client, data: PanelEntity, guild: Guild) {
-    super(client)
+  public constructor () {
+    super()
+  }
 
-    this.guild = guild
+  public setOptions (data: PanelEntity, context: GuildContext): void {
+    this.context = context
 
     this.setup(data)
   }
@@ -34,15 +44,15 @@ export default class Panel extends Postable(BaseStructure) {
   }
 
   public async update (data: PanelUpdateOptions): Promise<Panel> {
-    return await this.guild.panels.update(this, data)
+    return await this.context.panels.update(this, data)
   }
 
   public async delete (): Promise<void> {
-    return await this.guild.panels.delete(this)
+    return await this.context.panels.delete(this)
   }
 
   public async post (channel: TextChannel): Promise<Panel> {
-    return await this.guild.panels.post(this, channel)
+    return await this.context.panels.post(this, channel)
   }
 
   public override toString (): string {

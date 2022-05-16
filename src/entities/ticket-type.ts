@@ -4,7 +4,7 @@ import { IsNotEmpty, ValidateIf } from 'class-validator'
 import Guild from './guild'
 import Message from './message'
 import Ticket from './ticket'
-import { decorators } from '../util'
+import { decorators } from '../utils'
 
 const { Nand } = decorators
 

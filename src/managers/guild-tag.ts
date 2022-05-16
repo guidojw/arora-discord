@@ -1,47 +1,40 @@
-import { type Guild, MessageEmbed } from 'discord.js'
-import { Tag, type TagUpdateOptions } from '../structures'
-import BaseManager from './base'
-import type { CommandoClient } from 'discord.js-commando'
-import { Repository } from 'typeorm'
+import { type GuildContext, Tag, type TagUpdateOptions } from '../structures'
+import { inject, injectable } from 'inversify'
+import { DataManager } from './base'
+import { MessageEmbed } from 'discord.js'
+import type { Repository } from 'typeorm'
 import type { Tag as TagEntity } from '../entities'
 import type { TagNameResolvable } from './tag-tag-name'
-import { constants } from '../util'
-import container from '../configs/container'
+import { constants } from '../utils'
 import { discordService } from '../services'
-import getDecorators from 'inversify-inject-decorators'
+
+const { TYPES } = constants
 
 export type TagResolvable = TagNameResolvable | Tag | number
 
-const { TYPES } = constants
-const { lazyInject } = getDecorators(container)
-
-export default class GuildTagManager extends BaseManager<Tag, TagResolvable> {
-  @lazyInject(TYPES.TagRepository)
+@injectable()
+export default class GuildTagManager extends DataManager<number, Tag, TagResolvable, TagEntity> {
+  @inject(TYPES.TagRepository)
   private readonly tagRepository!: Repository<TagEntity>
 
-  public readonly guild: Guild
+  public context!: GuildContext
 
-  public constructor (guild: Guild, iterable?: Iterable<TagEntity>) {
-    // @ts-expect-error
-    super(guild.client, iterable, Tag)
-
-    this.guild = guild
+  public constructor () {
+    super(Tag)
   }
 
-  public override add (data: TagEntity, cache = true): Tag {
-    return super.add(data, cache, { id: data.id, extras: [this.guild] })
+  public override setOptions (context: GuildContext): void {
+    this.context = context
+  }
+
+  public override add (data: TagEntity): Tag {
+    return super.add(data, { id: data.id, extras: [this.context] })
   }
 
   public async create (name: string, content: string | object): Promise<Tag> {
     name = name.toLowerCase()
     if (this.resolve(name) !== null) {
       throw new Error('A tag with that name already exists.')
-    }
-    const first = name.split(/ +/)[0]
-    if (name === 'all' ||
-      (this.client as CommandoClient).registry.commands.some(command => command.name === first ||
-        command.aliases.includes(first))) {
-      throw new Error('Not allowed, name is reserved.')
     }
     if (typeof content !== 'string') {
       const embed = new MessageEmbed(content)
@@ -60,7 +53,7 @@ export default class GuildTagManager extends BaseManager<Tag, TagResolvable> {
     }
 
     const newData = await this.tagRepository.save(this.tagRepository.create({
-      guildId: this.guild.id,
+      guildId: this.context.id,
       content,
       names: [{ name }]
     }))
@@ -69,7 +62,7 @@ export default class GuildTagManager extends BaseManager<Tag, TagResolvable> {
   }
 
   public async delete (tag: TagResolvable): Promise<void> {
-    const id = this.resolveID(tag)
+    const id = this.resolveId(tag)
     if (id === null) {
       throw new Error('Invalid tag.')
     }
@@ -85,7 +78,7 @@ export default class GuildTagManager extends BaseManager<Tag, TagResolvable> {
     tag: TagResolvable,
     data: TagUpdateOptions
   ): Promise<Tag> {
-    const id = this.resolveID(tag)
+    const id = this.resolveId(tag)
     if (id === null) {
       throw new Error('Invalid tag.')
     }
@@ -111,15 +104,17 @@ export default class GuildTagManager extends BaseManager<Tag, TagResolvable> {
     }
 
     const newData = await this.tagRepository.save(this.tagRepository.create({
-      id,
-      ...changes
+      ...changes,
+      id
     }))
 
     const _tag = this.cache.get(id)
     _tag?.setup(newData)
-    return _tag ?? this.add(newData, false)
+    return _tag ?? this.add(newData)
   }
 
+  public override resolve (tag: Tag): Tag
+  public override resolve (tag: TagResolvable): Tag | null
   public override resolve (tag: TagResolvable): Tag | null {
     if (typeof tag === 'string') {
       return this.cache.find(otherTag => otherTag.names.resolve(tag) !== null) ?? null
@@ -127,10 +122,12 @@ export default class GuildTagManager extends BaseManager<Tag, TagResolvable> {
     return super.resolve(tag)
   }
 
-  public override resolveID (tag: TagResolvable): number | null {
+  public override resolveId (tag: number): number
+  public override resolveId (tag: TagResolvable): number | null
+  public override resolveId (tag: TagResolvable): number | null {
     if (typeof tag === 'string') {
-      return this.cache.find(otherTag => otherTag.names.resolve(tag) !== null)?.id ?? null
+      return this.resolve(tag)?.id ?? null
     }
-    return super.resolveID(tag)
+    return super.resolveId(tag)
   }
 }

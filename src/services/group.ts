@@ -2,7 +2,7 @@ import * as discordService from './discord'
 import * as userService from '../services/user'
 import type { GetGroup, GetGroupRoles } from '@guidojw/bloxy/dist/client/apis/GroupsAPI'
 import { applicationAdapter, robloxAdapter } from '../adapters'
-import { timeUtil, util } from '../util'
+import { timeUtil, util } from '../utils'
 import type { GetUsers } from './user'
 import type { MessageEmbed } from 'discord.js'
 import pluralize from 'pluralize'
@@ -95,9 +95,9 @@ export function getBanRow (ban: Ban, { users, roles }: { users: GetUsers, roles:
 
   let durationString = ''
   if (ban.duration !== null) {
-    const days = ban.duration / (24 * 60 * 60 * 1000)
+    const days = ban.duration / 86_400_000
     const extensionDays = ban.extensions.reduce((result, extension) => result + extension.duration, 0) /
-      (24 * 60 * 60 * 1000)
+      86_400_000
     const extensionString = extensionDays !== 0
       ? ` (${Math.sign(extensionDays) === 1 ? '+' : ''}${extensionDays})`
       : ''

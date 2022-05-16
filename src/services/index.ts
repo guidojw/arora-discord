@@ -1,3 +1,6 @@
 export * as discordService from './discord'
 export * as groupService from './group'
 export * as userService from './user'
+export * as verificationService from './verification'
+export { default as ChannelLinkService } from './channel-link'
+export { default as PersistentRoleService } from './persistent-role'
