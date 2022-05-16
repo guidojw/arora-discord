@@ -3,7 +3,8 @@ import { ApplicationCommandOptionType, type RESTPutAPIApplicationCommandsJSONBod
 const persistentRolesCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'persistentroles',
   description: 'Persist or unpersist roles on a member',
-  default_permission: false,
+  default_member_permissions: '0',
+  dm_permission: false,
   options: [{
     name: 'persist',
     description: 'Persist a role on a member',

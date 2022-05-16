@@ -3,7 +3,8 @@ import type { RESTPutAPIApplicationCommandsJSONBody } from 'discord-api-types/v1
 const deleteSuggestionCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'deletesuggestion',
   description: 'Delete your last suggestion',
-  default_permission: false
+  default_member_permissions: '0',
+  dm_permission: false
 }
 
 export default deleteSuggestionCommand

@@ -3,7 +3,8 @@ import { ApplicationCommandOptionType, type RESTPutAPIApplicationCommandsJSONBod
 const trainingsCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'trainings',
   description: 'Schedule or cancel a training',
-  default_permission: false,
+  default_member_permissions: '0',
+  dm_permission: false,
   options: [{
     name: 'schedule',
     description: 'Schedule a training',

@@ -3,7 +3,8 @@ import { ApplicationCommandOptionType, type RESTPutAPIApplicationCommandsJSONBod
 const ticketTypesCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'tickettypes',
   description: 'Create, link, delete or list a ticket type',
-  default_permission: false,
+  default_member_permissions: '0',
+  dm_permission: false,
   options: [{
     name: 'create',
     description: 'Create a ticket type',

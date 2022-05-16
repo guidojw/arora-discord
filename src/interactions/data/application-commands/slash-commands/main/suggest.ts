@@ -3,7 +3,8 @@ import { ApplicationCommandOptionType, type RESTPutAPIApplicationCommandsJSONBod
 const suggestCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'suggest',
   description: 'Make a suggestion',
-  default_permission: false,
+  default_member_permissions: '0',
+  dm_permission: false,
   options: [{
     name: 'suggestion',
     description: 'The suggestion to make',

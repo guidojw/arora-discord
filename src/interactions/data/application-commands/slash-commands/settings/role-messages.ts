@@ -3,7 +3,8 @@ import { ApplicationCommandOptionType, type RESTPutAPIApplicationCommandsJSONBod
 const roleMessagesCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'rolemessages',
   description: 'Create, delete or list a role message',
-  default_permission: false,
+  default_member_permissions: '0',
+  dm_permission: false,
   options: [{
     name: 'create',
     description: 'Create a role message',

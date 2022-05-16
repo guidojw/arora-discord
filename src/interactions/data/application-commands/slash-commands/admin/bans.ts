@@ -3,7 +3,8 @@ import { ApplicationCommandOptionType, type RESTPutAPIApplicationCommandsJSONBod
 const bansCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'bans',
   description: 'Ban or unban a Roblox user',
-  default_permission: false,
+  default_member_permissions: '0',
+  dm_permission: false,
   options: [{
     name: 'create',
     description: 'Ban a Roblox user',

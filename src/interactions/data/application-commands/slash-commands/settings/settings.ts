@@ -13,7 +13,8 @@ const choices = getEnumKeys(GuildSetting)
 const settingsCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'settings',
   description: 'Get or set a guild setting',
-  default_permission: false,
+  default_member_permissions: '0',
+  dm_permission: false,
   options: [{
     name: 'get',
     description: 'Get a guild setting',

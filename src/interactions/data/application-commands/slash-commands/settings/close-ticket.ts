@@ -3,7 +3,8 @@ import type { RESTPutAPIApplicationCommandsJSONBody } from 'discord-api-types/v1
 const closeTicketCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'closeticket',
   description: 'Close this ticket',
-  default_permission: false
+  default_member_permissions: '0',
+  dm_permission: false
 }
 
 export default closeTicketCommand

@@ -3,7 +3,8 @@ import type { RESTPutAPIApplicationCommandsJSONBody } from 'discord-api-types/v1
 const getShoutCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'getshout',
   description: 'Get the group\'s shout',
-  default_permission: false
+  default_member_permissions: '0',
+  dm_permission: false
 }
 
 export default getShoutCommand

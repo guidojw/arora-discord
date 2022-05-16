@@ -7,7 +7,8 @@ import {
 const channelLinksCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'channellinks',
   description: 'Link or unlink a text channel from a voice channel',
-  default_permission: false,
+  default_member_permissions: '0',
+  dm_permission: false,
   options: [{
     name: 'link',
     description: 'Link a voice channel to a text channel',

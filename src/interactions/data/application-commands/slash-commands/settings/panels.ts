@@ -7,7 +7,8 @@ import {
 const panelsCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'panels',
   description: 'Create, edit, post, list or delete a panel',
-  default_permission: false,
+  default_member_permissions: '0',
+  dm_permission: false,
   options: [{
     name: 'create',
     description: 'Create a panel',

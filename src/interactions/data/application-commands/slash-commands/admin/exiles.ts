@@ -3,7 +3,8 @@ import { ApplicationCommandOptionType, type RESTPutAPIApplicationCommandsJSONBod
 const exilesCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'exiles',
   description: 'Exile or unexile a Roblox user',
-  default_permission: false,
+  default_member_permissions: '0',
+  dm_permission: false,
   options: [{
     name: 'create',
     description: 'Exile a Roblox user',

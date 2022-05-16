@@ -3,7 +3,8 @@ import { ApplicationCommandOptionType, type RESTPutAPIApplicationCommandsJSONBod
 const demoteCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'demote',
   description: 'Demote a Roblox user in the group',
-  default_permission: false,
+  default_member_permissions: '0',
+  dm_permission: false,
   options: [{
     name: 'username',
     description: 'Username of the user to demote',

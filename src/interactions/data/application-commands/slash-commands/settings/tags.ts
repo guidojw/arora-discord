@@ -3,7 +3,8 @@ import { ApplicationCommandOptionType, type RESTPutAPIApplicationCommandsJSONBod
 const tagsCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'tags',
   description: 'Create, edit or delete a tag',
-  default_permission: false,
+  default_member_permissions: '0',
+  dm_permission: false,
   options: [{
     name: 'create',
     description: 'Create a tag',

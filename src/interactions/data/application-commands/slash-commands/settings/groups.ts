@@ -7,7 +7,8 @@ import {
 const groupsCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'groups',
   description: 'Create, edit, delete or list a group',
-  default_permission: false,
+  default_member_permissions: '0',
+  dm_permission: false,
   options: [{
     name: 'create',
     description: 'Create a group',

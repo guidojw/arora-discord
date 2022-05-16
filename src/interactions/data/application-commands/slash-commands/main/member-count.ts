@@ -3,7 +3,8 @@ import { ApplicationCommandOptionType, type RESTPutAPIApplicationCommandsJSONBod
 const memberCountCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'membercount',
   description: 'Fetch a group\'s member count',
-  default_permission: false,
+  default_member_permissions: '0',
+  dm_permission: false,
   options: [{
     name: 'id',
     description: 'The ID of the group to fetch the member count of',

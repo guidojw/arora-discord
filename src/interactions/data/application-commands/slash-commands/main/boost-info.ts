@@ -3,7 +3,8 @@ import { ApplicationCommandOptionType, type RESTPutAPIApplicationCommandsJSONBod
 const boostInfoCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'boostinfo',
   description: 'Get a member\'s boost information',
-  default_permission: false,
+  default_member_permissions: '0',
+  dm_permission: false,
   options: [{
     name: 'member',
     description: 'The member to get the boost information of',

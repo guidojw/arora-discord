@@ -15,7 +15,8 @@ const choices = getEnumKeys(ActivityType)
 const setActivityCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'setactivity',
   description: 'Set the bot\'s activity',
-  default_permission: false,
+  default_member_permissions: '0',
+  dm_permission: false,
   options: [{
     name: 'name',
     description: 'The name for the new activity',

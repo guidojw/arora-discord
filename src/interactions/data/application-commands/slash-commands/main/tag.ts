@@ -3,7 +3,8 @@ import { ApplicationCommandOptionType, type RESTPutAPIApplicationCommandsJSONBod
 const tagCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'tag',
   description: 'Post a tag',
-  default_permission: false,
+  default_member_permissions: '0',
+  dm_permission: false,
   options: [{
     name: 'query',
     description: 'The tag to post',
