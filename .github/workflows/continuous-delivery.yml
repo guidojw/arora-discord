@@ -23,7 +23,7 @@ jobs:
     steps:
       - name: Validate branch
         run: |
-          if [ $GITHUB_REF_NAME != 'staging' ] && [ $GITHUB_REF_NAME != 'main' ]; then
+          if [ "$GITHUB_REF_NAME" != 'staging' ] && [ "$GITHUB_REF_NAME" != 'main' ]; then
             echo 'This workflow can only be run on branches staging and main.'
             exit 1
           fi
@@ -44,7 +44,7 @@ jobs:
         env:
           INPUT_MERGE: ${{ github.event.inputs.merge }}
         run: |
-          if [ $GITHUB_REF_NAME = 'main' ]; then
+          if [ "$GITHUB_REF_NAME" = 'main' ]; then
             if [ "${INPUT_MERGE,,}" = 'y' ]; then
               git fetch origin staging
               if ! git diff origin/main origin/staging --exit-code; then
@@ -71,7 +71,7 @@ jobs:
         env:
           HAS_DIFF: ${{ fromJSON(needs.metadata.outputs.has_diff || false) }}
         run: |
-          if [ $GITHUB_REF_NAME != 'main' ]; then
+          if [ "$GITHUB_REF_NAME" != 'main' ]; then
             echo 'Can only merge when the workflow target branch is main.'
             exit 1
           fi
@@ -98,7 +98,7 @@ jobs:
         if: fromJSON(needs.metadata.outputs.has_diff)
         run: |
           git fetch origin main
-          echo '::set-output name=sha::'$(git rev-parse origin/main)
+          echo '::set-output name=sha::'"$(git rev-parse origin/main)"
 
   continuous_integration:
     name: Continuous Integration
@@ -192,8 +192,8 @@ jobs:
         run: |
           echo '::set-output name=conclusion::success'
           for RESULT in $RESULTS; do
-            if [ $RESULT = 'cancelled' ] || [ $RESULT = 'failure' ]; then
-              echo '::set-output name=conclusion::'$RESULT
+            if [ "$RESULT" = 'cancelled' ] || [ "$RESULT" = 'failure' ]; then
+              echo '::set-output name=conclusion::'"$RESULT"
               break
             fi
           done
