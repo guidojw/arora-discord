@@ -132,7 +132,8 @@ export default class Dispatcher {
     | CommandInteractionOption['user']
     | CommandInteractionOption['member']
     | CommandInteractionOption['channel']
-    | CommandInteractionOption['role'],
+    | CommandInteractionOption['role']
+    | CommandInteractionOption['attachment'],
     undefined
     > {
     switch (option.type) {
@@ -149,6 +150,7 @@ export default class Dispatcher {
       case 'CHANNEL': return option.channel ?? null
       case 'ROLE': return option.role ?? null
       case 'MENTIONABLE': return option.member ?? option.user ?? option.role ?? null
+      case 'ATTACHMENT': return option.attachment ?? null
       case 'NUMBER': return option.value ?? null
       default: return null
     }
