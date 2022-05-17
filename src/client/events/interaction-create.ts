@@ -31,10 +31,15 @@ export default class InteractionCreateEventHandler implements BaseHandler {
       }
     } catch (err: any) {
       if (interaction.isRepliable() && !interaction.replied) {
-        return await interaction.reply({
-          content: err.toString(),
-          ephemeral: true
-        })
+        if (interaction.deferred) {
+          await interaction.editReply(err.toString())
+        } else {
+          await interaction.reply({
+            content: err.toString(),
+            ephemeral: true
+          })
+        }
+        return
       }
       throw err
     }
