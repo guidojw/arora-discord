@@ -31,7 +31,7 @@ const panelsCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
     options: [{
       name: 'id',
       description: 'The ID of the panel to delete',
-      type: ApplicationCommandOptionType.Integer,
+      type: ApplicationCommandOptionType.String,
       required: true
     }]
   }, {
@@ -41,7 +41,7 @@ const panelsCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
     options: [{
       name: 'id',
       description: 'The ID of the panel to edit',
-      type: ApplicationCommandOptionType.Integer,
+      type: ApplicationCommandOptionType.String,
       required: true
     }, {
       name: 'key',
@@ -65,7 +65,7 @@ const panelsCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
     options: [{
       name: 'id',
       description: 'The ID of the panel to post',
-      type: ApplicationCommandOptionType.Integer,
+      type: ApplicationCommandOptionType.String,
       required: true
     }, {
       name: 'channel',
@@ -80,7 +80,7 @@ const panelsCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
     options: [{
       name: 'id',
       description: 'The ID of the panel to list',
-      type: ApplicationCommandOptionType.Integer
+      type: ApplicationCommandOptionType.String
     }]
   }, {
     name: 'raw',
@@ -89,7 +89,7 @@ const panelsCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
     options: [{
       name: 'id',
       description: 'The ID of the panel to get the raw content of',
-      type: ApplicationCommandOptionType.Integer,
+      type: ApplicationCommandOptionType.String,
       required: true
     }]
   }]
