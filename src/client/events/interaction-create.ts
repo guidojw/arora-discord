@@ -26,7 +26,7 @@ export default class InteractionCreateEventHandler implements BaseHandler {
         await context.log(
           interaction.user,
           // eslint-disable-next-line @typescript-eslint/no-base-to-string
-          `${interaction.user.toString()} **used command** \`/${interaction.commandName}${subCommandName !== null ? ` ${subCommandName}` : ''}\` **in** ${(interaction.channel as TextChannel).toString()}`
+          `${interaction.user.toString()} **used command** \`/${interaction.commandName}${subCommandName !== null ? ` ${subCommandName}` : ''}\`${interaction.channel !== null ? `**in** ${(interaction.channel as TextChannel).toString()}` : ''}`
         )
       }
     } catch (err: any) {
