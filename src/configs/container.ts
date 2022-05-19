@@ -15,12 +15,13 @@ import {
   packetHandlers
 } from '../client'
 import { Container, type interfaces } from 'inversify'
-import { type Repository, getRepository } from 'typeorm'
 import type { BaseArgumentType } from '../argument-types'
 import type { BaseJob } from '../jobs'
+import { type Repository } from 'typeorm'
 import { applicationCommands } from '../interactions'
 import applicationConfig from '../configs/application'
 import { constants } from '../utils'
+import dataSource from './data-source'
 
 const { TYPES } = constants
 
@@ -320,46 +321,46 @@ bind<interfaces.Factory<structures.BaseStructure<any>>>(TYPES.StructureFactory)
 
 // Repositories
 bind<Repository<entities.Channel>>(TYPES.ChannelRepository).toDynamicValue(() => {
-  return getRepository(entities.Channel)
+  return dataSource.getRepository(entities.Channel)
 })
 bind<Repository<entities.Emoji>>(TYPES.EmojiRepository).toDynamicValue(() => {
-  return getRepository(entities.Emoji)
+  return dataSource.getRepository(entities.Emoji)
 })
 bind<Repository<entities.Group>>(TYPES.GroupRepository).toDynamicValue(() => {
-  return getRepository(entities.Group)
+  return dataSource.getRepository(entities.Group)
 })
 bind<Repository<entities.Guild>>(TYPES.GuildRepository).toDynamicValue(() => {
-  return getRepository(entities.Guild)
+  return dataSource.getRepository(entities.Guild)
 })
 bind<Repository<entities.Member>>(TYPES.MemberRepository).toDynamicValue(() => {
-  return getRepository(entities.Member)
+  return dataSource.getRepository(entities.Member)
 })
 bind<Repository<entities.Message>>(TYPES.MessageRepository).toDynamicValue(() => {
-  return getRepository(entities.Message)
+  return dataSource.getRepository(entities.Message)
 })
 bind<Repository<entities.Panel>>(TYPES.PanelRepository).toDynamicValue(() => {
-  return getRepository(entities.Panel)
+  return dataSource.getRepository(entities.Panel)
 })
 bind<Repository<entities.Role>>(TYPES.RoleRepository).toDynamicValue(() => {
-  return getRepository(entities.Role)
+  return dataSource.getRepository(entities.Role)
 })
 bind<Repository<entities.RoleBinding>>(TYPES.RoleBindingRepository).toDynamicValue(() => {
-  return getRepository(entities.RoleBinding)
+  return dataSource.getRepository(entities.RoleBinding)
 })
 bind<Repository<entities.RoleMessage>>(TYPES.RoleMessageRepository).toDynamicValue(() => {
-  return getRepository(entities.RoleMessage)
+  return dataSource.getRepository(entities.RoleMessage)
 })
 bind<Repository<entities.Tag>>(TYPES.TagRepository).toDynamicValue(() => {
-  return getRepository(entities.Tag)
+  return dataSource.getRepository(entities.Tag)
 })
 bind<Repository<entities.TagName>>(TYPES.TagNameRepository).toDynamicValue(() => {
-  return getRepository(entities.TagName)
+  return dataSource.getRepository(entities.TagName)
 })
 bind<Repository<entities.Ticket>>(TYPES.TicketRepository).toDynamicValue(() => {
-  return getRepository(entities.Ticket)
+  return dataSource.getRepository(entities.Ticket)
 })
 bind<Repository<entities.TicketType>>(TYPES.TicketTypeRepository).toDynamicValue(() => {
-  return getRepository(entities.TicketType)
+  return dataSource.getRepository(entities.TicketType)
 })
 
 // Services
