@@ -82,10 +82,10 @@ export default class GuildTicketManager extends DataManager<number, Ticket, Tick
     }), {
       data: { userId: author.id }
     })).id
-    const newData = await this.ticketRepository.findOne(
-      id,
-      { relations: ['author'] }
-    ) as TicketEntity
+    const newData = await this.ticketRepository.findOne({
+      where: { id },
+      relations: { author: true }
+    }) as TicketEntity
     const ticket = this.add(newData)
 
     await this.context.log(
@@ -136,10 +136,10 @@ export default class GuildTicketManager extends DataManager<number, Ticket, Tick
       ...changes,
       id
     }))
-    const newData = await this.ticketRepository.findOne(
-      id,
-      { relations: ['author'] }
-    ) as TicketEntity
+    const newData = await this.ticketRepository.findOne({
+      where: { id },
+      relations: { author: true }
+    }) as TicketEntity
 
     const _ticket = this.cache.get(id)
     _ticket?.setup(newData)

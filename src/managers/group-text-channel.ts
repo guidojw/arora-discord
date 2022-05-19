@@ -35,10 +35,10 @@ export default class GroupTextChannelManager extends BaseManager<string, TextCha
       throw new Error('Group already contains channel.')
     }
 
-    const group = await this.groupRepository.findOne(
-      this.group.id,
-      { relations: ['channels', 'roles'] }
-    ) as GroupEntity & { channels: ChannelEntity[] }
+    const group = await this.groupRepository.findOne({
+      where: { id: this.group.id },
+      relations: { channels: true, roles: true }
+    }) as GroupEntity & { channels: ChannelEntity[] }
     group.channels.push({ id: channel.id, guildId: this.context.id })
     await this.groupRepository.save(group)
     this.group.setup(group)
@@ -55,10 +55,10 @@ export default class GroupTextChannelManager extends BaseManager<string, TextCha
       throw new Error('Group does not contain channel.')
     }
 
-    const group = await this.groupRepository.findOne(
-      this.group.id,
-      { relations: ['channels', 'roles'] }
-    ) as GroupEntity & { channels: ChannelEntity[] }
+    const group = await this.groupRepository.findOne({
+      where: { id: this.group.id },
+      relations: { channels: true, roles: true }
+    }) as GroupEntity & { channels: ChannelEntity[] }
     group.channels = group.channels.filter(channel => channel.id !== id)
     await this.groupRepository.save(group)
     this.group.setup(group)

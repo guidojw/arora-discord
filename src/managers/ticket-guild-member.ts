@@ -54,11 +54,11 @@ export default class TicketGuildMemberManager extends BaseManager<string, GuildM
     }
 
     const memberFields = { userId: member.id, guildId: this.context.id }
-    const memberData = await this.memberRepository.findOne(
-      memberFields,
-      { relations: ['moderatingTickets', 'roles'] }
-    ) ?? await this.memberRepository.save(this.memberRepository.create(memberFields))
-    const ticket = await this.ticketRepository.findOne(this.ticket.id) as TicketEntity
+    const memberData = await this.memberRepository.findOne({
+      where: memberFields,
+      relations: { moderatingTickets: true, roles: true }
+    }) ?? await this.memberRepository.save(this.memberRepository.create(memberFields))
+    const ticket = await this.ticketRepository.findOneBy({ id: this.ticket.id }) as TicketEntity
     if (typeof memberData.moderatingTickets === 'undefined') {
       memberData.moderatingTickets = []
     }

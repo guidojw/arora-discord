@@ -129,10 +129,10 @@ export default class GuildPanelManager extends DataManager<number, Panel, PanelR
     }), {
       data: options
     })
-    const newData = await this.panelRepository.findOne(
-      panel.id,
-      { relations: ['message'] }
-    ) as PanelEntity
+    const newData = await this.panelRepository.findOne({
+      where: { id: panel.id },
+      relations: { message: true }
+    }) as PanelEntity
 
     const _panel = this.cache.get(panel.id)
     _panel?.setup(newData)
@@ -171,10 +171,10 @@ export default class GuildPanelManager extends DataManager<number, Panel, PanelR
         guildId: this.context.id
       }
     })
-    const newData = await this.panelRepository.findOne(
-      panel.id,
-      { relations: ['message'] }
-    ) as PanelEntity
+    const newData = await this.panelRepository.findOne({
+      where: { id: panel.id },
+      relations: { message: true }
+    }) as PanelEntity
 
     const _panel = this.cache.get(panel.id)
     _panel?.setup(newData)

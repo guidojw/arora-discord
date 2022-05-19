@@ -34,10 +34,10 @@ export default class GroupRoleManager extends BaseManager<string, Role, RoleReso
       throw new Error('Role not found.')
     }
 
-    const group = await this.groupRepository.findOne(
-      this.group.id,
-      { relations: ['channels', 'roles'] }
-    ) as GroupEntity & { roles: RoleEntity[] }
+    const group = await this.groupRepository.findOne({
+      where: { id: this.group.id },
+      relations: { channels: true, roles: true }
+    }) as GroupEntity & { roles: RoleEntity[] }
     group.roles.push({ id: role.id, guildId: this.context.id })
     await this.groupRepository.save(group)
     this.group.setup(group)
@@ -54,10 +54,10 @@ export default class GroupRoleManager extends BaseManager<string, Role, RoleReso
       throw new Error('Role not found.')
     }
 
-    const group = await this.groupRepository.findOne(
-      this.group.id,
-      { relations: ['channels', 'roles'] }
-    ) as GroupEntity & { roles: RoleEntity[] }
+    const group = await this.groupRepository.findOne({
+      where: { id: this.group.id },
+      relations: { channels: true, roles: true }
+    }) as GroupEntity & { roles: RoleEntity[] }
     group.roles = group.roles.filter(role => role.id !== id)
     await this.groupRepository.save(group)
     this.group.setup(group)
