@@ -4,9 +4,9 @@ import type { BaseJob } from '../jobs'
 import { RewriteFrames } from '@sentry/integrations'
 import { constants } from '../utils'
 import container from '../configs/container'
-import { createConnection } from 'typeorm'
 import cron from 'node-cron'
 import cronConfig from '../configs/cron'
+import dataSource from '../configs/data-source'
 
 const { TYPES } = constants
 
@@ -24,7 +24,7 @@ export async function init (): Promise<AroraClient> {
     })
   }
 
-  await createConnection()
+  await dataSource.initialize()
 
   const jobFactory = container.get<(jobName: string) => BaseJob>(TYPES.JobFactory)
   const healthCheckJobConfig = cronConfig.healthCheckJob
