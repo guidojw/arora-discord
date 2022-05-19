@@ -41,7 +41,7 @@ jobs:
           fi
 
           if [ "$GITHUB_REF_NAME" = 'staging' ] || [ "$GITHUB_REF_NAME" = 'main' ]; then
-            BUILD_ARGS='BUILD_HASH='${INPUT_SHA:-GITHUB_SHA}
+            BUILD_ARGS='BUILD_HASH='${INPUT_SHA:-$GITHUB_SHA}
             if [ "$GITHUB_REF_NAME" = 'main' ]; then
               BUILD_ARGS+=$'\nNODE_ENV=production'
             else
