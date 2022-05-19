@@ -17,9 +17,8 @@ export class GuildSubscriber implements EntitySubscriberInterface<Guild> {
       if ((column.propertyName.includes('ChannelId') || column.propertyName.includes('CategoryId'))) {
         const value = event.entity[column.propertyName as keyof Guild] as string
         if (value != null) {
-          const entity = channelRepository.create({ id: value, guildId: event.entity.id })
-          if (typeof await channelRepository.findOne(entity) === 'undefined') {
-            await channelRepository.save(entity)
+          if (await channelRepository.findOneBy({ id: value }) === null) {
+            await channelRepository.save(channelRepository.create({ id: value, guildId: event.entity.id }))
           }
         }
       }

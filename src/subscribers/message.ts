@@ -9,9 +9,10 @@ export class MessageSubscriber implements EntitySubscriberInterface<Message> {
 
   public async beforeInsert (event: InsertEvent<Message>): Promise<void> {
     const channelRepository = event.manager.getRepository(Channel)
-    const entity = channelRepository.create({ id: event.entity.channelId, guildId: event.entity.guildId })
-    if (typeof await channelRepository.findOne(entity) === 'undefined') {
-      await channelRepository.save(entity)
+    if (await channelRepository.findOneBy({ id: event.entity.channelId }) === null) {
+      await channelRepository.save(
+        channelRepository.create({ id: event.entity.channelId, guildId: event.entity.guildId })
+      )
     }
   }
 }
