@@ -39,7 +39,7 @@ export default class ChannelLinkService {
   public async unlinkChannel (voiceChannel: VoiceBasedChannel, textChannel: TextChannel): Promise<void> {
     const data = await this.getData(voiceChannel)
 
-    if (typeof data === 'undefined' || !data?.toLinks.some(link => link.id === textChannel.id)) {
+    if (data === null || !data?.toLinks.some(link => link.id === textChannel.id)) {
       throw new Error('Voice channel does not have linked text channel.')
     } else {
       data.toLinks = data.toLinks.filter(link => link.id !== textChannel.id)
@@ -47,10 +47,10 @@ export default class ChannelLinkService {
     }
   }
 
-  private async getData (channel: GuildChannel): Promise<(ChannelEntity & { toLinks: ChannelEntity[] }) | undefined> {
-    return await this.channelRepository.findOne(
-      { id: channel.id, guildId: channel.guild.id },
-      { relations: ['toLinks'] }
-    ) as (ChannelEntity & { toLinks: ChannelEntity[] }) | undefined
+  private async getData (channel: GuildChannel): Promise<(ChannelEntity & { toLinks: ChannelEntity[] }) | null> {
+    return await this.channelRepository.findOne({
+      where: { id: channel.id, guildId: channel.guild.id },
+      relations: { toLinks: true }
+    }) as (ChannelEntity & { toLinks: ChannelEntity[] }) | null
   }
 }

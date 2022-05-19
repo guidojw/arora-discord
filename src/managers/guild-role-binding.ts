@@ -83,7 +83,7 @@ RoleBindingEntity
   }
 
   public async fetch (): Promise<Collection<number, RoleBinding>> {
-    const data = await this.roleBindingRepository.find({ guildId: this.context.id })
+    const data = await this.roleBindingRepository.findBy({ guildId: this.context.id })
     this.cache.clear()
     for (const rawRoleBinding of data) {
       this.add(rawRoleBinding)

@@ -1,23 +1,19 @@
-'use strict'
+import { DataSource, type DataSourceOptions } from 'typeorm'
+import dotenv from 'dotenv'
 
-require('dotenv').config()
+dotenv.config()
 
-const baseConfig = {
+const baseConfig: DataSourceOptions = {
   type: 'postgres',
   port: 5432,
   username: process.env.POSTGRES_USER,
   password: process.env.POSTGRES_PASSWORD,
   entities: ['dist/entities/**/*.js'],
   migrations: ['dist/migrations/**/*.js'],
-  subscribers: ['dist/subscribers/**/*.js'],
-  cli: {
-    entitiesDir: 'src/entities',
-    migrationsDir: 'src/migrations',
-    subscribersDir: 'src/subscribers'
-  }
+  subscribers: ['dist/subscribers/**/*.js']
 }
 
-module.exports = {
+const dataSource = new DataSource({
   development: {
     ...baseConfig,
     host: '127.0.0.1',
@@ -34,4 +30,6 @@ module.exports = {
     host: process.env.POSTGRES_HOST,
     database: 'arora_discord_staging'
   }
-}[process.env.NODE_ENV ?? 'development']
+}[process.env.NODE_ENV ?? 'development'] as DataSourceOptions)
+
+export default dataSource

@@ -14,24 +14,22 @@ export class TicketTypeSubscriber implements EntitySubscriberInterface<TicketTyp
 
     if (event.updatedColumns.some(column => column.propertyName === 'messageId') && event.entity.messageId != null) {
       const messageRepository = event.manager.getRepository(Message)
-      const messageEntity = messageRepository.create({
-        id: event.entity.messageId,
-        channelId: event.queryRunner.data.channelId,
-        guildId: event.queryRunner.data.guildId
-      })
-      if (typeof await messageRepository.findOne(messageEntity) === 'undefined') {
-        await messageRepository.save(messageEntity)
+      if (await messageRepository.findOneBy({ id: event.entity.messageId }) === null) {
+        await messageRepository.save(messageRepository.create({
+          id: event.entity.messageId,
+          channelId: event.queryRunner.data.channelId,
+          guildId: event.queryRunner.data.guildId
+        }))
       }
     }
 
     if (event.updatedColumns.some(column => column.propertyName === 'emojiId') && event.entity.emojiId != null) {
       const emojiRepository = event.manager.getRepository(Emoji)
-      const emojiEntity = emojiRepository.create({
-        id: event.entity.emojiId,
-        guildId: event.queryRunner.data.guildId
-      })
-      if (typeof await emojiRepository.findOne(emojiEntity) === 'undefined') {
-        await emojiRepository.save(emojiEntity)
+      if (await emojiRepository.findOneBy({ id: event.entity.emojiId }) === null) {
+        await emojiRepository.save(emojiRepository.create({
+          id: event.entity.emojiId,
+          guildId: event.queryRunner.data.guildId
+        }))
       }
     }
   }

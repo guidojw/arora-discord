@@ -40,7 +40,10 @@ export default class TagTagNameManager extends DataManager<string, TagName, TagN
     }
 
     const tagNameData = await this.tagNameRepository.save(this.tagNameRepository.create({ name, tagId: this.tag.id }))
-    const tagData = await this.tagRepository.findOne(this.tag.id, { relations: ['names'] }) as TagEntity
+    const tagData = await this.tagRepository.findOne({
+      where: { id: this.tag.id },
+      relations: { names: true }
+    }) as TagEntity
     if (typeof tagData.names === 'undefined') {
       tagData.names = []
     }
