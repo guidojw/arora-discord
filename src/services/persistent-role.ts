@@ -40,7 +40,7 @@ export default class PersistentRoleService {
   public async unpersistRole (member: GuildMember, role: Role): Promise<void> {
     const data = await this.getData(member)
 
-    if (typeof data === 'undefined' || !data?.roles.some(otherRole => otherRole.id === role.id)) {
+    if (data === null || !data?.roles.some(otherRole => otherRole.id === role.id)) {
       throw new Error('Member does not have role.')
     } else {
       data.roles = data.roles.filter(otherRole => otherRole.id !== role.id)
@@ -49,10 +49,10 @@ export default class PersistentRoleService {
     }
   }
 
-  private async getData (member: GuildMember): Promise<(MemberEntity & { roles: RoleEntity[] }) | undefined> {
-    return await this.memberRepository.findOne(
-      { userId: member.id, guildId: member.guild.id },
-      { relations: ['moderatingTickets', 'roles'] }
-    ) as (MemberEntity & { roles: RoleEntity[] }) | undefined
+  private async getData (member: GuildMember): Promise<(MemberEntity & { roles: RoleEntity[] }) | null> {
+    return await this.memberRepository.findOne({
+      where: { userId: member.id, guildId: member.guild.id },
+      relations: { moderatingTickets: true, roles: true }
+    }) as (MemberEntity & { roles: RoleEntity[] }) | null
   }
 }
