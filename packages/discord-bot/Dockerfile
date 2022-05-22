@@ -3,7 +3,7 @@ FROM node:18.2.0@sha256:3e2e7e08f088c7c9c0c836622f725540ade205f10160a91dd3cc8991
 WORKDIR /opt/app
 RUN yarn global add turbo
 COPY . .
-RUN turbo prune --scope=discord-bot --docker
+RUN turbo prune --scope=arora-discord --docker
 
 
 FROM node:18.2.0@sha256:3e2e7e08f088c7c9c0c836622f725540ade205f10160a91dd3cc899170d410ef AS installer
@@ -23,8 +23,8 @@ ENV BUILD_HASH=$BUILD_HASH
 
 COPY --from=base /opt/app/out/full/ .
 COPY --from=installer /opt/app/ .
-RUN yarn turbo run build --scope=discord-bot --include-dependencies --no-deps
+RUN yarn turbo run build --scope=arora-discord --include-dependencies --no-deps
 
 RUN chmod +x ./bin/wait-for-it.sh
 
-CMD yarn workspace discord-bot start
+CMD yarn workspace arora-discord start
