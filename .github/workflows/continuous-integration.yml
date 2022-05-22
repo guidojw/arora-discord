@@ -49,9 +49,9 @@ jobs:
           echo '::add-matcher::.github/problem-matchers/tsc.json'
 
       - name: Build test image
-        uses: guidojw/actions/build-docker-image@92f1fbb6058a84135e953d0d49462bccf3e6336a # tag=v1.2.0
+        uses: guidojw/actions/build-docker-image@db8a60933698fc34f3b6b3e605d927804b4b71ca # tag=v1.3.1
         with:
-          file: packages/${{ matrix.package }}/Dockerfile
+          context: packages/${{ matrix.package }}
           name: ${{ matrix.package }}
 
   lint:
