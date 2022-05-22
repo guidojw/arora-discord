@@ -18,11 +18,6 @@ jobs:
     outputs:
       packages: ${{ steps.filter.outputs.changes }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3.0.2
-        with:
-          ref: ${{ inputs.sha }}
-
       - name: Filter paths
         id: filter
         uses: dorny/paths-filter@b2feaf19c27470162a626bd6fa8438ae5b263721 # tag=v2.10.2
@@ -39,6 +34,11 @@ jobs:
       matrix:
         package: ${{ fromJSON(needs.directory_check.outputs.packages) }}
     steps:
+      - name: Checkout code
+        uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # tag=v3.0.2
+        with:
+          ref: ${{ inputs.sha }}
+
       - name: Add problem matchers
         run: |
           echo '::add-matcher::.github/problem-matchers/tsc.json'
