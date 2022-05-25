@@ -154,7 +154,6 @@ jobs:
             if [ "$STAGE" = 'production' ]; then
               docker-compose run --rm nsadmin yarn run typeorm migration:run
               docker-compose run --rm nsadmin node bin/update-commands.js
-              docker-compose run --rm tradmin yarn run typeorm migration:run
               docker-compose run --rm tradmin node bin/update-commands.js
             else
               docker-compose run --rm app yarn run typeorm migration:run
@@ -201,7 +200,7 @@ jobs:
           done
 
       - name: Update Continuous Delivery check run
-        uses: guidojw/actions/update-check-run@2b1dea8cbd9e44491c269e771b75636026caf8ca # tag=v1.1.0
+        uses: guidojw/actions/update-check-run@92f1fbb6058a84135e953d0d49462bccf3e6336a # tag=v1.2.0
         with:
           app_id: ${{ env.APP_ID }}
           private_key: ${{ secrets.APP_PRIVATE_KEY }}

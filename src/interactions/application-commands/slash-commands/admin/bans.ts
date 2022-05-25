@@ -219,7 +219,7 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
         await interaction.user.send({ embeds: [embed] })
       }
 
-      return await interaction.reply('Sent you a DM with the banlist.')
+      await interaction.editReply('Sent you a DM with the banlist.')
     }
   }
 }

@@ -107,7 +107,7 @@ GuildEntity
       ...changes,
       id: context.id
     }))
-    const newData = await this.guildRepository.findOne(context.id) as GuildEntity
+    const newData = await this.guildRepository.findOneBy({ id: context.id }) as GuildEntity
 
     const _context = this.cache.get(context.id)
     _context?.setup(newData)

@@ -97,10 +97,10 @@ TicketTypeEntity
       ...changes,
       id
     }))
-    const newData = await this.ticketTypeRepository.findOne(
-      id,
-      { relations: ['message'] }
-    ) as TicketTypeEntity
+    const newData = await this.ticketTypeRepository.findOne({
+      where: { id },
+      relations: { message: true }
+    }) as TicketTypeEntity
 
     const _ticketType = this.cache.get(id)
     _ticketType?.setup(newData)
@@ -155,10 +155,10 @@ TicketTypeEntity
         guildId: this.context.id
       }
     })
-    const newData = await this.ticketTypeRepository.findOne(
-      ticketType.id,
-      { relations: ['message'] }
-    ) as TicketTypeEntity
+    const newData = await this.ticketTypeRepository.findOne({
+      where: { id: ticketType.id },
+      relations: { message: true }
+    }) as TicketTypeEntity
 
     const _ticketType = this.cache.get(ticketType.id)
     _ticketType?.setup(newData)
@@ -186,7 +186,7 @@ TicketTypeEntity
       emojiId: null,
       emoji: null
     }))
-    const newData = await this.ticketTypeRepository.findOne(ticketType.id) as TicketTypeEntity
+    const newData = await this.ticketTypeRepository.findOneBy({ id: ticketType.id }) as TicketTypeEntity
 
     const _ticketType = this.cache.get(ticketType.id)
     _ticketType?.setup(newData)

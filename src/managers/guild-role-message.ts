@@ -83,10 +83,10 @@ RoleMessageEntity
     }), {
       data: { channelId: message.channel.id }
     })).id
-    const newData = await this.roleMessageRepository.findOne(
-      id,
-      { relations: ['message'] }
-    ) as RoleMessageEntity
+    const newData = await this.roleMessageRepository.findOne({
+      where: { id },
+      relations: { message: true }
+    }) as RoleMessageEntity
 
     return this.add(newData)
   }

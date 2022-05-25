@@ -23,7 +23,7 @@ const validateReason = validators([noChannels, noTags, noUrls])
   requiresApi: true,
   requiresRobloxGroup: true,
   subCommands: {
-    create: {
+    schedule: {
       args: [
         { key: 'type', parse: parseKey },
         { key: 'date', type: 'date' },
@@ -58,7 +58,7 @@ export default class TrainingsCommand extends SubCommandCommand<TrainingsCommand
   @named('GuildContextManager')
   private readonly guildContexts!: GuildContextManager
 
-  public async create (
+  public async schedule (
     interaction: CommandInteraction<'raw' | 'cached'>,
     { type, date, time, notes }: {
       type: string
