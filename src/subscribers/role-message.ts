@@ -9,23 +9,26 @@ export class RoleMessageSubscriber implements EntitySubscriberInterface<RoleMess
 
   public async beforeInsert (event: InsertEvent<RoleMessage>): Promise<void> {
     const messageRepository = event.manager.getRepository(Message)
-    if (await messageRepository.findOneBy({ id: event.entity.messageId }) === null) {
-      await messageRepository.save(messageRepository.create({
-        id: event.entity.messageId,
-        guildId: event.entity.guildId,
-        channelId: event.queryRunner.data.channelId
-      }))
+    const messageFields = {
+      id: event.entity.messageId,
+      guildId: event.entity.guildId,
+      channelId: event.queryRunner.data.channelId
+    }
+    if (await messageRepository.findOneBy(messageFields) === null) {
+      await messageRepository.save(messageRepository.create(messageFields))
     }
 
     const roleRepository = event.manager.getRepository(Role)
-    if (await roleRepository.findOneBy({ id: event.entity.roleId }) === null) {
-      await roleRepository.save(roleRepository.create({ id: event.entity.roleId, guildId: event.entity.guildId }))
+    const roleFields = { id: event.entity.roleId, guildId: event.entity.guildId }
+    if (await roleRepository.findOneBy(roleFields) === null) {
+      await roleRepository.save(roleRepository.create(roleFields))
     }
 
     if (event.entity.emojiId != null) {
       const emojiRepository = event.manager.getRepository(Emoji)
-      if (await emojiRepository.findOneBy({ id: event.entity.emojiId }) === null) {
-        await emojiRepository.save(emojiRepository.create({ id: event.entity.emojiId, guildId: event.entity.guildId }))
+      const emojiFields = { id: event.entity.emojiId, guildId: event.entity.guildId }
+      if (await emojiRepository.findOneBy(emojiFields) === null) {
+        await emojiRepository.save(emojiRepository.create(emojiFields))
       }
     }
   }
