@@ -10,7 +10,7 @@ import emojiRegex from 'emoji-regex'
 
 const { TYPES } = constants
 
-export type TicketTypeResolvable = TicketType | string
+export type TicketTypeResolvable = string | TicketType | number
 
 @injectable()
 export default class GuildTicketTypeManager extends DataManager<
