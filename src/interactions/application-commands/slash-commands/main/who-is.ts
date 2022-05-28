@@ -1,4 +1,4 @@
-import { type CommandInteraction, MessageEmbed } from 'discord.js'
+import { type CommandInteraction, MessageActionRow, MessageButton, MessageEmbed } from 'discord.js'
 import { constants, timeUtil } from '../../../../utils'
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
@@ -64,7 +64,13 @@ export default class WhoIsCommand extends Command {
         .addField('Rank', (group?.role.rank ?? 0).toString(), true)
         .addField('\u200b', '\u200b', true)
     }
-    embed.addField('\u200b', `[Profile](https://www.roblox.com/users/${user.id}/profile)`)
-    return await interaction.reply({ embeds: [embed] })
+    const row = new MessageActionRow()
+      .addComponents(
+        new MessageButton()
+          .setLabel('Profile')
+          .setURL(`https://www.roblox.com/users/${user.id}/profile`)
+          .setStyle('LINK')
+      )
+    return await interaction.reply({ embeds: [embed], components: [row] })
   }
 }
