@@ -9,8 +9,9 @@ export class RoleBindingSubscriber implements EntitySubscriberInterface<RoleBind
 
   public async beforeInsert (event: InsertEvent<RoleBinding>): Promise<void> {
     const roleRepository = event.manager.getRepository(Role)
-    if (await roleRepository.findOneBy({ id: event.entity.roleId }) === null) {
-      await roleRepository.save(roleRepository.create({ id: event.entity.roleId, guildId: event.entity.guildId }))
+    const fields = { id: event.entity.roleId, guildId: event.entity.guildId }
+    if (await roleRepository.findOneBy(fields) === null) {
+      await roleRepository.save(roleRepository.create(fields))
     }
   }
 }

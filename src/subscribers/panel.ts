@@ -14,12 +14,13 @@ export class PanelSubscriber implements EntitySubscriberInterface<Panel> {
 
     const messageRepository = event.manager.getRepository(Message)
     if (event.updatedColumns.some(column => column.propertyName === 'messageId') && event.entity.messageId != null) {
-      if (await messageRepository.findOneBy({ id: event.entity.messageId }) === null) {
-        await messageRepository.save(messageRepository.create({
-          id: event.entity.messageId,
-          channelId: event.queryRunner.data.channelId,
-          guildId: event.queryRunner.data.guildId
-        }))
+      const fields = {
+        id: event.entity.messageId,
+        channelId: event.queryRunner.data.channelId,
+        guildId: event.queryRunner.data.guildId
+      }
+      if (await messageRepository.findOneBy(fields) === null) {
+        await messageRepository.save(messageRepository.create(fields))
       }
     }
   }

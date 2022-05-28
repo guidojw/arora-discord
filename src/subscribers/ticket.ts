@@ -9,11 +9,9 @@ export class TicketSubscriber implements EntitySubscriberInterface<Ticket> {
 
   public async beforeInsert (event: InsertEvent<Ticket>): Promise<void> {
     const memberRepository = event.manager.getRepository(Member)
-    const member = await memberRepository.findOneBy({ id: event.queryRunner.data.userId }) ??
-      await memberRepository.save(memberRepository.create({
-        userId: event.queryRunner.data.userId,
-        guildId: event.entity.guildId
-      }))
+    const memberFields = { userId: event.queryRunner.data.userId, guildId: event.entity.guildId }
+    const member = await memberRepository.findOneBy(memberFields) ??
+      await memberRepository.save(memberRepository.create(memberFields))
 
     // Map to own IDs instead of Discord's snowflake IDs. This is necessary
     // because the id is the primary key and since Discord member IDs are
@@ -23,10 +21,9 @@ export class TicketSubscriber implements EntitySubscriberInterface<Ticket> {
     event.entity.authorId = member.id
 
     const channelRepository = event.manager.getRepository(Channel)
-    if (await channelRepository.findOneBy({ id: event.entity.channelId }) === null) {
-      await channelRepository.save(
-        channelRepository.create({ id: event.entity.channelId, guildId: event.entity.guildId })
-      )
+    const channelFields = { id: event.entity.channelId, guildId: event.entity.guildId }
+    if (await channelRepository.findOneBy(channelFields) === null) {
+      await channelRepository.save(channelRepository.create(channelFields))
     }
   }
 }
