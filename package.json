@@ -33,7 +33,7 @@
     "pg-hstore": "^2.3.4",
     "pluralize": "^8.0.0",
     "typeorm": "^0.3.6",
-    "ws": "^8.6.0"
+    "ws": "^8.7.0"
   },
   "devDependencies": {
     "@discordjs/rest": "^0.4.1",
@@ -44,15 +44,15 @@
     "@types/node-cron": "^3.0.1",
     "@types/pluralize": "^0.0.29",
     "@types/ws": "^8.5.3",
-    "@typescript-eslint/eslint-plugin": "^5.25.0",
-    "eslint": "^8.15.0",
+    "@typescript-eslint/eslint-plugin": "^5.26.0",
+    "eslint": "^8.16.0",
     "eslint-config-standard-with-typescript": "^21.0.1",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^6.0.0",
     "eslint-plugin-unicorn": "^42.0.0",
     "reflect-metadata": "^0.1.13",
-    "typescript": "^4.6.4"
+    "typescript": "^4.7.2"
   },
   "engines": {
     "node": ">=16.6.0"
