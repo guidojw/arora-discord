@@ -21,10 +21,9 @@ export class TicketSubscriber implements EntitySubscriberInterface<Ticket> {
     event.entity.authorId = member.id
 
     const channelRepository = event.manager.getRepository(Channel)
-    if (await channelRepository.findOneBy({ id: event.entity.channelId }) === null) {
-      await channelRepository.save(
-        channelRepository.create({ id: event.entity.channelId, guildId: event.entity.guildId })
-      )
+    const channelFields = { id: event.entity.channelId, guildId: event.entity.guildId }
+    if (await channelRepository.findOneBy(channelFields) === null) {
+      await channelRepository.save(channelRepository.create(channelFields))
     }
   }
 }
