@@ -1,5 +1,5 @@
 import { type CommandInteraction, type Message, MessageEmbed } from 'discord.js'
-import type { GuildContext, TicketType } from '../../../../structures'
+import type { GuildContext, TicketType, TicketTypeUpdateOptions } from '../../../../structures'
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
 import type { GuildContextManager } from '../../../../managers'
@@ -19,6 +19,16 @@ const { TYPES } = constants
     },
     delete: {
       args: [{ key: 'id', name: 'ticketType', type: 'ticket-type' }]
+    },
+    edit: {
+      args: [
+        { key: 'id', name: 'ticketType', type: 'ticket-type' },
+        {
+          key: 'key',
+          parse: (val: string) => val.toLowerCase()
+        },
+        { key: 'value' }
+      ]
     },
     link: {
       args: [
@@ -70,6 +80,26 @@ export default class TicketTypesCommand extends SubCommandCommand<TicketTypesCom
     await context.ticketTypes.delete(ticketType)
 
     return await interaction.reply('Successfully deleted ticket type.')
+  }
+
+  public async edit (
+    interaction: CommandInteraction<'raw' | 'cached'>,
+    { ticketType, key, value }: {
+      ticketType: TicketType
+      key: string
+      value: string
+    }
+  ): Promise<void> {
+    const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
+
+    const changes: TicketTypeUpdateOptions = {}
+    if (key === 'name') {
+      changes.name = value
+    }
+
+    ticketType = await context.ticketTypes.update(ticketType, changes)
+
+    return await interaction.reply(`Successfully edited ticket type \`${ticketType.name}\`.`)
   }
 
   public async link (

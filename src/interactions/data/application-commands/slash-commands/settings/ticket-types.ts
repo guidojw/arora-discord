@@ -26,6 +26,27 @@ const ticketTypesCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
       required: true
     }]
   }, {
+    name: 'edit',
+    description: 'Edit a ticket type',
+    type: ApplicationCommandOptionType.Subcommand,
+    options: [{
+      name: 'id',
+      description: 'The ID of the ticket type to edit',
+      type: ApplicationCommandOptionType.String,
+      required: true
+    }, {
+      name: 'key',
+      description: 'The key of the ticket type to edit',
+      type: ApplicationCommandOptionType.String,
+      required: true,
+      choices: [{ name: 'name', value: 'name' }]
+    }, {
+      name: 'value',
+      description: 'The value to change this key to',
+      type: ApplicationCommandOptionType.String,
+      required: true
+    }]
+  }, {
     name: 'link',
     description: 'Link a ticket type',
     type: ApplicationCommandOptionType.Subcommand,

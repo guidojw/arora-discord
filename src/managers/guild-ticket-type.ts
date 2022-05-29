@@ -89,7 +89,7 @@ TicketTypeEntity
 
     const changes: Partial<TicketTypeEntity> = {}
     if (typeof data.name !== 'undefined') {
-      if (this.resolve(data.name) !== null) {
+      if (this.resolve(data.name) !== ticketType) {
         throw new Error('A ticket type with that name already exists.')
       }
       changes.name = data.name
@@ -175,7 +175,7 @@ TicketTypeEntity
       message.components.push(row)
     }
     const button = new MessageButton()
-      .setLabel(ticketType.toString())
+      .setLabel(ticketType.name)
       .setStyle('PRIMARY')
       .setCustomId(`ticket_type:${ticketType.id}`)
     if (emoji !== null) {
