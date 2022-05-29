@@ -1,15 +1,12 @@
-import { type GuildContext, Ticket, type TicketUpdateOptions } from '../structures'
 import {
-  GuildEmoji,
+  type ButtonInteraction,
   type GuildMemberResolvable,
   MessageEmbed,
-  type MessageReaction,
   TextChannel,
-  type TextChannelResolvable,
-  type User
+  type TextChannelResolvable
 } from 'discord.js'
+import { type GuildContext, Ticket, type TicketUpdateOptions } from '../structures'
 import { inject, injectable } from 'inversify'
-import type { AroraClient } from '../client'
 import { DataManager } from './base'
 import type { Repository } from 'typeorm'
 import type { Ticket as TicketEntity } from '../entities'
@@ -25,9 +22,6 @@ export type TicketResolvable = TextChannelResolvable | GuildMemberResolvable | T
 
 @injectable()
 export default class GuildTicketManager extends DataManager<number, Ticket, TicketResolvable, TicketEntity> {
-  @inject(TYPES.Client)
-  private readonly client!: AroraClient<true>
-
   @inject(TYPES.TicketRepository)
   private readonly ticketRepository!: Repository<TicketEntity>
 
@@ -146,42 +140,42 @@ export default class GuildTicketManager extends DataManager<number, Ticket, Tick
     return _ticket ?? this.add(newData)
   }
 
-  public async onMessageReactionAdd (reaction: MessageReaction, user: User): Promise<void> {
-    const ticketType = this.context.ticketTypes.cache.find(ticketType => (
-      ticketType.message?.id === reaction.message.id && ticketType.emoji !== null &&
-      (reaction.emoji instanceof GuildEmoji
-        ? ticketType.emoji instanceof GuildEmoji && reaction.emoji.id === ticketType.emojiId
-        : !(ticketType.emoji instanceof GuildEmoji) && reaction.emoji.name === ticketType.emojiId)
-    ))
-    if (typeof ticketType !== 'undefined') {
-      await reaction.users.remove(user)
+  public async onButtonInteraction (interaction: ButtonInteraction): Promise<void> {
+    const match = interaction.customId.match(/^ticket_type:([0-9]+)$/)
+    if (match !== null) {
+      const ticketType = this.context.ticketTypes.resolve(parseInt(match[1]))
+      if (ticketType !== null) {
+        const user = interaction.user
+        if (!this.debounces.has(user.id)) {
+          this.debounces.set(user.id, true)
+          setTimeout(this.debounces.delete.bind(this.debounces, user.id), TICKETS_INTERVAL).unref()
 
-      if (!this.debounces.has(user.id)) {
-        this.debounces.set(user.id, true)
-        setTimeout(this.debounces.delete.bind(this.debounces, user.id), TICKETS_INTERVAL).unref()
+          if (this.resolve(user) === null) {
+            const ticket = await this.create({ author: user, ticketType })
+            await ticket.populateChannel()
+            ticket.timeout = setTimeout(() => {
+              ticket.close('Timeout: ticket closed', false).catch(console.error)
+            }, SUBMISSION_TIME).unref()
 
-        if (this.resolve(user) === null) {
-          if (!this.context.supportEnabled) {
+            const embed = new MessageEmbed()
+              .setColor(0x00ff00)
+              .setTitle('Successfully opened ticket.')
+              // eslint-disable-next-line @typescript-eslint/no-base-to-string
+              .setDescription(`You can visit it in ${ticket.channel.toString()}.`)
+            await interaction.reply({ embeds: [embed], ephemeral: true })
+          } else {
             const embed = new MessageEmbed()
               .setColor(0xff0000)
-              .setAuthor({ name: this.client.user.username, iconURL: this.client.user.displayAvatarURL() })
-              .setTitle(`Welcome to ${this.context.guild.name} Support`)
-              .setDescription(`We are currently closed. Check the ${this.context.guild.name} server for more information.`)
-            await this.client.send(user, { embeds: [embed] })
-            return
+              .setTitle('Couldn\'t make ticket')
+              .setDescription('You already have an open ticket.')
+            await interaction.reply({ embeds: [embed], ephemeral: true })
           }
-
-          const ticket = await this.create({ author: user, ticketType })
-          await ticket.populateChannel()
-          ticket.timeout = setTimeout(() => {
-            ticket.close('Timeout: ticket closed', false).catch(console.error)
-          }, SUBMISSION_TIME).unref()
         } else {
           const embed = new MessageEmbed()
             .setColor(0xff0000)
-            .setTitle('Couldn\'t make ticket')
-            .setDescription('You already have an open ticket.')
-          await this.client.send(user, { embeds: [embed] })
+            .setTitle('Please wait a few seconds')
+            .setDescription('before trying to open a new ticket.')
+          await interaction.reply({ embeds: [embed], ephemeral: true })
         }
       }
     }

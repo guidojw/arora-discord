@@ -4,8 +4,9 @@ import {
   Command,
   SubCommandCommand
 } from '../interactions/application-commands'
-import type { CommandInteraction, CommandInteractionOption, Interaction } from 'discord.js'
+import type { CommandInteraction, CommandInteractionOption, Interaction, MessageComponentInteraction } from 'discord.js'
 import { inject, injectable, type interfaces, named } from 'inversify'
+import type { GuildContext } from '../structures'
 import type { GuildContextManager } from '../managers'
 import applicationConfig from '../configs/application'
 import { constants } from '../utils'
@@ -24,6 +25,8 @@ export default class Dispatcher {
   public async handleInteraction (interaction: Interaction): Promise<void> {
     if (interaction.isCommand()) {
       return await this.handleCommandInteraction(interaction)
+    } else if (interaction.isMessageComponent()) {
+      return await this.handleMessageComponentInteraction(interaction)
     }
   }
 
@@ -85,6 +88,17 @@ export default class Dispatcher {
       : subCommandGroupName == null
         ? await command.execute(interaction, subCommandName, args)
         : await command.execute(interaction, subCommandGroupName, subCommandName, args)
+  }
+
+  private async handleMessageComponentInteraction (interaction: MessageComponentInteraction): Promise<void> {
+    if (interaction.isButton()) {
+      if (!interaction.inGuild() || interaction.customId.startsWith('prompt_')) {
+        return
+      }
+      const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
+
+      await context.tickets.onButtonInteraction(interaction)
+    }
   }
 
   private async parseArgs (

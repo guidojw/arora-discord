@@ -25,9 +25,6 @@ export default class MessageReactionAddEventHandler implements BaseHandler {
     }
     const context = this.guildContexts.resolve(reaction.message.guild) as GuildContext
 
-    await Promise.all([
-      context.handleRoleMessage('add', reaction, user),
-      context.tickets.onMessageReactionAdd(reaction, user)
-    ])
+    await context.handleRoleMessage('add', reaction, user)
   }
 }
