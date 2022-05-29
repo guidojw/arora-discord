@@ -63,10 +63,12 @@ TicketTypeEntity
         await ticketType.message.fetch()
       }
       await ticketType.message.edit({
-        components: ticketType.message.components.map(row => ({
-          ...row,
-          components: row.components.filter(component => component.customId !== `ticket_type:${ticketType.id}`)
-        }))
+        components: ticketType.message.components
+          .map(row => ({
+            ...row,
+            components: row.components.filter(component => component.customId !== `ticket_type:${ticketType.id}`)
+          }))
+          .filter(row => row.components.length !== 0)
       })
     }
 
@@ -213,10 +215,12 @@ TicketTypeEntity
         await ticketType.message.fetch()
       }
       await ticketType.message.edit({
-        components: ticketType.message.components.map(row => ({
-          ...row,
-          components: row.components.filter(component => component.customId !== `ticket_type:${ticketType.id}`)
-        }))
+        components: ticketType.message.components
+          .map(row => ({
+            ...row,
+            components: row.components.filter(component => component.customId !== `ticket_type:${ticketType.id}`)
+          }))
+          .filter(row => row.components.length !== 0)
       })
     }
     await this.ticketTypeRepository.save(this.ticketTypeRepository.create({
