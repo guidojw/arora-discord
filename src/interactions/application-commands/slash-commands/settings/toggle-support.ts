@@ -19,7 +19,7 @@ export default class ToggleSupportCommand extends Command {
     }
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
-    const editedMessages: Set<Message> = new Set()
+    const editedMessages = new Set<Message>()
     for (const ticketType of context.ticketTypes.cache.values()) {
       if (ticketType.message !== null) {
         if (ticketType.message.partial) {
