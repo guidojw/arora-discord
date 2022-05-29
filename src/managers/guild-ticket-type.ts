@@ -163,10 +163,12 @@ TicketTypeEntity
         await ticketType.message.fetch()
       }
       await ticketType.message.edit({
-        components: ticketType.message.components.map(row => ({
-          ...row,
-          components: row.components.filter(component => component.customId !== `ticket_type:${ticketType.id}`)
-        }))
+        components: ticketType.message.components
+          .map(row => ({
+            ...row,
+            components: row.components.filter(component => component.customId !== `ticket_type:${ticketType.id}`)
+          }))
+          .filter(row => row.components.length !== 0)
       })
     }
     let row = message.components.find(row => row.type === 'ACTION_ROW' && row.components.length < 5)
