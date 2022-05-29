@@ -62,12 +62,7 @@ TicketTypeEntity
         await ticketType.message.fetch()
       }
       await ticketType.message.edit({
-        components: ticketType.message.components
-          .map(row => ({
-            ...row,
-            components: row.components.filter(component => component.customId !== `ticket_type:${ticketType.id}`)
-          }))
-          .filter(row => row.components.length !== 0)
+        components: filterOutComponentWithCustomId(ticketType.message.components, `ticket_type:${ticketType.id}`)
       })
     }
 
@@ -161,12 +156,7 @@ TicketTypeEntity
         await ticketType.message.fetch()
       }
       await ticketType.message.edit({
-        components: ticketType.message.components
-          .map(row => ({
-            ...row,
-            components: row.components.filter(component => component.customId !== `ticket_type:${ticketType.id}`)
-          }))
-          .filter(row => row.components.length !== 0)
+        components: filterOutComponentWithCustomId(ticketType.message.components, `ticket_type:${ticketType.id}`)
       })
     }
     let row = message.components.find(row => row.type === 'ACTION_ROW' && row.components.length < 5)
@@ -217,12 +207,7 @@ TicketTypeEntity
         await ticketType.message.fetch()
       }
       await ticketType.message.edit({
-        components: ticketType.message.components
-          .map(row => ({
-            ...row,
-            components: row.components.filter(component => component.customId !== `ticket_type:${ticketType.id}`)
-          }))
-          .filter(row => row.components.length !== 0)
+        components: filterOutComponentWithCustomId(ticketType.message.components, `ticket_type:${ticketType.id}`)
       })
     }
     await this.ticketTypeRepository.save(this.ticketTypeRepository.create({
@@ -256,4 +241,13 @@ TicketTypeEntity
     }
     return super.resolveId(ticketType)
   }
+}
+
+function filterOutComponentWithCustomId (components: MessageActionRow[], customId: string): MessageActionRow[] {
+  return components
+    .map(row => {
+      row.components = row.components.filter(component => component.customId !== customId)
+      return row
+    })
+    .filter(row => row.components.length !== 0)
 }
