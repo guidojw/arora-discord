@@ -23,8 +23,8 @@ const { TYPES } = constants
     link: {
       args: [
         { key: 'id', name: 'ticketType', type: 'ticket-type' },
-        { key: 'emoji', type: 'custom-emoji|default-emoji' },
-        { key: 'message', type: 'message' }
+        { key: 'message', type: 'message' },
+        { key: 'emoji', type: 'custom-emoji|default-emoji', required: false }
       ]
     },
     unlink: {
@@ -74,10 +74,10 @@ export default class TicketTypesCommand extends SubCommandCommand<TicketTypesCom
 
   public async link (
     interaction: CommandInteraction<'raw' | 'cached'>,
-    { ticketType, emoji, message }: {
+    { ticketType, message, emoji }: {
       ticketType: TicketType
-      emoji: string
       message: Message
+      emoji: string | null
     }
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext

@@ -130,7 +130,7 @@ TicketTypeEntity
   public async link (
     ticketTypeResolvable: TicketTypeResolvable,
     message: Message,
-    emojiResolvable: EmojiResolvable
+    emojiResolvable: EmojiResolvable | null
   ): Promise<TicketType> {
     const ticketType = this.resolve(ticketTypeResolvable)
     if (ticketType === null) {
@@ -146,15 +146,14 @@ TicketTypeEntity
     } catch {
       throw new Error('Invalid message.')
     }
-    let emoji
-    if (typeof emojiResolvable === 'string') {
-      const valid = new RegExp(`^(?:${emojiRegex().source})$`).test(emojiResolvable)
-      emoji = valid ? emojiResolvable : null
-    } else {
-      emoji = this.context.guild.emojis.resolve(emojiResolvable)
-    }
-    if (emoji === null) {
-      throw new Error('Invalid emoji.')
+    let emoji = null
+    if (emojiResolvable !== null) {
+      if (typeof emojiResolvable === 'string') {
+        const valid = new RegExp(`^(?:${emojiRegex().source})$`).test(emojiResolvable)
+        emoji = valid ? emojiResolvable : null
+      } else {
+        emoji = this.context.guild.emojis.resolve(emojiResolvable)
+      }
     }
 
     if (ticketType.message !== null) {
@@ -175,13 +174,14 @@ TicketTypeEntity
       row = new MessageActionRow()
       message.components.push(row)
     }
-    row.addComponents(
-      new MessageButton()
-        // .setLabel(ticketType.toString())
-        .setEmoji(emoji)
-        .setStyle('PRIMARY')
-        .setCustomId(`ticket_type:${ticketType.id}`)
-    )
+    const button = new MessageButton()
+      .setLabel(ticketType.toString())
+      .setStyle('PRIMARY')
+      .setCustomId(`ticket_type:${ticketType.id}`)
+    if (emoji !== null) {
+      button.setEmoji(emoji)
+    }
+    row.addComponents(button)
     await message.edit({ components: message.components })
     await this.ticketTypeRepository.save(this.ticketTypeRepository.create({
       id: ticketType.id,

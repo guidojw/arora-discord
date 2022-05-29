@@ -35,15 +35,15 @@ const ticketTypesCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
       type: ApplicationCommandOptionType.String,
       required: true
     }, {
-      name: 'emoji',
-      description: 'The emoji to link to this ticket type',
-      type: ApplicationCommandOptionType.String,
-      required: true
-    }, {
       name: 'message',
       description: 'The message to link this ticket type on',
       type: ApplicationCommandOptionType.String,
       required: true
+    }, {
+      name: 'emoji',
+      description: 'The emoji to link to this ticket type',
+      type: ApplicationCommandOptionType.String,
+      required: false
     }]
   }, {
     name: 'unlink',
