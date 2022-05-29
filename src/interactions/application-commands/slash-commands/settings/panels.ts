@@ -22,6 +22,7 @@ const { validators, isObject, noNumber, noWhitespace } = argumentUtil
         },
         {
           key: 'content',
+          type: 'json-object',
           validate: validators([isObject])
         }
       ]
