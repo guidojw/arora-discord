@@ -178,6 +178,7 @@ TicketTypeEntity
       .setLabel(ticketType.name)
       .setStyle('PRIMARY')
       .setCustomId(`ticket_type:${ticketType.id}`)
+      .setDisabled(!this.context.supportEnabled)
     if (emoji !== null) {
       button.setEmoji(emoji)
     }

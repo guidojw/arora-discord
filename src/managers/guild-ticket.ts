@@ -7,7 +7,6 @@ import {
 } from 'discord.js'
 import { type GuildContext, Ticket, type TicketUpdateOptions } from '../structures'
 import { inject, injectable } from 'inversify'
-import type { AroraClient } from '../client'
 import { DataManager } from './base'
 import type { Repository } from 'typeorm'
 import type { Ticket as TicketEntity } from '../entities'
@@ -23,9 +22,6 @@ export type TicketResolvable = TextChannelResolvable | GuildMemberResolvable | T
 
 @injectable()
 export default class GuildTicketManager extends DataManager<number, Ticket, TicketResolvable, TicketEntity> {
-  @inject(TYPES.Client)
-  private readonly client!: AroraClient<true>
-
   @inject(TYPES.TicketRepository)
   private readonly ticketRepository!: Repository<TicketEntity>
 
@@ -155,15 +151,6 @@ export default class GuildTicketManager extends DataManager<number, Ticket, Tick
           setTimeout(this.debounces.delete.bind(this.debounces, user.id), TICKETS_INTERVAL).unref()
 
           if (this.resolve(user) === null) {
-            if (!this.context.supportEnabled) {
-              const embed = new MessageEmbed()
-                .setColor(0xff0000)
-                .setAuthor({ name: this.client.user.username, iconURL: this.client.user.displayAvatarURL() })
-                .setTitle(`Welcome to ${this.context.guild.name} Support!`)
-                .setDescription('We are currently closed. Check the server for more information.')
-              return await interaction.reply({ embeds: [embed], ephemeral: true })
-            }
-
             const ticket = await this.create({ author: user, ticketType })
             await ticket.populateChannel()
             ticket.timeout = setTimeout(() => {
