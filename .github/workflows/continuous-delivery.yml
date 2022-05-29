@@ -152,11 +152,11 @@ jobs:
             cd /opt/docker/$PROJECT_NAME/$STAGE
             docker-compose pull
             if [ "$STAGE" = 'production' ]; then
-              docker-compose run --rm nsadmin yarn run typeorm migration:run
+              docker-compose run --rm nsadmin yarn run typeorm migration:run -d dist/configs/data-source.js
               docker-compose run --rm nsadmin node bin/update-commands.js
               docker-compose run --rm tradmin node bin/update-commands.js
             else
-              docker-compose run --rm app yarn run typeorm migration:run
+              docker-compose run --rm app yarn run typeorm migration:run -d dist/configs/data-source.js
               docker-compose run --rm app node bin/update-commands.js
             fi
             docker-compose up -d
