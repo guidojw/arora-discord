@@ -84,7 +84,7 @@ export default class TicketTypesCommand extends SubCommandCommand<TicketTypesCom
 
     ticketType = await context.ticketTypes.link(ticketType, message, emoji)
 
-    return await interaction.reply(`Successfully linked emoji ${ticketType.emoji?.toString() ?? 'Unknown'} on message \`${ticketType.messageId ?? 'unknown'}\` to ticket type \`${ticketType.name}\`.`)
+    return await interaction.reply(`Successfully linked ticket type \`${ticketType.name}\` to message \`${ticketType.messageId ?? 'unknown'}\`.`)
   }
 
   public async unlink (
@@ -95,7 +95,7 @@ export default class TicketTypesCommand extends SubCommandCommand<TicketTypesCom
 
     ticketType = await context.ticketTypes.unlink(ticketType)
 
-    return await interaction.reply(`Successfully unlinked message reaction from ticket type \`${ticketType.name}\`.`)
+    return await interaction.reply(`Successfully unlinked message from ticket type \`${ticketType.name}\`.`)
   }
 
   public async list (

@@ -20,9 +20,6 @@ TicketTypeEntity
   public messageId!: string | null
   public channelId!: string | null
 
-  private _emoji!: string | null
-  private _emojiId!: string | null
-
   public setOptions (data: TicketTypeEntity, context: GuildContext): void {
     this.context = context
 
@@ -34,18 +31,6 @@ TicketTypeEntity
     this.name = data.name
     this.messageId = data.message?.id ?? null
     this.channelId = data.message?.channelId ?? null
-    this._emoji = data.emoji ?? null
-    this._emojiId = data.emojiId ?? null
-  }
-
-  public get emoji (): GuildEmoji | string | null {
-    return this._emojiId !== null
-      ? this.context.guild.emojis.cache.get(this._emojiId) ?? null
-      : this._emoji
-  }
-
-  public get emojiId (): string {
-    return (this._emoji ?? this._emojiId) as string
   }
 
   public async update (data: TicketTypeUpdateOptions): Promise<TicketType> {

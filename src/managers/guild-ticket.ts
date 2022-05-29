@@ -147,7 +147,7 @@ export default class GuildTicketManager extends DataManager<number, Ticket, Tick
   public async onButtonInteraction (interaction: ButtonInteraction): Promise<void> {
     const match = interaction.customId.match(/^ticket_type:([0-9]+)$/)
     if (match !== null) {
-      const ticketType = this.context.ticketTypes.resolve(parseInt(match[0]))
+      const ticketType = this.context.ticketTypes.resolve(parseInt(match[1]))
       if (ticketType !== null) {
         const user = interaction.user
         if (!this.debounces.has(user.id)) {
@@ -159,7 +159,7 @@ export default class GuildTicketManager extends DataManager<number, Ticket, Tick
               const embed = new MessageEmbed()
                 .setColor(0xff0000)
                 .setAuthor({ name: this.client.user.username, iconURL: this.client.user.displayAvatarURL() })
-                .setTitle(`Welcome to ${this.context.guild.name} Support`)
+                .setTitle(`Welcome to ${this.context.guild.name} Support!`)
                 .setDescription('We are currently closed. Check the server for more information.')
               return await interaction.reply({ embeds: [embed], ephemeral: true })
             }
@@ -186,8 +186,8 @@ export default class GuildTicketManager extends DataManager<number, Ticket, Tick
         } else {
           const embed = new MessageEmbed()
             .setColor(0xff0000)
-            .setTitle('Please wait a few seconds...')
-            .setDescription('...before trying to open a new ticket.')
+            .setTitle('Please wait a few seconds')
+            .setDescription('before trying to open a new ticket.')
           await interaction.reply({ embeds: [embed], ephemeral: true })
         }
       }

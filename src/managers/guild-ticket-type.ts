@@ -1,7 +1,6 @@
-import { type EmojiResolvable, GuildEmoji, type Message } from 'discord.js'
+import { type EmojiResolvable, type Message, MessageActionRow, MessageButton } from 'discord.js'
 import { type GuildContext, TicketType, type TicketTypeUpdateOptions } from '../structures'
 import { inject, injectable } from 'inversify'
-import type { AroraClient } from '../client'
 import { DataManager } from './base'
 import type { Repository } from 'typeorm'
 import type { TicketType as TicketTypeEntity } from '../entities'
@@ -19,9 +18,6 @@ TicketType,
 TicketTypeResolvable,
 TicketTypeEntity
 > {
-  @inject(TYPES.Client)
-  private readonly client!: AroraClient<true>
-
   @inject(TYPES.TicketTypeRepository)
   private readonly ticketTypeRepository!: Repository<TicketTypeEntity>
 
@@ -62,11 +58,16 @@ TicketTypeEntity
       throw new Error('Ticket type not found.')
     }
 
-    if (ticketType.emoji !== null && ticketType.message !== null) {
+    if (ticketType.message !== null) {
       if (ticketType.message.partial) {
         await ticketType.message.fetch()
       }
-      await ticketType.message.reactions.resolve(ticketType.emojiId)?.users.remove(this.client.user)
+      await ticketType.message.edit({
+        components: ticketType.message.components.map(row => ({
+          ...row,
+          components: row.components.filter(component => component.customId !== `ticket_type:${ticketType.id}`)
+        }))
+      })
     }
 
     await this.ticketTypeRepository.delete(ticketType.id)
@@ -77,11 +78,11 @@ TicketTypeEntity
     ticketTypeResolvable: TicketTypeResolvable,
     data: TicketTypeUpdateOptions
   ): Promise<TicketType> {
-    const id = this.resolveId(ticketTypeResolvable)
-    if (id === null) {
+    const ticketType = this.resolve(ticketTypeResolvable)
+    if (ticketType === null) {
       throw new Error('Invalid ticket type.')
     }
-    if (!this.cache.has(id)) {
+    if (!this.cache.has(ticketType.id)) {
       throw new Error('Ticket type not found.')
     }
 
@@ -91,18 +92,36 @@ TicketTypeEntity
         throw new Error('A ticket type with that name already exists.')
       }
       changes.name = data.name.toLowerCase()
+
+      if (ticketType.message !== null) {
+        if (ticketType.message.partial) {
+          await ticketType.message.fetch()
+        }
+        await ticketType.message.edit({
+          components: ticketType.message.components.map(row => ({
+            ...row,
+            components: row.components.map(component => {
+              if (typeof data.name !== 'undefined' && component.type === 'BUTTON' && component.customId ===
+                `ticket_type:${ticketType.id}`) {
+                component.setLabel(data.name)
+              }
+              return component
+            })
+          }))
+        })
+      }
     }
 
     await this.ticketTypeRepository.save(this.ticketTypeRepository.create({
       ...changes,
-      id
+      id: ticketType.id
     }))
     const newData = await this.ticketTypeRepository.findOne({
-      where: { id },
+      where: { id: ticketType.id },
       relations: { message: true }
     }) as TicketTypeEntity
 
-    const _ticketType = this.cache.get(id)
+    const _ticketType = this.cache.get(ticketType.id)
     _ticketType?.setup(newData)
     return _ticketType ?? this.add(newData)
   }
@@ -137,18 +156,33 @@ TicketTypeEntity
       throw new Error('Invalid emoji.')
     }
 
-    if (ticketType.emoji !== null && ticketType.message !== null) {
+    if (ticketType.message !== null) {
       if (ticketType.message.partial) {
         await ticketType.message.fetch()
       }
-      await ticketType.message.reactions.resolve(ticketType.emojiId)?.users.remove(this.client.user)
+      await ticketType.message.edit({
+        components: ticketType.message.components.map(row => ({
+          ...row,
+          components: row.components.filter(component => component.customId !== `ticket_type:${ticketType.id}`)
+        }))
+      })
     }
-    await message.react(emoji)
+    let row = message.components.find(row => row.type === 'ACTION_ROW' && row.components.length < 5)
+    if (typeof row === 'undefined') {
+      row = new MessageActionRow()
+      message.components.push(row)
+    }
+    row.addComponents(
+      new MessageButton()
+        // .setLabel(ticketType.toString())
+        .setEmoji(emoji)
+        .setStyle('PRIMARY')
+        .setCustomId(`ticket_type:${ticketType.id}`)
+    )
+    await message.edit({ components: message.components })
     await this.ticketTypeRepository.save(this.ticketTypeRepository.create({
       id: ticketType.id,
-      messageId: message.id,
-      emojiId: emoji instanceof GuildEmoji ? emoji.id : null,
-      emoji: !(emoji instanceof GuildEmoji) ? emoji : null
+      messageId: message.id
     }), {
       data: {
         channelId: message.channel.id,
@@ -174,17 +208,20 @@ TicketTypeEntity
       throw new Error('Ticket type not found.')
     }
 
-    if (ticketType.emoji !== null && ticketType.message !== null) {
+    if (ticketType.message !== null) {
       if (ticketType.message.partial) {
         await ticketType.message.fetch()
       }
-      await ticketType.message.reactions.resolve(ticketType.emojiId)?.users.remove(this.client.user)
+      await ticketType.message.edit({
+        components: ticketType.message.components.map(row => ({
+          ...row,
+          components: row.components.filter(component => component.customId !== `ticket_type:${ticketType.id}`)
+        }))
+      })
     }
     await this.ticketTypeRepository.save(this.ticketTypeRepository.create({
       id: ticketType.id,
-      messageId: null,
-      emojiId: null,
-      emoji: null
+      messageId: null
     }))
     const newData = await this.ticketTypeRepository.findOneBy({ id: ticketType.id }) as TicketTypeEntity
 
