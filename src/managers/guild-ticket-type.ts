@@ -36,7 +36,6 @@ TicketTypeEntity
   }
 
   public async create (name: string): Promise<TicketType> {
-    name = name.toLowerCase()
     if (this.resolve(name) !== null) {
       throw new Error('A ticket type with that name already exists.')
     }
@@ -93,7 +92,7 @@ TicketTypeEntity
       if (this.resolve(data.name) !== null) {
         throw new Error('A ticket type with that name already exists.')
       }
-      changes.name = data.name.toLowerCase()
+      changes.name = data.name
 
       if (ticketType.message !== null) {
         if (ticketType.message.partial) {
