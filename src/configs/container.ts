@@ -120,6 +120,8 @@ bind<BaseCommand>(TYPES.Command).to(applicationCommands.ShoutCommand)
 bind<BaseCommand>(TYPES.Command).to(applicationCommands.TrainingsCommand)
   .whenTargetTagged('command', 'trainings')
 
+bind<BaseCommand>(TYPES.Command).to(applicationCommands.InfoCommand)
+  .whenTargetTagged('command', 'info')
 bind<BaseCommand>(TYPES.Command).to(applicationCommands.RestartCommand)
   .whenTargetTagged('command', 'restart')
 bind<BaseCommand>(TYPES.Command).to(applicationCommands.StatusCommand)
