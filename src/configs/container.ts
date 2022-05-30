@@ -125,6 +125,9 @@ bind<BaseCommand>(TYPES.Command).to(applicationCommands.RestartCommand)
 bind<BaseCommand>(TYPES.Command).to(applicationCommands.StatusCommand)
   .whenTargetTagged('command', 'status')
 
+bind<BaseCommand>(TYPES.Command).to(applicationCommands.HttpCatCommand)
+  .whenTargetTagged('command', 'http')
+
 bind<BaseCommand>(TYPES.Command).to(applicationCommands.BoostInfoCommand)
   .whenTargetTagged('command', 'boostinfo')
 bind<BaseCommand>(TYPES.Command).to(applicationCommands.DeleteSuggestionCommand)
