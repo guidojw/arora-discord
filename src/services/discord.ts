@@ -1,40 +1,86 @@
 import {
-  type GuildEmoji,
-  type Message,
+  type ButtonInteraction,
+  Interaction,
+  Message,
+  MessageActionRow,
+  type MessageButton,
   MessageEmbed,
-  type MessageReaction,
-  type ReactionEmoji,
-  type User,
   type UserResolvable
 } from 'discord.js'
+import crypto from 'node:crypto'
 
-const REACTION_COLLECTOR_TIME = 60000
+const PROMPT_TIME = 60_000
 
 export async function prompt (
   user: UserResolvable,
-  message: Message,
-  options: Array<GuildEmoji | string>
-): Promise<GuildEmoji | ReactionEmoji | null> {
-  const userId = message.client.users.resolveId(user)
+  interactionOrMessage: Interaction<'cached'> | Message,
+  options: Record<string, MessageButton>
+): Promise<[string, ButtonInteraction] | [null, null]> {
+  const userId = interactionOrMessage.client.users.resolveId(user)
   if (userId === null) {
     throw new Error('Invalid user.')
   }
+  if (interactionOrMessage.channel === null) {
+    throw new Error('Can only prompt buttons on interactions and messages in a cached channel.')
+  }
+  if (interactionOrMessage instanceof Interaction) {
+    if (!interactionOrMessage.isRepliable()) {
+      throw new Error('Can only prompt buttons on repliable interactions.')
+    }
+    if (!interactionOrMessage.replied) {
+      throw new Error('Can only prompt buttons on already replied to interactions.')
+    }
+  }
+  if (
+    interactionOrMessage instanceof Message && interactionOrMessage.author.id !== interactionOrMessage.client.user?.id
+  ) {
+    throw new Error('Can only prompt buttons on messages sent by the bot.')
+  }
 
-  const filter = (reaction: MessageReaction, user: User): boolean => (
-    reaction.emoji.name !== null && options.includes(reaction.emoji.name) && user.id === userId
+  const buttons = Object.values(options)
+  for (const button of buttons) {
+    if (button.style === null) {
+      button.setStyle('PRIMARY')
+    }
+    button.setCustomId(`prompt:${crypto.randomUUID()}`)
+  }
+  const edit = (interactionOrMessage instanceof Interaction
+    ? interactionOrMessage.editReply
+    : interactionOrMessage.edit).bind(interactionOrMessage)
+  await edit({
+    components: [new MessageActionRow().setComponents(buttons)]
+  })
+
+  const filter = (promptInteraction: ButtonInteraction): boolean => (
+    buttons.some(button => button.customId === promptInteraction.customId) && promptInteraction.user.id === userId
   )
-  const collector = message.createReactionCollector({ filter, time: REACTION_COLLECTOR_TIME })
-  const promise: Promise<GuildEmoji | ReactionEmoji | null> = new Promise(resolve => {
-    collector.on('end', collected => {
-      const reaction = collected.first()
-      resolve(reaction?.emoji ?? null)
+  let choice = null
+  let resultInteraction: ButtonInteraction | null = null
+  try {
+    resultInteraction = await interactionOrMessage.channel.awaitMessageComponent({
+      filter,
+      time: PROMPT_TIME,
+      componentType: 'BUTTON'
+    })
+    choice = Object.entries(options).find(([, option]) => (
+      option.customId === resultInteraction?.customId
+    ))?.[0] ?? null
+  } catch {}
+
+  const reply = interactionOrMessage instanceof Interaction
+    ? await interactionOrMessage.fetchReply()
+    : interactionOrMessage
+  await edit({
+    components: reply.components.map(row => {
+      row.components.forEach(button => button.setDisabled(true))
+      return row
     })
   })
-  collector.on('collect', collector.stop)
-  for (const option of options) {
-    await message.react(option)
+
+  if (choice === null || resultInteraction === null) {
+    return [null, null]
   }
-  return await promise
+  return [choice, resultInteraction]
 }
 
 export function getListEmbeds<T, D extends any[]> (

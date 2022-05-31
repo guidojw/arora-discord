@@ -61,11 +61,6 @@ export enum GuildSetting {
   verificationPreference
 }
 
-export enum CommandType {
-  Command = 'command',
-  Group = 'group'
-}
-
 export enum GroupType {
   Channel = 'channel',
   Role = 'role'
