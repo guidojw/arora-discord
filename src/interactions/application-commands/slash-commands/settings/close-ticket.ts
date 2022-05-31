@@ -24,7 +24,7 @@ export default class CloseTicketCommand extends Command {
     const ticket = context.tickets.resolve(interaction.channelId)
     if (ticket !== null) {
       await interaction.reply('Are you sure you want to close this ticket?')
-      const [choice, promptInteraction] = await discordService.promptButton(interaction.user, interaction, {
+      const [choice, promptInteraction] = await discordService.prompt(interaction.user, interaction, {
         yes: new MessageButton()
           .setLabel('Yes')
           .setStyle('SUCCESS')
