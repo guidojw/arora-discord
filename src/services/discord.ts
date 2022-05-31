@@ -46,7 +46,7 @@ export async function prompt (
   })
 
   const filter = (promptInteraction: ButtonInteraction<'cached'>): boolean => (
-    buttons.some(button => button.customId === promptInteraction.component.customId) &&
+    buttons.some(button => button.customId === promptInteraction.customId) &&
     promptInteraction.user.id === (interaction instanceof Interaction ? interaction.user.id : userId)
   )
   let choice = null
@@ -58,7 +58,7 @@ export async function prompt (
       componentType: 'BUTTON'
     }) as ButtonInteraction<'cached'>
     choice = Object.entries<MessageButton>(options).find(([, option]) => (
-      option.customId === resultInteraction?.component.customId
+      option.customId === resultInteraction?.customId
     ))?.[0] ?? null
   } catch {}
 
