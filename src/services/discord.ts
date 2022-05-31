@@ -55,13 +55,13 @@ export async function prompt (
     buttons.some(button => button.customId === promptInteraction.customId) && promptInteraction.user.id === userId
   )
   let choice = null
-  let resultInteraction: ButtonInteraction<'cached'> | null = null
+  let resultInteraction: ButtonInteraction | null = null
   try {
     resultInteraction = await interactionOrMessage.channel.awaitMessageComponent({
       filter,
       time: PROMPT_TIME,
       componentType: 'BUTTON'
-    }) as ButtonInteraction<'cached'>
+    })
     choice = Object.entries<MessageButton>(options).find(([, option]) => (
       option.customId === resultInteraction?.customId
     ))?.[0] ?? null
