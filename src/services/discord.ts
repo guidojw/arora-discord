@@ -46,8 +46,7 @@ export async function prompt (
   })
 
   const filter = (promptInteraction: ButtonInteraction<'cached'>): boolean => (
-    buttons.some(button => button.customId === promptInteraction.customId) &&
-    promptInteraction.user.id === (interaction instanceof Interaction ? interaction.user.id : userId)
+    buttons.some(button => button.customId === promptInteraction.customId) && promptInteraction.user.id === userId
   )
   let choice = null
   let resultInteraction: ButtonInteraction<'cached'> | null = null
