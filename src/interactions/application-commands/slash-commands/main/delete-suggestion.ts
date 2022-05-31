@@ -1,4 +1,4 @@
-import type { CommandInteraction, Message } from 'discord.js'
+import { type CommandInteraction, MessageButton } from 'discord.js'
 import { inject, injectable, named } from 'inversify'
 import { Command } from '../base'
 import type { GuildContext } from '../../../../structures'
@@ -15,7 +15,7 @@ export default class DeleteSuggestionCommand extends Command {
   private readonly guildContexts!: GuildContextManager
 
   public async execute (interaction: CommandInteraction): Promise<void> {
-    if (!interaction.inGuild()) {
+    if (!interaction.inCachedGuild()) {
       return
     }
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
@@ -28,18 +28,28 @@ export default class DeleteSuggestionCommand extends Command {
 
     for (const suggestion of messages.values()) {
       if (suggestion.embeds[0]?.author?.url === authorUrl) {
-        const prompt = await interaction.reply({
+        await interaction.reply({
           content: 'Are you sure you would like to delete this suggestion?',
-          embeds: [suggestion.embeds[0]],
-          fetchReply: true
-        }) as Message
-        const choice = (await discordService.prompt(interaction.user, prompt, ['✅', '🚫']))?.toString() === '✅'
+          embeds: [suggestion.embeds[0]]
+        })
+        const [choice, promptInteraction] = await discordService.prompt(interaction.user, interaction, {
+          yes: new MessageButton()
+            .setLabel('Yes')
+            .setStyle('SUCCESS')
+            .setEmoji('✔️'),
+          no: new MessageButton()
+            .setLabel('No')
+            .setStyle('DANGER')
+            .setEmoji('✖️')
+        })
 
-        if (choice) {
-          await suggestion.delete()
-          await interaction.followUp('Successfully deleted your last suggestion.')
-        } else {
-          await interaction.followUp('Didn\'t delete your last suggestion.')
+        if (choice !== null) {
+          if (choice === 'yes') {
+            await suggestion.delete()
+            await promptInteraction.reply('Successfully deleted your last suggestion.')
+          } else {
+            await promptInteraction.reply('Didn\'t delete your last suggestion.')
+          }
         }
         return
       }

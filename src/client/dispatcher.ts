@@ -92,7 +92,7 @@ export default class Dispatcher {
 
   private async handleMessageComponentInteraction (interaction: MessageComponentInteraction): Promise<void> {
     if (interaction.isButton()) {
-      if (!interaction.inGuild() || interaction.customId.startsWith('prompt_')) {
+      if (!interaction.inGuild() || interaction.customId.startsWith('prompt:')) {
         return
       }
       const context = this.guildContexts.resolve(interaction.guildId) as GuildContext

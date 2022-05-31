@@ -4,6 +4,7 @@ import {
   type GuildMember,
   type Message,
   MessageAttachment,
+  MessageButton,
   MessageEmbed,
   type PartialGuildMember,
   type TextChannel,
@@ -141,7 +142,7 @@ export default class Ticket extends BaseStructure<TicketEntity> {
       const sent = await this.client.send(this.author, { embeds: [embed] }) !== null
 
       if (sent && success && this.context.ratingsChannel !== null) {
-        const rating = await this.requestRating()
+        const [rating, ratingInteraction] = await this.requestRating()
         if (rating !== null) {
           await this.logRating(rating)
 
@@ -150,7 +151,7 @@ export default class Ticket extends BaseStructure<TicketEntity> {
             .setAuthor({ name: this.client.user.username, iconURL: this.client.user.displayAvatarURL() })
             .setTitle('Rating submitted')
             .setDescription('Thank you!')
-          await this.client.send(this.author, { embeds: [embed] })
+          await ratingInteraction.reply({ embeds: [embed] })
         } else {
           const embed = new MessageEmbed()
             .setColor(this.context.primaryColor ?? applicationConfig.defaultColor)
@@ -164,9 +165,9 @@ export default class Ticket extends BaseStructure<TicketEntity> {
     return await this.delete()
   }
 
-  public async requestRating (): Promise<string | null> {
+  public async requestRating (): Promise<ReturnType<(typeof discordService)['prompt']>> {
     if (this.author === null) {
-      return null
+      return [null, null]
     }
 
     const embed = new MessageEmbed()
@@ -176,15 +177,14 @@ export default class Ticket extends BaseStructure<TicketEntity> {
     const message = await this.client.send(this.author, { embeds: [embed] })
 
     if (message !== null) {
-      const options = []
+      const options: Record<string, MessageButton> = {}
       for (let i = 1; i <= 5; i++) {
-        options.push(`${i}⃣`)
+        options[i] = new MessageButton().setEmoji(`${i}⃣`)
       }
 
-      const rating = await discordService.prompt(this.author as GuildMember, message, options)
-      return rating?.name?.substring(0, 1) ?? null
+      return await discordService.prompt(this.author as GuildMember, message, options)
     }
-    return null
+    return [null, null]
   }
 
   public async logRating (rating: string): Promise<Message | null> {
