@@ -37,7 +37,7 @@ export async function prompt (
     throw new Error('Can only prompt buttons on messages sent by the bot.')
   }
 
-  const buttons = Object.values<MessageButton>(options)
+  const buttons = Object.values(options)
   for (const button of buttons) {
     if (button.style === null) {
       button.setStyle('PRIMARY')
@@ -51,7 +51,7 @@ export async function prompt (
     components: [new MessageActionRow().setComponents(buttons)]
   })
 
-  const filter = (promptInteraction: ButtonInteraction<'cached'>): boolean => (
+  const filter = (promptInteraction: ButtonInteraction): boolean => (
     buttons.some(button => button.customId === promptInteraction.customId) && promptInteraction.user.id === userId
   )
   let choice = null
@@ -62,7 +62,7 @@ export async function prompt (
       time: PROMPT_TIME,
       componentType: 'BUTTON'
     })
-    choice = Object.entries<MessageButton>(options).find(([, option]) => (
+    choice = Object.entries(options).find(([, option]) => (
       option.customId === resultInteraction?.customId
     ))?.[0] ?? null
   } catch {}
