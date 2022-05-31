@@ -21,7 +21,7 @@ export async function prompt (
     throw new Error('Invalid user.')
   }
   if (interactionOrMessage.channel === null) {
-    throw new Error('Can only prompt buttons on interactions in a cached channel.')
+    throw new Error('Can only prompt buttons on interactions and messages in a cached channel.')
   }
   if (interactionOrMessage instanceof Interaction) {
     if (!interactionOrMessage.isRepliable()) {
