@@ -13,23 +13,27 @@ const PROMPT_TIME = 60_000
 
 export async function prompt (
   user: UserResolvable,
-  interaction: Interaction<'cached'> | Message,
+  interactionOrMessage: Interaction<'cached'> | Message,
   options: Record<string, MessageButton>
 ): Promise<[string, ButtonInteraction] | [null, null]> {
-  const userId = interaction.client.users.resolveId(user)
+  const userId = interactionOrMessage.client.users.resolveId(user)
   if (userId === null) {
     throw new Error('Invalid user.')
   }
-  if (interaction.channel === null) {
+  if (interactionOrMessage.channel === null) {
     throw new Error('Can only prompt buttons on interactions in a cached channel.')
   }
-  if (interaction instanceof Interaction && !interaction.isRepliable()) {
-    throw new Error('Can only prompt buttons on repliable interactions.')
+  if (interactionOrMessage instanceof Interaction) {
+    if (!interactionOrMessage.isRepliable()) {
+      throw new Error('Can only prompt buttons on repliable interactions.')
+    }
+    if (!interactionOrMessage.replied) {
+      throw new Error('Can only prompt buttons on already replied to interactions.')
+    }
   }
-  if (interaction instanceof Interaction && !interaction.replied) {
-    throw new Error('Can only prompt buttons on already replied to interactions.')
-  }
-  if (interaction instanceof Message && interaction.author.id !== interaction.client.user?.id) {
+  if (
+    interactionOrMessage instanceof Message && interactionOrMessage.author.id !== interactionOrMessage.client.user?.id
+  ) {
     throw new Error('Can only prompt buttons on messages sent by the bot.')
   }
 
@@ -40,7 +44,9 @@ export async function prompt (
     }
     button.setCustomId(`prompt:${crypto.randomUUID()}`)
   }
-  const edit = (interaction instanceof Interaction ? interaction.editReply : interaction.edit).bind(interaction)
+  const edit = (interactionOrMessage instanceof Interaction
+    ? interactionOrMessage.editReply
+    : interactionOrMessage.edit).bind(interactionOrMessage)
   await edit({
     components: [new MessageActionRow().setComponents(buttons)]
   })
@@ -51,7 +57,7 @@ export async function prompt (
   let choice = null
   let resultInteraction: ButtonInteraction<'cached'> | null = null
   try {
-    resultInteraction = await interaction.channel.awaitMessageComponent({
+    resultInteraction = await interactionOrMessage.channel.awaitMessageComponent({
       filter,
       time: PROMPT_TIME,
       componentType: 'BUTTON'
@@ -61,7 +67,9 @@ export async function prompt (
     ))?.[0] ?? null
   } catch {}
 
-  const reply = interaction instanceof Interaction ? await interaction.fetchReply() : interaction
+  const reply = interactionOrMessage instanceof Interaction
+    ? await interactionOrMessage.fetchReply()
+    : interactionOrMessage
   await edit({
     components: reply.components.map(row => {
       row.components.forEach(button => button.setDisabled(true))
