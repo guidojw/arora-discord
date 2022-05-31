@@ -18,6 +18,7 @@ export default class InfoCommand extends Command {
       .addField('Public', application.bot_public ? 'yes' : 'no', true)
       .addField('Bot Repository', 'https://github.com/guidojw/arora-discord')
       .addField('API Repository', 'https://github.com/guidojw/arora-api')
+      .setThumbnail('attachment://logo.png')
       .setColor(0xff82d1)
       .setTimestamp()
     if (typeof application.privacy_policy_url !== 'undefined') {
