@@ -22,7 +22,7 @@ export async function fetchVerificationData (
       error = err
     }
   }
-  if ((data ?? false) === false || typeof guildId !== 'undefined') {
+  if ((data ?? false) === false || typeof guildId === 'undefined') {
     try {
       const fetch = verificationPreference === VerificationProvider.RoVer || typeof guildId === 'undefined'
         ? fetchBloxlinkData
@@ -51,7 +51,7 @@ async function fetchRoVerData (
   userId: string,
   guildId: string
 ): Promise<{ robloxUsername: string, robloxId: number } | null> {
-  let response: { robloxUsername: string, robloxId: number }
+  let response: { cachedUsername: string, robloxId: number }
   try {
     response = (await roVerAdapter('GET', `guilds/${guildId}/discord-to-roblox/${userId}`)).data
   } catch (err: any) {
@@ -62,7 +62,7 @@ async function fetchRoVerData (
   }
 
   return {
-    robloxUsername: response.robloxUsername,
+    robloxUsername: response.cachedUsername,
     robloxId: response.robloxId
   }
 }
