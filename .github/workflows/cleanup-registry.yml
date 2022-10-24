@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Delete old versions
-        uses: snok/container-retention-policy@46881d5f6ddd0509d9646f4565ddcdfdca520707 # tag=v1.4.2
+        uses: snok/container-retention-policy@6601a342b42bf08909bbd5b48736d4176100365b # tag=v1.5.1
         with:
           image-names: ${{ env.IMAGE_NAMES }}
           cut-off: 2 days ago UTC

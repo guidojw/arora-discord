@@ -14,16 +14,20 @@ export async function fetchVerificationData (
 ): Promise<VerificationData | null> {
   let data = null
   let error
-  try {
-    const fetch = verificationPreference === VerificationProvider.RoVer ? fetchRoVerData : fetchBloxlinkData
-    data = await fetch(userId, guildId)
-  } catch (err) {
-    error = err
-  }
-  if ((data ?? false) === false) {
+  if (typeof guildId !== 'undefined') {
     try {
-      const fetch = verificationPreference === VerificationProvider.RoVer ? fetchBloxlinkData : fetchRoVerData
+      const fetch = verificationPreference === VerificationProvider.RoVer ? fetchRoVerData : fetchBloxlinkData
       data = await fetch(userId, guildId)
+    } catch (err) {
+      error = err
+    }
+  }
+  if ((data ?? false) === false || typeof guildId === 'undefined') {
+    try {
+      const fetch = verificationPreference === VerificationProvider.RoVer || typeof guildId === 'undefined'
+        ? fetchBloxlinkData
+        : fetchRoVerData
+      data = await fetch(userId, guildId as string)
     } catch (err) {
       throw error ?? err
     }
@@ -43,19 +47,22 @@ export async function fetchVerificationData (
   return data
 }
 
-async function fetchRoVerData (userId: string): Promise<{ robloxUsername: string, robloxId: number } | null> {
-  let response: { robloxUsername: string, robloxId: number }
+async function fetchRoVerData (
+  userId: string,
+  guildId: string
+): Promise<{ robloxUsername: string, robloxId: number } | null> {
+  let response: { cachedUsername: string, robloxId: number }
   try {
-    response = (await roVerAdapter('GET', `user/${userId}`)).data
+    response = (await roVerAdapter('GET', `guilds/${guildId}/discord-to-roblox/${userId}`)).data
   } catch (err: any) {
-    if (err.response?.data?.errorCode === 404) {
+    if (err.response?.status === 404) {
       return null
     }
-    throw err.response?.data?.error ?? err
+    throw err.response?.data?.message ?? err
   }
 
   return {
-    robloxUsername: response.robloxUsername,
+    robloxUsername: response.cachedUsername,
     robloxId: response.robloxId
   }
 }
