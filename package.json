@@ -40,7 +40,7 @@
     "@guidojw/bloxy": "^5.7.6",
     "@types/common-tags": "^1.8.1",
     "@types/lodash": "^4.14.184",
-    "@types/node": "^16.11.56",
+    "@types/node": "^18.11.8",
     "@types/node-cron": "^3.0.2",
     "@types/pluralize": "^0.0.29",
     "@types/ws": "^8.5.3",
