@@ -274,7 +274,7 @@ export default class Ticket extends BaseStructure<TicketEntity> {
     let robloxUsername = null
     if (this.author !== null) {
       try {
-        const verificationData = await verificationService.fetchVerificationData(this.author.id)
+        const verificationData = await verificationService.fetchVerificationData(this.author.id, this.guildId)
         if (verificationData !== null) {
           robloxId = verificationData.robloxId
           robloxUsername = robloxId !== null
