@@ -83,7 +83,10 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
 
-    const authorId = (await verificationService.fetchVerificationData(interaction.user.id))?.robloxId
+    const authorId = (await verificationService.fetchVerificationData(
+      interaction.user.id,
+      interaction.guildId
+    ))?.robloxId
     if (typeof authorId === 'undefined') {
       return await interaction.reply({
         content: 'This command requires you to be verified with a verification provider.',
@@ -107,7 +110,10 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
 
-    const authorId = (await verificationService.fetchVerificationData(interaction.user.id))?.robloxId
+    const authorId = (await verificationService.fetchVerificationData(
+      interaction.user.id,
+      interaction.guildId
+    ))?.robloxId
     if (typeof authorId === 'undefined') {
       return await interaction.reply({
         content: 'This command requires you to be verified with a verification provider.',
@@ -139,7 +145,10 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
     } else if (key === 'reason') {
       changes.reason = value
     }
-    const editorId = (await verificationService.fetchVerificationData(interaction.user.id))?.robloxId
+    const editorId = (await verificationService.fetchVerificationData(
+      interaction.user.id,
+      interaction.guildId
+    ))?.robloxId
     if (typeof editorId === 'undefined') {
       return await interaction.reply({
         content: 'This command requires you to be verified with a verification provider.',
@@ -162,7 +171,10 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
 
-    const authorId = (await verificationService.fetchVerificationData(interaction.user.id))?.robloxId
+    const authorId = (await verificationService.fetchVerificationData(
+      interaction.user.id,
+      interaction.guildId
+    ))?.robloxId
     if (typeof authorId === 'undefined') {
       return await interaction.reply({
         content: 'This command requires you to be verified with a verification provider.',
