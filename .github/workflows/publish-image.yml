@@ -47,9 +47,11 @@ jobs:
             else
               BUILD_ARGS+=$'\nNODE_ENV=staging'
             fi
-            echo 'build_args<<EOF' >> "$GITHUB_OUTPUT"
-            echo "$BUILD_ARGS" >> "$GITHUB_OUTPUT"
-            echo 'EOF' >> "$GITHUB_OUTPUT"
+            {
+              echo 'build_args<<EOF'
+              echo "$BUILD_ARGS"
+              echo 'EOF'
+            } >> "$GITHUB_OUTPUT"
           fi
 
   publish:
