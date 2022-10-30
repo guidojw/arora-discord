@@ -35,9 +35,9 @@ jobs:
           INPUT_SHA: ${{ inputs.sha }}
         run: |
           if [ "$GITHUB_REF_NAME" = 'main' ]; then
-            echo '::set-output name=tag::latest'
+            echo 'tag=latest'
           else
-            echo '::set-output name=tag::'"$GITHUB_REF_NAME"
+            echo 'tag='"$GITHUB_REF_NAME"
           fi
 
           if [ "$GITHUB_REF_NAME" = 'staging' ] || [ "$GITHUB_REF_NAME" = 'main' ]; then
