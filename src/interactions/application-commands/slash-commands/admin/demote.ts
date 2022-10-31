@@ -32,7 +32,10 @@ export default class DemoteCommand extends Command {
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
 
-    const authorId = (await verificationService.fetchVerificationData(interaction.user.id))?.robloxId
+    const authorId = (await verificationService.fetchVerificationData(
+      interaction.user.id,
+      interaction.guildId
+    ))?.robloxId
     if (typeof authorId === 'undefined') {
       return await interaction.reply({
         content: 'This command requires you to be verified with a verification provider.',

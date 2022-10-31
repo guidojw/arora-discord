@@ -88,7 +88,10 @@ export default class TrainingsCommand extends SubCommandCommand<TrainingsCommand
     if (typeof trainingType === 'undefined') {
       return await interaction.reply({ content: 'Type not found.', ephemeral: true })
     }
-    const authorId = (await verificationService.fetchVerificationData(interaction.user.id))?.robloxId
+    const authorId = (await verificationService.fetchVerificationData(
+      interaction.user.id,
+      interaction.guildId
+    ))?.robloxId
     if (typeof authorId === 'undefined') {
       return await interaction.reply({
         content: 'This command requires you to be verified with a verification provider.',
@@ -116,7 +119,10 @@ export default class TrainingsCommand extends SubCommandCommand<TrainingsCommand
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
 
-    const authorId = (await verificationService.fetchVerificationData(interaction.user.id))?.robloxId
+    const authorId = (await verificationService.fetchVerificationData(
+      interaction.user.id,
+      interaction.guildId
+    ))?.robloxId
     if (typeof authorId === 'undefined') {
       return await interaction.reply({
         content: 'This command requires you to be verified with a verification provider.',
@@ -185,7 +191,10 @@ export default class TrainingsCommand extends SubCommandCommand<TrainingsCommand
       changes.date = Math.floor(new Date(dateInfo.year, dateInfo.month, dateInfo.day, timeInfo.hours, timeInfo.minutes)
         .getTime())
     }
-    const editorId = (await verificationService.fetchVerificationData(interaction.user.id))?.robloxId
+    const editorId = (await verificationService.fetchVerificationData(
+      interaction.user.id,
+      interaction.guildId
+    ))?.robloxId
     if (typeof editorId === 'undefined') {
       return await interaction.reply({
         content: 'This command requires you to be verified with a verification provider.',
