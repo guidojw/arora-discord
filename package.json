@@ -50,12 +50,12 @@
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-n": "^15.2.5",
     "eslint-plugin-promise": "^6.0.0",
-    "eslint-plugin-unicorn": "^44.0.2",
+    "eslint-plugin-unicorn": "^45.0.2",
     "reflect-metadata": "^0.1.13",
     "typescript": "^4.7.4"
   },
   "engines": {
     "node": ">=16.6.0"
   },
-  "packageManager": "yarn@3.2.4"
+  "packageManager": "yarn@3.3.1"
 }
