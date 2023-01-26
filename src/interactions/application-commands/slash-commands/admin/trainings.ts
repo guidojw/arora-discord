@@ -64,7 +64,7 @@ export default class TrainingsCommand extends SubCommandCommand<TrainingsCommand
       type: string
       date: string
       time: string
-      notes?: string
+      notes: string | null
     }
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
@@ -102,7 +102,7 @@ export default class TrainingsCommand extends SubCommandCommand<TrainingsCommand
     const training = (await applicationAdapter('POST', `v1/groups/${context.robloxGroupId}/trainings`, {
       authorId,
       date: dateUnix,
-      notes,
+      notes: notes ?? undefined,
       typeId: trainingType.id
     })).data
 
