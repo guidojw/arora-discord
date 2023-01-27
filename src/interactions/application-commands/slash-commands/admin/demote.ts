@@ -43,10 +43,12 @@ export default class DemoteCommand extends Command {
       })
     }
 
+    await interaction.deferReply()
+
     const roles: ChangeMemberRole = (await applicationAdapter('POST', `v1/groups/${context.robloxGroupId}/users/${user.id}/demote`, {
       authorId
     })).data
 
-    return await interaction.reply(`Successfully demoted **${user.username ?? user.id}** from **${roles.oldRole.name}** to **${roles.newRole.name}**.`)
+    await interaction.editReply(`Successfully demoted **${user.username ?? user.id}** from **${roles.oldRole.name}** to **${roles.newRole.name}**.`)
   }
 }

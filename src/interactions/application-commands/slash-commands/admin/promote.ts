@@ -43,10 +43,12 @@ export default class PromoteCommand extends Command {
       })
     }
 
+    await interaction.deferReply()
+
     const roles: ChangeMemberRole = (await applicationAdapter('POST', `v1/groups/${context.robloxGroupId}/users/${user.id}/promote`, {
       authorId
     })).data
 
-    return await interaction.reply(`Successfully promoted **${user.username ?? user.id}** from **${roles.oldRole.name}** to **${roles.newRole.name}**.`)
+    await interaction.editReply(`Successfully promoted **${user.username ?? user.id}** from **${roles.oldRole.name}** to **${roles.newRole.name}**.`)
   }
 }
