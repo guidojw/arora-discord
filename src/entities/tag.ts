@@ -1,5 +1,14 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
-import { IsNotEmpty, IsNumber, IsNumberString, IsString, MaxLength, ValidateIf, ValidateNested } from 'class-validator'
+import {
+  IsArray,
+  IsNotEmpty,
+  IsNumber,
+  IsNumberString,
+  IsString,
+  MaxLength,
+  ValidateIf,
+  ValidateNested
+} from 'class-validator'
 import Guild from './guild'
 import TagName from './tag-name'
 
@@ -29,5 +38,6 @@ export default class Tag {
   @OneToMany(() => TagName, tagName => tagName.tag, { cascade: true })
   @ValidateIf(tag => typeof tag.names !== 'undefined')
   @ValidateNested()
+  @IsArray()
   public names?: TagName[]
 }

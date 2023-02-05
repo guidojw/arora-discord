@@ -8,7 +8,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn
 } from 'typeorm'
-import { IsNumber, IsNumberString, ValidateIf, ValidateNested } from 'class-validator'
+import { IsArray, IsNumber, IsNumberString, ValidateIf, ValidateNested } from 'class-validator'
 import Guild from './guild'
 import Role from './role'
 import Ticket from './ticket'
@@ -37,6 +37,7 @@ export default class Member {
   @OneToMany(() => Ticket, ticket => ticket.author)
   @ValidateIf(member => typeof member.tickets !== 'undefined')
   @ValidateNested()
+  @IsArray()
   public tickets?: Ticket[]
 
   @ManyToMany(() => Ticket, ticket => ticket.moderators, { cascade: true })
@@ -47,6 +48,7 @@ export default class Member {
   })
   @ValidateIf(member => typeof member.moderatingTickets !== 'undefined')
   @ValidateNested()
+  @IsArray()
   public moderatingTickets?: Ticket[]
 
   @ManyToMany(() => Role, role => role.members, { cascade: true })
@@ -57,5 +59,6 @@ export default class Member {
   })
   @ValidateIf(member => typeof member.roles !== 'undefined')
   @ValidateNested()
+  @IsArray()
   public roles?: Role[]
 }

@@ -1,5 +1,6 @@
 import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
 import {
+  IsArray,
   IsBoolean,
   IsEnum,
   IsNotEmpty,
@@ -54,6 +55,7 @@ export default class Group {
   })
   @ValidateIf(group => typeof group.channels !== 'undefined')
   @ValidateNested()
+  @IsArray()
   public channels?: Channel[]
 
   @ManyToMany(() => Role, role => role.groups, { cascade: true })
@@ -64,5 +66,6 @@ export default class Group {
   })
   @ValidateIf(group => typeof group.roles !== 'undefined')
   @ValidateNested()
+  @IsArray()
   public roles?: Role[]
 }

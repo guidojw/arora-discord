@@ -1,5 +1,5 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn } from 'typeorm'
-import { IsNumberString, ValidateIf, ValidateNested } from 'class-validator'
+import { IsArray, IsNumberString, ValidateIf, ValidateNested } from 'class-validator'
 import Guild from './guild'
 import RoleMessage from './role-message'
 
@@ -22,5 +22,6 @@ export default class Emoji {
   @OneToMany(() => RoleMessage, roleMessage => roleMessage.emoji)
   @ValidateIf(emoji => typeof emoji.roleMessages !== 'undefined')
   @ValidateNested()
+  @IsArray()
   public roleMessages?: RoleMessage[]
 }
