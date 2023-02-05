@@ -37,7 +37,7 @@ jobs:
       stage: ${{ steps.get_metadata.outputs.stage }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@755da8c3cf115ac066823e79a1e1788f8940201b # v3.2.0
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
 
       - name: Get metadata
         id: get_metadata
@@ -82,7 +82,7 @@ jobs:
 
       - name: Checkout code
         if: fromJSON(needs.metadata.outputs.has_diff)
-        uses: actions/checkout@755da8c3cf115ac066823e79a1e1788f8940201b # v3.2.0
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
 
       - name: Run merge
         if: fromJSON(needs.metadata.outputs.has_diff)
@@ -128,19 +128,19 @@ jobs:
       ((github.event.inputs.merge != 'y' || !fromJSON(needs.metadata.outputs.has_diff)) && !cancelled()))
     steps:
       - name: Checkout code
-        uses: actions/checkout@755da8c3cf115ac066823e79a1e1788f8940201b # v3.2.0
+        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
         with:
           ref: ${{ needs.merge.outputs.sha }}
 
       - name: Start deployment
-        uses: bobheadxi/deployments@9d4477fdaa4120020cd10ab7e97f68c801422e73 # tag=v1.3.0
+        uses: bobheadxi/deployments@88ce5600046c82542f8246ac287d0a53c461bca3 # v1.4.0
         id: start_deployment
         with:
           step: start
           env: ${{ needs.metadata.outputs.stage }}
 
       - name: Deploy
-        uses: appleboy/ssh-action@4a03da89e5c43da56e502053be4bbcb293411883 # v0.1.6
+        uses: appleboy/ssh-action@d91a1af6f57cd4478ceee14d7705601dafabaa19 # v0.1.7
         env:
           STAGE: ${{ needs.metadata.outputs.stage }}
         with:
@@ -172,7 +172,7 @@ jobs:
           set_commits: skip
 
       - name: Finish deployment
-        uses: bobheadxi/deployments@9d4477fdaa4120020cd10ab7e97f68c801422e73 # tag=v1.3.0
+        uses: bobheadxi/deployments@88ce5600046c82542f8246ac287d0a53c461bca3 # v1.4.0
         if: steps.start_deployment.conclusion == 'success' && always()
         with:
           step: finish
