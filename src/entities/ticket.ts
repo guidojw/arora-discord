@@ -1,5 +1,5 @@
 import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm'
-import { IsNumber, IsNumberString, IsOptional, ValidateIf, ValidateNested } from 'class-validator'
+import { IsArray, IsNumber, IsNumberString, IsOptional, ValidateIf, ValidateNested } from 'class-validator'
 import Channel from './channel'
 import Guild from './guild'
 import Member from './member'
@@ -39,6 +39,7 @@ export default class Ticket {
   @ManyToMany(() => Member, member => member.moderatingTickets)
   @ValidateIf(ticket => typeof ticket.moderators !== 'undefined')
   @ValidateNested()
+  @IsArray()
   public moderators?: Member[]
 
   @ManyToOne(() => Member, member => member.tickets, { onDelete: 'CASCADE' }) // FIXME: should be SET NULL

@@ -1,5 +1,5 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryColumn } from 'typeorm'
-import { IsNumberString, IsOptional, ValidateIf, ValidateNested } from 'class-validator'
+import { IsArray, IsNumberString, IsOptional, ValidateIf, ValidateNested } from 'class-validator'
 import Channel from './channel'
 import Guild from './guild'
 import Panel from './panel'
@@ -45,5 +45,6 @@ export default class Message {
   @OneToMany(() => RoleMessage, roleMessage => roleMessage.message)
   @ValidateIf(message => typeof message.roleMessages !== 'undefined')
   @ValidateNested()
+  @IsArray()
   public roleMessages?: RoleMessage[]
 }

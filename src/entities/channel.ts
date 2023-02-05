@@ -9,7 +9,7 @@ import {
   OneToOne,
   PrimaryColumn
 } from 'typeorm'
-import { IsNumberString, IsOptional, ValidateIf, ValidateNested } from 'class-validator'
+import { IsArray, IsNumberString, IsOptional, ValidateIf, ValidateNested } from 'class-validator'
 import Group from './group'
 import Guild from './guild'
 import Message from './message'
@@ -34,6 +34,7 @@ export default class Channel {
   @ManyToMany(() => Group, group => group.channels)
   @ValidateIf(channel => typeof channel.groups !== 'undefined')
   @ValidateNested()
+  @IsArray()
   public groups?: Group[]
 
   @ManyToMany(() => Channel, channel => channel.fromLinks, { cascade: true })
@@ -44,16 +45,19 @@ export default class Channel {
   })
   @ValidateIf(channel => typeof channel.toLinks !== 'undefined')
   @ValidateNested()
+  @IsArray()
   public toLinks?: Channel[]
 
   @ManyToMany(() => Channel, channel => channel.toLinks)
   @ValidateIf(channel => typeof channel.fromLinks !== 'undefined')
   @ValidateNested()
+  @IsArray()
   public fromLinks?: Channel[]
 
   @OneToMany(() => Message, message => message.channel)
   @ValidateIf(channel => typeof channel.messages !== 'undefined')
   @ValidateNested()
+  @IsArray()
   public messages?: Message[]
 
   @OneToOne(() => Ticket, ticket => ticket.channel)
