@@ -1,5 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm'
 import {
+  IsArray,
   IsNotEmpty,
   IsNumber,
   IsNumberString,
@@ -50,5 +51,6 @@ export default class TicketType {
   @OneToMany(() => Ticket, ticket => ticket.type)
   @ValidateIf(ticketType => typeof ticketType.tickets !== 'undefined')
   @ValidateNested()
+  @IsArray()
   public tickets?: Ticket[]
 }
