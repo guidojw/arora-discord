@@ -140,7 +140,7 @@ jobs:
           env: ${{ needs.metadata.outputs.stage }}
 
       - name: Deploy
-        uses: appleboy/ssh-action@d91a1af6f57cd4478ceee14d7705601dafabaa19 # v0.1.7
+        uses: appleboy/ssh-action@b60142998894e495c513803efc6d5d72a72c968a # v0.1.8
         env:
           STAGE: ${{ needs.metadata.outputs.stage }}
         with:
@@ -162,7 +162,7 @@ jobs:
             docker-compose up -d
 
       - name: Finalize Sentry release
-        uses: getsentry/action-release@bd5f874fcda966ba48139b0140fb3ec0cb3aabdd # v1.2.1
+        uses: getsentry/action-release@586b62368d564f25d694ce05fcb9cf53de65ac4f # v1.3.1
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_PROJECT: ${{ env.PROJECT_NAME }}
