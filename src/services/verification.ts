@@ -68,18 +68,20 @@ async function fetchRoVerData (
 }
 
 async function fetchBloxlinkData (userId: string, guildId?: string): Promise<number | null> {
-  const response = (await bloxlinkAdapter(
-    'GET',
-    `user/${userId}${typeof guildId !== 'undefined' ? `?guild=${guildId}` : ''}`
-  )).data
-  if (response.status === 'error') {
-    if ((response.error as string).includes('not linked')) {
+  let response: { success: true, user: { robloxId: string, primaryAccount: string } }
+  try {
+    response = (await bloxlinkAdapter(
+      'GET',
+      `${userId}${typeof guildId !== 'undefined' ? `?guildId=${guildId}` : ''}`
+    )).data
+  } catch (err: any) {
+    if (err.response?.status === 404) {
       return null
     }
-    return response.status
+    throw err.response?.data?.error ?? err
   }
 
-  return (response.matchingAccount !== null || response.primaryAccount !== null)
-    ? parseInt(response.matchingAccount ?? response.primaryAccount)
+  return (response.user.robloxId !== null || response.user.primaryAccount !== null)
+    ? parseInt(response.user.robloxId ?? response.user.primaryAccount)
     : null
 }
