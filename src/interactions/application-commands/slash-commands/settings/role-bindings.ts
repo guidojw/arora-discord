@@ -2,7 +2,7 @@ import { type CommandInteraction, MessageEmbed, type Role } from 'discord.js'
 import type { GuildContext, RoleBinding } from '../../../../structures'
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
-import type { GuildContextManager } from '../../../../managers'
+import { GuildContextManager } from '../../../../managers'
 import { SubCommandCommand } from '../base'
 import type { SubCommandCommandOptions } from '..'
 import applicationConfig from '../../../../configs/application'
@@ -55,7 +55,7 @@ export default class RoleBindingsCommand extends SubCommandCommand<RoleBindingsC
 
     const roleBinding = await context.roleBindings.create({ role, min, max: max ?? undefined })
 
-    return await interaction.reply({
+    await interaction.reply({
       content: `Successfully bound group \`${roleBinding.robloxGroupId}\` rank \`${getRangeString(roleBinding.min, roleBinding.max)}\` to role ${roleBinding.role?.toString() ?? 'Unknown'}.`,
       allowedMentions: { users: [interaction.user.id] }
     })
@@ -69,7 +69,7 @@ export default class RoleBindingsCommand extends SubCommandCommand<RoleBindingsC
 
     await context.roleBindings.delete(roleBinding)
 
-    return await interaction.reply('Successfully deleted role binding.')
+    await interaction.reply('Successfully deleted role binding.')
   }
 
   public async list (
@@ -82,11 +82,12 @@ export default class RoleBindingsCommand extends SubCommandCommand<RoleBindingsC
       const embed = new MessageEmbed()
         .addField(`Role Binding ${roleBinding.id}`, `\`${roleBinding.robloxGroupId}\` \`${getRangeString(roleBinding.min, roleBinding.max)}\` => ${roleBinding.role?.toString() ?? 'Unknown'}`)
         .setColor(context.primaryColor ?? applicationConfig.defaultColor)
-      return await interaction.reply({ embeds: [embed] })
+      await interaction.reply({ embeds: [embed] })
     } else {
       await context.roleBindings.fetch()
       if (context.roleBindings.cache.size === 0) {
-        return await interaction.reply('No role bindings found.')
+        await interaction.reply('No role bindings found.')
+        return
       }
 
       const embeds = discordService.getListEmbeds(

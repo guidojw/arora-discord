@@ -4,7 +4,7 @@ import { groupService, userService, verificationService } from '../../../../serv
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
 import type { GuildContext } from '../../../../structures'
-import type { GuildContextManager } from '../../../../managers'
+import { GuildContextManager } from '../../../../managers'
 import { SubCommandCommand } from '../base'
 import type { SubCommandCommandOptions } from '..'
 import type { Training } from '../../../../services/group'
@@ -80,23 +80,26 @@ export default class TrainingsCommand extends SubCommandCommand<TrainingsCommand
     ).getTime())
     const afterNow = dateUnix - Date.now() > 0
     if (!afterNow) {
-      return await interaction.reply({ content: 'Please give a date and time that are after now.', ephemeral: true })
+      await interaction.reply({ content: 'Please give a date and time that are after now.', ephemeral: true })
+      return
     }
     const trainingTypes = await groupService.getTrainingTypes(context.robloxGroupId)
     let trainingType = trainingTypes.find(trainingType => trainingType.abbreviation.toLowerCase() === type)
     trainingType ??= trainingTypes.find(trainingType => trainingType.name.toLowerCase() === type)
     if (typeof trainingType === 'undefined') {
-      return await interaction.reply({ content: 'Type not found.', ephemeral: true })
+      await interaction.reply({ content: 'Type not found.', ephemeral: true })
+      return
     }
     const authorId = (await verificationService.fetchVerificationData(
       interaction.user.id,
       interaction.guildId
     ))?.robloxId
     if (typeof authorId === 'undefined') {
-      return await interaction.reply({
+      await interaction.reply({
         content: 'This command requires you to be verified with a verification provider.',
         ephemeral: true
       })
+      return
     }
 
     const training = (await applicationAdapter('POST', `v1/groups/${context.robloxGroupId}/trainings`, {
@@ -110,7 +113,7 @@ export default class TrainingsCommand extends SubCommandCommand<TrainingsCommand
       .addField('Successfully scheduled', `**${trainingType.name}** training on **${date}** at **${time}**.`)
       .addField('Training ID', training.id.toString())
       .setColor(context.primaryColor ?? applicationConfig.defaultColor)
-    return await interaction.reply({ embeds: [embed] })
+    await interaction.reply({ embeds: [embed] })
   }
 
   public async cancel (
@@ -124,10 +127,11 @@ export default class TrainingsCommand extends SubCommandCommand<TrainingsCommand
       interaction.guildId
     ))?.robloxId
     if (typeof authorId === 'undefined') {
-      return await interaction.reply({
+      await interaction.reply({
         content: 'This command requires you to be verified with a verification provider.',
         ephemeral: true
       })
+      return
     }
 
     await applicationAdapter('POST', `v1/groups/${context.robloxGroupId}/trainings/${id}/cancel`, {
@@ -135,7 +139,7 @@ export default class TrainingsCommand extends SubCommandCommand<TrainingsCommand
       reason
     })
 
-    return await interaction.reply(`Successfully cancelled training with ID **${id}**.`)
+    await interaction.reply(`Successfully cancelled training with ID **${id}**.`)
   }
 
   public async edit (
@@ -149,7 +153,8 @@ export default class TrainingsCommand extends SubCommandCommand<TrainingsCommand
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
 
     if (['author', 'type', 'date', 'time'].includes(key) && value === null) {
-      return await interaction.reply({ content: `Invalid ${key}`, ephemeral: true })
+      await interaction.reply({ content: `Invalid ${key}`, ephemeral: true })
+      return
     }
 
     const changes: { authorId?: number, notes?: string | null, typeId?: number, date?: number } = {}
@@ -163,7 +168,8 @@ export default class TrainingsCommand extends SubCommandCommand<TrainingsCommand
       let trainingType = trainingTypes.find(trainingType => trainingType.abbreviation.toLowerCase() === type)
       trainingType ??= trainingTypes.find(trainingType => trainingType.name.toLowerCase() === type)
       if (typeof trainingType === 'undefined') {
-        return await interaction.reply({ content: 'Type not found.', ephemeral: true })
+        await interaction.reply({ content: 'Type not found.', ephemeral: true })
+        return
       }
 
       changes.typeId = trainingType.id
@@ -176,13 +182,15 @@ export default class TrainingsCommand extends SubCommandCommand<TrainingsCommand
       let timeInfo
       if (key === 'date') {
         if (!validDate(value as string)) {
-          return await interaction.reply({ content: 'Please enter a valid date.', ephemeral: true })
+          await interaction.reply({ content: 'Please enter a valid date.', ephemeral: true })
+          return
         }
         dateInfo = getDateInfo(value as string)
         timeInfo = getTimeInfo(getTime(date))
       } else {
         if (!validTime(value as string)) {
-          return await interaction.reply({ content: 'Please enter a valid time.', ephemeral: true })
+          await interaction.reply({ content: 'Please enter a valid time.', ephemeral: true })
+          return
         }
         dateInfo = getDateInfo(getDate(date))
         timeInfo = getTimeInfo(value as string)
@@ -196,10 +204,11 @@ export default class TrainingsCommand extends SubCommandCommand<TrainingsCommand
       interaction.guildId
     ))?.robloxId
     if (typeof editorId === 'undefined') {
-      return await interaction.reply({
+      await interaction.reply({
         content: 'This command requires you to be verified with a verification provider.',
         ephemeral: true
       })
+      return
     }
 
     await applicationAdapter('PUT', `v1/groups/${context.robloxGroupId}/trainings/${id}`, {
@@ -207,7 +216,7 @@ export default class TrainingsCommand extends SubCommandCommand<TrainingsCommand
       editorId
     })
 
-    return await interaction.reply(`Successfully edited training with ID **${id}**.`)
+    await interaction.reply(`Successfully edited training with ID **${id}**.`)
   }
 
   public async list (
@@ -229,19 +238,20 @@ export default class TrainingsCommand extends SubCommandCommand<TrainingsCommand
         .addField('Time', `${getTime(date)} ${getTimeZoneAbbreviation(date)}`, true)
         .addField('Host', username, true)
         .setColor(context.primaryColor ?? applicationConfig.defaultColor)
-      return await interaction.reply({ embeds: [embed] })
+      await interaction.reply({ embeds: [embed] })
     } else {
       const trainings: Training[] = (await applicationAdapter('GET', `v1/groups/${context.robloxGroupId}/trainings?sort=date`))
         .data
       if (trainings.length === 0) {
-        return await interaction.reply('There are currently no hosted trainings.')
+        await interaction.reply('There are currently no hosted trainings.')
+        return
       }
 
       const embeds = await groupService.getTrainingEmbeds(trainings)
       for (const embed of embeds) {
         await interaction.user.send({ embeds: [embed] })
       }
-      return await interaction.reply('Sent you a DM with the upcoming trainings.')
+      await interaction.reply('Sent you a DM with the upcoming trainings.')
     }
   }
 }

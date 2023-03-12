@@ -1,7 +1,7 @@
 import { type AnyFunction, type KeyOfType, type OverloadedParameters, constants } from '../../../utils'
 import type { Argument, ArgumentOptions } from '.'
 import { inject, injectable, type interfaces } from 'inversify'
-import type { AroraClient } from '../../../client'
+import { AroraClient } from '../../../client'
 import type { CommandInteraction } from 'discord.js'
 
 const { TYPES } = constants

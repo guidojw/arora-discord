@@ -3,7 +3,7 @@ import type { Group as GroupEntity, Role as RoleEntity } from '../entities'
 import type { GuildContext, RoleGroup } from '../structures'
 import { inject, injectable } from 'inversify'
 import BaseManager from './base'
-import type { Repository } from 'typeorm'
+import { Repository } from 'typeorm'
 import { constants } from '../utils'
 
 const { TYPES } = constants

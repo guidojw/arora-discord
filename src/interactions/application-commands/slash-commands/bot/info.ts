@@ -1,5 +1,5 @@
 import { type CommandInteraction, MessageAttachment, MessageEmbed } from 'discord.js'
-import { RESTGetAPIOAuth2CurrentApplicationResult, Routes } from 'discord-api-types/v10'
+import { type RESTGetAPIOAuth2CurrentApplicationResult, Routes } from 'discord-api-types/v10'
 import { Command } from '../base'
 import { REST } from '@discordjs/rest'
 import { injectable } from 'inversify'
@@ -25,6 +25,6 @@ export default class InfoCommand extends Command {
       embed.addField('Privacy Policy', application.privacy_policy_url)
     }
 
-    return await interaction.reply({ embeds: [embed], files: [attachment] })
+    await interaction.reply({ embeds: [embed], files: [attachment] })
   }
 }

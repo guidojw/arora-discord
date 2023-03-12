@@ -2,7 +2,7 @@ import type { Collection, RoleResolvable } from 'discord.js'
 import { type GuildContext, RoleBinding } from '../structures'
 import { inject, injectable } from 'inversify'
 import { DataManager } from './base'
-import type { Repository } from 'typeorm'
+import { Repository } from 'typeorm'
 import type { RoleBinding as RoleBindingEntity } from '../entities'
 import { constants } from '../utils'
 

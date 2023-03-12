@@ -6,11 +6,11 @@ import { createClassDecorator } from './util'
  * Applies given options to the class.
  */
 export function ApplyOptions<T extends object> (options: T): ClassDecorator {
-  return createClassDecorator((target: Constructor<any>) => (
+  return createClassDecorator((target: Constructor<any>) => {
     // Using Reflect.defineMetadata instead of a Proxy because Proxy's
     // handler.construct doesn't work when Inversify creates an instance.
     Reflect.defineMetadata('options', options, target)
-  ))
+  })
 }
 
 /**
@@ -19,8 +19,8 @@ export function ApplyOptions<T extends object> (options: T): ClassDecorator {
 export function Xor (
   property: string,
   validationOptions?: ValidationOptions
-): (object: Object, propertyName: string) => void {
-  return function (object: Object, propertyName: string) {
+): (object: any, propertyName: string) => void {
+  return function (object: any, propertyName: string) {
     registerDecorator({
       name: 'xor',
       target: object.constructor,
@@ -46,8 +46,8 @@ export function Xor (
 export function Nand (
   property: string,
   validationOptions?: ValidationOptions
-): (object: Object, propertyName: string) => void {
-  return function (object: Object, propertyName: string) {
+): (object: any, propertyName: string) => void {
+  return function (object: any, propertyName: string) {
     registerDecorator({
       name: 'nand',
       target: object.constructor,

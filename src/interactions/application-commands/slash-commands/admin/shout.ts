@@ -5,7 +5,7 @@ import { ApplyOptions } from '../../../../utils/decorators'
 import { Command } from '../base'
 import type { CommandOptions } from '..'
 import type { GuildContext } from '../../../../structures'
-import type { GuildContextManager } from '../../../../managers'
+import { GuildContextManager } from '../../../../managers'
 import { applicationAdapter } from '../../../../adapters'
 import applicationConfig from '../../../../configs/application'
 import { verificationService } from '../../../../services'
@@ -42,10 +42,11 @@ export default class ShoutCommand extends Command {
       interaction.guildId
     ))?.robloxId
     if (typeof authorId === 'undefined') {
-      return await interaction.reply({
+      await interaction.reply({
         content: 'This command requires you to be verified with a verification provider.',
         ephemeral: true
       })
+      return
     }
 
     const shout = (await applicationAdapter('PUT', `v1/groups/${context.robloxGroupId}/status`, {
@@ -54,12 +55,12 @@ export default class ShoutCommand extends Command {
     })).data
 
     if (shout.body === '') {
-      return await interaction.reply('Successfully cleared shout.')
+      await interaction.reply('Successfully cleared shout.')
     } else {
       const embed = new MessageEmbed()
         .addField('Successfully shouted', shout.body)
         .setColor(context.primaryColor ?? applicationConfig.defaultColor)
-      return await interaction.reply({ embeds: [embed] })
+      await interaction.reply({ embeds: [embed] })
     }
   }
 }

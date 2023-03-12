@@ -1,5 +1,5 @@
 import { type AnyFunction, constants } from '../utils'
-import type { BaseHandler, SettingProvider, WebSocketManager } from '.'
+import { type BaseHandler, SettingProvider, WebSocketManager } from '.'
 import {
   Client,
   type ClientEvents,

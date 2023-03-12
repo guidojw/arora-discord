@@ -55,7 +55,7 @@ export default class Tag extends BaseStructure<TagEntity> {
   }
 
   public async delete (): Promise<void> {
-    return await this.context.tags.delete(this)
+    await this.context.tags.delete(this)
   }
 
   public override toString (): string {

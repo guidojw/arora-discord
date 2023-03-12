@@ -8,7 +8,7 @@ import {
 import { type GuildContext, Ticket, type TicketUpdateOptions } from '../structures'
 import { inject, injectable } from 'inversify'
 import { DataManager } from './base'
-import type { Repository } from 'typeorm'
+import { Repository } from 'typeorm'
 import type { Ticket as TicketEntity } from '../entities'
 import type { TicketTypeResolvable } from './guild-ticket-type'
 import { constants } from '../utils'

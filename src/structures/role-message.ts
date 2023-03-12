@@ -51,6 +51,6 @@ RoleMessageEntity
   }
 
   public async delete (): Promise<void> {
-    return await this.context.roleMessages.delete(this)
+    await this.context.roleMessages.delete(this)
   }
 }

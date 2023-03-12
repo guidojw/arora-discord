@@ -58,7 +58,7 @@ export class DataManager<
   @inject(TYPES.StructureFactory)
   private readonly structureFactory!: interfaces.MultiFactory<Holds, [string], Parameters<Holds['setOptions']>>
 
-  public readonly cache: Collection<K, Holds> = new Collection()
+  public readonly cache = new Collection<K, Holds>()
 
   public add (
     data: Parameters<Holds['setOptions']>[0],

@@ -7,7 +7,7 @@ import {
 import type { CommandInteraction, CommandInteractionOption, Interaction, MessageComponentInteraction } from 'discord.js'
 import { inject, injectable, type interfaces, named } from 'inversify'
 import type { GuildContext } from '../structures'
-import type { GuildContextManager } from '../managers'
+import { GuildContextManager } from '../managers'
 import applicationConfig from '../configs/application'
 import { constants } from '../utils'
 
@@ -24,9 +24,9 @@ export default class Dispatcher {
 
   public async handleInteraction (interaction: Interaction): Promise<void> {
     if (interaction.isCommand()) {
-      return await this.handleCommandInteraction(interaction)
+      await this.handleCommandInteraction(interaction)
     } else if (interaction.isMessageComponent()) {
-      return await this.handleMessageComponentInteraction(interaction)
+      await this.handleMessageComponentInteraction(interaction)
     }
   }
 
@@ -58,7 +58,8 @@ export default class Dispatcher {
       }
     }
     if (typeof error !== 'undefined') {
-      return await interaction.reply({ content: error, ephemeral: true })
+      await interaction.reply({ content: error, ephemeral: true })
+      return
     }
 
     let subCommandGroupName, subCommandName, subCommandArgs
@@ -83,7 +84,7 @@ export default class Dispatcher {
       ? await this.parseArgs(interaction, subCommandArgs as Record<string, Argument<any>>)
       : {}
 
-    return command instanceof Command
+    command instanceof Command
       ? await command.execute(interaction, args)
       : subCommandGroupName == null
         ? await command.execute(interaction, subCommandName, args)
@@ -108,14 +109,14 @@ export default class Dispatcher {
     const result: Record<string, any> = {}
     for (const [key, arg] of Object.entries(args)) {
       const option = interaction.options.get(arg.key, arg.required ?? true)
-      if (option === null && typeof arg.default === 'undefined') {
-        result[key] = null
-        continue
+      let val = null
+      if (option === null) {
+        if (typeof arg.default !== 'undefined') {
+          val = typeof arg.default === 'string' ? arg.default : arg.default(interaction, this.guildContexts)
+        }
+      } else {
+        val = Dispatcher.getCommandInteractionOptionValue(option)
       }
-
-      let val = option !== null
-        ? Dispatcher.getCommandInteractionOptionValue(option)
-        : typeof arg.default === 'string' ? arg.default : (arg.default as Function)(interaction, this.guildContexts)
       if (typeof val !== 'string') {
         result[key] = val
         continue
