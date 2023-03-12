@@ -2,7 +2,7 @@ import { type EmojiResolvable, type Message, MessageActionRow, MessageButton } f
 import { type GuildContext, TicketType, type TicketTypeUpdateOptions } from '../structures'
 import { inject, injectable } from 'inversify'
 import { DataManager } from './base'
-import type { Repository } from 'typeorm'
+import { Repository } from 'typeorm'
 import type { TicketType as TicketTypeEntity } from '../entities'
 import { constants } from '../utils'
 import emojiRegex from 'emoji-regex'

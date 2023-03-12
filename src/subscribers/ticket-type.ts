@@ -1,9 +1,10 @@
 import { Emoji, Message, TicketType } from '../entities'
 import { type EntitySubscriberInterface, EventSubscriber, type UpdateEvent } from 'typeorm'
+import type { Constructor } from '../utils'
 
 @EventSubscriber()
 export class TicketTypeSubscriber implements EntitySubscriberInterface<TicketType> {
-  public listenTo (): Function {
+  public listenTo (): Constructor {
     return TicketType
   }
 

@@ -4,7 +4,7 @@ import { argumentUtil, constants } from '../../../../utils'
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
 import type { GroupType } from '../../../../utils/constants'
-import type { GuildContextManager } from '../../../../managers'
+import { GuildContextManager } from '../../../../managers'
 import { SubCommandCommand } from '../base'
 import type { SubCommandCommandOptions } from '..'
 import applicationConfig from '../../../../configs/application'
@@ -84,7 +84,7 @@ export default class GroupsCommand extends SubCommandCommand<GroupsCommand> {
 
     const group = await context.groups.create(name, type)
 
-    return await interaction.reply(`Successfully created group \`${group.name}\`.`)
+    await interaction.reply(`Successfully created group \`${group.name}\`.`)
   }
 
   public async delete (
@@ -93,7 +93,7 @@ export default class GroupsCommand extends SubCommandCommand<GroupsCommand> {
   ): Promise<void> {
     await group.delete()
 
-    return await interaction.reply('Successfully deleted group.')
+    await interaction.reply('Successfully deleted group.')
   }
 
   public async channels (
@@ -106,13 +106,14 @@ export default class GroupsCommand extends SubCommandCommand<GroupsCommand> {
         await group.channels.add(channel)
 
         // eslint-disable-next-line @typescript-eslint/no-base-to-string
-        return await interaction.reply(`Successfully added channel ${channel.toString()} to group \`${group.name}\`.`)
+        await interaction.reply(`Successfully added channel ${channel.toString()} to group \`${group.name}\`.`)
+        return
       }
       case 'remove': {
         await group.channels.remove(channel)
 
         // eslint-disable-next-line @typescript-eslint/no-base-to-string
-        return await interaction.reply(`Successfully removed channel ${channel.toString()} from group \`${group.name}\`.`)
+        await interaction.reply(`Successfully removed channel ${channel.toString()} from group \`${group.name}\`.`)
       }
     }
   }
@@ -126,16 +127,17 @@ export default class GroupsCommand extends SubCommandCommand<GroupsCommand> {
       case 'add': {
         await group.roles.add(role)
 
-        return await interaction.reply({
+        await interaction.reply({
           content: `Successfully added role ${role.toString()} to group \`${group.name}\`.`,
           allowedMentions: { users: [interaction.user.id] }
         })
+        return
       }
       case 'remove': {
         await group.roles.remove(role)
 
         // eslint-disable-next-line @typescript-eslint/no-base-to-string
-        return await interaction.reply({
+        await interaction.reply({
           content: `Successfully removed role ${role.toString()} from group \`${group.name}\`.`,
           allowedMentions: { users: [interaction.user.id] }
         })
@@ -166,10 +168,11 @@ export default class GroupsCommand extends SubCommandCommand<GroupsCommand> {
         const rolesString = Array.from(group.roles.cache.values()).join(' ')
         embed.addField('Roles', rolesString !== '' ? rolesString : 'none')
       }
-      return await interaction.reply({ embeds: [embed] })
+      await interaction.reply({ embeds: [embed] })
     } else {
       if (context.groups.cache.size === 0) {
-        return await interaction.reply('No groups found.')
+        await interaction.reply('No groups found.')
+        return
       }
 
       const embeds = discordService.getListEmbeds(

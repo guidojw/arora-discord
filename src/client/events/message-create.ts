@@ -1,8 +1,8 @@
-import { ApplicationCommandData, type Message, TextChannel } from 'discord.js'
-import type { AroraClient, BaseHandler } from '..'
+import { type ApplicationCommandData, type Message, TextChannel } from 'discord.js'
+import { AroraClient, type BaseHandler } from '..'
 import { inject, injectable, named } from 'inversify'
 import type { GuildContext } from '../../structures'
-import type { GuildContextManager } from '../../managers'
+import { GuildContextManager } from '../../managers'
 import { constants } from '../../utils'
 import { stripIndents } from 'common-tags'
 

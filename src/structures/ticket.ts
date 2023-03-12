@@ -14,7 +14,7 @@ import type { GuildContext, TicketType } from '.'
 import { type ManagerFactory, constants, timeUtil, util } from '../utils'
 import { discordService, userService, verificationService } from '../services'
 import { inject, injectable } from 'inversify'
-import type { AroraClient } from '../client'
+import { AroraClient } from '../client'
 import BaseStructure from './base'
 import type { Ticket as TicketEntity } from '../entities'
 import type { TicketGuildMemberManager } from '../managers'
@@ -84,7 +84,7 @@ export default class Ticket extends BaseStructure<TicketEntity> {
     return this.authorId !== null
       ? this.context.guild.members.cache.get(this.authorId) ??
       (this.client.options.partials?.includes(PartialTypes.GUILD_MEMBER) === true
-        // @ts-expect-error
+        // @ts-expect-error: Calling private library method.
         ? this.context.guild.members._add({ user: { id: this.authorId } })
         : null)
       : null
@@ -162,7 +162,7 @@ export default class Ticket extends BaseStructure<TicketEntity> {
       }
     }
 
-    return await this.delete()
+    await this.delete()
   }
 
   public async requestRating (): Promise<ReturnType<(typeof discordService)['prompt']>> {
@@ -302,7 +302,7 @@ export default class Ticket extends BaseStructure<TicketEntity> {
   }
 
   public async delete (): Promise<void> {
-    return await this.context.tickets.delete(this)
+    await this.context.tickets.delete(this)
   }
 
   public async onMessage (message: Message): Promise<void> {

@@ -31,7 +31,7 @@ export default class Group extends BaseStructure<GroupEntity> {
   }
 
   public async delete (): Promise<void> {
-    return await this.context.groups.delete(this)
+    await this.context.groups.delete(this)
   }
 
   public isChannelGroup (): this is ChannelGroup {

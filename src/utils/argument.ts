@@ -21,7 +21,7 @@ export function validators (
     }
     for (const step of steps) {
       if (step instanceof Array) {
-        const validations = step.map(validator => validator.call(this, val, interaction, this))
+        const validations = step.map(async validator => await validator.call(this, val, interaction, this))
         const results = await Promise.allSettled(validations)
         if (results.some(result => result.status === 'fulfilled' && result.value === true)) {
           continue

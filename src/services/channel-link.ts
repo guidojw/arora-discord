@@ -1,7 +1,7 @@
 import type { Collection, GuildChannel, TextChannel, VoiceBasedChannel } from 'discord.js'
 import { inject, injectable } from 'inversify'
 import type { Channel as ChannelEntity } from '../entities'
-import type { Repository } from 'typeorm'
+import { Repository } from 'typeorm'
 import { constants } from '../utils'
 
 const { TYPES } = constants

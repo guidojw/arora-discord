@@ -1,7 +1,7 @@
 import type { Collection, GuildMember, Role } from 'discord.js'
 import type { Member as MemberEntity, Role as RoleEntity } from '../entities'
 import { inject, injectable } from 'inversify'
-import type { Repository } from 'typeorm'
+import { Repository } from 'typeorm'
 import { constants } from '../utils'
 
 const { TYPES } = constants

@@ -2,7 +2,7 @@ import { type CommandInteraction, MessageButton } from 'discord.js'
 import { inject, injectable, named } from 'inversify'
 import { Command } from '../base'
 import type { GuildContext } from '../../../../structures'
-import type { GuildContextManager } from '../../../../managers'
+import { GuildContextManager } from '../../../../managers'
 import { constants } from '../../../../utils'
 import { discordService } from '../../../../services'
 
@@ -21,7 +21,8 @@ export default class DeleteSuggestionCommand extends Command {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
     if (context.suggestionsChannel === null) {
-      return await interaction.reply({ content: 'This server has no suggestionsChannel set yet.', ephemeral: true })
+      await interaction.reply({ content: 'This server has no suggestionsChannel set yet.', ephemeral: true })
+      return
     }
     const messages = await context.suggestionsChannel.messages.fetch()
     const authorUrl = `https://discord.com/users/${interaction.user.id}`
@@ -55,6 +56,6 @@ export default class DeleteSuggestionCommand extends Command {
       }
     }
 
-    return await interaction.reply('Could not find a suggestion you made.')
+    await interaction.reply('Could not find a suggestion you made.')
   }
 }

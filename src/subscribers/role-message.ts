@@ -1,9 +1,10 @@
 import { Emoji, Message, Role, RoleMessage } from '../entities'
 import { type EntitySubscriberInterface, EventSubscriber, type InsertEvent } from 'typeorm'
+import type { Constructor } from '../utils'
 
 @EventSubscriber()
 export class RoleMessageSubscriber implements EntitySubscriberInterface<RoleMessage> {
-  public listenTo (): Function {
+  public listenTo (): Constructor {
     return RoleMessage
   }
 

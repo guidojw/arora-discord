@@ -2,9 +2,9 @@ import { Collection, Constants, type GuildMember, type GuildMemberResolvable, ty
 import type { GuildContext, Ticket } from '../structures'
 import type { Member as MemberEntity, Ticket as TicketEntity } from '../entities'
 import { inject, injectable } from 'inversify'
-import type { AroraClient } from '../client'
+import { AroraClient } from '../client'
 import BaseManager from './base'
-import type { Repository } from 'typeorm'
+import { Repository } from 'typeorm'
 import { constants } from '../utils'
 
 const { PartialTypes } = Constants
@@ -30,11 +30,11 @@ export default class TicketGuildMemberManager extends BaseManager<string, GuildM
   }
 
   public get cache (): Collection<Snowflake, GuildMember> {
-    const cache: Collection<string, GuildMember> = new Collection()
+    const cache = new Collection<string, GuildMember>()
     for (const moderatorId of this.ticket._moderators) {
       const member = this.context.guild.members.resolve(moderatorId) ??
         (this.client.options.partials?.includes(PartialTypes.GUILD_MEMBER) === true
-          // @ts-expect-error
+          // @ts-expect-error: Calling private library method.
           ? this.context.guild.members._add({ user: { id: moderatorId } })
           : null)
       if (member !== null) {

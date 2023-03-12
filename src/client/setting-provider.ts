@@ -7,8 +7,8 @@ import type {
 import { inject, injectable, named } from 'inversify'
 import type { AroraClient } from '.'
 import type { Guild } from 'discord.js'
-import type { GuildContextManager } from '../managers'
-import type { Repository } from 'typeorm'
+import { GuildContextManager } from '../managers'
+import { Repository } from 'typeorm'
 import { constants } from '../utils'
 
 const { TYPES } = constants
@@ -32,7 +32,9 @@ export default class SettingProvider {
   private readonly tagRepository!: Repository<TagEntity>
 
   public async init (client: AroraClient): Promise<void> {
-    await Promise.all(client.guilds.cache.map(async guild => await this.setupGuild(guild)))
+    await Promise.all(client.guilds.cache.map(async guild => {
+      await this.setupGuild(guild)
+    }))
   }
 
   public async setupGuild (guild: Guild): Promise<void> {

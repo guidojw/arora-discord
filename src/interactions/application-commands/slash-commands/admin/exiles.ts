@@ -5,7 +5,7 @@ import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
 import type { Exile } from '../../../../services/group'
 import type { GuildContext } from '../../../../structures'
-import type { GuildContextManager } from '../../../../managers'
+import { GuildContextManager } from '../../../../managers'
 import type { RobloxUser } from '../../../../argument-types'
 import { SubCommandCommand } from '../base'
 import type { SubCommandCommandOptions } from '..'
@@ -54,10 +54,11 @@ export default class ExilesCommand extends SubCommandCommand<ExilesCommand> {
       interaction.guildId
     ))?.robloxId
     if (typeof authorId === 'undefined') {
-      return await interaction.reply({
+      await interaction.reply({
         content: 'This command requires you to be verified with a verification provider.',
         ephemeral: true
       })
+      return
     }
 
     await applicationAdapter('POST', `v1/groups/${context.robloxGroupId}/exiles`, {
@@ -66,7 +67,7 @@ export default class ExilesCommand extends SubCommandCommand<ExilesCommand> {
       reason
     })
 
-    return await interaction.reply(`Successfully exiled **${user.username ?? user.id}**.`)
+    await interaction.reply(`Successfully exiled **${user.username ?? user.id}**.`)
   }
 
   public async delete (
@@ -80,10 +81,11 @@ export default class ExilesCommand extends SubCommandCommand<ExilesCommand> {
       interaction.guildId
     ))?.robloxId
     if (typeof authorId === 'undefined') {
-      return await interaction.reply({
+      await interaction.reply({
         content: 'This command requires you to be verified with a verification provider.',
         ephemeral: true
       })
+      return
     }
 
     await applicationAdapter('DELETE', `v1/groups/${context.robloxGroupId}/exiles/${user.id}`, {
@@ -91,7 +93,7 @@ export default class ExilesCommand extends SubCommandCommand<ExilesCommand> {
       reason
     })
 
-    return await interaction.reply(`Successfully unexiled **${user.username ?? user.id}**.`)
+    await interaction.reply(`Successfully unexiled **${user.username ?? user.id}**.`)
   }
 
   public async list (
@@ -111,11 +113,12 @@ export default class ExilesCommand extends SubCommandCommand<ExilesCommand> {
         .addField('Start time', getTime(date), true)
         .addField('Reason', exile.reason)
 
-      return await interaction.reply({ embeds: [embed] })
+      await interaction.reply({ embeds: [embed] })
     } else {
       const exiles = (await applicationAdapter('GET', `v1/groups/${context.robloxGroupId}/exiles?sort=date`)).data
       if (exiles.length === 0) {
-        return await interaction.reply('There are currently no exiles.')
+        await interaction.reply('There are currently no exiles.')
+        return
       }
 
       const embeds = await groupService.getExileEmbeds(exiles)
@@ -123,7 +126,7 @@ export default class ExilesCommand extends SubCommandCommand<ExilesCommand> {
         await interaction.user.send({ embeds: [embed] })
       }
 
-      return await interaction.reply('Sent you a DM with the current exiles.')
+      await interaction.reply('Sent you a DM with the current exiles.')
     }
   }
 }

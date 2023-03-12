@@ -42,7 +42,7 @@ if (applicationConfig.apiEnabled === true) {
 // Arguments
 bind<Argument<any>>(TYPES.Argument).to(Argument)
 
-bind<interfaces.Factory<Argument<unknown>>>(TYPES.ArgumentFactory)
+bind<interfaces.SimpleFactory<Argument<unknown>, [ArgumentOptions<unknown>]>>(TYPES.ArgumentFactory)
   .toFactory<Argument<unknown>, [ArgumentOptions<unknown>]>(
   (context: interfaces.Context) => {
     return (options: ArgumentOptions<unknown>) => {
@@ -96,7 +96,8 @@ bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.TicketTypeArgum
 bind<BaseArgumentType<any>>(TYPES.ArgumentType).to(argumentTypes.TimeArgumentType)
   .whenTargetTagged('argumentType', 'time')
 
-bind<interfaces.Factory<BaseArgumentType<any>>>(TYPES.ArgumentTypeFactory).toFactory<BaseArgumentType<any>, [string]>(
+bind<interfaces.SimpleFactory<BaseArgumentType<any>, [string]>>(TYPES.ArgumentTypeFactory)
+  .toFactory<BaseArgumentType<any>, [string]>(
   (context: interfaces.Context) => {
     return (argumentTypeName: string) => {
       return context.container.getTagged<BaseArgumentType<any>>(TYPES.ArgumentType, 'argumentType', argumentTypeName)
@@ -170,7 +171,8 @@ bind<BaseCommand>(TYPES.Command).to(applicationCommands.TicketTypesCommand)
 bind<BaseCommand>(TYPES.Command).to(applicationCommands.ToggleSupportCommand)
   .whenTargetTagged('command', 'togglesupport')
 
-bind<interfaces.Factory<BaseCommand>>(TYPES.CommandFactory).toFactory<BaseCommand | undefined, [string]>(
+bind<interfaces.SimpleFactory<BaseCommand | undefined, [string]>>(TYPES.CommandFactory)
+  .toFactory<BaseCommand | undefined, [string]>(
   (context: interfaces.Context) => {
     return (commandName: string) => {
       const command = context.container.getTagged<BaseCommand | undefined>(TYPES.Command, 'command', commandName)
@@ -208,7 +210,8 @@ bind<BaseHandler>(TYPES.Handler).to(eventHandlers.RoleDeleteEventHandler)
 bind<BaseHandler>(TYPES.Handler).to(eventHandlers.VoiceStateUpdateEventHandler)
   .whenTargetTagged('eventHandler', 'voiceStateUpdate')
 
-bind<interfaces.Factory<BaseHandler>>(TYPES.EventHandlerFactory).toFactory<BaseHandler, [string]>(
+bind<interfaces.SimpleFactory<BaseHandler, [string]>>(TYPES.EventHandlerFactory)
+  .toFactory<BaseHandler, [string]>(
   (context: interfaces.Context) => {
     return (eventName: string) => {
       return context.container.getTagged<BaseHandler>(TYPES.Handler, 'eventHandler', eventName)
@@ -224,13 +227,15 @@ bind<BaseJob>(TYPES.Job).to(jobs.HealthCheckJob)
 bind<BaseJob>(TYPES.Job).to(jobs.PremiumMembersReportJob)
   .whenTargetNamed('premiumMembersReport')
 
-bind<interfaces.AutoNamedFactory<BaseJob>>(TYPES.JobFactory).toAutoNamedFactory<BaseJob>(TYPES.Job)
+bind<interfaces.AutoNamedFactory<BaseJob>>(TYPES.JobFactory)
+  .toAutoNamedFactory<BaseJob>(TYPES.Job)
 
 // Packet Handlers
 bind<BaseHandler>(TYPES.Handler).to(packetHandlers.RankChangePacketHandler)
   .whenTargetTagged('packetHandler', 'rankChange')
 
-bind<interfaces.Factory<BaseHandler>>(TYPES.PacketHandlerFactory).toFactory<BaseHandler, [string]>(
+bind<interfaces.SimpleFactory<BaseHandler, [string]>>(TYPES.PacketHandlerFactory)
+  .toFactory<BaseHandler, [string]>(
   (context: interfaces.Context) => {
     return (eventName: string) => {
       return context.container.getTagged<BaseHandler>(TYPES.Handler, 'packetHandler', eventName)
@@ -265,18 +270,16 @@ bind<managers.TagTagNameManager>(TYPES.Manager).to(managers.TagTagNameManager)
 bind<managers.TicketGuildMemberManager>(TYPES.Manager).to(managers.TicketGuildMemberManager)
   .whenTargetNamed('TicketGuildMemberManager')
 
-bind<interfaces.Factory<managers.BaseManager<number | string, any, unknown>>>(TYPES.ManagerFactory)
-  // eslint-disable-next-line no-extra-parens
-  .toFactory<(...args: unknown[]) => managers.BaseManager<number | string, any, unknown>, [string]>(
-  // @ts-expect-error
+bind<interfaces.MultiFactory<managers.BaseManager<number | string, any, unknown>, [string]>>(TYPES.ManagerFactory)
+  .toFactory<managers.BaseManager<number | string, any, unknown>, [string]>(
   (context: interfaces.Context) => {
     return <T extends managers.BaseManager<number | string, any, unknown>>(managerName: string) => {
       if (!context.container.isBoundNamed(TYPES.Manager, managerName)) {
         throw new Error(`Unknown manager ${managerName}.`)
       }
-      return (...args: T['setOptions'] extends ((...args: infer P) => void) ? P : never[]) => {
+      return (...args: T['setOptions'] extends ((...args: infer P) => void) ? P : []) => {
         const manager = context.container.getNamed<T>(TYPES.Manager, managerName)
-        manager.setOptions?.(...(args ?? []))
+        manager.setOptions?.(...args)
         return manager
       }
     }
@@ -307,9 +310,8 @@ bind<structures.Ticket>(TYPES.Structure).to(structures.Ticket)
 bind<structures.TicketType>(TYPES.Structure).to(structures.TicketType)
   .whenTargetNamed('TicketType')
 
-bind<interfaces.Factory<structures.BaseStructure<any>>>(TYPES.StructureFactory)
-  // eslint-disable-next-line no-extra-parens
-  .toFactory<(...args: unknown[]) => structures.BaseStructure<any>, [string]>(
+bind<interfaces.MultiFactory<structures.BaseStructure<any>>>(TYPES.StructureFactory)
+  .toFactory<structures.BaseStructure<any>, [string]>(
   (context: interfaces.Context) => {
     return <T extends structures.BaseStructure<any>>(structureName: string) => {
       if (!context.container.isBoundNamed(TYPES.Structure, structureName)) {

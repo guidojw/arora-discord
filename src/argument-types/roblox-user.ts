@@ -7,7 +7,7 @@ export interface RobloxUser { id: number, username: string | null }
 
 @injectable()
 export default class RobloxUserArgumentType extends BaseArgumentType<RobloxUser> {
-  private readonly cache: Map<string, RobloxUser> = new Map()
+  private readonly cache = new Map<string, RobloxUser>()
 
   public async validate (
     val: string,

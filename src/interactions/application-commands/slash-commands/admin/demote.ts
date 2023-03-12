@@ -5,7 +5,7 @@ import { Command } from '../base'
 import type { CommandInteraction } from 'discord.js'
 import type { CommandOptions } from '..'
 import type { GuildContext } from '../../../../structures'
-import type { GuildContextManager } from '../../../../managers'
+import { GuildContextManager } from '../../../../managers'
 import type { RobloxUser } from '../../../../argument-types'
 import { applicationAdapter } from '../../../../adapters'
 import { constants } from '../../../../utils'
@@ -37,10 +37,11 @@ export default class DemoteCommand extends Command {
       interaction.guildId
     ))?.robloxId
     if (typeof authorId === 'undefined') {
-      return await interaction.reply({
+      await interaction.reply({
         content: 'This command requires you to be verified with a verification provider.',
         ephemeral: true
       })
+      return
     }
 
     await interaction.deferReply()

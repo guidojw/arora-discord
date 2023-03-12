@@ -1,9 +1,10 @@
 import { type EntitySubscriberInterface, EventSubscriber, type UpdateEvent } from 'typeorm'
 import { Message, Panel } from '../entities'
+import type { Constructor } from '../utils'
 
 @EventSubscriber()
 export class PanelSubscriber implements EntitySubscriberInterface<Panel> {
-  public listenTo (): Function {
+  public listenTo (): Constructor {
     return Panel
   }
 

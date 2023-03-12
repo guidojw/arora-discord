@@ -5,7 +5,7 @@ import { Command } from '../base'
 import type { CommandOptions } from '..'
 import type { GetGroupStatus } from '../../../../services/group'
 import type { GuildContext } from '../../../../structures'
-import type { GuildContextManager } from '../../../../managers'
+import { GuildContextManager } from '../../../../managers'
 import { applicationAdapter } from '../../../../adapters'
 import applicationConfig from '../../../../configs/application'
 import { constants } from '../../../../utils'
@@ -32,9 +32,9 @@ export default class GetShoutCommand extends Command {
         .addField(`Current shout by ${shout.poster.username}`, shout.body)
         .setTimestamp(new Date(shout.updated))
         .setColor(context.primaryColor ?? applicationConfig.defaultColor)
-      return await interaction.reply({ embeds: [embed] })
+      await interaction.reply({ embeds: [embed] })
     } else {
-      return await interaction.reply('There currently is no shout.')
+      await interaction.reply('There currently is no shout.')
     }
   }
 }

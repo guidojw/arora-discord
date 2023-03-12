@@ -23,7 +23,8 @@ const { diffDays } = timeUtil
 export default class BoostInfoCommand extends Command {
   public async execute (interaction: CommandInteraction, { member }: { member: GuildMember }): Promise<void> {
     if (member.premiumSince === null) {
-      return await interaction.reply('Member is not a booster.')
+      await interaction.reply('Member is not a booster.')
+      return
     }
 
     const now = new Date()
@@ -41,6 +42,6 @@ export default class BoostInfoCommand extends Command {
       .setDescription(`Has been boosting this server for **${pluralize('month', months, true)}** and **${pluralize('day', days, true)}**!`)
       .setFooter({ text: '* Discord Nitro months are 30 days long.' })
       .setColor(0xff73fa)
-    return await interaction.reply({ embeds: [embed] })
+    await interaction.reply({ embeds: [embed] })
   }
 }

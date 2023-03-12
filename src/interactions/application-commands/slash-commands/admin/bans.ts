@@ -4,7 +4,7 @@ import { groupService, userService, verificationService } from '../../../../serv
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
 import type { GuildContext } from '../../../../structures'
-import type { GuildContextManager } from '../../../../managers'
+import { GuildContextManager } from '../../../../managers'
 import type { RobloxUser } from '../../../../argument-types'
 import { SubCommandCommand } from '../base'
 import type { SubCommandCommandOptions } from '..'
@@ -88,10 +88,11 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
       interaction.guildId
     ))?.robloxId
     if (typeof authorId === 'undefined') {
-      return await interaction.reply({
+      await interaction.reply({
         content: 'This command requires you to be verified with a verification provider.',
         ephemeral: true
       })
+      return
     }
 
     await applicationAdapter('POST', `v1/groups/${context.robloxGroupId}/bans`, {
@@ -101,7 +102,7 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
       reason
     })
 
-    return await interaction.reply(`Successfully banned **${user.username ?? user.id}**.`)
+    await interaction.reply(`Successfully banned **${user.username ?? user.id}**.`)
   }
 
   public async delete (
@@ -115,10 +116,11 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
       interaction.guildId
     ))?.robloxId
     if (typeof authorId === 'undefined') {
-      return await interaction.reply({
+      await interaction.reply({
         content: 'This command requires you to be verified with a verification provider.',
         ephemeral: true
       })
+      return
     }
 
     await applicationAdapter('POST', `v1/groups/${context.robloxGroupId}/bans/${user.id}/cancel`, {
@@ -126,7 +128,7 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
       reason
     })
 
-    return await interaction.reply(`Successfully unbanned **${user.username ?? user.id}**.`)
+    await interaction.reply(`Successfully unbanned **${user.username ?? user.id}**.`)
   }
 
   public async edit (
@@ -150,15 +152,16 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
       interaction.guildId
     ))?.robloxId
     if (typeof editorId === 'undefined') {
-      return await interaction.reply({
+      await interaction.reply({
         content: 'This command requires you to be verified with a verification provider.',
         ephemeral: true
       })
+      return
     }
 
     await applicationAdapter('PUT', `v1/groups/${context.robloxGroupId}/bans/${user.id}`, { changes, editorId })
 
-    return await interaction.reply(`Successfully edited **${user.username ?? user.id}**'s ban.`)
+    await interaction.reply(`Successfully edited **${user.username ?? user.id}**'s ban.`)
   }
 
   public async extend (
@@ -176,10 +179,11 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
       interaction.guildId
     ))?.robloxId
     if (typeof authorId === 'undefined') {
-      return await interaction.reply({
+      await interaction.reply({
         content: 'This command requires you to be verified with a verification provider.',
         ephemeral: true
       })
+      return
     }
 
     await applicationAdapter('POST', `v1/groups/${context.robloxGroupId}/bans/${user.id}/extend`, {
@@ -188,7 +192,7 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
       reason
     })
 
-    return await interaction.reply(`Successfully extended **${user.username ?? user.id}**'s ban.`)
+    await interaction.reply(`Successfully extended **${user.username ?? user.id}**'s ban.`)
   }
 
   public async list (
@@ -217,13 +221,14 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
         .addField('Duration', `${days}${extensionString} ${pluralize('day', days + extensionDays)}`, true)
         .addField('Reason', ban.reason)
 
-      return await interaction.reply({ embeds: [embed] })
+      await interaction.reply({ embeds: [embed] })
     } else {
       await interaction.deferReply()
 
       const bans = (await applicationAdapter('GET', `v1/groups/${context.robloxGroupId}/bans?sort=date`)).data
       if (bans.length === 0) {
-        return await interaction.reply('There are currently no bans.')
+        await interaction.reply('There are currently no bans.')
+        return
       }
 
       const embeds = await groupService.getBanEmbeds(context.robloxGroupId, bans)

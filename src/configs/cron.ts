@@ -1,6 +1,6 @@
 export interface CronConfig { name: string, expression: string }
 
-const cronConfig: { [key: string]: CronConfig } = {
+const cronConfig: Record<string, CronConfig> = {
   announceTrainingsJob: {
     name: 'announceTrainings',
     expression: '*/5 * * * *' // https://crontab.guru/#*/5_*_*_*_*

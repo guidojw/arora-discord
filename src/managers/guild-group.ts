@@ -3,7 +3,7 @@ import { inject, injectable, type interfaces } from 'inversify'
 import { DataManager } from './base'
 import type { Group as GroupEntity } from '../entities'
 import { GroupType } from '../utils/constants'
-import type { Repository } from 'typeorm'
+import { Repository } from 'typeorm'
 import { constants } from '../utils'
 
 const { TYPES } = constants

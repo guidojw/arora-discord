@@ -3,7 +3,7 @@ import { constants, timeUtil, util } from '../../../../utils'
 import { inject, injectable, named } from 'inversify'
 import { Command } from '../base'
 import type { GuildContext } from '../../../../structures'
-import type { GuildContextManager } from '../../../../managers'
+import { GuildContextManager } from '../../../../managers'
 import { applicationAdapter } from '../../../../adapters'
 import applicationConfig from '../../../../configs/application'
 import os from 'node:os'
@@ -48,6 +48,6 @@ export default class StatusCommand extends Command {
         .addField('API Status', status.state, true)
     }
 
-    return await interaction.reply({ embeds: [embed] })
+    await interaction.reply({ embeds: [embed] })
   }
 }

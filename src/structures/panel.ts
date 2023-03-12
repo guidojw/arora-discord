@@ -48,7 +48,7 @@ PanelEntity
   }
 
   public async delete (): Promise<void> {
-    return await this.context.panels.delete(this)
+    await this.context.panels.delete(this)
   }
 
   public async post (channel: TextChannel): Promise<Panel> {

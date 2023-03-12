@@ -3,7 +3,7 @@ import type { GuildContext, Tag, TagUpdateOptions } from '../../../../structures
 import { argumentUtil, constants } from '../../../../utils'
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
-import type { GuildContextManager } from '../../../../managers'
+import { GuildContextManager } from '../../../../managers'
 import { SubCommandCommand } from '../base'
 import type { SubCommandCommandOptions } from '..'
 
@@ -71,7 +71,7 @@ export default class TagsCommand extends SubCommandCommand<TagsCommand> {
 
     const tag = await context.tags.create(name, content)
 
-    return await interaction.reply(`Successfully created tag \`${tag.names.cache.first()?.name ?? 'Unknown'}\`.`)
+    await interaction.reply(`Successfully created tag \`${tag.names.cache.first()?.name ?? 'Unknown'}\`.`)
   }
 
   public async delete (
@@ -82,7 +82,7 @@ export default class TagsCommand extends SubCommandCommand<TagsCommand> {
 
     await context.tags.delete(tag)
 
-    return await interaction.reply('Successfully deleted tag.')
+    await interaction.reply('Successfully deleted tag.')
   }
 
   public async edit (
@@ -100,7 +100,8 @@ export default class TagsCommand extends SubCommandCommand<TagsCommand> {
       if (
         typeof value !== 'string' && Object.prototype.toString.call(JSON.parse(String(value))) !== '[object Object]'
       ) {
-        return await interaction.reply({ content: '`value` must be a string or object.', ephemeral: true })
+        await interaction.reply({ content: '`value` must be a string or object.', ephemeral: true })
+        return
       }
 
       changes.content = value
@@ -108,7 +109,7 @@ export default class TagsCommand extends SubCommandCommand<TagsCommand> {
 
     tag = await context.tags.update(tag, changes)
 
-    return await interaction.reply(`Successfully edited tag \`${tag.names.cache.first()?.name ?? 'Unknown'}\`.`)
+    await interaction.reply(`Successfully edited tag \`${tag.names.cache.first()?.name ?? 'Unknown'}\`.`)
   }
 
   public aliases (
@@ -134,19 +135,21 @@ export default class TagsCommand extends SubCommandCommand<TagsCommand> {
 
         const tagName = await tag.names.create(name)
 
-        return await interaction.reply(`Successfully created alias \`${tagName.name}\` for tag \`${tag.names.cache.first()?.name ?? 'Unknown'}\`.`)
+        await interaction.reply(`Successfully created alias \`${tagName.name}\` for tag \`${tag.names.cache.first()?.name ?? 'Unknown'}\`.`)
+        return
       }
       case 'delete': {
         const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
         const tag = context.tags.resolve(name)
         if (tag === null) {
-          return await interaction.reply('Tag not found.')
+          await interaction.reply('Tag not found.')
+          return
         }
 
         await tag.names.delete(name)
 
-        return await interaction.reply(`Successfully deleted alias from tag \`${tag.names.cache.first()?.name ?? 'Unknown'}\`.`)
+        await interaction.reply(`Successfully deleted alias from tag \`${tag.names.cache.first()?.name ?? 'Unknown'}\`.`)
       }
     }
   }

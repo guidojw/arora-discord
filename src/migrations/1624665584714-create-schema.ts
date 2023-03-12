@@ -10,7 +10,8 @@ export class createSchema1624665584714 implements MigrationInterface {
       // so delete the Sequelize migration table and skip all other migrations.
       // If the database is migrated from nothing, this if statement will not
       // run.
-      return await queryRunner.dropTable('sequelize_meta')
+      await queryRunner.dropTable('sequelize_meta')
+      return
     }
 
     await queryRunner.createTable(new Table({
@@ -764,7 +765,7 @@ async function getGuildIdForeignKey (queryRunner: QueryRunner, tableName: string
 }
 
 async function createGuildIdForeignKey (queryRunner: QueryRunner, tableName: string): Promise<void> {
-  return await queryRunner.createForeignKey(tableName, new TableForeignKey({
+  await queryRunner.createForeignKey(tableName, new TableForeignKey({
     columnNames: ['guild_id'],
     referencedColumnNames: ['id'],
     referencedTableName: 'guilds',
@@ -777,7 +778,7 @@ async function createExclusiveArcConstraint (
   tableName: string,
   columns: string[]
 ): Promise<void> {
-  return await createCardinalityConstraint(queryRunner, tableName, columns, '= 1')
+  await createCardinalityConstraint(queryRunner, tableName, columns, '= 1')
 }
 
 async function createExclusiveArcOrNoneConstraint (
@@ -785,7 +786,7 @@ async function createExclusiveArcOrNoneConstraint (
   tableName: string,
   columns: string[]
 ): Promise<void> {
-  return await createCardinalityConstraint(queryRunner, tableName, columns, '<= 1')
+  await createCardinalityConstraint(queryRunner, tableName, columns, '<= 1')
 }
 
 async function createCardinalityConstraint (
@@ -795,7 +796,7 @@ async function createCardinalityConstraint (
   condition: string
 ): Promise<void> {
   const driver = queryRunner.connection.driver
-  return await queryRunner.createCheckConstraint(tableName, new TableCheck({
+  await queryRunner.createCheckConstraint(tableName, new TableCheck({
     expression: `(${columns.map(column => `(${driver.escape(column)} IS NOT NULL)::INTEGER`).join(' +\n')}) ${condition}`
   }))
 }

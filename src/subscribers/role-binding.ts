@@ -1,9 +1,10 @@
 import { type EntitySubscriberInterface, EventSubscriber, type InsertEvent } from 'typeorm'
 import { Role, RoleBinding } from '../entities'
+import type { Constructor } from '../utils'
 
 @EventSubscriber()
 export class RoleBindingSubscriber implements EntitySubscriberInterface<RoleBinding> {
-  public listenTo (): Function {
+  public listenTo (): Constructor {
     return RoleBinding
   }
 

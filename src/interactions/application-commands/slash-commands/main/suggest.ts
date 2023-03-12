@@ -5,7 +5,7 @@ import { ApplyOptions } from '../../../../utils/decorators'
 import { Command } from '../base'
 import type { CommandOptions } from '..'
 import type { GuildContext } from '../../../../structures'
-import type { GuildContextManager } from '../../../../managers'
+import { GuildContextManager } from '../../../../managers'
 
 const { TYPES } = constants
 const { validators, noTags } = argumentUtil
@@ -37,10 +37,12 @@ export default class SuggestCommand extends Command {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
     if (context.suggestionsChannel === null) {
-      return await interaction.reply({ content: 'This server has no suggestionsChannel set yet.', ephemeral: true })
+      await interaction.reply({ content: 'This server has no suggestionsChannel set yet.', ephemeral: true })
+      return
     }
     if (/^\s*$/.test(suggestion)) {
-      return await interaction.reply({ content: 'Cannot suggest empty suggestions.', ephemeral: true })
+      await interaction.reply({ content: 'Cannot suggest empty suggestions.', ephemeral: true })
+      return
     }
     const authorUrl = `https://discord.com/users/${interaction.user.id}`
     const embed = new MessageEmbed()
@@ -57,6 +59,6 @@ export default class SuggestCommand extends Command {
     await newMessage.react('⬆️')
     await newMessage.react('⬇️')
 
-    return await interaction.reply({ content: 'Successfully suggested', embeds: [embed] })
+    await interaction.reply({ content: 'Successfully suggested', embeds: [embed] })
   }
 }
