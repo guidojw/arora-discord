@@ -60,7 +60,7 @@ jobs:
     needs: metadata
     steps:
       - name: Checkout code
-        uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
         with:
           ref: ${{ inputs.sha }}
           fetch-depth: 0
@@ -97,7 +97,7 @@ jobs:
 
       - name: Create Sentry release
         if: ${{ !(github.event_name == 'workflow_dispatch' && github.workflow == 'Publish Image') }}
-        uses: getsentry/action-release@586b62368d564f25d694ce05fcb9cf53de65ac4f # v1.3.1
+        uses: getsentry/action-release@4744f6a65149f441c5f396d5b0877307c0db52c7 # v1.4.1
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_PROJECT: ${{ env.PROJECT_NAME }}
