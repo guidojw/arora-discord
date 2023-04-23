@@ -38,7 +38,7 @@ TicketTypeEntity
   }
 
   public async delete (): Promise<void> {
-    return await this.context.ticketTypes.delete(this)
+    await this.context.ticketTypes.delete(this)
   }
 
   public async link (message: Message, emoji: GuildEmoji): Promise<TicketType> {

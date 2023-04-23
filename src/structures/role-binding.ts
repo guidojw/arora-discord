@@ -33,6 +33,6 @@ export default class RoleBinding extends BaseStructure<RoleBindingEntity> {
   }
 
   public async delete (): Promise<void> {
-    return await this.context.roleBindings.delete(this)
+    await this.context.roleBindings.delete(this)
   }
 }

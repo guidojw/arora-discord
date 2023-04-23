@@ -1,9 +1,10 @@
 import { Channel, Guild } from '../entities'
 import { type EntitySubscriberInterface, EventSubscriber, type UpdateEvent } from 'typeorm'
+import type { Constructor } from '../utils'
 
 @EventSubscriber()
 export class GuildSubscriber implements EntitySubscriberInterface<Guild> {
-  public listenTo (): Function {
+  public listenTo (): Constructor {
     return Guild
   }
 

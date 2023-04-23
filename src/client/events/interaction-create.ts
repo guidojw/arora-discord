@@ -1,8 +1,8 @@
-import type { BaseHandler, Dispatcher } from '..'
+import { type BaseHandler, Dispatcher } from '..'
 import type { Interaction, TextChannel } from 'discord.js'
 import { inject, injectable, named } from 'inversify'
 import type { GuildContext } from '../../structures'
-import type { GuildContextManager } from '../../managers'
+import { GuildContextManager } from '../../managers'
 import { constants } from '../../utils'
 
 const { TYPES } = constants

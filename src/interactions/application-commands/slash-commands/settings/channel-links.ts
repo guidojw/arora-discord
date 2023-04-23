@@ -1,9 +1,9 @@
 import { type CommandInteraction, MessageEmbed, type TextChannel, type VoiceChannel } from 'discord.js'
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
-import type { ChannelLinkService } from '../../../../services'
+import { ChannelLinkService } from '../../../../services'
 import type { GuildContext } from '../../../../structures'
-import type { GuildContextManager } from '../../../../managers'
+import { GuildContextManager } from '../../../../managers'
 import { SubCommandCommand } from '../base'
 import type { SubCommandCommandOptions } from '..'
 import applicationConfig from '../../../../configs/application'
@@ -49,7 +49,7 @@ export default class ChannelLinksCommand extends SubCommandCommand<ChannelLinksC
     await this.channelLinkService.linkChannel(fromChannel, toChannel)
 
     // eslint-disable-next-line @typescript-eslint/no-base-to-string
-    return await interaction.reply(`Successfully linked voice channel ${fromChannel.toString()} to text channel ${toChannel.toString()}.`)
+    await interaction.reply(`Successfully linked voice channel ${fromChannel.toString()} to text channel ${toChannel.toString()}.`)
   }
 
   public async unlink (
@@ -62,7 +62,7 @@ export default class ChannelLinksCommand extends SubCommandCommand<ChannelLinksC
     await this.channelLinkService.unlinkChannel(fromChannel, toChannel)
 
     // eslint-disable-next-line @typescript-eslint/no-base-to-string
-    return await interaction.reply(`Successfully unlinked text channel ${toChannel.toString()} from voice channel ${fromChannel.toString()}.`)
+    await interaction.reply(`Successfully unlinked text channel ${toChannel.toString()} from voice channel ${fromChannel.toString()}.`)
   }
 
   public async list (
@@ -73,7 +73,8 @@ export default class ChannelLinksCommand extends SubCommandCommand<ChannelLinksC
 
     const links = await this.channelLinkService.fetchToLinks(channel)
     if (links.size === 0) {
-      return await interaction.reply('No links found.')
+      await interaction.reply('No links found.')
+      return
     }
 
     const embed = new MessageEmbed()
@@ -81,6 +82,6 @@ export default class ChannelLinksCommand extends SubCommandCommand<ChannelLinksC
       // eslint-disable-next-line @typescript-eslint/no-base-to-string
       .setDescription(links.map(channel => channel.toString()).toString())
       .setColor(context.primaryColor ?? applicationConfig.defaultColor)
-    return await interaction.reply({ embeds: [embed] })
+    await interaction.reply({ embeds: [embed] })
   }
 }

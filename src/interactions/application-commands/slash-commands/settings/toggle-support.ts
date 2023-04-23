@@ -2,7 +2,7 @@ import { type CommandInteraction, type Message, MessageEmbed } from 'discord.js'
 import { inject, injectable, named } from 'inversify'
 import { Command } from '../base'
 import type { GuildContext } from '../../../../structures'
-import type { GuildContextManager } from '../../../../managers'
+import { GuildContextManager } from '../../../../managers'
 import { constants } from '../../../../utils'
 
 const { TYPES } = constants
@@ -45,6 +45,6 @@ export default class ToggleSupportCommand extends Command {
       .setColor(context.supportEnabled ? 0x00ff00 : 0xff0000)
       .setTitle('Successfully toggled support')
       .setDescription(`Tickets System: **${context.supportEnabled ? 'online' : 'offline'}**`)
-    return await interaction.reply({ embeds: [embed] })
+    await interaction.reply({ embeds: [embed] })
   }
 }

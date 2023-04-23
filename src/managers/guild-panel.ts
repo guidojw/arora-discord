@@ -1,10 +1,10 @@
 import { type GuildContext, Panel, type PanelUpdateOptions } from '../structures'
 import { MessageEmbed, type TextChannelResolvable } from 'discord.js'
 import { inject, injectable } from 'inversify'
-import type { AroraClient } from '../client'
+import { AroraClient } from '../client'
 import { DataManager } from './base'
 import type { Panel as PanelEntity } from '../entities'
-import type { Repository } from 'typeorm'
+import { Repository } from 'typeorm'
 import { constants } from '../utils'
 import { discordService } from '../services'
 

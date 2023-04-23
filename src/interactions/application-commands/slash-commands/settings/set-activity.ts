@@ -29,27 +29,29 @@ export default class SetActivityCommand extends Command {
     { name, type }: { name: string | null, type: Exclude<ActivityType, 'CUSTOM'> | null }
   ): Promise<void> {
     if (name === null || type === null) {
-      await this.client.startActivityCarousel()
+      this.client.startActivityCarousel()
 
-      return await interaction.reply('Successfully set activity back to default.')
+      await interaction.reply('Successfully set activity back to default.')
     } else {
       const options: { type: Exclude<ActivityType, 'CUSTOM'>, url?: string } = { type }
       if (type === 'STREAMING') {
         const match = name.match(endUrlRegex)
         if (match === null) {
-          return await interaction.reply('No URL specified.')
+          await interaction.reply('No URL specified.')
+          return
         }
         name = name.replace(endUrlRegex, '')
         if (name === '') {
-          return await interaction.reply('Name cannot be empty.')
+          await interaction.reply('Name cannot be empty.')
+          return
         }
         options.url = match[1]
       }
 
       this.client.stopActivityCarousel()
-      await this.client.user?.setActivity(name, options)
+      this.client.user?.setActivity(name, options)
 
-      return await interaction.reply(`Successfully set activity to \`${type} ${name}\`.`)
+      await interaction.reply(`Successfully set activity to \`${type} ${name}\`.`)
     }
   }
 }

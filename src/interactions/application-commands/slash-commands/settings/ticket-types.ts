@@ -2,7 +2,7 @@ import { type CommandInteraction, type Message, MessageEmbed } from 'discord.js'
 import type { GuildContext, TicketType, TicketTypeUpdateOptions } from '../../../../structures'
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
-import type { GuildContextManager } from '../../../../managers'
+import { GuildContextManager } from '../../../../managers'
 import { SubCommandCommand } from '../base'
 import type { SubCommandCommandOptions } from '..'
 import applicationConfig from '../../../../configs/application'
@@ -68,7 +68,7 @@ export default class TicketTypesCommand extends SubCommandCommand<TicketTypesCom
 
     const type = await context.ticketTypes.create(name)
 
-    return await interaction.reply(`Successfully created ticket type \`${type.name}\`.`)
+    await interaction.reply(`Successfully created ticket type \`${type.name}\`.`)
   }
 
   public async delete (
@@ -79,7 +79,7 @@ export default class TicketTypesCommand extends SubCommandCommand<TicketTypesCom
 
     await context.ticketTypes.delete(ticketType)
 
-    return await interaction.reply('Successfully deleted ticket type.')
+    await interaction.reply('Successfully deleted ticket type.')
   }
 
   public async edit (
@@ -99,7 +99,7 @@ export default class TicketTypesCommand extends SubCommandCommand<TicketTypesCom
 
     ticketType = await context.ticketTypes.update(ticketType, changes)
 
-    return await interaction.reply(`Successfully edited ticket type \`${ticketType.name}\`.`)
+    await interaction.reply(`Successfully edited ticket type \`${ticketType.name}\`.`)
   }
 
   public async link (
@@ -114,7 +114,7 @@ export default class TicketTypesCommand extends SubCommandCommand<TicketTypesCom
 
     ticketType = await context.ticketTypes.link(ticketType, message, emoji)
 
-    return await interaction.reply(`Successfully linked ticket type \`${ticketType.name}\` to message \`${ticketType.messageId ?? 'unknown'}\`.`)
+    await interaction.reply(`Successfully linked ticket type \`${ticketType.name}\` to message \`${ticketType.messageId ?? 'unknown'}\`.`)
   }
 
   public async unlink (
@@ -125,7 +125,7 @@ export default class TicketTypesCommand extends SubCommandCommand<TicketTypesCom
 
     ticketType = await context.ticketTypes.unlink(ticketType)
 
-    return await interaction.reply(`Successfully unlinked message from ticket type \`${ticketType.name}\`.`)
+    await interaction.reply(`Successfully unlinked message from ticket type \`${ticketType.name}\`.`)
   }
 
   public async list (
@@ -141,10 +141,11 @@ export default class TicketTypesCommand extends SubCommandCommand<TicketTypesCom
       const embed = new MessageEmbed()
         .addField(`Ticket Type ${ticketType.id}`, `Name: \`${ticketType.name}\``)
         .setColor(context.primaryColor ?? applicationConfig.defaultColor)
-      return await interaction.reply({ embeds: [embed] })
+      await interaction.reply({ embeds: [embed] })
     } else {
       if (context.ticketTypes.cache.size === 0) {
-        return await interaction.reply('No ticket types found.')
+        await interaction.reply('No ticket types found.')
+        return
       }
 
       const embeds = discordService.getListEmbeds(

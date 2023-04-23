@@ -5,7 +5,7 @@ import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
 import { Command } from '../base'
 import type { CommandOptions } from '..'
-import type { GuildContextManager } from '../../../../managers'
+import { GuildContextManager } from '../../../../managers'
 import applicationConfig from '../../../../configs/application'
 
 const { TYPES } = constants
@@ -41,7 +41,7 @@ export default class TagsCommand extends Command {
 
     if (tag !== null) {
       const memberMention = who?.toString()
-      return await interaction.reply({
+      await interaction.reply({
         content: typeof tag.content === 'string' ? `${typeof memberMention !== 'undefined' ? `${memberMention}, ` : ''}${tag.content}` : memberMention ?? undefined,
         embeds: typeof tag.content !== 'string' ? [tag.content] : undefined,
         allowedMentions: { users: [who?.id ?? interaction.user.id] }
@@ -57,7 +57,7 @@ export default class TagsCommand extends Command {
         .setDescription(list)
         .setFooter({ text: `Page 1/1 (${context.tags.cache.size} entries)` })
         .setColor(context.primaryColor ?? applicationConfig.defaultColor)
-      return await interaction.reply({ embeds: [embed] })
+      await interaction.reply({ embeds: [embed] })
     }
   }
 }

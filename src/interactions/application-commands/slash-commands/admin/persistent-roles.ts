@@ -2,8 +2,8 @@ import { type CommandInteraction, type GuildMember, MessageEmbed, type Role } fr
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
 import type { GuildContext } from '../../../../structures'
-import type { GuildContextManager } from '../../../../managers'
-import type { PersistentRoleService } from '../../../../services'
+import { GuildContextManager } from '../../../../managers'
+import { PersistentRoleService } from '../../../../services'
 import { SubCommandCommand } from '../base'
 import type { SubCommandCommandOptions } from '..'
 import applicationConfig from '../../../../configs/application'
@@ -39,7 +39,7 @@ export default class PersistentRolesCommand extends SubCommandCommand<Persistent
   ): Promise<void> {
     await this.persistentRoleService.persistRole(member, role)
 
-    return await interaction.reply({
+    await interaction.reply({
       content: `Successfully persisted role **${role.toString()}** on member **${member.toString()}**.`,
       allowedMentions: {}
     })
@@ -51,7 +51,7 @@ export default class PersistentRolesCommand extends SubCommandCommand<Persistent
   ): Promise<void> {
     await this.persistentRoleService.unpersistRole(member, role)
 
-    return await interaction.reply({
+    await interaction.reply({
       content: `Successfully removed persistent role **${role.toString()}** from member **${member.toString()}**.`,
       allowedMentions: {}
     })
@@ -65,13 +65,14 @@ export default class PersistentRolesCommand extends SubCommandCommand<Persistent
 
     const persistentRoles = await this.persistentRoleService.fetchPersistentRoles(member)
     if (persistentRoles.size === 0) {
-      return await interaction.reply('No persistent roles found.')
+      await interaction.reply('No persistent roles found.')
+      return
     }
 
     const embed = new MessageEmbed()
       .setTitle(`${member.user.tag}'s Persistent Roles`)
       .setDescription(persistentRoles.map(role => role.toString()).toString())
       .setColor(context.primaryColor ?? applicationConfig.defaultColor)
-    return await interaction.reply({ embeds: [embed] })
+    await interaction.reply({ embeds: [embed] })
   }
 }

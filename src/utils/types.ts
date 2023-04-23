@@ -1,8 +1,8 @@
 import type { BaseManager } from '../managers'
 import type { interfaces } from 'inversify'
 
-export type Constructor<T = {}> = new (...args: any[]) => T
-export type AbstractConstructor<T = {}> = abstract new (...args: any[]) => T
+export type Constructor<T = unknown> = new (...args: any[]) => T
+export type AbstractConstructor<T = unknown> = abstract new (...args: any[]) => T
 export type Mixin<T extends AnyFunction> = InstanceType<ReturnType<T>>
 export type Enum = Record<string, number | string>
 export type EnumKeys<T extends Enum> = Exclude<keyof T, number>
@@ -52,4 +52,4 @@ export type ManagerFactory = <
   U extends { id: K },
   K extends number | string = number | string
   > (managerName: string) =>
-  interfaces.SimpleFactory<T, T['setOptions'] extends ((...args: infer P) => unknown) ? P : never[]>
+  interfaces.SimpleFactory<T, T['setOptions'] extends ((...args: infer P) => void) ? P : never[]>

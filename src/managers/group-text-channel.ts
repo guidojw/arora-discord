@@ -3,7 +3,7 @@ import type { ChannelGroup, GuildContext } from '../structures'
 import type { Collection, Snowflake, TextChannel, TextChannelResolvable } from 'discord.js'
 import { inject, injectable } from 'inversify'
 import BaseManager from './base'
-import type { Repository } from 'typeorm'
+import { Repository } from 'typeorm'
 import { constants } from '../utils'
 
 const { TYPES } = constants

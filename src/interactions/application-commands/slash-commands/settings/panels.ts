@@ -3,7 +3,7 @@ import type { GuildContext, Panel, PanelUpdateOptions } from '../../../../struct
 import { argumentUtil, constants } from '../../../../utils'
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
-import type { GuildContextManager } from '../../../../managers'
+import { GuildContextManager } from '../../../../managers'
 import { SubCommandCommand } from '../base'
 import type { SubCommandCommandOptions } from '..'
 import { discordService } from '../../../../services'
@@ -80,7 +80,7 @@ export default class PanelsCommand extends SubCommandCommand<PanelsCommand> {
 
     const panel = await context.panels.create(name, content)
 
-    return await interaction.reply(`Successfully created panel \`${panel.name}\`.`)
+    await interaction.reply(`Successfully created panel \`${panel.name}\`.`)
   }
 
   public async delete (
@@ -91,7 +91,7 @@ export default class PanelsCommand extends SubCommandCommand<PanelsCommand> {
 
     await context.panels.delete(panel)
 
-    return await interaction.reply('Successfully deleted panel.')
+    await interaction.reply('Successfully deleted panel.')
   }
 
   public async edit (
@@ -107,13 +107,15 @@ export default class PanelsCommand extends SubCommandCommand<PanelsCommand> {
     const changes: PanelUpdateOptions = {}
     if (key === 'content') {
       if (value instanceof Message) {
-        return await interaction.reply({ content: '`value` must be an object.', ephemeral: true })
+        await interaction.reply({ content: '`value` must be an object.', ephemeral: true })
+        return
       }
 
       changes.content = value
     } else if (key === 'message') {
       if (!(value instanceof Message)) {
-        return await interaction.reply({ content: '`value` must be a message URL.', ephemeral: true })
+        await interaction.reply({ content: '`value` must be a message URL.', ephemeral: true })
+        return
       }
 
       changes.message = value
@@ -121,7 +123,7 @@ export default class PanelsCommand extends SubCommandCommand<PanelsCommand> {
 
     panel = await context.panels.update(panel, changes)
 
-    return await interaction.reply(`Successfully edited panel \`${panel.name}\`.`)
+    await interaction.reply(`Successfully edited panel \`${panel.name}\`.`)
   }
 
   public async post (
@@ -135,7 +137,7 @@ export default class PanelsCommand extends SubCommandCommand<PanelsCommand> {
 
     panel = await context.panels.post(panel, channel ?? undefined)
 
-    return await interaction.reply(channel !== null
+    await interaction.reply(channel !== null
       // eslint-disable-next-line @typescript-eslint/no-base-to-string
       ? `Successfully posted panel \`${panel.name}\` in ${channel.toString()}.`
       : `Successfully removed panel \`${panel.name}\` from channel.`
@@ -152,10 +154,11 @@ export default class PanelsCommand extends SubCommandCommand<PanelsCommand> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
     if (panel !== null) {
-      return await interaction.reply({ embeds: [panel.embed] })
+      await interaction.reply({ embeds: [panel.embed] })
     } else {
       if (context.panels.cache.size === 0) {
-        return await interaction.reply('No panels found.')
+        await interaction.reply('No panels found.')
+        return
       }
 
       const embeds = discordService.getListEmbeds(

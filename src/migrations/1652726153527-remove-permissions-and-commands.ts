@@ -119,7 +119,7 @@ async function createExclusiveArcConstraint (
   tableName: string,
   columns: string[]
 ): Promise<void> {
-  return await createCardinalityConstraint(queryRunner, tableName, columns, '= 1')
+  await createCardinalityConstraint(queryRunner, tableName, columns, '= 1')
 }
 
 async function createCardinalityConstraint (
@@ -129,7 +129,7 @@ async function createCardinalityConstraint (
   condition: string
 ): Promise<void> {
   const driver = queryRunner.connection.driver
-  return await queryRunner.createCheckConstraint(tableName, new TableCheck({
+  await queryRunner.createCheckConstraint(tableName, new TableCheck({
     expression: `(${columns.map(column => `(${driver.escape(column)} IS NOT NULL)::INTEGER`).join(' +\n')}) ${condition}`
   }))
 }

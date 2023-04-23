@@ -3,7 +3,7 @@ import { GuildContext, type GuildUpdateOptions } from '../structures'
 import { inject, injectable } from 'inversify'
 import { DataManager } from './base'
 import type { Guild as GuildEntity } from '../entities'
-import type { Repository } from 'typeorm'
+import { Repository } from 'typeorm'
 import { constants } from '../utils'
 
 const { TYPES } = constants

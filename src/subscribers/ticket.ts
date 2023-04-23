@@ -1,9 +1,10 @@
 import { Channel, Member, Ticket } from '../entities'
 import { type EntitySubscriberInterface, EventSubscriber, type InsertEvent } from 'typeorm'
+import type { Constructor } from '../utils'
 
 @EventSubscriber()
 export class TicketSubscriber implements EntitySubscriberInterface<Ticket> {
-  public listenTo (): Function {
+  public listenTo (): Constructor {
     return Ticket
   }
 

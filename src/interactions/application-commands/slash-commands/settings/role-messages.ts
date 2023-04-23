@@ -2,7 +2,7 @@ import { type CommandInteraction, type Message, MessageEmbed, type Role } from '
 import type { GuildContext, RoleMessage } from '../../../../structures'
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
-import type { GuildContextManager } from '../../../../managers'
+import { GuildContextManager } from '../../../../managers'
 import { SubCommandCommand } from '../base'
 import type { SubCommandCommandOptions } from '..'
 import applicationConfig from '../../../../configs/application'
@@ -54,7 +54,7 @@ export default class RoleMessagesCommand extends SubCommandCommand<RoleMessagesC
 
     const roleMessage = await context.roleMessages.create({ role, message, emoji })
 
-    return await interaction.reply({
+    await interaction.reply({
       content: `Successfully bound role ${roleMessage.role?.toString() ?? 'Unknown'} to emoji ${roleMessage.emoji?.toString() ?? 'Unknown'} on message \`${roleMessage.messageId ?? 'unknown'}\`.`,
       allowedMentions: { users: [message.author.id] }
     })
@@ -68,7 +68,7 @@ export default class RoleMessagesCommand extends SubCommandCommand<RoleMessagesC
 
     await context.roleMessages.delete(roleMessage)
 
-    return await interaction.reply('Successfully deleted role message.')
+    await interaction.reply('Successfully deleted role message.')
   }
 
   public async list (
@@ -84,10 +84,11 @@ export default class RoleMessagesCommand extends SubCommandCommand<RoleMessagesC
       const embed = new MessageEmbed()
         .addField(`Role Message ${roleMessage.id}`, `Message ID: \`${roleMessage.messageId ?? 'unknown'}\`, ${roleMessage.emoji?.toString() ?? 'Unknown'} => ${roleMessage.role?.toString() ?? 'Unknown'}`)
         .setColor(context.primaryColor ?? applicationConfig.defaultColor)
-      return await interaction.reply({ embeds: [embed] })
+      await interaction.reply({ embeds: [embed] })
     } else {
       if (context.roleMessages.cache.size === 0) {
-        return await interaction.reply('No role messages found.')
+        await interaction.reply('No role messages found.')
+        return
       }
 
       const embeds = discordService.getListEmbeds(

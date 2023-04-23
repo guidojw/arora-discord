@@ -2,7 +2,7 @@ import { type GuildContext, type Tag, TagName } from '../structures'
 import type { Tag as TagEntity, TagName as TagNameEntity } from '../entities'
 import { inject, injectable } from 'inversify'
 import { DataManager } from './base'
-import type { Repository } from 'typeorm'
+import { Repository } from 'typeorm'
 import { constants } from '../utils'
 
 const { TYPES } = constants

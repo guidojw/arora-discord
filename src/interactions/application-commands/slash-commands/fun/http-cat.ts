@@ -14,6 +14,6 @@ const AVAILABLE_STATUS_CODES = [
 @injectable()
 export default class HttpCatCommand extends Command {
   public async execute (interaction: CommandInteraction): Promise<void> {
-    return await interaction.reply(`https://http.cat/${AVAILABLE_STATUS_CODES[Math.floor(Math.random() * AVAILABLE_STATUS_CODES.length)]}`)
+    await interaction.reply(`https://http.cat/${AVAILABLE_STATUS_CODES[Math.floor(Math.random() * AVAILABLE_STATUS_CODES.length)]}`)
   }
 }

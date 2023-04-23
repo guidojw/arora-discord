@@ -5,7 +5,7 @@ import { ApplyOptions } from '../../../../utils/decorators'
 import { Command } from '../base'
 import type { CommandOptions } from '..'
 import type { GuildContext } from '../../../../structures'
-import type { GuildContextManager } from '../../../../managers'
+import { GuildContextManager } from '../../../../managers'
 import type { RobloxUser } from '../../../../argument-types'
 import applicationConfig from '../../../../configs/application'
 import pluralize from 'pluralize'
@@ -71,6 +71,6 @@ export default class WhoIsCommand extends Command {
           .setURL(`https://www.roblox.com/users/${user.id}/profile`)
           .setStyle('LINK')
       )
-    return await interaction.reply({ embeds: [embed], components: [row] })
+    await interaction.reply({ embeds: [embed], components: [row] })
   }
 }

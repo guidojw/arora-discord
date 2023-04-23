@@ -15,15 +15,15 @@ import {
   type User
 } from 'discord.js'
 import type { Group, Panel, RoleBinding, RoleMessage, Tag, Ticket, TicketType } from '.'
-import type {
+import {
   GuildContextManager,
-  GuildGroupManager,
-  GuildPanelManager,
-  GuildRoleBindingManager,
-  GuildRoleMessageManager,
-  GuildTagManager,
-  GuildTicketManager,
-  GuildTicketTypeManager
+  type GuildGroupManager,
+  type GuildPanelManager,
+  type GuildRoleBindingManager,
+  type GuildRoleMessageManager,
+  type GuildTagManager,
+  type GuildTicketManager,
+  type GuildTicketTypeManager
 } from '../managers'
 import { type ManagerFactory, constants } from '../utils'
 import { inject, injectable, type interfaces, named } from 'inversify'

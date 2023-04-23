@@ -3,7 +3,7 @@ import type { GuildContext, GuildUpdateOptions } from '../../../../structures'
 import { argumentUtil, constants, util } from '../../../../utils'
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
-import type { GuildContextManager } from '../../../../managers'
+import { GuildContextManager } from '../../../../managers'
 import { SubCommandCommand } from '../base'
 import type { SubCommandCommandOptions } from '..'
 import { VerificationProvider } from '../../../../utils/constants'
@@ -68,7 +68,7 @@ export default class SettingsCommand extends SubCommandCommand<SettingsCommand> 
       result = context[setting]
     }
 
-    return await interaction.reply(`The ${settingName} is ${result instanceof GuildChannel ? result.toString() : `\`${String(result)}\``}.`)
+    await interaction.reply(`The ${settingName} is ${result instanceof GuildChannel ? result.toString() : `\`${String(result)}\``}.`)
   }
 
   public async set (
@@ -96,28 +96,33 @@ export default class SettingsCommand extends SubCommandCommand<SettingsCommand> 
         if (typeof value !== 'number') {
           value = parseInt(String(value), 16)
           if (isNaN(value)) {
-            return await interaction.reply('Invalid color.')
+            await interaction.reply('Invalid color.')
+            return
           }
         } else if (value < 0 || value > parseInt('0xffffff', 16)) {
-          return await interaction.reply('Color out of bounds.')
+          await interaction.reply('Color out of bounds.')
+          return
         }
 
         changes.primaryColor = value
       } else if (setting === 'robloxGroupId') {
         if (typeof value !== 'number') {
-          return await interaction.reply('Invalid ID.')
+          await interaction.reply('Invalid ID.')
+          return
         }
 
         changes.robloxGroup = value
       } else if (setting === 'robloxUsernamesInNicknames') {
         if (typeof value !== 'boolean') {
-          return await interaction.reply('Invalid boolean.')
+          await interaction.reply('Invalid boolean.')
+          return
         }
 
         changes.robloxUsernamesInNicknames = value
       } else if (setting === 'verificationPreference') {
         if (typeof value !== 'string' || !getEnumValues(VerificationProvider).includes(value.toLowerCase())) {
-          return await interaction.reply('Invalid verification provider.')
+          await interaction.reply('Invalid verification provider.')
+          return
         }
         value = value.toLowerCase()
 
@@ -125,11 +130,13 @@ export default class SettingsCommand extends SubCommandCommand<SettingsCommand> 
       } else if (setting.includes('Channel') || setting.includes('Category')) {
         if (setting === 'ticketsCategoryId') {
           if (!(value instanceof CategoryChannel)) {
-            return await interaction.reply('Invalid category channel.')
+            await interaction.reply('Invalid category channel.')
+            return
           }
         } else {
           if (!(value instanceof TextChannel)) {
-            return await interaction.reply('Invalid channel.')
+            await interaction.reply('Invalid channel.')
+            return
           }
         }
 
@@ -145,6 +152,6 @@ export default class SettingsCommand extends SubCommandCommand<SettingsCommand> 
     await context.update(changes)
 
     // eslint-disable-next-line @typescript-eslint/no-base-to-string
-    return await interaction.reply(`Successfully set ${guildSettingTransformer(setting)} to ${value instanceof GuildChannel ? value.toString() : `\`${String(value)}\``}.`)
+    await interaction.reply(`Successfully set ${guildSettingTransformer(setting)} to ${value instanceof GuildChannel ? value.toString() : `\`${String(value)}\``}.`)
   }
 }

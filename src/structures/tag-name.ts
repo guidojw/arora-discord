@@ -24,6 +24,6 @@ export default class TagName extends BaseStructure<TagNameEntity> {
   }
 
   public async delete (): Promise<void> {
-    return await this.tag.names.delete(this)
+    await this.tag.names.delete(this)
   }
 }
