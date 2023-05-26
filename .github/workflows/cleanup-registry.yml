@@ -20,4 +20,4 @@ jobs:
           cut-off: 2 days ago UTC
           account-type: personal
           skip-tags: latest,staging
-          token: ${{ secrets.PAT }}
+          token: ${{ secrets.GH_PAT }}
