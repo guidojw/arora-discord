@@ -82,7 +82,7 @@ jobs:
           cache-from: type=gha,scope=main
           cache-to: type=gha,scope=main
           tags: |
-            ${{ env.REGISTRY_URL }}/${{ github.repository_owner }}/${{ env.PROJECT_NAME }}:${{
+            ${{ env.DOCKER_REGISTRY_URL }}/${{ github.repository_owner }}/${{ env.PROJECT_NAME }}:${{
             needs.metadata.outputs.tag }}
 
       - name: Get sourcemaps from image
