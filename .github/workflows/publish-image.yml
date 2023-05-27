@@ -102,7 +102,6 @@ jobs:
         with:
           finalize: false
           sourcemaps: sourcemaps
-          dist: ${{ inputs.sha }}
           version: ${{ inputs.sha }}
           url_prefix: ~/dist
 
