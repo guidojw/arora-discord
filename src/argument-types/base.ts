@@ -45,7 +45,7 @@ export class BaseStructureArgumentType<
   private readonly managerName: string
 
   public constructor (
-    @unmanagedConstructorParameter() holds: Constructor<T>,
+  @unmanagedConstructorParameter() holds: Constructor<T>,
     @unmanagedConstructorParameter() managerName?: string
   ) {
     super()
