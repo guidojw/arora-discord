@@ -29,7 +29,7 @@ export interface SubCommandCommandOptions<T extends SubCommandCommand<any>> exte
   subCommands: {
     [K in Exclude<KeyOfType<T, AnyFunction>, 'setOptions' | 'execute'>]: T[K] extends AnyFunction
       ? Parameters<T[K]>[1] extends string
-        ? { [U in keyof SubCommandNames<T[K]> as SubCommandNames<T[K]>[U]]: SubCommandOptions }
+        ? { [U in keyof SubCommandNames<T[K]> as Exclude<SubCommandNames<T[K]>[U], never>]: SubCommandOptions }
         : SubCommandOptions
       : never
   }

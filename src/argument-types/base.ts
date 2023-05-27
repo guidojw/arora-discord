@@ -10,6 +10,13 @@ import pluralize from 'pluralize'
 
 const { TYPES } = constants
 
+function unmanagedConstructorParameter (): ParameterDecorator {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  return (target: Object, propertyKey: string | symbol | undefined, parameterIndex: number) => {
+    unmanaged()(target, propertyKey as string, parameterIndex)
+  }
+}
+
 @injectable()
 export default abstract class BaseArgumentType<T> {
   public abstract validate (
@@ -37,7 +44,10 @@ export class BaseStructureArgumentType<
 
   private readonly managerName: string
 
-  public constructor (@unmanaged() holds: Constructor<T>, @unmanaged() managerName?: string) {
+  public constructor (
+  @unmanagedConstructorParameter() holds: Constructor<T>,
+    @unmanagedConstructorParameter() managerName?: string
+  ) {
     super()
 
     this.holds = holds
