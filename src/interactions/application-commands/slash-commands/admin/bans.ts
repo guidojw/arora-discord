@@ -227,7 +227,7 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
 
       const bans = (await applicationAdapter('GET', `v1/groups/${context.robloxGroupId}/bans?sort=date`)).data
       if (bans.length === 0) {
-        await interaction.reply('There are currently no bans.')
+        await interaction.editReply('There are currently no bans.')
         return
       }
 
