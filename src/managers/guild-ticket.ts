@@ -151,6 +151,8 @@ export default class GuildTicketManager extends DataManager<number, Ticket, Tick
           setTimeout(this.debounces.delete.bind(this.debounces, user.id), TICKETS_INTERVAL).unref()
 
           if (this.resolve(user) === null) {
+            await interaction.deferReply({ ephemeral: true })
+
             const ticket = await this.create({ author: user, ticketType })
             await ticket.populateChannel()
             ticket.timeout = setTimeout(() => {
@@ -162,7 +164,7 @@ export default class GuildTicketManager extends DataManager<number, Ticket, Tick
               .setTitle('Successfully opened ticket.')
               // eslint-disable-next-line @typescript-eslint/no-base-to-string
               .setDescription(`You can visit it in ${ticket.channel.toString()}.`)
-            await interaction.reply({ embeds: [embed], ephemeral: true })
+            await interaction.editReply({ embeds: [embed] })
           } else {
             const embed = new MessageEmbed()
               .setColor(0xff0000)
