@@ -1,4 +1,4 @@
-import { type ChatInputCommandInteraction, EmbedBuilder, type Message } from 'discord.js'
+import { type ChatInputCommandInteraction, EmbedBuilder } from 'discord.js'
 import { argumentUtil, constants } from '../../../../utils'
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
@@ -43,7 +43,7 @@ export default class PollCommand extends Command {
       .setAuthor({ name: interaction.user.tag, iconURL: interaction.user.displayAvatarURL() })
       .setColor(context?.primaryColor ?? applicationConfig.defaultColor)
 
-    const newMessage = await interaction.reply({ embeds: [embed], fetchReply: true }) as Message
+    const newMessage = await interaction.reply({ embeds: [embed], fetchReply: true })
     if (options.length > 0) {
       for (const option of options) {
         await newMessage.react(`${option}⃣`)
