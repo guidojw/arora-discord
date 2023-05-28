@@ -1,11 +1,10 @@
 import { type AbstractConstructor, type Mixin, constants } from '../../utils'
 import type { BaseStructure, GuildContext } from '..'
-import { Constants, type Message, type TextChannel } from 'discord.js'
+import { type Message, Partials, type TextChannel } from 'discord.js'
 import { inject, injectable } from 'inversify'
 import { AroraClient } from '../../client'
 import type { IdentifiableEntity } from '../../entities'
 
-const { PartialTypes } = Constants
 const { TYPES } = constants
 
 export type PostableType = Mixin<typeof Postable>
@@ -42,7 +41,7 @@ export default function Postable<T extends AbstractConstructor<BaseStructure<U>>
     public get message (): Message | null {
       return this.messageId !== null && this.channel !== null
         ? this.channel.messages.cache.get(this.messageId) ??
-        (this.client.options.partials?.includes(PartialTypes.MESSAGE) === true
+        (this.client.options.partials?.includes(Partials.Message) === true
           // @ts-expect-error: Calling private library method.
           ? this.channel.messages._add({ id: this.messageId, channel_id: this.channelId })
           : null)

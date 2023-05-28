@@ -1,8 +1,8 @@
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
 import type { ChangeMemberRole } from '../../../../services/group'
+import type { ChatInputCommandInteraction } from 'discord.js'
 import { Command } from '../base'
-import type { CommandInteraction } from 'discord.js'
 import type { CommandOptions } from '..'
 import type { GuildContext } from '../../../../structures'
 import { GuildContextManager } from '../../../../managers'
@@ -27,7 +27,7 @@ export default class DemoteCommand extends Command {
   private readonly guildContexts!: GuildContextManager
 
   public async execute (
-    interaction: CommandInteraction<'raw' | 'cached'>,
+    interaction: ChatInputCommandInteraction<'raw' | 'cached'>,
     { user }: { user: RobloxUser }
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }

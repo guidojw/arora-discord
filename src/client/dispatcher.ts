@@ -1,10 +1,16 @@
 import {
+  ApplicationCommandOptionType,
+  type ChatInputCommandInteraction,
+  type CommandInteractionOption,
+  type Interaction,
+  type MessageComponentInteraction
+} from 'discord.js'
+import {
   type Argument,
   type BaseCommand,
   Command,
   SubCommandCommand
 } from '../interactions/application-commands'
-import type { CommandInteraction, CommandInteractionOption, Interaction, MessageComponentInteraction } from 'discord.js'
 import { inject, injectable, type interfaces, named } from 'inversify'
 import type { GuildContext } from '../structures'
 import { GuildContextManager } from '../managers'
@@ -23,14 +29,14 @@ export default class Dispatcher {
   private readonly guildContexts!: GuildContextManager
 
   public async handleInteraction (interaction: Interaction): Promise<void> {
-    if (interaction.isCommand()) {
+    if (interaction.isChatInputCommand()) {
       await this.handleCommandInteraction(interaction)
     } else if (interaction.isMessageComponent()) {
       await this.handleMessageComponentInteraction(interaction)
     }
   }
 
-  private async handleCommandInteraction (interaction: CommandInteraction): Promise<void> {
+  private async handleCommandInteraction (interaction: ChatInputCommandInteraction): Promise<void> {
     const command = this.commandFactory(interaction.commandName)
     if (typeof command === 'undefined') {
       throw new Error(`Unknown command "${interaction.commandName}".`)
@@ -103,7 +109,7 @@ export default class Dispatcher {
   }
 
   private async parseArgs (
-    interaction: CommandInteraction,
+    interaction: ChatInputCommandInteraction,
     args: Record<string, Argument<any>>
   ): Promise<Record<string, any>> {
     const result: Record<string, any> = {}
@@ -152,21 +158,21 @@ export default class Dispatcher {
     undefined
     > {
     switch (option.type) {
-      case 'SUB_COMMAND':
-      case 'SUB_COMMAND_GROUP':
-      case 'STRING':
-      case 'INTEGER':
-      case 'BOOLEAN': return option.value ?? null
+      case ApplicationCommandOptionType.Subcommand:
+      case ApplicationCommandOptionType.SubcommandGroup:
+      case ApplicationCommandOptionType.String:
+      case ApplicationCommandOptionType.Integer:
+      case ApplicationCommandOptionType.Boolean: return option.value ?? null
       // Discord.js resolves the user to a member too. The dispatcher will
       // always send the member as option value to the commands since most
       // commands require the member anyway, and it's easier to get the user
       // from a member than vice versa.
-      case 'USER': return option.member ?? null
-      case 'CHANNEL': return option.channel ?? null
-      case 'ROLE': return option.role ?? null
-      case 'MENTIONABLE': return option.member ?? option.user ?? option.role ?? null
-      case 'ATTACHMENT': return option.attachment ?? null
-      case 'NUMBER': return option.value ?? null
+      case ApplicationCommandOptionType.User: return option.member ?? null
+      case ApplicationCommandOptionType.Channel: return option.channel ?? null
+      case ApplicationCommandOptionType.Role: return option.role ?? null
+      case ApplicationCommandOptionType.Mentionable: return option.member ?? option.user ?? option.role ?? null
+      case ApplicationCommandOptionType.Attachment: return option.attachment ?? null
+      case ApplicationCommandOptionType.Number: return option.value ?? null
       default: return null
     }
   }

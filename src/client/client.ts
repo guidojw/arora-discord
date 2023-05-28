@@ -1,38 +1,37 @@
-import { type AnyFunction, constants } from '../utils'
-import { type BaseHandler, SettingProvider, WebSocketManager } from '.'
 import {
+  ActivityType,
   Client,
   type ClientEvents,
-  Constants,
   DiscordAPIError,
+  GatewayIntentBits,
   type Guild,
-  Intents,
   type Message,
   type PartialTextBasedChannelFields,
-  type PartialTypes as PartialType,
+  Partials,
   type Presence
 } from 'discord.js'
+import { type AnyFunction, constants } from '../utils'
+import { type BaseHandler, SettingProvider, WebSocketManager } from '.'
 import { decorate, inject, injectable, type interfaces, optional } from 'inversify'
 import applicationConfig from '../configs/application'
 
-const { PartialTypes } = Constants
 const { TYPES } = constants
 
 const ACTIVITY_CAROUSEL_INTERVAL = 60_000
-const REQUIRED_INTENTS: number[] = [
-  Intents.FLAGS.GUILDS,
-  Intents.FLAGS.GUILD_MEMBERS,
-  Intents.FLAGS.GUILD_VOICE_STATES,
-  Intents.FLAGS.GUILD_MESSAGES,
-  Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-  Intents.FLAGS.DIRECT_MESSAGES,
-  Intents.FLAGS.DIRECT_MESSAGE_REACTIONS
+const REQUIRED_INTENTS: GatewayIntentBits[] = [
+  GatewayIntentBits.Guilds,
+  GatewayIntentBits.GuildMembers,
+  GatewayIntentBits.GuildVoiceStates,
+  GatewayIntentBits.GuildMessages,
+  GatewayIntentBits.GuildMessageReactions,
+  GatewayIntentBits.DirectMessages,
+  GatewayIntentBits.DirectMessageReactions
 ]
-const REQUIRED_PARTIALS: PartialType[] = [
-  PartialTypes.GUILD_MEMBER,
-  PartialTypes.REACTION,
-  PartialTypes.MESSAGE,
-  PartialTypes.USER
+const REQUIRED_PARTIALS: Partials[] = [
+  Partials.GuildMember,
+  Partials.Reaction,
+  Partials.Message,
+  Partials.User
 ]
 
 decorate(injectable(), Client)
@@ -114,7 +113,7 @@ export default class AroraClient<Ready extends boolean = boolean> extends Client
         for (const guild of this.guilds.cache.values()) {
           totalMemberCount += guild.memberCount
         }
-        return this.user.setActivity(`${totalMemberCount} users`, { type: 'WATCHING' })
+        return this.user.setActivity(`${totalMemberCount} users`, { type: ActivityType.Watching })
       }
     }
   }
@@ -143,7 +142,7 @@ async function failSilently<T extends AnyFunction> (fn: T, codes: number[]): Pro
   try {
     return await Promise.resolve(fn())
   } catch (err) {
-    if (!(err instanceof DiscordAPIError) || !codes.includes(err.code)) {
+    if (!(err instanceof DiscordAPIError) || (typeof err.code === 'number' && !codes.includes(err.code))) {
       throw err
     }
     return null

@@ -1,4 +1,4 @@
-import type { RESTPutAPIApplicationCommandsJSONBody } from 'discord-api-types/v10'
+import type { RESTPutAPIApplicationCommandsJSONBody } from 'discord.js'
 
 const closeTicketCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'closeticket',

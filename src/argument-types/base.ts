@@ -1,4 +1,4 @@
-import type { Collection, CommandInteraction } from 'discord.js'
+import type { ChatInputCommandInteraction, Collection } from 'discord.js'
 import { type Constructor, constants } from '../utils'
 import { type DataManager, GuildContextManager } from '../managers'
 import type { GuildContext, IdentifiableStructure } from '../structures'
@@ -21,13 +21,13 @@ function unmanagedConstructorParameter (): ParameterDecorator {
 export default abstract class BaseArgumentType<T> {
   public abstract validate (
     value: string,
-    interaction: CommandInteraction,
+    interaction: ChatInputCommandInteraction,
     arg: Argument<T>
   ): boolean | string | Promise<boolean | string>
 
   public abstract parse (
     value: string,
-    interaction: CommandInteraction,
+    interaction: ChatInputCommandInteraction,
     arg: Argument<T>
   ): T | null | Promise<T | null>
 }
@@ -58,7 +58,7 @@ export class BaseStructureArgumentType<
 
   public validate (
     value: string,
-    interaction: CommandInteraction,
+    interaction: ChatInputCommandInteraction,
     _arg: Argument<T>
   ): boolean | string | Promise<boolean | string> {
     if (!interaction.inGuild()) {
@@ -83,7 +83,7 @@ export class BaseStructureArgumentType<
 
   public parse (
     value: string,
-    interaction: CommandInteraction,
+    interaction: ChatInputCommandInteraction,
     _arg: Argument<T>
   ): T | null | Promise<T | null> {
     if (!interaction.inGuild()) {

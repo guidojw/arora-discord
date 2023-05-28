@@ -1,5 +1,5 @@
+import type { ChatInputCommandInteraction } from 'discord.js'
 import { Command } from '../base'
-import type { CommandInteraction } from 'discord.js'
 import { injectable } from 'inversify'
 
 const AVAILABLE_STATUS_CODES = [
@@ -13,7 +13,7 @@ const AVAILABLE_STATUS_CODES = [
 
 @injectable()
 export default class HttpCatCommand extends Command {
-  public async execute (interaction: CommandInteraction): Promise<void> {
+  public async execute (interaction: ChatInputCommandInteraction): Promise<void> {
     await interaction.reply(`https://http.cat/${AVAILABLE_STATUS_CODES[Math.floor(Math.random() * AVAILABLE_STATUS_CODES.length)]}`)
   }
 }

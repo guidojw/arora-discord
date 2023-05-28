@@ -1,4 +1,4 @@
-import { type CommandInteraction, MessageEmbed } from 'discord.js'
+import { type ChatInputCommandInteraction, EmbedBuilder } from 'discord.js'
 import { argumentUtil, constants, timeUtil } from '../../../../utils'
 import { groupService, userService, verificationService } from '../../../../services'
 import { inject, injectable, named } from 'inversify'
@@ -59,7 +59,7 @@ export default class TrainingsCommand extends SubCommandCommand<TrainingsCommand
   private readonly guildContexts!: GuildContextManager
 
   public async schedule (
-    interaction: CommandInteraction<'raw' | 'cached'>,
+    interaction: ChatInputCommandInteraction<'raw' | 'cached'>,
     { type, date, time, notes }: {
       type: string
       date: string
@@ -109,15 +109,17 @@ export default class TrainingsCommand extends SubCommandCommand<TrainingsCommand
       typeId: trainingType.id
     })).data
 
-    const embed = new MessageEmbed()
-      .addField('Successfully scheduled', `**${trainingType.name}** training on **${date}** at **${time}**.`)
-      .addField('Training ID', training.id.toString())
+    const embed = new EmbedBuilder()
+      .addFields([
+        { name: 'Successfully scheduled', value: `**${trainingType.name}** training on **${date}** at **${time}**.` },
+        { name: 'Training ID', value: training.id.toString() }
+      ])
       .setColor(context.primaryColor ?? applicationConfig.defaultColor)
     await interaction.reply({ embeds: [embed] })
   }
 
   public async cancel (
-    interaction: CommandInteraction<'raw' | 'cached'>,
+    interaction: ChatInputCommandInteraction<'raw' | 'cached'>,
     { id, reason }: { id: number, reason: string }
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
@@ -143,7 +145,7 @@ export default class TrainingsCommand extends SubCommandCommand<TrainingsCommand
   }
 
   public async edit (
-    interaction: CommandInteraction<'raw' | 'cached'>,
+    interaction: ChatInputCommandInteraction<'raw' | 'cached'>,
     { id, key, value }: {
       id: number
       key: string
@@ -220,7 +222,7 @@ export default class TrainingsCommand extends SubCommandCommand<TrainingsCommand
   }
 
   public async list (
-    interaction: CommandInteraction<'raw' | 'cached'>,
+    interaction: ChatInputCommandInteraction<'raw' | 'cached'>,
     { id }: { id: number | null }
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
@@ -231,12 +233,14 @@ export default class TrainingsCommand extends SubCommandCommand<TrainingsCommand
       const username = (await userService.getUser(training.authorId)).name
       const date = new Date(training.date)
 
-      const embed = new MessageEmbed()
+      const embed = new EmbedBuilder()
         .setTitle(`Training ${training.id}`)
-        .addField('Type', training.type?.abbreviation ?? 'Deleted', true)
-        .addField('Date', getDate(date), true)
-        .addField('Time', `${getTime(date)} ${getTimeZoneAbbreviation(date)}`, true)
-        .addField('Host', username, true)
+        .addFields([
+          { name: 'Type', value: training.type?.abbreviation ?? 'Deleted', inline: true },
+          { name: 'Date', value: getDate(date), inline: true },
+          { name: 'Time', value: `${getTime(date)} ${getTimeZoneAbbreviation(date)}`, inline: true },
+          { name: 'Host', value: username, inline: true }
+        ])
         .setColor(context.primaryColor ?? applicationConfig.defaultColor)
       await interaction.reply({ embeds: [embed] })
     } else {

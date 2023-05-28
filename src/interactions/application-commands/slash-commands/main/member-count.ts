@@ -1,4 +1,4 @@
-import { type CommandInteraction, MessageEmbed } from 'discord.js'
+import { type ChatInputCommandInteraction, EmbedBuilder } from 'discord.js'
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
 import { Command } from '../base'
@@ -18,7 +18,7 @@ const { TYPES } = constants
       {
         key: 'id',
         required: false,
-        default: (interaction: CommandInteraction, guildContexts: GuildContextManager) => (
+        default: (interaction: ChatInputCommandInteraction, guildContexts: GuildContextManager) => (
           interaction.inGuild()
             ? (guildContexts.resolve(interaction.guildId) as GuildContext).robloxGroupId
             : null
@@ -32,7 +32,7 @@ export default class MemberCountCommand extends Command {
   @named('GuildContextManager')
   private readonly guildContexts!: GuildContextManager
 
-  public async execute (interaction: CommandInteraction, { id }: { id: number | null }): Promise<void> {
+  public async execute (interaction: ChatInputCommandInteraction, { id }: { id: number | null }): Promise<void> {
     const context = interaction.inGuild()
       ? this.guildContexts.resolve(interaction.guildId) as GuildContext
       : null
@@ -43,8 +43,8 @@ export default class MemberCountCommand extends Command {
     }
     const group = await groupService.getGroup(id)
 
-    const embed = new MessageEmbed()
-      .addField(`${group.name}'s member count`, group.memberCount.toString())
+    const embed = new EmbedBuilder()
+      .addFields([{ name: `${group.name}'s member count`, value: group.memberCount.toString() }])
       .setColor(context?.primaryColor ?? applicationConfig.defaultColor)
     await interaction.reply({ embeds: [embed] })
   }

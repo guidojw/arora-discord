@@ -1,4 +1,4 @@
-import { type Message, MessageEmbed, type TextChannel } from 'discord.js'
+import { EmbedBuilder, type Message, type TextChannel } from 'discord.js'
 import type { AbstractConstructor } from '../utils'
 import BaseStructure from './base'
 import type { GuildContext } from '.'
@@ -39,8 +39,8 @@ PanelEntity
     this.channelId = data.message?.channelId ?? null
   }
 
-  public get embed (): MessageEmbed {
-    return new MessageEmbed(JSON.parse(this.content))
+  public get embed (): EmbedBuilder {
+    return new EmbedBuilder(JSON.parse(this.content))
   }
 
   public async update (data: PanelUpdateOptions): Promise<Panel> {

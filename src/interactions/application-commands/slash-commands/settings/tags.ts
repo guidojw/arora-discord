@@ -1,4 +1,4 @@
-import { type CommandInteraction, Formatters } from 'discord.js'
+import { type ChatInputCommandInteraction, codeBlock } from 'discord.js'
 import type { GuildContext, Tag, TagUpdateOptions } from '../../../../structures'
 import { argumentUtil, constants } from '../../../../utils'
 import { inject, injectable, named } from 'inversify'
@@ -61,7 +61,7 @@ export default class TagsCommand extends SubCommandCommand<TagsCommand> {
   private readonly guildContexts!: GuildContextManager
 
   public async create (
-    interaction: CommandInteraction,
+    interaction: ChatInputCommandInteraction,
     { name, content }: { name: string, content: string | object }
   ): Promise<void> {
     if (!interaction.inGuild()) {
@@ -75,7 +75,7 @@ export default class TagsCommand extends SubCommandCommand<TagsCommand> {
   }
 
   public async delete (
-    interaction: CommandInteraction<'raw' | 'cached'>,
+    interaction: ChatInputCommandInteraction<'raw' | 'cached'>,
     { tag }: { tag: Tag }
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
@@ -86,7 +86,7 @@ export default class TagsCommand extends SubCommandCommand<TagsCommand> {
   }
 
   public async edit (
-    interaction: CommandInteraction<'raw' | 'cached'>,
+    interaction: ChatInputCommandInteraction<'raw' | 'cached'>,
     { tag, key, value }: {
       tag: Tag
       key: string
@@ -113,17 +113,17 @@ export default class TagsCommand extends SubCommandCommand<TagsCommand> {
   }
 
   public aliases (
-    interaction: CommandInteraction<'raw' | 'cached'>,
+    interaction: ChatInputCommandInteraction<'raw' | 'cached'>,
     subCommand: 'create',
     { tag, name }: { tag: Tag, name: string }
   ): Promise<void>
   public aliases (
-    interaction: CommandInteraction<'raw' | 'cached'>,
+    interaction: ChatInputCommandInteraction<'raw' | 'cached'>,
     subCommand: 'delete',
     { name }: { name: string }
   ): Promise<void>
   public async aliases (
-    interaction: CommandInteraction<'raw' | 'cached'>,
+    interaction: ChatInputCommandInteraction<'raw' | 'cached'>,
     subCommand: 'create' | 'delete',
     { tag, name }: { tag?: Tag, name: string }
   ): Promise<void> {
@@ -155,11 +155,11 @@ export default class TagsCommand extends SubCommandCommand<TagsCommand> {
   }
 
   public async raw (
-    interaction: CommandInteraction<'raw' | 'cached'>,
+    interaction: ChatInputCommandInteraction<'raw' | 'cached'>,
     { tag }: { tag: Tag }
   ): Promise<void> {
     await interaction.reply({
-      content: Formatters.codeBlock(tag._content),
+      content: codeBlock(tag._content),
       allowedMentions: { users: [interaction.user.id] }
     })
   }

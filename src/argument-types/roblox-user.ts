@@ -1,4 +1,4 @@
-import type { CommandInteraction, GuildMember } from 'discord.js'
+import type { ChatInputCommandInteraction, GuildMember } from 'discord.js'
 import { userService, verificationService } from '../services'
 import BaseArgumentType from './base'
 import { injectable } from 'inversify'
@@ -11,7 +11,7 @@ export default class RobloxUserArgumentType extends BaseArgumentType<RobloxUser>
 
   public async validate (
     val: string,
-    interaction: CommandInteraction
+    interaction: ChatInputCommandInteraction
   ): Promise<boolean> {
     if (val === 'self') {
       const verificationData = await verificationService.fetchVerificationData(
@@ -78,7 +78,7 @@ export default class RobloxUserArgumentType extends BaseArgumentType<RobloxUser>
     return false
   }
 
-  public parse (_val: string, interaction: CommandInteraction): RobloxUser | null {
+  public parse (_val: string, interaction: ChatInputCommandInteraction): RobloxUser | null {
     const result = this.cache.get(interaction.id)
     this.cache.delete(interaction.id)
     return result ?? null

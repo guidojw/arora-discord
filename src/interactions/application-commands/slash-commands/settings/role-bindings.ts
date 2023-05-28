@@ -1,4 +1,4 @@
-import { type CommandInteraction, MessageEmbed, type Role } from 'discord.js'
+import { type ChatInputCommandInteraction, EmbedBuilder, type Role } from 'discord.js'
 import type { GuildContext, RoleBinding } from '../../../../structures'
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
@@ -44,7 +44,7 @@ export default class RoleBindingsCommand extends SubCommandCommand<RoleBindingsC
   private readonly guildContexts!: GuildContextManager
 
   public async create (
-    interaction: CommandInteraction<'raw' | 'cached'>,
+    interaction: ChatInputCommandInteraction<'raw' | 'cached'>,
     { role, min, max }: {
       role: Role
       min: number
@@ -62,7 +62,7 @@ export default class RoleBindingsCommand extends SubCommandCommand<RoleBindingsC
   }
 
   public async delete (
-    interaction: CommandInteraction<'raw' | 'cached'>,
+    interaction: ChatInputCommandInteraction<'raw' | 'cached'>,
     { roleBinding }: { roleBinding: RoleBinding }
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
@@ -73,14 +73,19 @@ export default class RoleBindingsCommand extends SubCommandCommand<RoleBindingsC
   }
 
   public async list (
-    interaction: CommandInteraction<'raw' | 'cached'>,
+    interaction: ChatInputCommandInteraction<'raw' | 'cached'>,
     { roleBinding }: { roleBinding: RoleBinding | null }
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
     if (roleBinding !== null) {
-      const embed = new MessageEmbed()
-        .addField(`Role Binding ${roleBinding.id}`, `\`${roleBinding.robloxGroupId}\` \`${getRangeString(roleBinding.min, roleBinding.max)}\` => ${roleBinding.role?.toString() ?? 'Unknown'}`)
+      const embed = new EmbedBuilder()
+        .addFields([
+          {
+            name: `Role Binding ${roleBinding.id}`,
+            value: `\`${roleBinding.robloxGroupId}\` \`${getRangeString(roleBinding.min, roleBinding.max)}\` => ${roleBinding.role?.toString() ?? 'Unknown'}`
+          }
+        ])
         .setColor(context.primaryColor ?? applicationConfig.defaultColor)
       await interaction.reply({ embeds: [embed] })
     } else {

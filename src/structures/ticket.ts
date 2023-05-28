@@ -1,12 +1,12 @@
 import {
+  AttachmentBuilder,
+  ButtonBuilder,
   Collection,
-  Constants,
+  EmbedBuilder,
   type GuildMember,
   type Message,
-  MessageAttachment,
-  MessageButton,
-  MessageEmbed,
   type PartialGuildMember,
+  Partials,
   type TextChannel,
   type TextChannelResolvable
 } from 'discord.js'
@@ -22,7 +22,6 @@ import applicationConfig from '../configs/application'
 import pluralize from 'pluralize'
 import { stripIndents } from 'common-tags'
 
-const { PartialTypes } = Constants
 const { TYPES } = constants
 const { getDate, getTime } = timeUtil
 const { makeCommaSeparatedString } = util
@@ -83,7 +82,7 @@ export default class Ticket extends BaseStructure<TicketEntity> {
   public get author (): GuildMember | PartialGuildMember | null {
     return this.authorId !== null
       ? this.context.guild.members.cache.get(this.authorId) ??
-      (this.client.options.partials?.includes(PartialTypes.GUILD_MEMBER) === true
+      (this.client.options.partials?.includes(Partials.GuildMember) === true
         // @ts-expect-error: Calling private library method.
         ? this.context.guild.members._add({ user: { id: this.authorId } })
         : null)
@@ -111,7 +110,7 @@ export default class Ticket extends BaseStructure<TicketEntity> {
     const date = new Date()
     const readableDate = getDate(date)
     const readableTime = getTime(date)
-    const ticketInfoEmbed = new MessageEmbed()
+    const ticketInfoEmbed = new EmbedBuilder()
       .setColor(this.context.primaryColor ?? applicationConfig.defaultColor)
       .setTitle('Ticket Information')
       .setDescription(stripIndents`
@@ -135,7 +134,7 @@ export default class Ticket extends BaseStructure<TicketEntity> {
     await this.channel.delete()
 
     if (this.author !== null) {
-      const embed = new MessageEmbed()
+      const embed = new EmbedBuilder()
         .setColor(color ?? (success ? 0x00ff00 : 0xff0000))
         .setAuthor({ name: this.client.user.username, iconURL: this.client.user.displayAvatarURL() })
         .setTitle(message)
@@ -146,14 +145,14 @@ export default class Ticket extends BaseStructure<TicketEntity> {
         if (rating !== null) {
           await this.logRating(rating)
 
-          const embed = new MessageEmbed()
+          const embed = new EmbedBuilder()
             .setColor(this.context.primaryColor ?? applicationConfig.defaultColor)
             .setAuthor({ name: this.client.user.username, iconURL: this.client.user.displayAvatarURL() })
             .setTitle('Rating submitted')
             .setDescription('Thank you!')
           await ratingInteraction.reply({ embeds: [embed] })
         } else {
-          const embed = new MessageEmbed()
+          const embed = new EmbedBuilder()
             .setColor(this.context.primaryColor ?? applicationConfig.defaultColor)
             .setAuthor({ name: this.client.user.username, iconURL: this.client.user.displayAvatarURL() })
             .setTitle('No rating submitted')
@@ -170,16 +169,16 @@ export default class Ticket extends BaseStructure<TicketEntity> {
       return [null, null]
     }
 
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
       .setColor(this.context.primaryColor ?? applicationConfig.defaultColor)
       .setAuthor({ name: this.client.user.username, iconURL: this.client.user.displayAvatarURL() })
       .setTitle('How would you rate the support you received?')
     const message = await this.client.send(this.author, { embeds: [embed] })
 
     if (message !== null) {
-      const options: Record<string, MessageButton> = {}
+      const options: Record<string, ButtonBuilder> = {}
       for (let i = 1; i <= 5; i++) {
-        options[i] = new MessageButton().setEmoji(`${i}⃣`)
+        options[i] = new ButtonBuilder().setEmoji(`${i}⃣`)
       }
 
       return await discordService.prompt(this.author as GuildMember, message, options)
@@ -203,7 +202,7 @@ export default class Ticket extends BaseStructure<TicketEntity> {
       moderatorsString = 'none'
     }
 
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
       .setColor(this.context.primaryColor ?? applicationConfig.defaultColor)
       .setAuthor({
         name: this.author?.user?.tag ?? this.authorId ?? 'unknown',
@@ -218,7 +217,7 @@ export default class Ticket extends BaseStructure<TicketEntity> {
     return await this.context.ratingsChannel.send({ embeds: [embed] })
   }
 
-  public async fetchArchiveAttachment (): Promise<MessageAttachment> {
+  public async fetchArchiveAttachment (): Promise<AttachmentBuilder> {
     let output = ''
 
     output += 'TICKET INFORMATION\n'
@@ -266,7 +265,7 @@ export default class Ticket extends BaseStructure<TicketEntity> {
 
     output += 'END OF TICKET\n'
 
-    return new MessageAttachment(Buffer.from(output), `${this.id}-${this.channel.name}.txt`)
+    return new AttachmentBuilder(Buffer.from(output), { name: `${this.id}-${this.channel.name}.txt` })
   }
 
   public async fetchAuthorData (): Promise<{ robloxId: number | null, robloxUsername: string | null }> {

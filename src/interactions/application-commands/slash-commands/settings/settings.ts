@@ -1,4 +1,4 @@
-import { CategoryChannel, type CommandInteraction, GuildChannel, TextChannel } from 'discord.js'
+import { CategoryChannel, type ChatInputCommandInteraction, GuildChannel, TextChannel } from 'discord.js'
 import type { GuildContext, GuildUpdateOptions } from '../../../../structures'
 import { argumentUtil, constants, util } from '../../../../utils'
 import { inject, injectable, named } from 'inversify'
@@ -45,7 +45,7 @@ export default class SettingsCommand extends SubCommandCommand<SettingsCommand> 
   private readonly guildContexts!: GuildContextManager
 
   public async get (
-    interaction: CommandInteraction,
+    interaction: ChatInputCommandInteraction,
     { setting }: { setting: keyof typeof GuildSetting }
   ): Promise<void> {
     if (!interaction.inGuild()) {
@@ -72,7 +72,7 @@ export default class SettingsCommand extends SubCommandCommand<SettingsCommand> 
   }
 
   public async set (
-    interaction: CommandInteraction,
+    interaction: ChatInputCommandInteraction,
     { setting, value }: {
       setting: keyof typeof GuildSetting
       value: CategoryChannel | TextChannel | number | boolean | string | null

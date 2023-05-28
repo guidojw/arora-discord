@@ -1,4 +1,4 @@
-import { type GuildMember, MessageEmbed } from 'discord.js'
+import { EmbedBuilder, type GuildMember } from 'discord.js'
 import type { BaseJob } from '.'
 import type { GuildContext } from '../structures'
 import { injectable } from 'inversify'
@@ -44,13 +44,18 @@ export default class PremiumMembersReportJob implements BaseJob {
     monthlyPremiumMembers.sort((a, b) => b.months - a.months)
 
     if (monthlyPremiumMembers.length > 0) {
-      const embed = new MessageEmbed()
+      const embed = new EmbedBuilder()
         .setTitle('Server Booster Report')
         .setColor(0xff73fa)
       const emoji = context.guild.emojis.cache.find(emoji => emoji.name?.toLowerCase() === 'boost')
 
       for (const { member, months } of monthlyPremiumMembers) {
-        embed.addField(`${member.user.tag} ${emoji?.toString() ?? ''}`, `Has been boosting this server for **${pluralize('month', months, true)}**!`)
+        embed.addFields([
+          {
+            name: `${member.user.tag} ${emoji?.toString() ?? ''}`,
+            value: `Has been boosting this server for **${pluralize('month', months, true)}**!`
+          }
+        ])
       }
 
       await Promise.all(serverBoosterReportChannelsGroup.channels.cache.map(async channel => (

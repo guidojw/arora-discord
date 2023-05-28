@@ -1,4 +1,4 @@
-import { type CommandInteraction, type GuildMember, MessageEmbed, type Role } from 'discord.js'
+import { type ChatInputCommandInteraction, EmbedBuilder, type GuildMember, type Role } from 'discord.js'
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
 import type { GuildContext } from '../../../../structures'
@@ -34,7 +34,7 @@ export default class PersistentRolesCommand extends SubCommandCommand<Persistent
   private readonly persistentRoleService!: PersistentRoleService
 
   public async persist (
-    interaction: CommandInteraction<'raw' | 'cached'>,
+    interaction: ChatInputCommandInteraction<'raw' | 'cached'>,
     { member, role }: { member: GuildMember, role: Role }
   ): Promise<void> {
     await this.persistentRoleService.persistRole(member, role)
@@ -46,7 +46,7 @@ export default class PersistentRolesCommand extends SubCommandCommand<Persistent
   }
 
   public async unpersist (
-    interaction: CommandInteraction<'raw' | 'cached'>,
+    interaction: ChatInputCommandInteraction<'raw' | 'cached'>,
     { member, role }: { member: GuildMember, role: Role }
   ): Promise<void> {
     await this.persistentRoleService.unpersistRole(member, role)
@@ -58,7 +58,7 @@ export default class PersistentRolesCommand extends SubCommandCommand<Persistent
   }
 
   public async list (
-    interaction: CommandInteraction<'raw' | 'cached'>,
+    interaction: ChatInputCommandInteraction<'raw' | 'cached'>,
     { member }: { member: GuildMember }
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
@@ -69,7 +69,7 @@ export default class PersistentRolesCommand extends SubCommandCommand<Persistent
       return
     }
 
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
       .setTitle(`${member.user.tag}'s Persistent Roles`)
       .setDescription(persistentRoles.map(role => role.toString()).toString())
       .setColor(context.primaryColor ?? applicationConfig.defaultColor)

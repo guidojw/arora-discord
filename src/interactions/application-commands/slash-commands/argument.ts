@@ -1,16 +1,17 @@
 import { inject, injectable, type interfaces } from 'inversify'
 import type { BaseArgumentType } from '../../../argument-types'
-import type { CommandInteraction } from 'discord.js'
+import type { ChatInputCommandInteraction } from 'discord.js'
 import type { GuildContextManager } from '../../../managers'
 import { constants } from '../../../utils'
 
 const { TYPES } = constants
 
-export type DefaultFunction<T> = ((interaction: CommandInteraction, guildContexts: GuildContextManager) => T)
+export type DefaultFunction<T> = ((interaction: ChatInputCommandInteraction, guildContexts: GuildContextManager) => T)
 export type ValidatorFunction<T> =
-(value: string, interaction: CommandInteraction, arg: Argument<T>) => boolean | string | Promise<boolean | string>
+(value: string, interaction: ChatInputCommandInteraction, arg: Argument<T>) =>
+boolean | string | Promise<boolean | string>
 export type ParserFunction<T> =
-(value: string, interaction: CommandInteraction, arg: Argument<T>) => T | null | Promise<T | null>
+(value: string, interaction: ChatInputCommandInteraction, arg: Argument<T>) => T | null | Promise<T | null>
 
 export interface ArgumentOptions<T> {
   key: string
@@ -58,7 +59,7 @@ export default class Argument<T> {
       : async function (
         this: Argument<T> & { type: Array<BaseArgumentType<T>> },
         value: string,
-        interaction: CommandInteraction,
+        interaction: ChatInputCommandInteraction,
         arg: Argument<T>
       ) {
         const results = await Promise.all(this.type.map(async type => await type.validate(value, interaction, arg)))
@@ -80,7 +81,7 @@ export default class Argument<T> {
       : async function (
         this: Argument<T> & { type: Array<BaseArgumentType<T>> },
         value: string,
-        interaction: CommandInteraction,
+        interaction: ChatInputCommandInteraction,
         arg: Argument<T>
       ) {
         const results = await Promise.all(this.type.map(async type => await type.validate(value, interaction, arg)))

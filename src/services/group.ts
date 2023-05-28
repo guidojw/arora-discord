@@ -3,8 +3,8 @@ import * as userService from '../services/user'
 import type { GetGroup, GetGroupRoles } from '@guidojw/bloxy/dist/client/apis/GroupsAPI'
 import { applicationAdapter, robloxAdapter } from '../adapters'
 import { timeUtil, util } from '../utils'
+import type { EmbedBuilder } from 'discord.js'
 import type { GetUsers } from './user'
-import type { MessageEmbed } from 'discord.js'
 import pluralize from 'pluralize'
 
 export type GetGroupStatus = GetGroup['shout']
@@ -70,7 +70,7 @@ export async function getGroup (groupId: number): Promise<GetGroup> {
   }
 }
 
-export async function getBanEmbeds (groupId: number, bans: Ban[]): Promise<MessageEmbed[]> {
+export async function getBanEmbeds (groupId: number, bans: Ban[]): Promise<EmbedBuilder[]> {
   const userIds = [...new Set([
     ...bans.map(ban => ban.userId),
     ...bans.map(ban => ban.authorId)
@@ -107,7 +107,7 @@ export function getBanRow (ban: Ban, { users, roles }: { users: GetUsers, roles:
   return `**${username}** (${roleAbbreviation}) by **${authorName}** at **${dateString}**${durationString} with reason:\n*${ban.reason}*`
 }
 
-export async function getExileEmbeds (exiles: Exile[]): Promise<MessageEmbed[]> {
+export async function getExileEmbeds (exiles: Exile[]): Promise<EmbedBuilder[]> {
   const userIds = [...new Set([
     ...exiles.map(exile => exile.userId),
     ...exiles.map(exile => exile.authorId)
@@ -130,7 +130,7 @@ export function getExileRow (exile: Exile, { users }: { users: GetUsers }): stri
   return `**${username}** by **${authorName}** at **${dateString}** with reason:\n*${exile.reason}*`
 }
 
-export async function getTrainingEmbeds (trainings: Training[]): Promise<MessageEmbed[]> {
+export async function getTrainingEmbeds (trainings: Training[]): Promise<EmbedBuilder[]> {
   const userIds = [...new Set([
     ...trainings.map(training => training.authorId)
   ])]

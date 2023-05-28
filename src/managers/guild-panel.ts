@@ -1,5 +1,5 @@
+import { ChannelType, EmbedBuilder, type TextChannelResolvable } from 'discord.js'
 import { type GuildContext, Panel, type PanelUpdateOptions } from '../structures'
-import { MessageEmbed, type TextChannelResolvable } from 'discord.js'
 import { inject, injectable } from 'inversify'
 import { AroraClient } from '../client'
 import { DataManager } from './base'
@@ -38,7 +38,7 @@ export default class GuildPanelManager extends DataManager<number, Panel, PanelR
     if (this.resolve(name) !== null) {
       throw new Error('A panel with that name already exists.')
     }
-    const embed = new MessageEmbed(content)
+    const embed = new EmbedBuilder(content)
     const valid = discordService.validateEmbed(embed)
     if (typeof valid === 'string') {
       throw new Error(valid)
@@ -87,7 +87,7 @@ export default class GuildPanelManager extends DataManager<number, Panel, PanelR
       changes.name = data.name
     }
     if (typeof data.content !== 'undefined') {
-      const embed = new MessageEmbed(data.content)
+      const embed = new EmbedBuilder(data.content)
       const valid = discordService.validateEmbed(embed)
       if (typeof valid === 'string') {
         throw new Error(valid)
@@ -150,7 +150,7 @@ export default class GuildPanelManager extends DataManager<number, Panel, PanelR
     let channel
     if (typeof channelResolvable !== 'undefined') {
       channel = this.context.guild.channels.resolve(channelResolvable)
-      if (channel === null || !channel.isText()) {
+      if (channel === null || channel.type !== ChannelType.GuildText) {
         throw new Error('Invalid channel.')
       }
     }

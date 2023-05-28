@@ -1,4 +1,4 @@
-import { type CommandInteraction, type Message, MessageEmbed } from 'discord.js'
+import { type ChatInputCommandInteraction, EmbedBuilder } from 'discord.js'
 import { argumentUtil, constants } from '../../../../utils'
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
@@ -27,7 +27,7 @@ export default class PollCommand extends Command {
   @named('GuildContextManager')
   private readonly guildContexts!: GuildContextManager
 
-  public async execute (interaction: CommandInteraction, { poll }: { poll: string }): Promise<void> {
+  public async execute (interaction: ChatInputCommandInteraction, { poll }: { poll: string }): Promise<void> {
     const context = interaction.inGuild()
       ? this.guildContexts.resolve(interaction.guildId) as GuildContext
       : null
@@ -38,12 +38,12 @@ export default class PollCommand extends Command {
         options.push(num)
       }
     }
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
       .setDescription(poll)
       .setAuthor({ name: interaction.user.tag, iconURL: interaction.user.displayAvatarURL() })
       .setColor(context?.primaryColor ?? applicationConfig.defaultColor)
 
-    const newMessage = await interaction.reply({ embeds: [embed], fetchReply: true }) as Message
+    const newMessage = await interaction.reply({ embeds: [embed], fetchReply: true })
     if (options.length > 0) {
       for (const option of options) {
         await newMessage.react(`${option}⃣`)

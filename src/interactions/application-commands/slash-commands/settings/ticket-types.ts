@@ -1,4 +1,4 @@
-import { type CommandInteraction, type Message, MessageEmbed } from 'discord.js'
+import { type ChatInputCommandInteraction, EmbedBuilder, type Message } from 'discord.js'
 import type { GuildContext, TicketType, TicketTypeUpdateOptions } from '../../../../structures'
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
@@ -58,7 +58,7 @@ export default class TicketTypesCommand extends SubCommandCommand<TicketTypesCom
   private readonly guildContexts!: GuildContextManager
 
   public async create (
-    interaction: CommandInteraction,
+    interaction: ChatInputCommandInteraction,
     { name }: { name: string }
   ): Promise<void> {
     if (!interaction.inGuild()) {
@@ -72,7 +72,7 @@ export default class TicketTypesCommand extends SubCommandCommand<TicketTypesCom
   }
 
   public async delete (
-    interaction: CommandInteraction<'raw' | 'cached'>,
+    interaction: ChatInputCommandInteraction<'raw' | 'cached'>,
     { ticketType }: { ticketType: TicketType }
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
@@ -83,7 +83,7 @@ export default class TicketTypesCommand extends SubCommandCommand<TicketTypesCom
   }
 
   public async edit (
-    interaction: CommandInteraction<'raw' | 'cached'>,
+    interaction: ChatInputCommandInteraction<'raw' | 'cached'>,
     { ticketType, key, value }: {
       ticketType: TicketType
       key: string
@@ -103,7 +103,7 @@ export default class TicketTypesCommand extends SubCommandCommand<TicketTypesCom
   }
 
   public async link (
-    interaction: CommandInteraction<'raw' | 'cached'>,
+    interaction: ChatInputCommandInteraction<'raw' | 'cached'>,
     { ticketType, message, emoji }: {
       ticketType: TicketType
       message: Message
@@ -118,7 +118,7 @@ export default class TicketTypesCommand extends SubCommandCommand<TicketTypesCom
   }
 
   public async unlink (
-    interaction: CommandInteraction<'raw' | 'cached'>,
+    interaction: ChatInputCommandInteraction<'raw' | 'cached'>,
     { ticketType }: { ticketType: TicketType }
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
@@ -129,7 +129,7 @@ export default class TicketTypesCommand extends SubCommandCommand<TicketTypesCom
   }
 
   public async list (
-    interaction: CommandInteraction,
+    interaction: ChatInputCommandInteraction,
     { ticketType }: { ticketType: TicketType | null }
   ): Promise<void> {
     if (!interaction.inGuild()) {
@@ -138,8 +138,8 @@ export default class TicketTypesCommand extends SubCommandCommand<TicketTypesCom
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
     if (ticketType !== null) {
-      const embed = new MessageEmbed()
-        .addField(`Ticket Type ${ticketType.id}`, `Name: \`${ticketType.name}\``)
+      const embed = new EmbedBuilder()
+        .addFields([{ name: `Ticket Type ${ticketType.id}`, value: `Name: \`${ticketType.name}\`` }])
         .setColor(context.primaryColor ?? applicationConfig.defaultColor)
       await interaction.reply({ embeds: [embed] })
     } else {
