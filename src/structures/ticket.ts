@@ -1,10 +1,10 @@
 import {
+  AttachmentBuilder,
   Collection,
   Constants,
   EmbedBuilder,
   type GuildMember,
   type Message,
-  MessageAttachment,
   MessageButton,
   type PartialGuildMember,
   type TextChannel,
@@ -218,7 +218,7 @@ export default class Ticket extends BaseStructure<TicketEntity> {
     return await this.context.ratingsChannel.send({ embeds: [embed] })
   }
 
-  public async fetchArchiveAttachment (): Promise<MessageAttachment> {
+  public async fetchArchiveAttachment (): Promise<AttachmentBuilder> {
     let output = ''
 
     output += 'TICKET INFORMATION\n'
@@ -266,7 +266,7 @@ export default class Ticket extends BaseStructure<TicketEntity> {
 
     output += 'END OF TICKET\n'
 
-    return new MessageAttachment(Buffer.from(output), `${this.id}-${this.channel.name}.txt`)
+    return new AttachmentBuilder(Buffer.from(output), { name: `${this.id}-${this.channel.name}.txt` })
   }
 
   public async fetchAuthorData (): Promise<{ robloxId: number | null, robloxUsername: string | null }> {

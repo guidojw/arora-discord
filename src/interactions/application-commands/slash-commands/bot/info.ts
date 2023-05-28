@@ -1,4 +1,4 @@
-import { type CommandInteraction, EmbedBuilder, MessageAttachment } from 'discord.js'
+import { AttachmentBuilder, type CommandInteraction, EmbedBuilder } from 'discord.js'
 import { type RESTGetAPIOAuth2CurrentApplicationResult, Routes } from 'discord-api-types/v10'
 import { Command } from '../base'
 import { REST } from '@discordjs/rest'
@@ -11,7 +11,7 @@ export default class InfoCommand extends Command {
     const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN as string)
     const application = await rest.get(Routes.oauth2CurrentApplication()) as RESTGetAPIOAuth2CurrentApplicationResult
 
-    const attachment = new MessageAttachment(await readFile('assets/logo.png'), 'logo.png')
+    const attachment = new AttachmentBuilder(await readFile('assets/logo.png'), { name: 'logo.png' })
     const embed = new EmbedBuilder()
       .setAuthor({ name: 'arora', iconURL: 'attachment://logo.png' })
       .addFields([
