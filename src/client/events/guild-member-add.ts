@@ -1,4 +1,4 @@
-import { type GuildMember, MessageEmbed } from 'discord.js'
+import { EmbedBuilder, type GuildMember } from 'discord.js'
 import { constants, util } from '../../utils'
 import { inject, injectable, named } from 'inversify'
 import type { BaseHandler } from '..'
@@ -30,7 +30,7 @@ export default class GuildMemberAddEventHandler implements BaseHandler {
     // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
     if (welcomeChannelsGroup !== null && welcomeChannelsGroup.isChannelGroup() &&
       welcomeChannelsGroup.channels.cache.size > 0) {
-      const embed = new MessageEmbed()
+      const embed = new EmbedBuilder()
         .setTitle(`Hey ${member.user.tag},`)
         .setDescription(`You're the **${getOrdinalNum(guild.memberCount)}** member on **${guild.name}**!`)
         .setThumbnail(member.user.displayAvatarURL())

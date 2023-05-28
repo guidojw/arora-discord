@@ -1,11 +1,11 @@
 import {
   Collection,
   Constants,
+  EmbedBuilder,
   type GuildMember,
   type Message,
   MessageAttachment,
   MessageButton,
-  MessageEmbed,
   type PartialGuildMember,
   type TextChannel,
   type TextChannelResolvable
@@ -111,7 +111,7 @@ export default class Ticket extends BaseStructure<TicketEntity> {
     const date = new Date()
     const readableDate = getDate(date)
     const readableTime = getTime(date)
-    const ticketInfoEmbed = new MessageEmbed()
+    const ticketInfoEmbed = new EmbedBuilder()
       .setColor(this.context.primaryColor ?? applicationConfig.defaultColor)
       .setTitle('Ticket Information')
       .setDescription(stripIndents`
@@ -135,7 +135,7 @@ export default class Ticket extends BaseStructure<TicketEntity> {
     await this.channel.delete()
 
     if (this.author !== null) {
-      const embed = new MessageEmbed()
+      const embed = new EmbedBuilder()
         .setColor(color ?? (success ? 0x00ff00 : 0xff0000))
         .setAuthor({ name: this.client.user.username, iconURL: this.client.user.displayAvatarURL() })
         .setTitle(message)
@@ -146,14 +146,14 @@ export default class Ticket extends BaseStructure<TicketEntity> {
         if (rating !== null) {
           await this.logRating(rating)
 
-          const embed = new MessageEmbed()
+          const embed = new EmbedBuilder()
             .setColor(this.context.primaryColor ?? applicationConfig.defaultColor)
             .setAuthor({ name: this.client.user.username, iconURL: this.client.user.displayAvatarURL() })
             .setTitle('Rating submitted')
             .setDescription('Thank you!')
           await ratingInteraction.reply({ embeds: [embed] })
         } else {
-          const embed = new MessageEmbed()
+          const embed = new EmbedBuilder()
             .setColor(this.context.primaryColor ?? applicationConfig.defaultColor)
             .setAuthor({ name: this.client.user.username, iconURL: this.client.user.displayAvatarURL() })
             .setTitle('No rating submitted')
@@ -170,7 +170,7 @@ export default class Ticket extends BaseStructure<TicketEntity> {
       return [null, null]
     }
 
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
       .setColor(this.context.primaryColor ?? applicationConfig.defaultColor)
       .setAuthor({ name: this.client.user.username, iconURL: this.client.user.displayAvatarURL() })
       .setTitle('How would you rate the support you received?')
@@ -203,7 +203,7 @@ export default class Ticket extends BaseStructure<TicketEntity> {
       moderatorsString = 'none'
     }
 
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
       .setColor(this.context.primaryColor ?? applicationConfig.defaultColor)
       .setAuthor({
         name: this.author?.user?.tag ?? this.authorId ?? 'unknown',

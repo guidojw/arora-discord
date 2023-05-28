@@ -1,4 +1,4 @@
-import { type CommandInteraction, MessageEmbed } from 'discord.js'
+import { type CommandInteraction, EmbedBuilder } from 'discord.js'
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
 import { Command } from '../base'
@@ -43,8 +43,8 @@ export default class MemberCountCommand extends Command {
     }
     const group = await groupService.getGroup(id)
 
-    const embed = new MessageEmbed()
-      .addField(`${group.name}'s member count`, group.memberCount.toString())
+    const embed = new EmbedBuilder()
+      .addFields([{ name: `${group.name}'s member count`, value: group.memberCount.toString() }])
       .setColor(context?.primaryColor ?? applicationConfig.defaultColor)
     await interaction.reply({ embeds: [embed] })
   }

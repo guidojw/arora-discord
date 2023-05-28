@@ -3,11 +3,11 @@ import {
   type CategoryChannelResolvable,
   Collection,
   type ColorResolvable,
+  EmbedBuilder,
   type Guild,
   GuildEmoji,
   type GuildMember,
   type Message,
-  MessageEmbed,
   type MessageReaction,
   type Snowflake,
   type TextChannel,
@@ -241,7 +241,7 @@ export default class GuildContext extends BaseStructure<GuildEntity> {
         await author.fetch()
       }
 
-      const embed = new MessageEmbed()
+      const embed = new EmbedBuilder()
         .setAuthor({ name: author.tag, iconURL: author.displayAvatarURL() })
         .setColor(this.primaryColor ?? applicationConfig.defaultColor)
         .setDescription(content)

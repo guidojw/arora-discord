@@ -1,4 +1,4 @@
-import { type CommandInteraction, type Message, MessageEmbed } from 'discord.js'
+import { type CommandInteraction, EmbedBuilder, type Message } from 'discord.js'
 import type { GuildContext, TicketType, TicketTypeUpdateOptions } from '../../../../structures'
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
@@ -138,8 +138,8 @@ export default class TicketTypesCommand extends SubCommandCommand<TicketTypesCom
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
     if (ticketType !== null) {
-      const embed = new MessageEmbed()
-        .addField(`Ticket Type ${ticketType.id}`, `Name: \`${ticketType.name}\``)
+      const embed = new EmbedBuilder()
+        .addFields([{ name: `Ticket Type ${ticketType.id}`, value: `Name: \`${ticketType.name}\`` }])
         .setColor(context.primaryColor ?? applicationConfig.defaultColor)
       await interaction.reply({ embeds: [embed] })
     } else {

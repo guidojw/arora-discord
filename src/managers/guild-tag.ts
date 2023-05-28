@@ -1,7 +1,7 @@
 import { type GuildContext, Tag, type TagUpdateOptions } from '../structures'
 import { inject, injectable } from 'inversify'
 import { DataManager } from './base'
-import { MessageEmbed } from 'discord.js'
+import { EmbedBuilder } from 'discord.js'
 import { Repository } from 'typeorm'
 import type { Tag as TagEntity } from '../entities'
 import type { TagNameResolvable } from './tag-tag-name'
@@ -37,7 +37,7 @@ export default class GuildTagManager extends DataManager<number, Tag, TagResolva
       throw new Error('A tag with that name already exists.')
     }
     if (typeof content !== 'string') {
-      const embed = new MessageEmbed(content)
+      const embed = new EmbedBuilder(content)
       const valid = discordService.validateEmbed(embed)
       if (typeof valid === 'string') {
         throw new Error(valid)
@@ -89,7 +89,7 @@ export default class GuildTagManager extends DataManager<number, Tag, TagResolva
     const changes: Partial<TagEntity> = {}
     if (typeof data.content !== 'undefined') {
       if (typeof data.content !== 'string') {
-        const embed = new MessageEmbed(data.content)
+        const embed = new EmbedBuilder(data.content)
         const valid = discordService.validateEmbed(embed)
         if (typeof valid === 'string') {
           throw new Error(valid)

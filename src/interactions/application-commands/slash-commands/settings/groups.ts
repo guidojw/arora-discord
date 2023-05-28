@@ -1,5 +1,5 @@
 import type { ChannelGroup, Group, GuildContext, RoleGroup } from '../../../../structures'
-import { type CommandInteraction, MessageEmbed, type Role, type TextChannel } from 'discord.js'
+import { type CommandInteraction, EmbedBuilder, type Role, type TextChannel } from 'discord.js'
 import { argumentUtil, constants } from '../../../../utils'
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
@@ -155,18 +155,20 @@ export default class GroupsCommand extends SubCommandCommand<GroupsCommand> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
     if (group !== null) {
-      const embed = new MessageEmbed()
+      const embed = new EmbedBuilder()
         .setTitle(`Group ${group.id}`)
-        .addField('Name', group.name, true)
-        .addField('Type', group.type, true)
-        .addField('Guarded', group.guarded ? 'yes' : 'no', true)
+        .addFields([
+          { name: 'Name', value: group.name, inline: true },
+          { name: 'Type', value: group.type, inline: true },
+          { name: 'Guarded', value: group.guarded ? 'yes' : 'no', inline: true }
+        ])
         .setColor(context.primaryColor ?? applicationConfig.defaultColor)
       if (group.isChannelGroup()) {
         const channelsString = Array.from(group.channels.cache.values()).join(' ')
-        embed.addField('Channels', channelsString !== '' ? channelsString : 'none')
+        embed.addFields([{ name: 'Channels', value: channelsString !== '' ? channelsString : 'none' }])
       } else if (group.isRoleGroup()) {
         const rolesString = Array.from(group.roles.cache.values()).join(' ')
-        embed.addField('Roles', rolesString !== '' ? rolesString : 'none')
+        embed.addFields([{ name: 'Roles', value: rolesString !== '' ? rolesString : 'none' }])
       }
       await interaction.reply({ embeds: [embed] })
     } else {

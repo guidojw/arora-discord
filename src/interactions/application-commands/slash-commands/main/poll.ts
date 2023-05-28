@@ -1,4 +1,4 @@
-import { type CommandInteraction, type Message, MessageEmbed } from 'discord.js'
+import { type CommandInteraction, EmbedBuilder, type Message } from 'discord.js'
 import { argumentUtil, constants } from '../../../../utils'
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
@@ -38,7 +38,7 @@ export default class PollCommand extends Command {
         options.push(num)
       }
     }
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
       .setDescription(poll)
       .setAuthor({ name: interaction.user.tag, iconURL: interaction.user.displayAvatarURL() })
       .setColor(context?.primaryColor ?? applicationConfig.defaultColor)

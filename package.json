@@ -22,7 +22,6 @@
     "axios": "^1.4.0",
     "class-validator": "^0.14.0",
     "common-tags": "^1.8.2",
-    "discord-api-types": "^0.37.42",
     "discord.js": "^14.11.0",
     "dotenv": "^16.0.3",
     "emoji-regex": "^10.2.1",
@@ -36,7 +35,6 @@
     "ws": "^8.13.0"
   },
   "devDependencies": {
-    "@discordjs/rest": "^1.7.1",
     "@guidojw/bloxy": "^5.7.6",
     "@types/common-tags": "^1.8.1",
     "@types/lodash": "^4.14.195",

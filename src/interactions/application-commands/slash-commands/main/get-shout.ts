@@ -1,4 +1,4 @@
-import { type CommandInteraction, MessageEmbed } from 'discord.js'
+import { type CommandInteraction, EmbedBuilder } from 'discord.js'
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
 import { Command } from '../base'
@@ -28,8 +28,8 @@ export default class GetShoutCommand extends Command {
     const shout: GetGroupStatus | '' = (await applicationAdapter('GET', `v1/groups/${context.robloxGroupId}/status`)).data
 
     if (shout !== '' && shout.body !== '') {
-      const embed = new MessageEmbed()
-        .addField(`Current shout by ${shout.poster.username}`, shout.body)
+      const embed = new EmbedBuilder()
+        .addFields([{ name: `Current shout by ${shout.poster.username}`, value: shout.body }])
         .setTimestamp(new Date(shout.updated))
         .setColor(context.primaryColor ?? applicationConfig.defaultColor)
       await interaction.reply({ embeds: [embed] })

@@ -1,4 +1,4 @@
-import { type CommandInteraction, MessageEmbed, type TextChannel, type VoiceChannel } from 'discord.js'
+import { type CommandInteraction, EmbedBuilder, type TextChannel, type VoiceChannel } from 'discord.js'
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
 import { ChannelLinkService } from '../../../../services'
@@ -77,7 +77,7 @@ export default class ChannelLinksCommand extends SubCommandCommand<ChannelLinksC
       return
     }
 
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
       .setTitle(`${channel.name}'s Channel Links`)
       // eslint-disable-next-line @typescript-eslint/no-base-to-string
       .setDescription(links.map(channel => channel.toString()).toString())

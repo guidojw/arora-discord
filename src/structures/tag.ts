@@ -2,7 +2,7 @@ import type { GuildContext, TagName } from '.'
 import { type ManagerFactory, constants } from '../utils'
 import { inject, injectable } from 'inversify'
 import BaseStructure from './base'
-import { MessageEmbed } from 'discord.js'
+import { EmbedBuilder } from 'discord.js'
 import type { Tag as TagEntity } from '../entities'
 import type { TagTagNameManager } from '../managers'
 
@@ -42,9 +42,9 @@ export default class Tag extends BaseStructure<TagEntity> {
     }
   }
 
-  public get content (): MessageEmbed | string {
+  public get content (): EmbedBuilder | string {
     try {
-      return new MessageEmbed(JSON.parse(this._content))
+      return new EmbedBuilder(JSON.parse(this._content))
     } catch (err) {
       return this._content
     }

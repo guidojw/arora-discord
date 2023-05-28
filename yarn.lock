@@ -801,7 +801,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "arora-discord@workspace:."
   dependencies:
-    "@discordjs/rest": ^1.7.1
     "@guidojw/bloxy": ^5.7.6
     "@sentry/integrations": ^7.53.1
     "@sentry/node": ^7.53.1
@@ -815,7 +814,6 @@ __metadata:
     axios: ^1.4.0
     class-validator: ^0.14.0
     common-tags: ^1.8.2
-    discord-api-types: ^0.37.42
     discord.js: ^14.11.0
     dotenv: ^16.0.3
     emoji-regex: ^10.2.1
@@ -1382,7 +1380,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"discord-api-types@npm:^0.37.41, discord-api-types@npm:^0.37.42":
+"discord-api-types@npm:^0.37.41":
   version: 0.37.42
   resolution: "discord-api-types@npm:0.37.42"
   checksum: 3c4f78beae6e18ee8afbaf9e911ccc4ad6b0658c18ea5b95e35f0dc7e56f2cd32b69c16062ab014cce093140ba98d95172e83039cd197fe618873e72a4d26a8b

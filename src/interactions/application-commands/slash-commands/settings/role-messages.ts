@@ -1,4 +1,4 @@
-import { type CommandInteraction, type Message, MessageEmbed, type Role } from 'discord.js'
+import { type CommandInteraction, EmbedBuilder, type Message, type Role } from 'discord.js'
 import type { GuildContext, RoleMessage } from '../../../../structures'
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
@@ -81,8 +81,13 @@ export default class RoleMessagesCommand extends SubCommandCommand<RoleMessagesC
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
     if (roleMessage !== null) {
-      const embed = new MessageEmbed()
-        .addField(`Role Message ${roleMessage.id}`, `Message ID: \`${roleMessage.messageId ?? 'unknown'}\`, ${roleMessage.emoji?.toString() ?? 'Unknown'} => ${roleMessage.role?.toString() ?? 'Unknown'}`)
+      const embed = new EmbedBuilder()
+        .addFields([
+          {
+            name: `Role Message ${roleMessage.id}`,
+            value: `Message ID: \`${roleMessage.messageId ?? 'unknown'}\`, ${roleMessage.emoji?.toString() ?? 'Unknown'} => ${roleMessage.role?.toString() ?? 'Unknown'}`
+          }
+        ])
         .setColor(context.primaryColor ?? applicationConfig.defaultColor)
       await interaction.reply({ embeds: [embed] })
     } else {

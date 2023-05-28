@@ -1,11 +1,12 @@
 import {
   type ButtonInteraction,
+  EmbedBuilder,
   Interaction,
   Message,
   MessageActionRow,
   type MessageButton,
-  MessageEmbed,
-  type UserResolvable
+  type UserResolvable,
+  embedLength
 } from 'discord.js'
 import crypto from 'node:crypto'
 
@@ -88,50 +89,52 @@ export function getListEmbeds<T, D extends any[]> (
   values: Iterable<T>,
   getRow: (value: T, ...args: D) => string,
   ...data: D
-): MessageEmbed[] {
+): EmbedBuilder[] {
   const embeds = []
-  let embed = new MessageEmbed()
+  let embed = new EmbedBuilder()
     .setTitle(title)
+  let currentField = 0
   for (const value of values) {
     const row = getRow(value, ...data)
-    const currentField = embed.fields.length - 1
-    if (currentField === -1) {
-      embed.addField('\u200b', `${row}\n`)
+    if (typeof embed.data.fields === 'undefined') {
+      embed.addFields([{ name: '\u200b', value: `${row}\n` }])
     } else {
-      const fieldLength = embed.fields.length >= 0 ? embed.fields[currentField].value.length : 0
+      const fieldLength = embed.data.fields.length >= 0 ? embed.data.fields[currentField].value.length : 0
       const addition = row.length + 2 // +2 for \n
 
-      if (embed.length + addition <= 6000 && fieldLength + addition <= 1024) {
-        embed.fields[currentField].value += `${row}\n`
+      const length = embedLength(embed.data)
+      if (length + addition <= 6000 && fieldLength + addition <= 1024) {
+        embed.data.fields[currentField].value += `${row}\n`
       } else {
-        if (embed.length + addition + 6 > 6000) { // +6 for \u200b
+        if (length + addition + 6 > 6000) { // +6 for \u200b
           embeds.push(embed)
-          embed = new MessageEmbed()
+          embed = new EmbedBuilder()
         }
-        embed.addField('\u200b', `${row}\n`)
+        embed.addFields([{ name: '\u200b', value: `${row}\n` }])
       }
     }
+    currentField++
   }
   embeds.push(embed)
 
   return embeds
 }
 
-export function validateEmbed (embed: MessageEmbed): string | true {
-  if (embed.length > 6000) {
+export function validateEmbed (embed: EmbedBuilder): string | true {
+  if (embedLength(embed.data) > 6000) {
     return 'Embed length is too big.'
-  } else if ((embed.title?.length ?? 0) > 256) {
+  } else if ((embed.data.title?.length ?? 0) > 256) {
     return 'Title is too long.'
-  } else if ((embed.description?.length ?? 0) > 2048) {
+  } else if ((embed.data.description?.length ?? 0) > 2048) {
     return 'Description is too long.'
-  } else if ((embed.footer?.text?.length ?? 0) > 2048) {
+  } else if ((embed.data.footer?.text?.length ?? 0) > 2048) {
     return 'Footer text is too long.'
-  } else if ((embed.author?.name?.length ?? 0) > 256) {
+  } else if ((embed.data.author?.name?.length ?? 0) > 256) {
     return 'Author name is too long.'
-  } else if (embed.fields.length > 25) {
+  } else if ((embed.data.fields?.length ?? 0) > 25) {
     return 'Embed has too many fields.'
-  } else {
-    for (const field of embed.fields) {
+  } else if (typeof embed.data.fields !== 'undefined') {
+    for (const field of embed.data.fields) {
       if (field.name.length > 256) {
         return `Field **${field.name}**'s name is too long.`
       } else if (field.value.length > 2048) {

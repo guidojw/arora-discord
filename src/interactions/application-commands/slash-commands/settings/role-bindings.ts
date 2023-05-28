@@ -1,4 +1,4 @@
-import { type CommandInteraction, MessageEmbed, type Role } from 'discord.js'
+import { type CommandInteraction, EmbedBuilder, type Role } from 'discord.js'
 import type { GuildContext, RoleBinding } from '../../../../structures'
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
@@ -79,8 +79,13 @@ export default class RoleBindingsCommand extends SubCommandCommand<RoleBindingsC
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
     if (roleBinding !== null) {
-      const embed = new MessageEmbed()
-        .addField(`Role Binding ${roleBinding.id}`, `\`${roleBinding.robloxGroupId}\` \`${getRangeString(roleBinding.min, roleBinding.max)}\` => ${roleBinding.role?.toString() ?? 'Unknown'}`)
+      const embed = new EmbedBuilder()
+        .addFields([
+          {
+            name: `Role Binding ${roleBinding.id}`,
+            value: `\`${roleBinding.robloxGroupId}\` \`${getRangeString(roleBinding.min, roleBinding.max)}\` => ${roleBinding.role?.toString() ?? 'Unknown'}`
+          }
+        ])
         .setColor(context.primaryColor ?? applicationConfig.defaultColor)
       await interaction.reply({ embeds: [embed] })
     } else {

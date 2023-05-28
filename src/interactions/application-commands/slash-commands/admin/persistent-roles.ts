@@ -1,4 +1,4 @@
-import { type CommandInteraction, type GuildMember, MessageEmbed, type Role } from 'discord.js'
+import { type CommandInteraction, EmbedBuilder, type GuildMember, type Role } from 'discord.js'
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
 import type { GuildContext } from '../../../../structures'
@@ -69,7 +69,7 @@ export default class PersistentRolesCommand extends SubCommandCommand<Persistent
       return
     }
 
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
       .setTitle(`${member.user.tag}'s Persistent Roles`)
       .setDescription(persistentRoles.map(role => role.toString()).toString())
       .setColor(context.primaryColor ?? applicationConfig.defaultColor)

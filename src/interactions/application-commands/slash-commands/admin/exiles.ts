@@ -1,4 +1,4 @@
-import { type CommandInteraction, MessageEmbed } from 'discord.js'
+import { type CommandInteraction, EmbedBuilder } from 'discord.js'
 import { constants, timeUtil } from '../../../../utils'
 import { groupService, verificationService } from '../../../../services'
 import { inject, injectable, named } from 'inversify'
@@ -106,12 +106,14 @@ export default class ExilesCommand extends SubCommandCommand<ExilesCommand> {
       const exile: Exile = (await applicationAdapter('GET', `v1/groups/${context.robloxGroupId}/exiles/${user.id}`)).data
 
       const date = new Date(exile.date)
-      const embed = new MessageEmbed()
+      const embed = new EmbedBuilder()
         .setTitle(`${user.username ?? user.id}'s exile`)
         .setColor(context.primaryColor ?? applicationConfig.defaultColor)
-        .addField('Start date', getDate(date), true)
-        .addField('Start time', getTime(date), true)
-        .addField('Reason', exile.reason)
+        .addFields([
+          { name: 'Start date', value: getDate(date), inline: true },
+          { name: 'Start time', value: getTime(date), inline: true },
+          { name: 'Reason', value: exile.reason }
+        ])
 
       await interaction.reply({ embeds: [embed] })
     } else {
