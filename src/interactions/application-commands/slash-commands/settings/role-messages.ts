@@ -1,4 +1,4 @@
-import { type CommandInteraction, EmbedBuilder, type Message, type Role } from 'discord.js'
+import { type ChatInputCommandInteraction, EmbedBuilder, type Message, type Role } from 'discord.js'
 import type { GuildContext, RoleMessage } from '../../../../structures'
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
@@ -43,7 +43,7 @@ export default class RoleMessagesCommand extends SubCommandCommand<RoleMessagesC
   private readonly guildContexts!: GuildContextManager
 
   public async create (
-    interaction: CommandInteraction<'raw' | 'cached'>,
+    interaction: ChatInputCommandInteraction<'raw' | 'cached'>,
     { role, message, emoji }: {
       role: Role
       message: Message
@@ -61,7 +61,7 @@ export default class RoleMessagesCommand extends SubCommandCommand<RoleMessagesC
   }
 
   public async delete (
-    interaction: CommandInteraction<'raw' | 'cached'>,
+    interaction: ChatInputCommandInteraction<'raw' | 'cached'>,
     { roleMessage }: { roleMessage: RoleMessage }
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
@@ -72,7 +72,7 @@ export default class RoleMessagesCommand extends SubCommandCommand<RoleMessagesC
   }
 
   public async list (
-    interaction: CommandInteraction,
+    interaction: ChatInputCommandInteraction,
     { roleMessage }: { roleMessage: RoleMessage | null }
   ): Promise<void> {
     if (!interaction.inGuild()) {

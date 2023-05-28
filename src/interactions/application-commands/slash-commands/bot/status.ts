@@ -1,4 +1,4 @@
-import { type CommandInteraction, EmbedBuilder } from 'discord.js'
+import { type ChatInputCommandInteraction, EmbedBuilder } from 'discord.js'
 import { constants, timeUtil, util } from '../../../../utils'
 import { inject, injectable, named } from 'inversify'
 import { Command } from '../base'
@@ -18,7 +18,7 @@ export default class StatusCommand extends Command {
   @named('GuildContextManager')
   private readonly guildContexts!: GuildContextManager
 
-  public async execute (interaction: CommandInteraction): Promise<void> {
+  public async execute (interaction: ChatInputCommandInteraction): Promise<void> {
     const embed = new EmbedBuilder()
       .setAuthor({
         name: interaction.client.user?.username ?? 'Arora',

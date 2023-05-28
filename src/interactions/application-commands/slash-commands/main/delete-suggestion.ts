@@ -1,4 +1,4 @@
-import { type CommandInteraction, MessageButton } from 'discord.js'
+import { type ChatInputCommandInteraction, MessageButton } from 'discord.js'
 import { inject, injectable, named } from 'inversify'
 import { Command } from '../base'
 import type { GuildContext } from '../../../../structures'
@@ -14,7 +14,7 @@ export default class DeleteSuggestionCommand extends Command {
   @named('GuildContextManager')
   private readonly guildContexts!: GuildContextManager
 
-  public async execute (interaction: CommandInteraction): Promise<void> {
+  public async execute (interaction: ChatInputCommandInteraction): Promise<void> {
     if (!interaction.inCachedGuild()) {
       return
     }

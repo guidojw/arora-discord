@@ -1,4 +1,4 @@
-import { type CommandInteraction, EmbedBuilder, MessageActionRow, MessageButton } from 'discord.js'
+import { type ChatInputCommandInteraction, EmbedBuilder, MessageActionRow, MessageButton } from 'discord.js'
 import { constants, timeUtil } from '../../../../utils'
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
@@ -33,7 +33,7 @@ export default class WhoIsCommand extends Command {
   @named('GuildContextManager')
   private readonly guildContexts!: GuildContextManager
 
-  public async execute (interaction: CommandInteraction, { user }: { user: RobloxUser }): Promise<void> {
+  public async execute (interaction: ChatInputCommandInteraction, { user }: { user: RobloxUser }): Promise<void> {
     const context = interaction.inGuild()
       ? this.guildContexts.resolve(interaction.guildId) as GuildContext
       : null

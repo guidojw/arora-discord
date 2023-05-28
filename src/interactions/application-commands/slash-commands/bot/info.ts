@@ -1,4 +1,4 @@
-import { AttachmentBuilder, type CommandInteraction, EmbedBuilder } from 'discord.js'
+import { AttachmentBuilder, type ChatInputCommandInteraction, EmbedBuilder } from 'discord.js'
 import { type RESTGetAPIOAuth2CurrentApplicationResult, Routes } from 'discord-api-types/v10'
 import { Command } from '../base'
 import { REST } from '@discordjs/rest'
@@ -7,7 +7,7 @@ import { readFile } from 'node:fs/promises'
 
 @injectable()
 export default class InfoCommand extends Command {
-  public async execute (interaction: CommandInteraction): Promise<void> {
+  public async execute (interaction: ChatInputCommandInteraction): Promise<void> {
     const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN as string)
     const application = await rest.get(Routes.oauth2CurrentApplication()) as RESTGetAPIOAuth2CurrentApplicationResult
 

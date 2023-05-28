@@ -1,4 +1,4 @@
-import { type CommandInteraction, EmbedBuilder, type Message } from 'discord.js'
+import { type ChatInputCommandInteraction, EmbedBuilder, type Message } from 'discord.js'
 import { argumentUtil, constants } from '../../../../utils'
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
@@ -27,7 +27,7 @@ export default class PollCommand extends Command {
   @named('GuildContextManager')
   private readonly guildContexts!: GuildContextManager
 
-  public async execute (interaction: CommandInteraction, { poll }: { poll: string }): Promise<void> {
+  public async execute (interaction: ChatInputCommandInteraction, { poll }: { poll: string }): Promise<void> {
     const context = interaction.inGuild()
       ? this.guildContexts.resolve(interaction.guildId) as GuildContext
       : null

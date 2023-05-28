@@ -1,4 +1,4 @@
-import { type CommandInteraction, EmbedBuilder, type Message } from 'discord.js'
+import { type ChatInputCommandInteraction, EmbedBuilder, type Message } from 'discord.js'
 import { inject, injectable, named } from 'inversify'
 import { Command } from '../base'
 import type { GuildContext } from '../../../../structures'
@@ -13,7 +13,7 @@ export default class ToggleSupportCommand extends Command {
   @named('GuildContextManager')
   private readonly guildContexts!: GuildContextManager
 
-  public async execute (interaction: CommandInteraction): Promise<void> {
+  public async execute (interaction: ChatInputCommandInteraction): Promise<void> {
     if (!interaction.inGuild()) {
       return
     }

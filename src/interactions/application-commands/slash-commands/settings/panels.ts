@@ -1,4 +1,4 @@
-import { type CommandInteraction, Formatters, Message, type TextChannel } from 'discord.js'
+import { type ChatInputCommandInteraction, Formatters, Message, type TextChannel } from 'discord.js'
 import type { GuildContext, Panel, PanelUpdateOptions } from '../../../../structures'
 import { argumentUtil, constants } from '../../../../utils'
 import { inject, injectable, named } from 'inversify'
@@ -67,7 +67,7 @@ export default class PanelsCommand extends SubCommandCommand<PanelsCommand> {
   private readonly guildContexts!: GuildContextManager
 
   public async create (
-    interaction: CommandInteraction,
+    interaction: ChatInputCommandInteraction,
     { name, content }: {
       name: string
       content: object
@@ -84,7 +84,7 @@ export default class PanelsCommand extends SubCommandCommand<PanelsCommand> {
   }
 
   public async delete (
-    interaction: CommandInteraction<'raw' | 'cached'>,
+    interaction: ChatInputCommandInteraction<'raw' | 'cached'>,
     { panel }: { panel: Panel }
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
@@ -95,7 +95,7 @@ export default class PanelsCommand extends SubCommandCommand<PanelsCommand> {
   }
 
   public async edit (
-    interaction: CommandInteraction<'raw' | 'cached'>,
+    interaction: ChatInputCommandInteraction<'raw' | 'cached'>,
     { panel, key, value }: {
       panel: Panel
       key: string
@@ -127,7 +127,7 @@ export default class PanelsCommand extends SubCommandCommand<PanelsCommand> {
   }
 
   public async post (
-    interaction: CommandInteraction<'raw' | 'cached'>,
+    interaction: ChatInputCommandInteraction<'raw' | 'cached'>,
     { panel, channel }: {
       panel: Panel
       channel: TextChannel | null
@@ -145,7 +145,7 @@ export default class PanelsCommand extends SubCommandCommand<PanelsCommand> {
   }
 
   public async list (
-    interaction: CommandInteraction,
+    interaction: ChatInputCommandInteraction,
     { panel }: { panel: Panel | null }
   ): Promise<void> {
     if (!interaction.inGuild()) {
@@ -171,7 +171,7 @@ export default class PanelsCommand extends SubCommandCommand<PanelsCommand> {
   }
 
   public async raw (
-    interaction: CommandInteraction<'raw' | 'cached'>,
+    interaction: ChatInputCommandInteraction<'raw' | 'cached'>,
     { panel }: { panel: Panel }
   ): Promise<void> {
     await interaction.reply({

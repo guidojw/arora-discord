@@ -1,5 +1,5 @@
 import type { ChannelGroup, Group, GuildContext, RoleGroup } from '../../../../structures'
-import { type CommandInteraction, EmbedBuilder, type Role, type TextChannel } from 'discord.js'
+import { type ChatInputCommandInteraction, EmbedBuilder, type Role, type TextChannel } from 'discord.js'
 import { argumentUtil, constants } from '../../../../utils'
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
@@ -74,7 +74,7 @@ export default class GroupsCommand extends SubCommandCommand<GroupsCommand> {
   private readonly guildContexts!: GuildContextManager
 
   public async create (
-    interaction: CommandInteraction,
+    interaction: ChatInputCommandInteraction,
     { name, type }: { name: string, type: GroupType }
   ): Promise<void> {
     if (!interaction.inGuild()) {
@@ -88,7 +88,7 @@ export default class GroupsCommand extends SubCommandCommand<GroupsCommand> {
   }
 
   public async delete (
-    interaction: CommandInteraction<'raw' | 'cached'>,
+    interaction: ChatInputCommandInteraction<'raw' | 'cached'>,
     { group }: { group: Group }
   ): Promise<void> {
     await group.delete()
@@ -97,7 +97,7 @@ export default class GroupsCommand extends SubCommandCommand<GroupsCommand> {
   }
 
   public async channels (
-    interaction: CommandInteraction<'raw' | 'cached'>,
+    interaction: ChatInputCommandInteraction<'raw' | 'cached'>,
     subCommand: 'add' | 'remove',
     { group, channel }: { group: ChannelGroup, channel: TextChannel }
   ): Promise<void> {
@@ -119,7 +119,7 @@ export default class GroupsCommand extends SubCommandCommand<GroupsCommand> {
   }
 
   public async roles (
-    interaction: CommandInteraction<'raw' | 'cached'>,
+    interaction: ChatInputCommandInteraction<'raw' | 'cached'>,
     subCommand: 'add' | 'remove',
     { group, role }: { group: RoleGroup, role: Role }
   ): Promise<void> {
@@ -146,7 +146,7 @@ export default class GroupsCommand extends SubCommandCommand<GroupsCommand> {
   }
 
   public async list (
-    interaction: CommandInteraction,
+    interaction: ChatInputCommandInteraction,
     { group }: { group: Group | null }
   ): Promise<void> {
     if (!interaction.inGuild()) {

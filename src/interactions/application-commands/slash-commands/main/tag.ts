@@ -1,4 +1,4 @@
-import { type CommandInteraction, EmbedBuilder, type GuildMember } from 'discord.js'
+import { type ChatInputCommandInteraction, EmbedBuilder, type GuildMember } from 'discord.js'
 import type { GuildContext, Tag } from '../../../../structures'
 import { constants, util } from '../../../../utils'
 import { inject, injectable, named } from 'inversify'
@@ -31,7 +31,7 @@ export default class TagsCommand extends Command {
   private readonly guildContexts!: GuildContextManager
 
   public async execute (
-    interaction: CommandInteraction,
+    interaction: ChatInputCommandInteraction,
     { tag, who }: { tag: Tag | null, who: GuildMember | null }
   ): Promise<void> {
     if (!interaction.inGuild()) {

@@ -1,4 +1,4 @@
-import { type CommandInteraction, EmbedBuilder } from 'discord.js'
+import { type ChatInputCommandInteraction, EmbedBuilder } from 'discord.js'
 import { argumentUtil, constants, timeUtil } from '../../../../utils'
 import { groupService, userService, verificationService } from '../../../../services'
 import { inject, injectable, named } from 'inversify'
@@ -74,7 +74,7 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
   private readonly guildContexts!: GuildContextManager
 
   public async create (
-    interaction: CommandInteraction<'raw' | 'cached'>,
+    interaction: ChatInputCommandInteraction<'raw' | 'cached'>,
     { user, duration, reason }: {
       user: RobloxUser
       duration: number | null
@@ -106,7 +106,7 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
   }
 
   public async delete (
-    interaction: CommandInteraction<'raw' | 'cached'>,
+    interaction: ChatInputCommandInteraction<'raw' | 'cached'>,
     { user, reason }: { user: RobloxUser, reason: string }
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
@@ -132,7 +132,7 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
   }
 
   public async edit (
-    interaction: CommandInteraction<'raw' | 'cached'>,
+    interaction: ChatInputCommandInteraction<'raw' | 'cached'>,
     { user, key, value }: {
       user: RobloxUser
       key: string
@@ -165,7 +165,7 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
   }
 
   public async extend (
-    interaction: CommandInteraction<'raw' | 'cached'>,
+    interaction: ChatInputCommandInteraction<'raw' | 'cached'>,
     { user, days, reason }: {
       user: RobloxUser
       days: number
@@ -196,7 +196,7 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
   }
 
   public async list (
-    interaction: CommandInteraction<'raw' | 'cached'>,
+    interaction: ChatInputCommandInteraction<'raw' | 'cached'>,
     { user }: { user: RobloxUser | null }
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }

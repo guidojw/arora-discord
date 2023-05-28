@@ -1,4 +1,4 @@
-import { type CommandInteraction, EmbedBuilder } from 'discord.js'
+import { type ChatInputCommandInteraction, EmbedBuilder } from 'discord.js'
 import { constants, timeUtil } from '../../../../utils'
 import { groupService, verificationService } from '../../../../services'
 import { inject, injectable, named } from 'inversify'
@@ -44,7 +44,7 @@ export default class ExilesCommand extends SubCommandCommand<ExilesCommand> {
   private readonly guildContexts!: GuildContextManager
 
   public async create (
-    interaction: CommandInteraction<'raw' | 'cached'>,
+    interaction: ChatInputCommandInteraction<'raw' | 'cached'>,
     { user, reason }: { user: RobloxUser, reason: string }
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
@@ -71,7 +71,7 @@ export default class ExilesCommand extends SubCommandCommand<ExilesCommand> {
   }
 
   public async delete (
-    interaction: CommandInteraction<'raw' | 'cached'>,
+    interaction: ChatInputCommandInteraction<'raw' | 'cached'>,
     { user, reason }: { user: RobloxUser, reason: string }
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
@@ -97,7 +97,7 @@ export default class ExilesCommand extends SubCommandCommand<ExilesCommand> {
   }
 
   public async list (
-    interaction: CommandInteraction<'raw' | 'cached'>,
+    interaction: ChatInputCommandInteraction<'raw' | 'cached'>,
     { user }: { user: RobloxUser | null }
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }

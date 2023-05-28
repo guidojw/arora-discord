@@ -1,4 +1,4 @@
-import { type CommandInteraction, EmbedBuilder } from 'discord.js'
+import { type ChatInputCommandInteraction, EmbedBuilder } from 'discord.js'
 import { argumentUtil, constants, timeUtil } from '../../../../utils'
 import { groupService, userService, verificationService } from '../../../../services'
 import { inject, injectable, named } from 'inversify'
@@ -59,7 +59,7 @@ export default class TrainingsCommand extends SubCommandCommand<TrainingsCommand
   private readonly guildContexts!: GuildContextManager
 
   public async schedule (
-    interaction: CommandInteraction<'raw' | 'cached'>,
+    interaction: ChatInputCommandInteraction<'raw' | 'cached'>,
     { type, date, time, notes }: {
       type: string
       date: string
@@ -119,7 +119,7 @@ export default class TrainingsCommand extends SubCommandCommand<TrainingsCommand
   }
 
   public async cancel (
-    interaction: CommandInteraction<'raw' | 'cached'>,
+    interaction: ChatInputCommandInteraction<'raw' | 'cached'>,
     { id, reason }: { id: number, reason: string }
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
@@ -145,7 +145,7 @@ export default class TrainingsCommand extends SubCommandCommand<TrainingsCommand
   }
 
   public async edit (
-    interaction: CommandInteraction<'raw' | 'cached'>,
+    interaction: ChatInputCommandInteraction<'raw' | 'cached'>,
     { id, key, value }: {
       id: number
       key: string
@@ -222,7 +222,7 @@ export default class TrainingsCommand extends SubCommandCommand<TrainingsCommand
   }
 
   public async list (
-    interaction: CommandInteraction<'raw' | 'cached'>,
+    interaction: ChatInputCommandInteraction<'raw' | 'cached'>,
     { id }: { id: number | null }
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }

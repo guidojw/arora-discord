@@ -1,10 +1,10 @@
-import type { CommandInteraction, GuildEmoji } from 'discord.js'
+import type { ChatInputCommandInteraction, GuildEmoji } from 'discord.js'
 import BaseArgumentType from './base'
 import { injectable } from 'inversify'
 
 @injectable()
 export default class CustomEmojiArgumentType extends BaseArgumentType<GuildEmoji> {
-  public validate (value: string, interaction: CommandInteraction): boolean {
+  public validate (value: string, interaction: ChatInputCommandInteraction): boolean {
     const match = value.match(/^(?:<a?:([a-zA-Z0-9_]+):)?([0-9]+)>?$/)
     if (match !== null && interaction.client.emojis.cache.has(match[2])) {
       return true
@@ -21,7 +21,7 @@ export default class CustomEmojiArgumentType extends BaseArgumentType<GuildEmoji
     return exactEmojis.size === 1
   }
 
-  public parse (value: string, interaction: CommandInteraction): GuildEmoji | null {
+  public parse (value: string, interaction: ChatInputCommandInteraction): GuildEmoji | null {
     const match = value.match(/^(?:<a?:([a-zA-Z0-9_]+):)?([0-9]+)>?$/)
     if (match !== null) {
       return interaction.client.emojis.cache.get(match[2]) ?? null

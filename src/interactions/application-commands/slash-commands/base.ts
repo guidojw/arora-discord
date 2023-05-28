@@ -2,7 +2,7 @@ import { type AnyFunction, type KeyOfType, type OverloadedParameters, constants 
 import type { Argument, ArgumentOptions } from '.'
 import { inject, injectable, type interfaces } from 'inversify'
 import { AroraClient } from '../../../client'
-import type { CommandInteraction } from 'discord.js'
+import type { ChatInputCommandInteraction } from 'discord.js'
 
 const { TYPES } = constants
 
@@ -64,7 +64,7 @@ export abstract class Command extends BaseCommand<CommandOptions> {
   }
 
   public abstract execute (
-    interaction: CommandInteraction,
+    interaction: ChatInputCommandInteraction,
     args: Record<string, any>
   ): Promise<void>
 }
@@ -104,18 +104,18 @@ export class SubCommandCommand<T extends SubCommandCommand<any>> extends BaseCom
   }
 
   public execute (
-    interaction: CommandInteraction,
+    interaction: ChatInputCommandInteraction,
     subCommandName: string,
     args: Record<string, any>
   ): Promise<void>
   public execute (
-    interaction: CommandInteraction,
+    interaction: ChatInputCommandInteraction,
     subCommandGroupName: string,
     subCommandName: string,
     args: Record<string, any>
   ): Promise<void>
   public async execute (
-    interaction: CommandInteraction,
+    interaction: ChatInputCommandInteraction,
     subCommandNameOrSubCommandGroupName: string,
     argsOrSubCommandName: string | Record<string, any>,
     args?: Record<string, any>

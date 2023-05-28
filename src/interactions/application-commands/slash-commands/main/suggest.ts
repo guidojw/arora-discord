@@ -1,4 +1,4 @@
-import { type Attachment, type CommandInteraction, EmbedBuilder } from 'discord.js'
+import { type Attachment, type ChatInputCommandInteraction, EmbedBuilder } from 'discord.js'
 import { argumentUtil, constants } from '../../../../utils'
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
@@ -28,7 +28,7 @@ export default class SuggestCommand extends Command {
   private readonly guildContexts!: GuildContextManager
 
   public async execute (
-    interaction: CommandInteraction,
+    interaction: ChatInputCommandInteraction,
     { suggestion, attachment }: { suggestion: string, attachment: Attachment | null }
   ): Promise<void> {
     if (!interaction.inGuild()) {
