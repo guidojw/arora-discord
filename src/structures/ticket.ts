@@ -2,11 +2,11 @@ import {
   AttachmentBuilder,
   ButtonBuilder,
   Collection,
-  Constants,
   EmbedBuilder,
   type GuildMember,
   type Message,
   type PartialGuildMember,
+  Partials,
   type TextChannel,
   type TextChannelResolvable
 } from 'discord.js'
@@ -22,7 +22,6 @@ import applicationConfig from '../configs/application'
 import pluralize from 'pluralize'
 import { stripIndents } from 'common-tags'
 
-const { PartialTypes } = Constants
 const { TYPES } = constants
 const { getDate, getTime } = timeUtil
 const { makeCommaSeparatedString } = util
@@ -83,7 +82,7 @@ export default class Ticket extends BaseStructure<TicketEntity> {
   public get author (): GuildMember | PartialGuildMember | null {
     return this.authorId !== null
       ? this.context.guild.members.cache.get(this.authorId) ??
-      (this.client.options.partials?.includes(PartialTypes.GUILD_MEMBER) === true
+      (this.client.options.partials?.includes(Partials.GuildMember) === true
         // @ts-expect-error: Calling private library method.
         ? this.context.guild.members._add({ user: { id: this.authorId } })
         : null)
