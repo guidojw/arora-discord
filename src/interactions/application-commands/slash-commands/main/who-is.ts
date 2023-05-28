@@ -1,4 +1,10 @@
-import { type ChatInputCommandInteraction, EmbedBuilder, MessageActionRow, MessageButton } from 'discord.js'
+import {
+  ButtonBuilder,
+  ButtonStyle,
+  type ChatInputCommandInteraction,
+  EmbedBuilder,
+  MessageActionRow
+} from 'discord.js'
 import { constants, timeUtil } from '../../../../utils'
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
@@ -70,10 +76,10 @@ export default class WhoIsCommand extends Command {
     }
     const row = new MessageActionRow()
       .addComponents(
-        new MessageButton()
+        new ButtonBuilder()
           .setLabel('Profile')
           .setURL(`https://www.roblox.com/users/${user.id}/profile`)
-          .setStyle('LINK')
+          .setStyle(ButtonStyle.Link)
       )
     await interaction.reply({ embeds: [embed], components: [row] })
   }

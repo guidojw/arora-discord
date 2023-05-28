@@ -1,11 +1,11 @@
 import {
   AttachmentBuilder,
+  ButtonBuilder,
   Collection,
   Constants,
   EmbedBuilder,
   type GuildMember,
   type Message,
-  MessageButton,
   type PartialGuildMember,
   type TextChannel,
   type TextChannelResolvable
@@ -177,9 +177,9 @@ export default class Ticket extends BaseStructure<TicketEntity> {
     const message = await this.client.send(this.author, { embeds: [embed] })
 
     if (message !== null) {
-      const options: Record<string, MessageButton> = {}
+      const options: Record<string, ButtonBuilder> = {}
       for (let i = 1; i <= 5; i++) {
-        options[i] = new MessageButton().setEmoji(`${i}⃣`)
+        options[i] = new ButtonBuilder().setEmoji(`${i}⃣`)
       }
 
       return await discordService.prompt(this.author as GuildMember, message, options)

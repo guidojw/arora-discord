@@ -1,4 +1,4 @@
-import { type EmojiResolvable, type Message, MessageActionRow, MessageButton } from 'discord.js'
+import { ButtonBuilder, ButtonStyle, type EmojiResolvable, type Message, MessageActionRow } from 'discord.js'
 import { type GuildContext, TicketType, type TicketTypeUpdateOptions } from '../structures'
 import { inject, injectable } from 'inversify'
 import { DataManager } from './base'
@@ -164,9 +164,9 @@ TicketTypeEntity
       row = new MessageActionRow()
       message.components.push(row)
     }
-    const button = new MessageButton()
+    const button = new ButtonBuilder()
       .setLabel(ticketType.name)
-      .setStyle('PRIMARY')
+      .setStyle(ButtonStyle.Primary)
       .setCustomId(`ticket_type:${ticketType.id}`)
       .setDisabled(!this.context.supportEnabled)
     if (emoji !== null) {

@@ -1,10 +1,11 @@
 import {
+  type ButtonBuilder,
   type ButtonInteraction,
+  ButtonStyle,
   EmbedBuilder,
   Interaction,
   Message,
   MessageActionRow,
-  type MessageButton,
   type UserResolvable,
   embedLength
 } from 'discord.js'
@@ -15,7 +16,7 @@ const PROMPT_TIME = 60_000
 export async function prompt (
   user: UserResolvable,
   interactionOrMessage: Interaction<'cached'> | Message,
-  options: Record<string, MessageButton>
+  options: Record<string, ButtonBuilder>
 ): Promise<[string, ButtonInteraction] | [null, null]> {
   const userId = interactionOrMessage.client.users.resolveId(user)
   if (userId === null) {
@@ -40,8 +41,8 @@ export async function prompt (
 
   const buttons = Object.values(options)
   for (const button of buttons) {
-    if (button.style === null) {
-      button.setStyle('PRIMARY')
+    if (typeof button.data.style === 'undefined') {
+      button.setStyle(ButtonStyle.Primary)
     }
     button.setCustomId(`prompt:${crypto.randomUUID()}`)
   }
@@ -53,8 +54,10 @@ export async function prompt (
   })
 
   const filter = (promptInteraction: ButtonInteraction): boolean => (
-    buttons.some(button => button.customId === promptInteraction.customId) && promptInteraction.user.id === userId
-  )
+    buttons.some(button => (
+      'custom_id' in button.data ? button.data.custom_id === promptInteraction.customId : false) &&
+      promptInteraction.user.id === userId
+    ))
   let choice = null
   let resultInteraction: ButtonInteraction | null = null
   try {

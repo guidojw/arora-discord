@@ -1,4 +1,4 @@
-import { type ChatInputCommandInteraction, MessageButton } from 'discord.js'
+import { ButtonBuilder, ButtonStyle, type ChatInputCommandInteraction } from 'discord.js'
 import { inject, injectable, named } from 'inversify'
 import { Command } from '../base'
 import type { GuildContext } from '../../../../structures'
@@ -34,13 +34,13 @@ export default class DeleteSuggestionCommand extends Command {
           embeds: [suggestion.embeds[0]]
         })
         const [choice, promptInteraction] = await discordService.prompt(interaction.user, interaction, {
-          yes: new MessageButton()
+          yes: new ButtonBuilder()
             .setLabel('Yes')
-            .setStyle('SUCCESS')
+            .setStyle(ButtonStyle.Success)
             .setEmoji('✔️'),
-          no: new MessageButton()
+          no: new ButtonBuilder()
             .setLabel('No')
-            .setStyle('DANGER')
+            .setStyle(ButtonStyle.Danger)
             .setEmoji('✖️')
         })
 
