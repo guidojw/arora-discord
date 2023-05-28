@@ -1,4 +1,14 @@
-import { ButtonBuilder, ButtonStyle, type EmojiResolvable, type Message, MessageActionRow } from 'discord.js'
+import {
+  type ActionRow,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  ComponentType,
+  type EmojiResolvable,
+  type Message,
+  type MessageActionRowComponent,
+  type MessageActionRowComponentBuilder
+} from 'discord.js'
 import { type GuildContext, TicketType, type TicketTypeUpdateOptions } from '../structures'
 import { inject, injectable } from 'inversify'
 import { DataManager } from './base'
@@ -94,15 +104,17 @@ TicketTypeEntity
           await ticketType.message.fetch()
         }
         await ticketType.message.edit({
-          components: ticketType.message.components.map(row => ({
+          components: ticketType.message.components
+            .map<ActionRowBuilder<MessageActionRowComponentBuilder>>(row => new ActionRowBuilder({
             ...row,
-            components: row.components.map(component => {
-              if (typeof data.name !== 'undefined' && component.type === 'BUTTON' && component.customId ===
-                `ticket_type:${ticketType.id}`) {
-                component.setLabel(data.name)
-              }
-              return component
-            })
+            components: row.components
+              .map(component => {
+                if (typeof data.name !== 'undefined' && component.type === ComponentType.Button &&
+                  'custom_id' in component.data && component.data.custom_id === `ticket_type:${ticketType.id}`) {
+                  return ButtonBuilder.from(component).setLabel(data.name)
+                }
+                return component
+              })
           }))
         })
       }
@@ -159,10 +171,11 @@ TicketTypeEntity
         components: filterOutComponentWithCustomId(ticketType.message.components, `ticket_type:${ticketType.id}`)
       })
     }
-    let row = message.components.find(row => row.type === 'ACTION_ROW' && row.components.length < 5)
+    const components = message.components.map<ActionRowBuilder<MessageActionRowComponentBuilder>>(ActionRowBuilder.from)
+    let row = components.find(row => row.components.length < 5)
     if (typeof row === 'undefined') {
-      row = new MessageActionRow()
-      message.components.push(row)
+      row = new ActionRowBuilder()
+      components.push(row)
     }
     const button = new ButtonBuilder()
       .setLabel(ticketType.name)
@@ -173,7 +186,7 @@ TicketTypeEntity
       button.setEmoji(emoji)
     }
     row.addComponents(button)
-    await message.edit({ components: message.components })
+    await message.edit({ components })
     await this.ticketTypeRepository.save(this.ticketTypeRepository.create({
       id: ticketType.id,
       messageId: message.id
@@ -243,10 +256,16 @@ TicketTypeEntity
   }
 }
 
-function filterOutComponentWithCustomId (components: MessageActionRow[], customId: string): MessageActionRow[] {
+function filterOutComponentWithCustomId (
+  components: Array<ActionRow<MessageActionRowComponent>>,
+  customId: string
+): Array<ActionRowBuilder<MessageActionRowComponentBuilder>> {
   return components
+    .map<ActionRowBuilder<MessageActionRowComponentBuilder>>(ActionRowBuilder.from)
     .map(row => {
-      row.components = row.components.filter(component => component.customId !== customId)
+      row.setComponents(row.components.filter(component => (
+        'custom_id' in component && component.custom_id !== customId)
+      ))
       return row
     })
     .filter(row => row.components.length !== 0)

@@ -1,9 +1,9 @@
 import {
+  ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
   type ChatInputCommandInteraction,
-  EmbedBuilder,
-  MessageActionRow
+  EmbedBuilder
 } from 'discord.js'
 import { constants, timeUtil } from '../../../../utils'
 import { inject, injectable, named } from 'inversify'
@@ -74,7 +74,7 @@ export default class WhoIsCommand extends Command {
           { name: '\u200b', value: '\u200b', inline: true }
         ])
     }
-    const row = new MessageActionRow()
+    const row = new ActionRowBuilder<ButtonBuilder>()
       .addComponents(
         new ButtonBuilder()
           .setLabel('Profile')

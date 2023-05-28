@@ -1,11 +1,11 @@
 import {
+  ActionRowBuilder,
   type ButtonBuilder,
   type ButtonInteraction,
   ButtonStyle,
   EmbedBuilder,
   Interaction,
   Message,
-  MessageActionRow,
   type UserResolvable,
   embedLength
 } from 'discord.js'
@@ -50,7 +50,7 @@ export async function prompt (
     ? interactionOrMessage.editReply
     : interactionOrMessage.edit).bind(interactionOrMessage)
   await edit({
-    components: [new MessageActionRow().setComponents(buttons)]
+    components: [new ActionRowBuilder().setComponents(buttons)]
   })
 
   const filter = (promptInteraction: ButtonInteraction): boolean => (
