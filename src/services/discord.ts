@@ -1,11 +1,14 @@
 import {
+  type ActionRow,
   ActionRowBuilder,
+  BaseInteraction,
   type ButtonBuilder,
+  type ButtonComponent,
   type ButtonInteraction,
   ButtonStyle,
   ComponentType,
   EmbedBuilder,
-  Interaction,
+  type Interaction,
   Message,
   type UserResolvable,
   embedLength
@@ -26,7 +29,7 @@ export async function prompt (
   if (interactionOrMessage.channel === null) {
     throw new Error('Can only prompt buttons on interactions and messages in a cached channel.')
   }
-  if (interactionOrMessage instanceof Interaction) {
+  if (interactionOrMessage instanceof BaseInteraction) {
     if (!interactionOrMessage.isRepliable()) {
       throw new Error('Can only prompt buttons on repliable interactions.')
     }
@@ -47,11 +50,11 @@ export async function prompt (
     }
     button.setCustomId(`prompt:${crypto.randomUUID()}`)
   }
-  const edit = (interactionOrMessage instanceof Interaction
+  const edit = (interactionOrMessage instanceof BaseInteraction
     ? interactionOrMessage.editReply
     : interactionOrMessage.edit).bind(interactionOrMessage)
   await edit({
-    components: [new ActionRowBuilder().setComponents(buttons)]
+    components: [new ActionRowBuilder<ButtonBuilder>().setComponents(buttons)]
   })
 
   const filter = (promptInteraction: ButtonInteraction): boolean => (
@@ -68,18 +71,20 @@ export async function prompt (
       componentType: ComponentType.Button
     })
     choice = Object.entries(options).find(([, option]) => (
-      option.customId === resultInteraction?.customId
+      'custom_id' in option.data && option.data.custom_id === resultInteraction?.customId
     ))?.[0] ?? null
   } catch {}
 
-  const reply = interactionOrMessage instanceof Interaction
+  const reply = interactionOrMessage instanceof BaseInteraction
     ? await interactionOrMessage.fetchReply()
     : interactionOrMessage
   await edit({
-    components: reply.components.map(row => {
-      row.components.forEach(button => button.setDisabled(true))
-      return row
-    })
+    components: (reply.components as Array<ActionRow<ButtonComponent>>)
+      .map<ActionRowBuilder<ButtonBuilder>>(row => ActionRowBuilder.from(row))
+      .map(row => {
+        row.components.forEach(button => button.setDisabled(true))
+        return row
+      })
   })
 
   if (choice === null || resultInteraction === null) {

@@ -59,10 +59,10 @@ export default class GuildTicketManager extends DataManager<number, Ticket, Tick
     const channelName = `${ticketType.name}-${author.user.tag}`
     let channel
     try {
-      channel = await this.context.guild.channels.create(
-        channelName,
-        { parent: this.context.ticketsCategory ?? undefined }
-      )
+      channel = await this.context.guild.channels.create({
+        name: channelName,
+        parent: this.context.ticketsCategory ?? undefined
+      })
       await channel.permissionOverwrites.edit(author, { ViewChannel: true })
     } catch (err) {
       await channel?.delete()

@@ -171,7 +171,8 @@ TicketTypeEntity
         components: filterOutComponentWithCustomId(ticketType.message.components, `ticket_type:${ticketType.id}`)
       })
     }
-    const components = message.components.map<ActionRowBuilder<MessageActionRowComponentBuilder>>(ActionRowBuilder.from)
+    const components = message.components
+      .map<ActionRowBuilder<MessageActionRowComponentBuilder>>(row => ActionRowBuilder.from(row))
     let row = components.find(row => row.components.length < 5)
     if (typeof row === 'undefined') {
       row = new ActionRowBuilder()
@@ -183,7 +184,7 @@ TicketTypeEntity
       .setCustomId(`ticket_type:${ticketType.id}`)
       .setDisabled(!this.context.supportEnabled)
     if (emoji !== null) {
-      button.setEmoji(emoji)
+      button.setEmoji(emoji.toString())
     }
     row.addComponents(button)
     await message.edit({ components })
@@ -261,7 +262,7 @@ function filterOutComponentWithCustomId (
   customId: string
 ): Array<ActionRowBuilder<MessageActionRowComponentBuilder>> {
   return components
-    .map<ActionRowBuilder<MessageActionRowComponentBuilder>>(ActionRowBuilder.from)
+    .map<ActionRowBuilder<MessageActionRowComponentBuilder>>(row => ActionRowBuilder.from(row))
     .map(row => {
       row.setComponents(row.components.filter(component => (
         'custom_id' in component && component.custom_id !== customId)
