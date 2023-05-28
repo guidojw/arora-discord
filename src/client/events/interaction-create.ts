@@ -20,7 +20,7 @@ export default class InteractionCreateEventHandler implements BaseHandler {
     try {
       await this.dispatcher.handleInteraction(interaction)
 
-      if (interaction.isCommand() && interaction.inGuild()) {
+      if (interaction.isChatInputCommand() && interaction.inGuild()) {
         const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
         const subCommandName = interaction.options.getSubcommand(false)
         await context.log(
