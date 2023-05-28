@@ -1,7 +1,12 @@
-import { AttachmentBuilder, type ChatInputCommandInteraction, EmbedBuilder } from 'discord.js'
-import { type RESTGetAPIOAuth2CurrentApplicationResult, Routes } from 'discord-api-types/v10'
+import {
+  AttachmentBuilder,
+  type ChatInputCommandInteraction,
+  EmbedBuilder,
+  REST,
+  type RESTGetAPIOAuth2CurrentApplicationResult,
+  Routes
+} from 'discord.js'
 import { Command } from '../base'
-import { REST } from '@discordjs/rest'
 import { injectable } from 'inversify'
 import { readFile } from 'node:fs/promises'
 

@@ -2,7 +2,7 @@ import {
   ApplicationCommandOptionType,
   ChannelType,
   type RESTPutAPIApplicationCommandsJSONBody
-} from 'discord-api-types/v10'
+} from 'discord.js'
 
 const groupsCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'groups',

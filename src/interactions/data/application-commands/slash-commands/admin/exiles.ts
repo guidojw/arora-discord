@@ -1,4 +1,4 @@
-import { ApplicationCommandOptionType, type RESTPutAPIApplicationCommandsJSONBody } from 'discord-api-types/v10'
+import { ApplicationCommandOptionType, type RESTPutAPIApplicationCommandsJSONBody } from 'discord.js'
 
 const exilesCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'exiles',
