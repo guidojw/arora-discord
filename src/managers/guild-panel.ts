@@ -1,4 +1,4 @@
-import { EmbedBuilder, type TextChannelResolvable } from 'discord.js'
+import { ChannelType, EmbedBuilder, type TextChannelResolvable } from 'discord.js'
 import { type GuildContext, Panel, type PanelUpdateOptions } from '../structures'
 import { inject, injectable } from 'inversify'
 import { AroraClient } from '../client'
@@ -150,7 +150,7 @@ export default class GuildPanelManager extends DataManager<number, Panel, PanelR
     let channel
     if (typeof channelResolvable !== 'undefined') {
       channel = this.context.guild.channels.resolve(channelResolvable)
-      if (channel === null || !channel.isText()) {
+      if (channel === null || channel.type !== ChannelType.GuildText) {
         throw new Error('Invalid channel.')
       }
     }

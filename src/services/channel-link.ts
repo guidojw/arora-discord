@@ -1,4 +1,4 @@
-import type { Collection, GuildChannel, TextChannel, VoiceBasedChannel } from 'discord.js'
+import { ChannelType, type Collection, type GuildChannel, type TextChannel, type VoiceBasedChannel } from 'discord.js'
 import { inject, injectable } from 'inversify'
 import type { Channel as ChannelEntity } from '../entities'
 import { Repository } from 'typeorm'
@@ -15,7 +15,7 @@ export default class ChannelLinkService {
     const data = await this.getData(channel)
 
     return channel.guild.channels.cache.filter(otherChannel => (
-      otherChannel.isText() && data?.toLinks.some(link => link.id === otherChannel.id)) === true
+      otherChannel.type === ChannelType.GuildText && data?.toLinks.some(link => link.id === otherChannel.id)) === true
     ) as Collection<string, TextChannel>
   }
 

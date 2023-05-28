@@ -1,4 +1,4 @@
-import type { CommandInteraction, Message } from 'discord.js'
+import { ChannelType, type CommandInteraction, type Message } from 'discord.js'
 import BaseArgumentType from './base'
 import { injectable } from 'inversify'
 
@@ -20,7 +20,7 @@ export default class MessageArgumentType extends BaseArgumentType<Message> {
       : guildId === '@me'
         ? interaction.channel
         : null
-    if (channel === null || !channel.isText()) {
+    if (channel === null || channel.type !== ChannelType.GuildText) {
       return false
     }
     try {
@@ -43,7 +43,7 @@ export default class MessageArgumentType extends BaseArgumentType<Message> {
       : guildId === '@me'
         ? interaction.channel
         : null
-    if (channel === null || !channel.isText()) {
+    if (channel === null || channel.type !== ChannelType.GuildText) {
       return null
     }
     return channel.messages.resolve(messageId)
