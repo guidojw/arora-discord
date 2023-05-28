@@ -1,4 +1,4 @@
-import { type ChatInputCommandInteraction, Formatters, Message, type TextChannel } from 'discord.js'
+import { type ChatInputCommandInteraction, Message, type TextChannel, codeBlock } from 'discord.js'
 import type { GuildContext, Panel, PanelUpdateOptions } from '../../../../structures'
 import { argumentUtil, constants } from '../../../../utils'
 import { inject, injectable, named } from 'inversify'
@@ -175,7 +175,7 @@ export default class PanelsCommand extends SubCommandCommand<PanelsCommand> {
     { panel }: { panel: Panel }
   ): Promise<void> {
     await interaction.reply({
-      content: Formatters.codeBlock(panel.content),
+      content: codeBlock(panel.content),
       allowedMentions: { users: [interaction.user.id] }
     })
   }

@@ -1,4 +1,4 @@
-import { type ChatInputCommandInteraction, Formatters } from 'discord.js'
+import { type ChatInputCommandInteraction, codeBlock } from 'discord.js'
 import type { GuildContext, Tag, TagUpdateOptions } from '../../../../structures'
 import { argumentUtil, constants } from '../../../../utils'
 import { inject, injectable, named } from 'inversify'
@@ -159,7 +159,7 @@ export default class TagsCommand extends SubCommandCommand<TagsCommand> {
     { tag }: { tag: Tag }
   ): Promise<void> {
     await interaction.reply({
-      content: Formatters.codeBlock(tag._content),
+      content: codeBlock(tag._content),
       allowedMentions: { users: [interaction.user.id] }
     })
   }
