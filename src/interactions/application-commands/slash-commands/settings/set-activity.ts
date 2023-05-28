@@ -1,4 +1,4 @@
-import type { ActivityType, ChatInputCommandInteraction } from 'discord.js'
+import { ActivityType, type ChatInputCommandInteraction } from 'discord.js'
 import { ApplyOptions } from '../../../../utils/decorators'
 import { Command } from '../base'
 import type { CommandOptions } from '..'
@@ -26,15 +26,15 @@ const endUrlRegex = new RegExp(`(?:\\s*)${urlRegex.toString().slice(1, -3)}$`, '
 export default class SetActivityCommand extends Command {
   public async execute (
     interaction: ChatInputCommandInteraction,
-    { name, type }: { name: string | null, type: Exclude<ActivityType, 'CUSTOM'> | null }
+    { name, type }: { name: string | null, type: Exclude<ActivityType, ActivityType.Custom> | null }
   ): Promise<void> {
     if (name === null || type === null) {
       this.client.startActivityCarousel()
 
       await interaction.reply('Successfully set activity back to default.')
     } else {
-      const options: { type: Exclude<ActivityType, 'CUSTOM'>, url?: string } = { type }
-      if (type === 'STREAMING') {
+      const options: { type: Exclude<ActivityType, ActivityType.Custom>, url?: string } = { type }
+      if (type === ActivityType.Streaming) {
         const match = name.match(endUrlRegex)
         if (match === null) {
           await interaction.reply('No URL specified.')

@@ -52,7 +52,7 @@ function makeValidator (test: ValidatorTest, message: string): ValidatorFunction
 }
 
 export const noChannels = makeValidator(
-  (val: string) => !MessageMentions.CHANNELS_PATTERN.test(val),
+  (val: string) => !MessageMentions.ChannelsPattern.test(val),
   'cannot contain channels'
 )
 
@@ -75,8 +75,8 @@ export const isObject = makeValidator(
 
 export const noTags = makeValidator(
   (val: string) => (
-    !MessageMentions.EVERYONE_PATTERN.test(val) && !MessageMentions.USERS_PATTERN.test(val) &&
-    !MessageMentions.ROLES_PATTERN.test(val)
+    !MessageMentions.EveryonePattern.test(val) && !MessageMentions.UsersPattern.test(val) &&
+    !MessageMentions.RolesPattern.test(val)
   ),
   'cannot contain tags'
 )

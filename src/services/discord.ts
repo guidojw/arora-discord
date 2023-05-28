@@ -3,6 +3,7 @@ import {
   type ButtonBuilder,
   type ButtonInteraction,
   ButtonStyle,
+  ComponentType,
   EmbedBuilder,
   Interaction,
   Message,
@@ -64,7 +65,7 @@ export async function prompt (
     resultInteraction = await interactionOrMessage.channel.awaitMessageComponent({
       filter,
       time: PROMPT_TIME,
-      componentType: 'BUTTON'
+      componentType: ComponentType.Button
     })
     choice = Object.entries(options).find(([, option]) => (
       option.customId === resultInteraction?.customId

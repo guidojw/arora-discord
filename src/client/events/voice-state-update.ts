@@ -32,8 +32,8 @@ export default class VoiceStateUpdateEventHandler implements BaseHandler {
         await Promise.all(toLinks.map(async channel => {
           try {
             await channel.permissionOverwrites.edit(member, {
-              VIEW_CHANNEL: true,
-              SEND_MESSAGES: true
+              ViewChannel: true,
+              SendMessages: true
             })
           } catch {}
         }))

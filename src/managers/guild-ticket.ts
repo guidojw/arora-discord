@@ -63,7 +63,7 @@ export default class GuildTicketManager extends DataManager<number, Ticket, Tick
         channelName,
         { parent: this.context.ticketsCategory ?? undefined }
       )
-      await channel.permissionOverwrites.edit(author, { VIEW_CHANNEL: true })
+      await channel.permissionOverwrites.edit(author, { ViewChannel: true })
     } catch (err) {
       await channel?.delete()
       throw err
