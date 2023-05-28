@@ -1,6 +1,6 @@
 import type { Channel as ChannelEntity, Group as GroupEntity } from '../entities'
 import type { ChannelGroup, GuildContext } from '../structures'
-import type { Collection, Snowflake, TextChannel, TextChannelResolvable } from 'discord.js'
+import { ChannelType, type Collection, type Snowflake, type TextChannel, type TextChannelResolvable } from 'discord.js'
 import { inject, injectable } from 'inversify'
 import BaseManager from './base'
 import { Repository } from 'typeorm'
@@ -28,7 +28,7 @@ export default class GroupTextChannelManager extends BaseManager<string, TextCha
 
   public async add (channelResolvable: TextChannelResolvable): Promise<ChannelGroup> {
     const channel = this.context.guild.channels.resolve(channelResolvable)
-    if (channel === null || !channel.isText()) {
+    if (channel === null || channel.type !== ChannelType.GuildText) {
       throw new Error('Invalid channel.')
     }
     if (this.cache.has(channel.id)) {

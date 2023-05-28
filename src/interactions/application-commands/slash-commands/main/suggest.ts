@@ -1,4 +1,4 @@
-import { type CommandInteraction, type MessageAttachment, MessageEmbed } from 'discord.js'
+import { type Attachment, type ChatInputCommandInteraction, EmbedBuilder } from 'discord.js'
 import { argumentUtil, constants } from '../../../../utils'
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
@@ -28,8 +28,8 @@ export default class SuggestCommand extends Command {
   private readonly guildContexts!: GuildContextManager
 
   public async execute (
-    interaction: CommandInteraction,
-    { suggestion, attachment }: { suggestion: string, attachment: MessageAttachment | null }
+    interaction: ChatInputCommandInteraction,
+    { suggestion, attachment }: { suggestion: string, attachment: Attachment | null }
   ): Promise<void> {
     if (!interaction.inGuild()) {
       return
@@ -45,7 +45,7 @@ export default class SuggestCommand extends Command {
       return
     }
     const authorUrl = `https://discord.com/users/${interaction.user.id}`
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
       .setDescription(suggestion)
       .setAuthor({ name: interaction.user.tag, iconURL: interaction.user.displayAvatarURL(), url: authorUrl })
       .setColor(0x000af43)

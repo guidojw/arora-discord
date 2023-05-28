@@ -1,8 +1,8 @@
 import { groupService, userService } from '../services'
 import type BaseJob from './base'
+import { EmbedBuilder } from 'discord.js'
 import type { GetUsers } from '../services/user'
 import type { GuildContext } from '../structures'
-import { MessageEmbed } from 'discord.js'
 import type { Training } from '../services/group'
 import { applicationAdapter } from '../adapters'
 import applicationConfig from '../configs/application'
@@ -37,17 +37,19 @@ export default class AnnounceTrainingsJob implements BaseJob {
       const embed = trainingsInfoPanel.embed.setColor(context.primaryColor ?? applicationConfig.defaultColor)
       const now = new Date()
 
-      if (embed.description !== null) {
-        embed.setDescription(embed.description.replace(/{timezone}/g, getTimeZoneAbbreviation(now)))
+      if (typeof embed.data.description !== 'undefined') {
+        embed.setDescription(embed.data.description.replace(/{timezone}/g, getTimeZoneAbbreviation(now)))
       }
 
       const nextTraining = trainings.find(training => new Date(training.date) > now)
-      embed.addField(
-        ':pushpin: Next training',
-        typeof nextTraining !== 'undefined'
-          ? getNextTrainingMessage(nextTraining, authors)
-          : ':x: There are currently no scheduled trainings.'
-      )
+      embed.addFields([
+        {
+          name: ':pushpin: Next training',
+          value: typeof nextTraining !== 'undefined'
+            ? getNextTrainingMessage(nextTraining, authors)
+            : ':x: There are currently no scheduled trainings.'
+        }
+      ])
 
       await trainingsInfoPanel.message.edit({ embeds: [embed] })
     }
@@ -63,7 +65,7 @@ export default class AnnounceTrainingsJob implements BaseJob {
   }
 }
 
-async function getTrainingsEmbed (groupId: number, trainings: Training[], authors: GetUsers): Promise<MessageEmbed> {
+async function getTrainingsEmbed (groupId: number, trainings: Training[], authors: GetUsers): Promise<EmbedBuilder> {
   const trainingTypes = (await groupService.getTrainingTypes(groupId))
     .map(trainingType => trainingType.name)
     .reduce((result: Record<string, Training[]>, item) => {
@@ -73,7 +75,7 @@ async function getTrainingsEmbed (groupId: number, trainings: Training[], author
   const groupedTrainings = lodash.assign({}, trainingTypes, groupService.groupTrainingsByType(trainings))
 
   const types = Object.keys(groupedTrainings)
-  const embed = new MessageEmbed()
+  const embed = new EmbedBuilder()
     .setFooter({ text: 'Updated at' })
     .setTimestamp()
 
@@ -94,7 +96,7 @@ async function getTrainingsEmbed (groupId: number, trainings: Training[], author
       result += ':x: No scheduled trainings'
     }
 
-    embed.addField(type, result)
+    embed.addFields([{ name: type, value: result }])
   }
   return embed
 }

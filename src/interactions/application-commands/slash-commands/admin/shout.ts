@@ -1,4 +1,4 @@
-import { type CommandInteraction, MessageEmbed } from 'discord.js'
+import { type ChatInputCommandInteraction, EmbedBuilder } from 'discord.js'
 import { argumentUtil, constants } from '../../../../utils'
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
@@ -32,7 +32,7 @@ export default class ShoutCommand extends Command {
   private readonly guildContexts!: GuildContextManager
 
   public async execute (
-    interaction: CommandInteraction<'raw' | 'cached'>,
+    interaction: ChatInputCommandInteraction<'raw' | 'cached'>,
     { message }: { message: string | null }
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
@@ -57,8 +57,8 @@ export default class ShoutCommand extends Command {
     if (shout.body === '') {
       await interaction.reply('Successfully cleared shout.')
     } else {
-      const embed = new MessageEmbed()
-        .addField('Successfully shouted', shout.body)
+      const embed = new EmbedBuilder()
+        .addFields([{ name: 'Successfully shouted', value: shout.body }])
         .setColor(context.primaryColor ?? applicationConfig.defaultColor)
       await interaction.reply({ embeds: [embed] })
     }

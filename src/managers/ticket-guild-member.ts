@@ -1,4 +1,4 @@
-import { Collection, Constants, type GuildMember, type GuildMemberResolvable, type Snowflake } from 'discord.js'
+import { Collection, type GuildMember, type GuildMemberResolvable, Partials, type Snowflake } from 'discord.js'
 import type { GuildContext, Ticket } from '../structures'
 import type { Member as MemberEntity, Ticket as TicketEntity } from '../entities'
 import { inject, injectable } from 'inversify'
@@ -7,7 +7,6 @@ import BaseManager from './base'
 import { Repository } from 'typeorm'
 import { constants } from '../utils'
 
-const { PartialTypes } = Constants
 const { TYPES } = constants
 
 @injectable()
@@ -33,7 +32,7 @@ export default class TicketGuildMemberManager extends BaseManager<string, GuildM
     const cache = new Collection<string, GuildMember>()
     for (const moderatorId of this.ticket._moderators) {
       const member = this.context.guild.members.resolve(moderatorId) ??
-        (this.client.options.partials?.includes(PartialTypes.GUILD_MEMBER) === true
+        (this.client.options.partials?.includes(Partials.GuildMember) === true
           // @ts-expect-error: Calling private library method.
           ? this.context.guild.members._add({ user: { id: moderatorId } })
           : null)

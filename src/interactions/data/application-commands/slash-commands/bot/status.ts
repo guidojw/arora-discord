@@ -1,4 +1,4 @@
-import type { RESTPutAPIApplicationCommandsJSONBody } from 'discord-api-types/v10'
+import type { RESTPutAPIApplicationCommandsJSONBody } from 'discord.js'
 
 const statusCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'status',

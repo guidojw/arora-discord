@@ -1,4 +1,4 @@
-import { type CommandInteraction, type GuildMember, MessageEmbed } from 'discord.js'
+import { type ChatInputCommandInteraction, EmbedBuilder, type GuildMember } from 'discord.js'
 import type { GuildContext, Tag } from '../../../../structures'
 import { constants, util } from '../../../../utils'
 import { inject, injectable, named } from 'inversify'
@@ -31,7 +31,7 @@ export default class TagsCommand extends Command {
   private readonly guildContexts!: GuildContextManager
 
   public async execute (
-    interaction: CommandInteraction,
+    interaction: ChatInputCommandInteraction,
     { tag, who }: { tag: Tag | null, who: GuildMember | null }
   ): Promise<void> {
     if (!interaction.inGuild()) {
@@ -52,7 +52,7 @@ export default class TagsCommand extends Command {
         list += `${tag.id}. ${makeCommaSeparatedString(tag.names.cache.map(tagName => `\`${tagName.name}\``))}\n`
       }
 
-      const embed = new MessageEmbed()
+      const embed = new EmbedBuilder()
         .setTitle('Tags')
         .setDescription(list)
         .setFooter({ text: `Page 1/1 (${context.tags.cache.size} entries)` })

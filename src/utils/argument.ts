@@ -1,11 +1,11 @@
 import type { Argument, ParserFunction, ValidatorFunction } from '../interactions/application-commands'
-import { type CommandInteraction, MessageMentions } from 'discord.js'
+import { type ChatInputCommandInteraction, MessageMentions } from 'discord.js'
 import type { Enum } from '.'
 import { getDateInfo } from './time'
 import { getEnumKeys } from './util'
 
 type ValidatorTest =
-((val: string, interaction: CommandInteraction, arg: Argument<any>) => boolean | Promise<boolean>)
+((val: string, interaction: ChatInputCommandInteraction, arg: Argument<any>) => boolean | Promise<boolean>)
 
 const dateRegex = /(([0-2]?[0-9]|3[0-1])[-](0?[1-9]|1[0-2])[-][0-9]{4})/
 const timeRegex = /^(2[0-3]|[0-1]?[\d]):[0-5][\d]$/
@@ -52,7 +52,7 @@ function makeValidator (test: ValidatorTest, message: string): ValidatorFunction
 }
 
 export const noChannels = makeValidator(
-  (val: string) => !MessageMentions.CHANNELS_PATTERN.test(val),
+  (val: string) => !MessageMentions.ChannelsPattern.test(val),
   'cannot contain channels'
 )
 
@@ -75,8 +75,8 @@ export const isObject = makeValidator(
 
 export const noTags = makeValidator(
   (val: string) => (
-    !MessageMentions.EVERYONE_PATTERN.test(val) && !MessageMentions.USERS_PATTERN.test(val) &&
-    !MessageMentions.ROLES_PATTERN.test(val)
+    !MessageMentions.EveryonePattern.test(val) && !MessageMentions.UsersPattern.test(val) &&
+    !MessageMentions.RolesPattern.test(val)
   ),
   'cannot contain tags'
 )

@@ -1,10 +1,10 @@
-import { type CommandInteraction, TextChannel } from 'discord.js'
+import { type ChatInputCommandInteraction, TextChannel } from 'discord.js'
 import BaseArgumentType from './base'
 import { injectable } from 'inversify'
 
 @injectable()
 export default class TextChannelArgumentType extends BaseArgumentType<TextChannel> {
-  public validate (value: string, interaction: CommandInteraction): boolean {
+  public validate (value: string, interaction: ChatInputCommandInteraction): boolean {
     if (!interaction.inCachedGuild()) {
       return false
     }
@@ -17,7 +17,7 @@ export default class TextChannelArgumentType extends BaseArgumentType<TextChanne
     return channel !== null && channel instanceof TextChannel
   }
 
-  public parse (value: string, interaction: CommandInteraction): TextChannel | null {
+  public parse (value: string, interaction: ChatInputCommandInteraction): TextChannel | null {
     if (!interaction.inCachedGuild()) {
       return null
     }

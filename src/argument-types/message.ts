@@ -1,4 +1,4 @@
-import type { CommandInteraction, Message } from 'discord.js'
+import { ChannelType, type ChatInputCommandInteraction, type Message } from 'discord.js'
 import BaseArgumentType from './base'
 import { injectable } from 'inversify'
 
@@ -7,7 +7,7 @@ const endpointUrl = 'https://discord.com/channels/'
 
 @injectable()
 export default class MessageArgumentType extends BaseArgumentType<Message> {
-  public async validate (value: string, interaction: CommandInteraction): Promise<boolean> {
+  public async validate (value: string, interaction: ChatInputCommandInteraction): Promise<boolean> {
     const match = value.match(messageUrlRegex)
     if (match === null) {
       return false
@@ -20,7 +20,7 @@ export default class MessageArgumentType extends BaseArgumentType<Message> {
       : guildId === '@me'
         ? interaction.channel
         : null
-    if (channel === null || !channel.isText()) {
+    if (channel === null || channel.type !== ChannelType.GuildText) {
       return false
     }
     try {
@@ -30,7 +30,7 @@ export default class MessageArgumentType extends BaseArgumentType<Message> {
     }
   }
 
-  public parse (value: string, interaction: CommandInteraction): Message | null {
+  public parse (value: string, interaction: ChatInputCommandInteraction): Message | null {
     const match = value.match(messageUrlRegex)
     if (match === null) {
       return null
@@ -43,7 +43,7 @@ export default class MessageArgumentType extends BaseArgumentType<Message> {
       : guildId === '@me'
         ? interaction.channel
         : null
-    if (channel === null || !channel.isText()) {
+    if (channel === null || channel.type !== ChannelType.GuildText) {
       return null
     }
     return channel.messages.resolve(messageId)

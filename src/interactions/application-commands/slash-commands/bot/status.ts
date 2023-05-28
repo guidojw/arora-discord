@@ -1,4 +1,4 @@
-import { type CommandInteraction, MessageEmbed } from 'discord.js'
+import { type ChatInputCommandInteraction, EmbedBuilder } from 'discord.js'
 import { constants, timeUtil, util } from '../../../../utils'
 import { inject, injectable, named } from 'inversify'
 import { Command } from '../base'
@@ -18,8 +18,8 @@ export default class StatusCommand extends Command {
   @named('GuildContextManager')
   private readonly guildContexts!: GuildContextManager
 
-  public async execute (interaction: CommandInteraction): Promise<void> {
-    const embed = new MessageEmbed()
+  public async execute (interaction: ChatInputCommandInteraction): Promise<void> {
+    const embed = new EmbedBuilder()
       .setAuthor({
         name: interaction.client.user?.username ?? 'Arora',
         iconURL: interaction.client.user?.displayAvatarURL()
@@ -28,14 +28,22 @@ export default class StatusCommand extends Command {
 
     if (interaction.inGuild()) {
       const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
-      embed.addField('System Statuses', `Tickets System: **${context.supportEnabled ? 'online' : 'offline'}**`)
+      embed.addFields([
+        { name: 'System Statuses', value: `Tickets System: **${context.supportEnabled ? 'online' : 'offline'}**` }
+      ])
     }
 
     const totalMem = os.totalmem()
     embed
-      .addField('Load Average', os.loadavg().join(', '), true)
-      .addField('Memory Usage', `${formatBytes(totalMem - os.freemem(), 3)} / ${formatBytes(totalMem, 3)}`, true)
-      .addField('Uptime', getDurationString(interaction.client.uptime ?? 0), true)
+      .addFields([
+        { name: 'Load Average', value: os.loadavg().join(', '), inline: true },
+        {
+          name: 'Memory Usage',
+          value: `${formatBytes(totalMem - os.freemem(), 3)} / ${formatBytes(totalMem, 3)}`,
+          inline: true
+        },
+        { name: 'Uptime', value: getDurationString(interaction.client.uptime ?? 0), inline: true }
+      ])
       .setFooter({ text: `Process ID: ${process.pid} | ${os.hostname()}` })
       .setTimestamp()
 
@@ -43,9 +51,10 @@ export default class StatusCommand extends Command {
       const startTime = Date.now()
       const status = (await applicationAdapter('GET', 'v1/status')).data
       const endTime = Date.now()
-      embed
-        .addField('API Latency', `${endTime - startTime}ms`, true)
-        .addField('API Status', status.state, true)
+      embed.addFields([
+        { name: 'API Latency', value: `${endTime - startTime}ms`, inline: true },
+        { name: 'API Status', value: status.state, inline: true }
+      ])
     }
 
     await interaction.reply({ embeds: [embed] })

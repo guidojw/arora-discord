@@ -1,4 +1,4 @@
-import { type CommandInteraction, MessageEmbed, type TextChannel, type VoiceChannel } from 'discord.js'
+import { type ChatInputCommandInteraction, EmbedBuilder, type TextChannel, type VoiceChannel } from 'discord.js'
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
 import { ChannelLinkService } from '../../../../services'
@@ -40,7 +40,7 @@ export default class ChannelLinksCommand extends SubCommandCommand<ChannelLinksC
   private readonly guildContexts!: GuildContextManager
 
   public async link (
-    interaction: CommandInteraction<'raw' | 'cached'>,
+    interaction: ChatInputCommandInteraction<'raw' | 'cached'>,
     { fromChannel, toChannel }: {
       fromChannel: VoiceChannel
       toChannel: TextChannel
@@ -53,7 +53,7 @@ export default class ChannelLinksCommand extends SubCommandCommand<ChannelLinksC
   }
 
   public async unlink (
-    interaction: CommandInteraction<'raw' | 'cached'>,
+    interaction: ChatInputCommandInteraction<'raw' | 'cached'>,
     { fromChannel, toChannel }: {
       fromChannel: VoiceChannel
       toChannel: TextChannel
@@ -66,7 +66,7 @@ export default class ChannelLinksCommand extends SubCommandCommand<ChannelLinksC
   }
 
   public async list (
-    interaction: CommandInteraction<'raw' | 'cached'>,
+    interaction: ChatInputCommandInteraction<'raw' | 'cached'>,
     { channel }: { channel: VoiceChannel }
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
@@ -77,7 +77,7 @@ export default class ChannelLinksCommand extends SubCommandCommand<ChannelLinksC
       return
     }
 
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
       .setTitle(`${channel.name}'s Channel Links`)
       // eslint-disable-next-line @typescript-eslint/no-base-to-string
       .setDescription(links.map(channel => channel.toString()).toString())

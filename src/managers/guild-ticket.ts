@@ -1,7 +1,7 @@
 import {
   type ButtonInteraction,
+  EmbedBuilder,
   type GuildMemberResolvable,
-  MessageEmbed,
   TextChannel,
   type TextChannelResolvable
 } from 'discord.js'
@@ -59,11 +59,11 @@ export default class GuildTicketManager extends DataManager<number, Ticket, Tick
     const channelName = `${ticketType.name}-${author.user.tag}`
     let channel
     try {
-      channel = await this.context.guild.channels.create(
-        channelName,
-        { parent: this.context.ticketsCategory ?? undefined }
-      )
-      await channel.permissionOverwrites.edit(author, { VIEW_CHANNEL: true })
+      channel = await this.context.guild.channels.create({
+        name: channelName,
+        parent: this.context.ticketsCategory ?? undefined
+      })
+      await channel.permissionOverwrites.edit(author, { ViewChannel: true })
     } catch (err) {
       await channel?.delete()
       throw err
@@ -159,21 +159,21 @@ export default class GuildTicketManager extends DataManager<number, Ticket, Tick
               ticket.close('Timeout: ticket closed', false).catch(console.error)
             }, SUBMISSION_TIME).unref()
 
-            const embed = new MessageEmbed()
+            const embed = new EmbedBuilder()
               .setColor(0x00ff00)
               .setTitle('Successfully opened ticket.')
               // eslint-disable-next-line @typescript-eslint/no-base-to-string
               .setDescription(`You can visit it in ${ticket.channel.toString()}.`)
             await interaction.editReply({ embeds: [embed] })
           } else {
-            const embed = new MessageEmbed()
+            const embed = new EmbedBuilder()
               .setColor(0xff0000)
               .setTitle('Couldn\'t make ticket')
               .setDescription('You already have an open ticket.')
             await interaction.reply({ embeds: [embed], ephemeral: true })
           }
         } else {
-          const embed = new MessageEmbed()
+          const embed = new EmbedBuilder()
             .setColor(0xff0000)
             .setTitle('Please wait a few seconds')
             .setDescription('before trying to open a new ticket.')

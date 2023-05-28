@@ -1,4 +1,10 @@
-import { type CommandInteraction, MessageActionRow, MessageButton, MessageEmbed } from 'discord.js'
+import {
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  type ChatInputCommandInteraction,
+  EmbedBuilder
+} from 'discord.js'
 import { constants, timeUtil } from '../../../../utils'
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
@@ -33,7 +39,7 @@ export default class WhoIsCommand extends Command {
   @named('GuildContextManager')
   private readonly guildContexts!: GuildContextManager
 
-  public async execute (interaction: CommandInteraction, { user }: { user: RobloxUser }): Promise<void> {
+  public async execute (interaction: ChatInputCommandInteraction, { user }: { user: RobloxUser }): Promise<void> {
     const context = interaction.inGuild()
       ? this.guildContexts.resolve(interaction.guildId) as GuildContext
       : null
@@ -42,17 +48,19 @@ export default class WhoIsCommand extends Command {
     const age = Math.floor((Date.now() - new Date(userInfo.created).getTime()) / 86_400_000)
     const outfits = await userService.getUserOutfits(user.id)
 
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
       .setAuthor({
         name: userInfo.name ?? 'Unknown',
         iconURL: `https://www.roblox.com/headshot-thumbnail/image?width=150&height=150&format=png&userId=${user.id}`
       })
       .setThumbnail(`https://www.roblox.com/outfit-thumbnail/image?width=150&height=150&format=png&userOutfitId=${outfits[0]?.id ?? 0}`)
       .setColor(context?.primaryColor ?? applicationConfig.defaultColor)
-      .addField('Blurb', userInfo.description !== '' ? userInfo.description : 'No blurb')
-      .addField('Join Date', getDate(new Date(userInfo.created)), true)
-      .addField('Account Age', pluralize('day', age, true), true)
-      .addField('\u200b', '\u200b', true)
+      .addFields([
+        { name: 'Blurb', value: userInfo.description !== '' ? userInfo.description : 'No blurb' },
+        { name: 'Join Date', value: getDate(new Date(userInfo.created)), inline: true },
+        { name: 'Account Age', value: pluralize('day', age, true), inline: true },
+        { name: '\u200b', value: '\u200b', inline: true }
+      ])
       .setFooter({ text: `User ID: ${user.id}` })
       .setTimestamp()
     // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
@@ -60,16 +68,18 @@ export default class WhoIsCommand extends Command {
       const groupsRoles = await userService.getGroupsRoles(user.id)
       const group = groupsRoles.find(group => group.group.id === context.robloxGroupId)
       embed
-        .addField('Role', group?.role.name ?? 'Guest', true)
-        .addField('Rank', (group?.role.rank ?? 0).toString(), true)
-        .addField('\u200b', '\u200b', true)
+        .addFields([
+          { name: 'Role', value: group?.role.name ?? 'Guest', inline: true },
+          { name: 'Rank', value: (group?.role.rank ?? 0).toString(), inline: true },
+          { name: '\u200b', value: '\u200b', inline: true }
+        ])
     }
-    const row = new MessageActionRow()
+    const row = new ActionRowBuilder<ButtonBuilder>()
       .addComponents(
-        new MessageButton()
+        new ButtonBuilder()
           .setLabel('Profile')
           .setURL(`https://www.roblox.com/users/${user.id}/profile`)
-          .setStyle('LINK')
+          .setStyle(ButtonStyle.Link)
       )
     await interaction.reply({ embeds: [embed], components: [row] })
   }

@@ -1,4 +1,4 @@
-import { type CommandInteraction, type GuildMember, MessageEmbed } from 'discord.js'
+import { type ChatInputCommandInteraction, EmbedBuilder, type GuildMember } from 'discord.js'
 import { ApplyOptions } from '../../../../utils/decorators'
 import { Command } from '../base'
 import type { CommandOptions } from '..'
@@ -15,13 +15,13 @@ const { diffDays } = timeUtil
       {
         key: 'member',
         required: false,
-        default: (interaction: CommandInteraction) => interaction.member
+        default: (interaction: ChatInputCommandInteraction) => interaction.member
       }
     ]
   }
 })
 export default class BoostInfoCommand extends Command {
-  public async execute (interaction: CommandInteraction, { member }: { member: GuildMember }): Promise<void> {
+  public async execute (interaction: ChatInputCommandInteraction, { member }: { member: GuildMember }): Promise<void> {
     if (member.premiumSince === null) {
       await interaction.reply('Member is not a booster.')
       return
@@ -36,7 +36,7 @@ export default class BoostInfoCommand extends Command {
     if (member.user.partial) {
       await member.user.fetch()
     }
-    const embed = new MessageEmbed()
+    const embed = new EmbedBuilder()
       .setTitle(`${member.user.tag} ${emoji?.toString() ?? ''}`)
       .setThumbnail(member.user.displayAvatarURL())
       .setDescription(`Has been boosting this server for **${pluralize('month', months, true)}** and **${pluralize('day', days, true)}**!`)

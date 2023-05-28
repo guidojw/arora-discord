@@ -1,4 +1,4 @@
-import { type CommandInteraction, MessageButton } from 'discord.js'
+import { ButtonBuilder, ButtonStyle, type ChatInputCommandInteraction } from 'discord.js'
 import { inject, injectable, named } from 'inversify'
 import { Command } from '../base'
 import type { GuildContext } from '../../../../structures'
@@ -15,7 +15,7 @@ export default class CloseTicketCommand extends Command {
   @named('GuildContextManager')
   private readonly guildContexts!: GuildContextManager
 
-  public async execute (interaction: CommandInteraction): Promise<void> {
+  public async execute (interaction: ChatInputCommandInteraction): Promise<void> {
     if (!interaction.inCachedGuild()) {
       return
     }
@@ -25,13 +25,13 @@ export default class CloseTicketCommand extends Command {
     if (ticket !== null) {
       await interaction.reply('Are you sure you want to close this ticket?')
       const [choice, promptInteraction] = await discordService.prompt(interaction.user, interaction, {
-        yes: new MessageButton()
+        yes: new ButtonBuilder()
           .setLabel('Yes')
-          .setStyle('SUCCESS')
+          .setStyle(ButtonStyle.Success)
           .setEmoji('✔️'),
-        no: new MessageButton()
+        no: new ButtonBuilder()
           .setLabel('No')
-          .setStyle('DANGER')
+          .setStyle(ButtonStyle.Danger)
           .setEmoji('✖️')
       })
       if (choice !== null) {
