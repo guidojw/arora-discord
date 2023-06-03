@@ -2,7 +2,6 @@ import {
   type ButtonInteraction,
   EmbedBuilder,
   type GuildMemberResolvable,
-  PermissionsBitField,
   TextChannel,
   type TextChannelResolvable
 } from 'discord.js'
@@ -62,14 +61,9 @@ export default class GuildTicketManager extends DataManager<number, Ticket, Tick
     try {
       channel = await this.context.guild.channels.create({
         name: channelName,
-        parent: this.context.ticketsCategory ?? undefined,
-        permissionOverwrites: [
-          {
-            id: author.id,
-            allow: PermissionsBitField.Flags.ViewChannel
-          }
-        ]
+        parent: this.context.ticketsCategory ?? undefined
       })
+      await channel.permissionOverwrites.edit(author, { ViewChannel: true })
     } catch (err) {
       await channel?.delete()
       throw err
