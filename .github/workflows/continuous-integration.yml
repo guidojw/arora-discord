@@ -27,7 +27,7 @@ jobs:
           echo '::add-matcher::.github/problem-matchers/tsc.json'
 
       - name: Build test image
-        uses: guidojw/actions/build-docker-image@abb0ee8d1336edf73383f2e5a09abd3a22f25b13 # v1.3.3
+        uses: guidojw/actions/build-docker-image@27db9dfd8bd462936c30a5e66ed5908406e5c276 # v1.3.3
         with:
           name: app
 
