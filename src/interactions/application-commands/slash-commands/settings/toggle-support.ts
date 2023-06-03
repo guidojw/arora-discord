@@ -26,14 +26,17 @@ export default class ToggleSupportCommand extends Command {
     }
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
-    const editedMessages =
-      new Set<{ message: Message, components: Array<ActionRowBuilder<MessageActionRowComponentBuilder>> }>()
+    const editedMessages: Array<{
+      message: Message
+      components: Array<ActionRowBuilder<MessageActionRowComponentBuilder>>
+    }> = []
     for (const ticketType of context.ticketTypes.cache.values()) {
       if (ticketType.message !== null) {
         if (ticketType.message.partial) {
           await ticketType.message.fetch()
         }
-        const components = ticketType.message.components
+        const editedMessage = editedMessages.find(({ message }) => message.id === ticketType.message?.id)
+        const components = editedMessage?.components ?? ticketType.message.components
           .map<ActionRowBuilder<MessageActionRowComponentBuilder>>(row => ActionRowBuilder.from(row))
         for (const row of components) {
           const button = row.components.find(button => (
@@ -42,15 +45,15 @@ export default class ToggleSupportCommand extends Command {
           ))
           if (typeof button !== 'undefined') {
             button.setDisabled(context.supportEnabled)
-            editedMessages.add({ message: ticketType.message, components })
+            if (typeof editedMessage === 'undefined') {
+              editedMessages.push({ message: ticketType.message, components })
+            }
             break
           }
         }
       }
     }
-    await Promise.all([...editedMessages].map(async ({ message, components }) => (
-      await message.edit({ components }))
-    ))
+    await Promise.all(editedMessages.map(async ({ message, components }) => await message.edit({ components })))
 
     await context.update({ supportEnabled: !context.supportEnabled })
 
