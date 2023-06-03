@@ -102,12 +102,12 @@ export function getListEmbeds<T, D extends any[]> (
   const embeds = []
   let embed = new EmbedBuilder()
     .setTitle(title)
-  let currentField = 0
   for (const value of values) {
     const row = getRow(value, ...data)
-    if (typeof embed.data.fields === 'undefined') {
+    const currentField = (embed.data.fields?.length ?? 0) - 1
+    if (currentField === -1) {
       embed.addFields([{ name: '\u200b', value: `${row}\n` }])
-    } else {
+    } else if (typeof embed.data.fields !== 'undefined') {
       const fieldLength = embed.data.fields.length >= 0 ? embed.data.fields[currentField].value.length : 0
       const addition = row.length + 2 // +2 for \n
 
@@ -122,7 +122,6 @@ export function getListEmbeds<T, D extends any[]> (
         embed.addFields([{ name: '\u200b', value: `${row}\n` }])
       }
     }
-    currentField++
   }
   embeds.push(embed)
 
