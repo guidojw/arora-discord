@@ -9,7 +9,7 @@ import { stripIndents } from 'common-tags'
 const { TYPES } = constants
 
 @injectable()
-export default class MessageEventHandler implements BaseHandler {
+export default class MessageCreateEventHandler implements BaseHandler {
   @inject(TYPES.Client)
   private readonly client!: AroraClient<true>
 
@@ -21,6 +21,9 @@ export default class MessageEventHandler implements BaseHandler {
     if (message.author.bot) {
       return
     }
+    // Attachments is not included in the message.partial getter so fetch
+    // always.
+    await message.fetch()
     const guild = message.guild
     if (guild === null) {
       return
