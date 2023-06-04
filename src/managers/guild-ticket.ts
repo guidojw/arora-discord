@@ -16,7 +16,7 @@ import { constants } from '../utils'
 
 const { TYPES } = constants
 
-const TICKETS_INTERVAL = 3_000
+const TICKETS_INTERVAL = 60_000
 const SUBMISSION_TIME = 3_600_000
 
 export type TicketResolvable = TextChannelResolvable | GuildMemberResolvable | Ticket | number
