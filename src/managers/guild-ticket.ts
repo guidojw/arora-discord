@@ -70,7 +70,7 @@ export default class GuildTicketManager extends DataManager<number, Ticket, Tick
       // sure it was created before creating the permission overwrites.
       channel = await this.context.guild.channels.fetch(channel.id, { force: true })
       if (channel === null || !channel.isTextBased() || channel.isThread()) {
-        throw new Error('Channel creation went wrong.')
+        throw new Error('Could not find channel.')
       }
 
       await channel.permissionOverwrites.create(author, { ViewChannel: true })
