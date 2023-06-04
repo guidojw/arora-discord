@@ -2,6 +2,7 @@ import {
   type ButtonInteraction,
   EmbedBuilder,
   type GuildMemberResolvable,
+  PermissionFlagsBits,
   TextChannel,
   type TextChannelResolvable
 } from 'discord.js'
@@ -15,7 +16,7 @@ import { constants } from '../utils'
 
 const { TYPES } = constants
 
-const TICKETS_INTERVAL = 60_000
+const TICKETS_INTERVAL = 3_000
 const SUBMISSION_TIME = 3_600_000
 
 export type TicketResolvable = TextChannelResolvable | GuildMemberResolvable | Ticket | number
@@ -57,23 +58,17 @@ export default class GuildTicketManager extends DataManager<number, Ticket, Tick
     }
 
     const channelName = `${ticketType.name}-${author.user.tag}`
+    const permissionOverwrites = this.context.ticketsCategory?.permissionOverwrites.cache.toJSON() ?? []
     let channel
     try {
       channel = await this.context.guild.channels.create({
         name: channelName,
-        parent: this.context.ticketsCategory ?? undefined
+        parent: this.context.ticketsCategory ?? undefined,
+        permissionOverwrites: [...permissionOverwrites, {
+          id: author.id,
+          allow: [PermissionFlagsBits.ViewChannel]
+        }]
       })
-
-      // In random occassions on the Twin-Rail server, the permission overwrites
-      // creation shows up in the audit log but not actually in the channel's
-      // permissions tab. Force fetch the channel from the API first to make
-      // sure it was created before creating the permission overwrites.
-      channel = await this.context.guild.channels.fetch(channel.id, { force: true })
-      if (channel === null || !channel.isTextBased() || channel.isThread()) {
-        throw new Error('Could not find channel.')
-      }
-
-      await channel.permissionOverwrites.create(author, { ViewChannel: true })
     } catch (err) {
       await channel?.delete()
       throw err
