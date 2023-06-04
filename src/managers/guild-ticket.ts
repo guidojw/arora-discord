@@ -63,7 +63,17 @@ export default class GuildTicketManager extends DataManager<number, Ticket, Tick
         name: channelName,
         parent: this.context.ticketsCategory ?? undefined
       })
-      await channel.permissionOverwrites.edit(author, { ViewChannel: true })
+
+      // In random occassions on the Twin-Rail server, the permission overwrites
+      // creation shows up in the audit log but not actually in the channel's
+      // permissions tab. Force fetch the channel from the API first to make
+      // sure it was created before creating the permission overwrites.
+      channel = await this.context.guild.channels.fetch(channel.id, { force: true })
+      if (channel === null || !channel.isTextBased() || channel.isThread()) {
+        throw new Error('Channel creation went wrong.')
+      }
+
+      await channel.permissionOverwrites.create(author, { ViewChannel: true })
     } catch (err) {
       await channel?.delete()
       throw err
