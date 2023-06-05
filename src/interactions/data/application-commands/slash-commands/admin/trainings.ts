@@ -13,7 +13,8 @@ const trainingsCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
       name: 'type',
       description: 'The type of this training',
       type: ApplicationCommandOptionType.String,
-      required: true
+      required: true,
+      autocomplete: true
     }, {
       name: 'date',
       description: 'The date to schedule this training at',
@@ -68,7 +69,8 @@ const trainingsCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
       name: 'value',
       description: 'The value to change this key to',
       type: ApplicationCommandOptionType.String,
-      required: true
+      required: true,
+      autocomplete: true
     }]
   }, {
     name: 'list',

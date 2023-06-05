@@ -1,5 +1,5 @@
+import type { AutocompleteInteraction, ChatInputCommandInteraction } from 'discord.js'
 import { ApplyOptions } from '../../../../utils/decorators'
-import type { ChatInputCommandInteraction } from 'discord.js'
 import { Command } from '../base'
 import type { CommandOptions } from '..'
 import { injectable } from 'inversify'
@@ -33,5 +33,16 @@ export default class HttpCatCommand extends Command {
   ): Promise<void> {
     statusCode ??= AVAILABLE_STATUS_CODES[Math.floor(Math.random() * AVAILABLE_STATUS_CODES.length)]
     await interaction.reply(`https://http.cat/${statusCode}`)
+  }
+
+  public override async autocomplete (interaction: AutocompleteInteraction): Promise<void> {
+    const option = interaction.options.getFocused(true)
+    if (option.name === 'statuscode') {
+      const results = AVAILABLE_STATUS_CODES.map(String).filter(statusCode => statusCode.startsWith(option.value))
+      await interaction.respond(results.map(result => ({ name: result, value: result })).slice(0, 25))
+      return
+    }
+
+    await super.autocomplete(interaction)
   }
 }

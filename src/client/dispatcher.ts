@@ -1,5 +1,6 @@
 import {
   ApplicationCommandOptionType,
+  type AutocompleteInteraction,
   type ChatInputCommandInteraction,
   type CommandInteractionOption,
   type Interaction,
@@ -31,6 +32,8 @@ export default class Dispatcher {
   public async handleInteraction (interaction: Interaction): Promise<void> {
     if (interaction.isChatInputCommand()) {
       await this.handleCommandInteraction(interaction)
+    } else if (interaction.isAutocomplete()) {
+      await this.handleAutocompleteInteraction(interaction)
     } else if (interaction.isMessageComponent()) {
       await this.handleMessageComponentInteraction(interaction)
     }
@@ -95,6 +98,15 @@ export default class Dispatcher {
       : subCommandGroupName == null
         ? await command.execute(interaction, subCommandName, args)
         : await command.execute(interaction, subCommandGroupName, subCommandName, args)
+  }
+
+  private async handleAutocompleteInteraction (interaction: AutocompleteInteraction): Promise<void> {
+    const command = this.commandFactory(interaction.commandName)
+    if (typeof command === 'undefined') {
+      throw new Error(`Unknown command "${interaction.commandName}".`)
+    }
+
+    await command.autocomplete(interaction)
   }
 
   private async handleMessageComponentInteraction (interaction: MessageComponentInteraction): Promise<void> {
