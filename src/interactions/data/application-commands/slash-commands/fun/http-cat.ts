@@ -1,9 +1,17 @@
-import type { RESTPutAPIApplicationCommandsJSONBody } from 'discord.js'
+import {
+  ApplicationCommandOptionType,
+  type RESTPutAPIApplicationCommandsJSONBody
+} from 'discord.js'
 
 const httpCatCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   name: 'httpcat',
-  description: 'Posts a picture of a random HTTP cat',
-  default_member_permissions: null
+  description: 'Posts a picture of a HTTP cat',
+  default_member_permissions: null,
+  options: [{
+    name: 'statuscode',
+    description: 'Status code to post a HTTP cat picture of',
+    type: ApplicationCommandOptionType.Integer
+  }]
 }
 
 export default httpCatCommand
