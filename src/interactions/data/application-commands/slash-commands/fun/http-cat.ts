@@ -10,7 +10,8 @@ const httpCatCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   options: [{
     name: 'statuscode',
     description: 'Status code to post a HTTP cat picture of',
-    type: ApplicationCommandOptionType.Integer
+    type: ApplicationCommandOptionType.Integer,
+    autocomplete: true
   }]
 }
 

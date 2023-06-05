@@ -81,7 +81,7 @@ export default class TagsCommand extends Command {
         return result
       }, [])
       console.log(results)
-      await interaction.respond(results.map(result => ({ name: result, value: result })))
+      await interaction.respond(results.map(result => ({ name: result, value: result })).slice(0, 25))
       return
     }
 
