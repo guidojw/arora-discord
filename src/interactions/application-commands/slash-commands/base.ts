@@ -1,8 +1,8 @@
 import { type AnyFunction, type KeyOfType, type OverloadedParameters, constants } from '../../../utils'
 import type { Argument, ArgumentOptions } from '.'
+import type { AutocompleteInteraction, ChatInputCommandInteraction } from 'discord.js'
 import { inject, injectable, type interfaces } from 'inversify'
 import { AroraClient } from '../../../client'
-import type { ChatInputCommandInteraction } from 'discord.js'
 
 const { TYPES } = constants
 
@@ -27,7 +27,7 @@ type SubCommandNames<T, U = OverloadedParameters<T>> = {
 
 export interface SubCommandCommandOptions<T extends SubCommandCommand<any>> extends BaseCommandOptions {
   subCommands: {
-    [K in Exclude<KeyOfType<T, AnyFunction>, 'setOptions' | 'execute'>]: T[K] extends AnyFunction
+    [K in Exclude<KeyOfType<T, AnyFunction>, 'setOptions' | 'execute' | 'autocomplete'>]: T[K] extends AnyFunction
       ? Parameters<T[K]>[1] extends string
         ? { [U in keyof SubCommandNames<T[K]> as Exclude<SubCommandNames<T[K]>[U], never>]: SubCommandOptions }
         : SubCommandOptions
@@ -46,6 +46,10 @@ export default abstract class BaseCommand<T extends CommandOptions = BaseCommand
 
   public setOptions (options: T): void {
     this.options = options
+  }
+
+  public async autocomplete (interaction: AutocompleteInteraction): Promise<void> {
+    await interaction.respond([])
   }
 }
 

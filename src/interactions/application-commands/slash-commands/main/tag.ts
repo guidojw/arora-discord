@@ -1,4 +1,9 @@
-import { type ChatInputCommandInteraction, EmbedBuilder, type GuildMember } from 'discord.js'
+import {
+  type AutocompleteInteraction,
+  type ChatInputCommandInteraction,
+  EmbedBuilder,
+  type GuildMember
+} from 'discord.js'
 import type { GuildContext, Tag } from '../../../../structures'
 import { constants, util } from '../../../../utils'
 import { inject, injectable, named } from 'inversify'
@@ -59,5 +64,27 @@ export default class TagsCommand extends Command {
         .setColor(context.primaryColor ?? applicationConfig.defaultColor)
       await interaction.reply({ embeds: [embed] })
     }
+  }
+
+  public override async autocomplete (interaction: AutocompleteInteraction): Promise<void> {
+    if (!interaction.inGuild()) {
+      return
+    }
+    const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
+
+    const option = interaction.options.getFocused(true)
+    if (option.name === 'query') {
+      const results = context.tags.cache.reduce<string[]>((result, tag) => {
+        result.push(...tag.names.cache.filter(tagName => (
+          tagName.name.toLowerCase().startsWith(option.value))
+        ).map(tagName => tagName.name))
+        return result
+      }, [])
+      console.log(results)
+      await interaction.respond(results.map(result => ({ name: result, value: result })))
+      return
+    }
+
+    await super.autocomplete(interaction)
   }
 }

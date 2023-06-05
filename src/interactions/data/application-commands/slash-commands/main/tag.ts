@@ -8,7 +8,8 @@ const tagCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   options: [{
     name: 'query',
     description: 'The tag to post',
-    type: ApplicationCommandOptionType.String
+    type: ApplicationCommandOptionType.String,
+    autocomplete: true
   }, {
     name: 'who',
     description: 'The member to post this tag for',
