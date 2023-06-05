@@ -1,4 +1,4 @@
-import { type ChatInputCommandInteraction, EmbedBuilder } from 'discord.js'
+import { type AutocompleteInteraction, type ChatInputCommandInteraction, EmbedBuilder } from 'discord.js'
 import { argumentUtil, constants, timeUtil } from '../../../../utils'
 import { groupService, userService, verificationService } from '../../../../services'
 import { inject, injectable, named } from 'inversify'
@@ -257,5 +257,32 @@ export default class TrainingsCommand extends SubCommandCommand<TrainingsCommand
       }
       await interaction.reply('Sent you a DM with the upcoming trainings.')
     }
+  }
+
+  public override async autocomplete (interaction: AutocompleteInteraction): Promise<void> {
+    if (applicationConfig.apiEnabled !== true || !interaction.inGuild()) {
+      await interaction.respond([])
+      return
+    }
+    const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
+    if (context.robloxGroupId === null) {
+      await interaction.respond([])
+      return
+    }
+
+    const option = interaction.options.getFocused(true)
+    if (option.name === 'type' || (option.name === 'value' && interaction.options.getString('key') === 'type')) {
+      const results = (await groupService.getTrainingTypes(context.robloxGroupId)).filter(trainingType => (
+        trainingType.abbreviation.toLowerCase().startsWith(option.value) ||
+        trainingType.name.toLowerCase().startsWith(option.value)
+      ))
+      await interaction.respond(results.map(result => ({
+        name: result.name,
+        value: result.abbreviation
+      })).slice(0, 25))
+      return
+    }
+
+    await super.autocomplete(interaction)
   }
 }
