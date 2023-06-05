@@ -1,5 +1,7 @@
+import { ApplyOptions } from '../../../../utils/decorators'
 import type { ChatInputCommandInteraction } from 'discord.js'
 import { Command } from '../base'
+import type { CommandOptions } from '..'
 import { injectable } from 'inversify'
 
 const AVAILABLE_STATUS_CODES = [
@@ -11,9 +13,25 @@ const AVAILABLE_STATUS_CODES = [
   500, 501, 502, 503, 504, 506, 507, 508, 509, 510, 511, 521, 523, 525, 599
 ]
 
+@ApplyOptions<CommandOptions>({
+  command: {
+    args: [
+      {
+        key: 'statuscode',
+        name: 'statusCode',
+        validate: (val: string) => AVAILABLE_STATUS_CODES.includes(parseInt(val)),
+        required: false
+      }
+    ]
+  }
+})
 @injectable()
 export default class HttpCatCommand extends Command {
-  public async execute (interaction: ChatInputCommandInteraction): Promise<void> {
-    await interaction.reply(`https://http.cat/${AVAILABLE_STATUS_CODES[Math.floor(Math.random() * AVAILABLE_STATUS_CODES.length)]}`)
+  public async execute (
+    interaction: ChatInputCommandInteraction,
+    { statusCode }: { statusCode: number }
+  ): Promise<void> {
+    statusCode ??= AVAILABLE_STATUS_CODES[Math.floor(Math.random() * AVAILABLE_STATUS_CODES.length)]
+    await interaction.reply(`https://http.cat/${statusCode}`)
   }
 }
