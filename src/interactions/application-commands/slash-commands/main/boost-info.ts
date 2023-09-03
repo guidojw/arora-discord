@@ -37,7 +37,7 @@ export default class BoostInfoCommand extends Command {
       await member.user.fetch()
     }
     const embed = new EmbedBuilder()
-      .setTitle(`${member.user.tag} ${emoji?.toString() ?? ''}`)
+      .setTitle(`${member.user.username} ${emoji?.toString() ?? ''}`)
       .setThumbnail(member.user.displayAvatarURL())
       .setDescription(`Has been boosting this server for **${pluralize('month', months, true)}** and **${pluralize('day', days, true)}**!`)
       .setFooter({ text: '* Discord Nitro months are 30 days long.' })
