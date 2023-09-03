@@ -196,7 +196,7 @@ export default class Ticket extends BaseStructure<TicketEntity> {
       ...this.moderators.cache.map(moderator => moderator.partial && moderator.fetch())
     ])
     let moderatorsString = makeCommaSeparatedString(this.moderators.cache.map((moderator: GuildMember) => {
-      return `**${moderator.user.tag ?? moderator.id}**`
+      return `**${moderator.user.username ?? moderator.id}**`
     }))
     if (moderatorsString === '') {
       moderatorsString = 'none'
@@ -205,7 +205,7 @@ export default class Ticket extends BaseStructure<TicketEntity> {
     const embed = new EmbedBuilder()
       .setColor(this.context.primaryColor ?? applicationConfig.defaultColor)
       .setAuthor({
-        name: this.author?.user?.tag ?? this.authorId ?? 'unknown',
+        name: this.author?.user?.username ?? this.authorId ?? 'unknown',
         iconURL: this.author?.user?.displayAvatarURL()
       })
       .setTitle('Ticket Rating')
@@ -230,7 +230,7 @@ export default class Ticket extends BaseStructure<TicketEntity> {
     }
     const { robloxId, robloxUsername } = await this.fetchAuthorData()
     output += 'AUTHOR INFORMATION\n'
-    output += `Discord tag: ${this.author?.user?.tag ?? 'unknown'}\nDiscord ID: ${this.authorId ?? 'unknown'}\n`
+    output += `Discord username: ${this.author?.user?.username ?? 'unknown'}\nDiscord ID: ${this.authorId ?? 'unknown'}\n`
     output += `Roblox username: ${robloxUsername ?? 'unknown'}\nRoblox ID: ${robloxId ?? 'unknown'}\n\n`
 
     output += `Created at: ${this.channel.createdAt.toString()}\nClosed at: ${new Date().toString()}\n\n`
@@ -248,7 +248,7 @@ export default class Ticket extends BaseStructure<TicketEntity> {
     }
     for (const message of messages.values()) {
       if (message.content !== '' || message.attachments.size > 0) {
-        output += `Sent by: ${message.author.tag} (${message.author.id})\n\n`
+        output += `Sent by: ${message.author.username} (${message.author.id})\n\n`
 
         if (message.content !== '') {
           output += `  ${message.cleanContent}\n\n`

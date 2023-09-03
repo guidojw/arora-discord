@@ -31,7 +31,7 @@ export default class GuildMemberAddEventHandler implements BaseHandler {
     if (welcomeChannelsGroup !== null && welcomeChannelsGroup.isChannelGroup() &&
       welcomeChannelsGroup.channels.cache.size > 0) {
       const embed = new EmbedBuilder()
-        .setTitle(`Hey ${member.user.tag},`)
+        .setTitle(`Hey ${member.user.username},`)
         .setDescription(`You're the **${getOrdinalNum(guild.memberCount)}** member on **${guild.name}**!`)
         .setThumbnail(member.user.displayAvatarURL())
         .setColor(context.primaryColor ?? applicationConfig.defaultColor)

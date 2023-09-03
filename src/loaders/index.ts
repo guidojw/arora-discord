@@ -41,7 +41,7 @@ export async function init (): Promise<AroraClient> {
     await client.login(process.env.DISCORD_TOKEN)
   } catch (err) {
     console.error(err)
-    client.destroy()
+    await client.destroy()
     process.exit(1)
   }
 

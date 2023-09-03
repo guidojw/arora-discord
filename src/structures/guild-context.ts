@@ -242,7 +242,7 @@ export default class GuildContext extends BaseStructure<GuildEntity> {
       }
 
       const embed = new EmbedBuilder()
-        .setAuthor({ name: author.tag, iconURL: author.displayAvatarURL() })
+        .setAuthor({ name: author.username, iconURL: author.displayAvatarURL() })
         .setColor(this.primaryColor ?? applicationConfig.defaultColor)
         .setDescription(content)
       if (typeof options.color !== 'undefined') {

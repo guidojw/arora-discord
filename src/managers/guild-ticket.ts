@@ -57,7 +57,7 @@ export default class GuildTicketManager extends DataManager<number, Ticket, Tick
       throw new Error('Invalid ticket type.')
     }
 
-    const channelName = `${ticketType.name}-${author.user.tag}`
+    const channelName = `${ticketType.name}-${author.user.username}`
     const permissionOverwrites = this.context.ticketsCategory?.permissionOverwrites.cache.toJSON() ?? []
     let channel
     try {

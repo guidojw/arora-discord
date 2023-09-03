@@ -40,7 +40,7 @@ export default class PollCommand extends Command {
     }
     const embed = new EmbedBuilder()
       .setDescription(poll)
-      .setAuthor({ name: interaction.user.tag, iconURL: interaction.user.displayAvatarURL() })
+      .setAuthor({ name: interaction.user.username, iconURL: interaction.user.displayAvatarURL() })
       .setColor(context?.primaryColor ?? applicationConfig.defaultColor)
 
     const newMessage = await interaction.reply({ embeds: [embed], fetchReply: true })
