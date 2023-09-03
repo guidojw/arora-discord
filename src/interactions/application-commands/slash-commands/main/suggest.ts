@@ -47,7 +47,7 @@ export default class SuggestCommand extends Command {
     const authorUrl = `https://discord.com/users/${interaction.user.id}`
     const embed = new EmbedBuilder()
       .setDescription(suggestion)
-      .setAuthor({ name: interaction.user.tag, iconURL: interaction.user.displayAvatarURL(), url: authorUrl })
+      .setAuthor({ name: interaction.user.username, iconURL: interaction.user.displayAvatarURL(), url: authorUrl })
       .setColor(0x000af43)
     if (attachment !== null) {
       if (attachment.height !== null) {

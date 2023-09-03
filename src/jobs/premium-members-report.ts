@@ -52,7 +52,7 @@ export default class PremiumMembersReportJob implements BaseJob {
       for (const { member, months } of monthlyPremiumMembers) {
         embed.addFields([
           {
-            name: `${member.user.tag} ${emoji?.toString() ?? ''}`,
+            name: `${member.user.username} ${emoji?.toString() ?? ''}`,
             value: `Has been boosting this server for **${pluralize('month', months, true)}**!`
           }
         ])

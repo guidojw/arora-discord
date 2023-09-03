@@ -17,43 +17,43 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@sentry/integrations": "^7.54.0",
-    "@sentry/node": "^7.54.0",
-    "axios": "^1.4.0",
+    "@sentry/integrations": "^7.66.0",
+    "@sentry/node": "^7.66.0",
+    "axios": "^1.5.0",
     "class-validator": "^0.14.0",
     "common-tags": "^1.8.2",
-    "discord.js": "^14.11.0",
-    "dotenv": "^16.1.4",
+    "discord.js": "^14.13.0",
+    "dotenv": "^16.3.1",
     "emoji-regex": "^10.2.1",
     "inversify": "^6.0.1",
     "lodash": "^4.17.21",
     "node-cron": "^3.0.2",
-    "pg": "^8.11.0",
+    "pg": "^8.11.3",
     "pg-hstore": "^2.3.4",
     "pluralize": "^8.0.0",
-    "typeorm": "^0.3.16",
+    "typeorm": "^0.3.17",
     "ws": "^8.13.0"
   },
   "devDependencies": {
     "@guidojw/bloxy": "^5.7.6",
     "@types/common-tags": "^1.8.1",
-    "@types/lodash": "^4.14.195",
-    "@types/node": "^18.16.16",
-    "@types/node-cron": "^3.0.7",
-    "@types/pluralize": "^0.0.29",
-    "@types/ws": "^8.5.4",
-    "@typescript-eslint/eslint-plugin": "^5.59.9",
-    "eslint": "^8.42.0",
-    "eslint-config-standard-with-typescript": "^35.0.0",
-    "eslint-plugin-import": "^2.27.5",
-    "eslint-plugin-n": "^16.0.0",
+    "@types/lodash": "^4.14.197",
+    "@types/node": "^18.17.14",
+    "@types/node-cron": "^3.0.8",
+    "@types/pluralize": "^0.0.30",
+    "@types/ws": "^8.5.5",
+    "@typescript-eslint/eslint-plugin": "^6.5.0",
+    "eslint": "^8.48.0",
+    "eslint-config-standard-with-typescript": "^39.0.0",
+    "eslint-plugin-import": "^2.28.1",
+    "eslint-plugin-n": "^16.0.2",
     "eslint-plugin-promise": "^6.1.1",
-    "eslint-plugin-unicorn": "^47.0.0",
+    "eslint-plugin-unicorn": "^48.0.1",
     "reflect-metadata": "^0.1.13",
-    "typescript": "^5.0.4"
+    "typescript": "^5.2.2"
   },
   "engines": {
     "node": ">=16.6.0"
   },
-  "packageManager": "yarn@3.6.0"
+  "packageManager": "yarn@3.6.3"
 }

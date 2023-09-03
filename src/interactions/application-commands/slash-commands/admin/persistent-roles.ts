@@ -70,7 +70,7 @@ export default class PersistentRolesCommand extends SubCommandCommand<Persistent
     }
 
     const embed = new EmbedBuilder()
-      .setTitle(`${member.user.tag}'s Persistent Roles`)
+      .setTitle(`${member.user.username}'s Persistent Roles`)
       .setDescription(persistentRoles.map(role => role.toString()).toString())
       .setColor(context.primaryColor ?? applicationConfig.defaultColor)
     await interaction.reply({ embeds: [embed] })
