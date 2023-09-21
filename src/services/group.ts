@@ -148,7 +148,7 @@ export function getTrainingRow (training: Training, { users }: { users: GetUsers
   const username = users.find(user => user.id === training.authorId)?.name ?? training.authorId
   const date = new Date(training.date)
 
-  return `${training.id}. **${training.type?.abbreviation ?? '??'}** training on <t:${date.getTime()}:d> at <t:${date.getTime()}:t>, hosted by **${username}**.`
+  return `${training.id}. **${training.type?.abbreviation ?? '??'}** training on <t:${date.getTime() / 1000}:d> at <t:${date.getTime() / 1000}:t>, hosted by **${username}**.`
 }
 
 export function groupTrainingsByType (trainings: Training[]): Record<string, Training[]> {

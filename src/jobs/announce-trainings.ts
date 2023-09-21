@@ -81,8 +81,6 @@ async function getTrainingsEmbed (groupId: number, trainings: Training[], author
 
   const types = Object.keys(groupedTrainings)
   const embed = new EmbedBuilder()
-    .setFooter({ text: 'Updated at' })
-    .setTimestamp()
 
   for (let i = 0; i < types.length; i++) {
     const type = types[i]
@@ -110,7 +108,7 @@ function getTrainingMessage (training: Training, authors: GetUsers): string {
   const date = new Date(training.date)
   const author = authors.find(author => author.id === training.authorId)
 
-  let result = `:calendar_spiral: <t:${date.getTime()}:d> at <t:${date.getTime()}:t> hosted by ${author?.name ?? training.authorId}`
+  let result = `:calendar_spiral: <t:${date.getTime() / 1000}:d> at <t:${date.getTime() / 1000}:t> hosted by ${author?.name ?? training.authorId}`
 
   if (training.notes !== null) {
     result += `\n> :notepad_spiral: ${training.notes}`
@@ -122,7 +120,7 @@ function getNextTrainingMessage (training: Training, authors: GetUsers): string 
   const date = new Date(training.date)
   const author = authors.find(author => author.id === training.authorId)
 
-  let result = `${training.type?.abbreviation ?? '(Deleted)'} training on <t:${date.getTime()}:d> at <t:${date.getTime()}:t> hosted by ${author?.name ?? training.authorId}`
+  let result = `${training.type?.abbreviation ?? '(Deleted)'} training on <t:${date.getTime() / 1000}:d> at <t:${date.getTime() / 1000}:t> hosted by ${author?.name ?? training.authorId}`
 
   if (training.notes !== null) {
     result += `\n${training.notes}`
