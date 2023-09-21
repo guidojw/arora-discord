@@ -13,7 +13,7 @@ interface TraniningCreatePacket {
 }
 
 @injectable()
-export default class TrainingCreatePackageHandler implements BaseHandler {
+export default class TrainingCreatePacketHandler implements BaseHandler {
   @inject(TYPES.Job)
   @named('announceTrainings')
   private readonly announceTrainingsJob!: AnnounceTrainingsJob

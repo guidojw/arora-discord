@@ -14,7 +14,7 @@ interface TraniningCancelPacket {
 }
 
 @injectable()
-export default class TrainingCancelPackageHandler implements BaseHandler {
+export default class TrainingCancelPacketHandler implements BaseHandler {
   @inject(TYPES.Job)
   @named('announceTrainings')
   private readonly announceTrainingsJob!: AnnounceTrainingsJob
