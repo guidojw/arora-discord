@@ -1,3 +1,4 @@
+import cron, { type JobCallback } from 'node-schedule'
 import { groupService, userService } from '../services'
 import type BaseJob from './base'
 import { EmbedBuilder } from 'discord.js'
@@ -8,7 +9,6 @@ import { applicationAdapter } from '../adapters'
 import applicationConfig from '../configs/application'
 import { injectable } from 'inversify'
 import lodash from 'lodash'
-import { timeUtil } from '../utils'
 
 @injectable()
 export default class AnnounceTrainingsJob implements BaseJob {
@@ -26,6 +26,18 @@ export default class AnnounceTrainingsJob implements BaseJob {
       'GET',
       `v1/groups/${context.robloxGroupId}/trainings?sort=date`
     )).data
+    for (const training of trainings) {
+      const jobName = `training_${training.id}`
+      const job = cron.scheduledJobs[jobName]
+      if (typeof job === 'undefined') {
+        cron.scheduleJob(
+          jobName,
+          new Date(new Date(training.date).getTime() + 15 * 60_000),
+          this.run.bind(this, context) as JobCallback
+        )
+      }
+    }
+
     const authorIds = [...new Set(trainings.map(training => training.authorId))]
     const authors = await userService.getUsers(authorIds)
 

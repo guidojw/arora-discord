@@ -32,7 +32,7 @@ import BaseStructure from './base'
 import type { Guild as GuildEntity } from '../entities'
 import type { VerificationProvider } from '../utils/constants'
 import applicationConfig from '../configs/application'
-import cron from 'node-cron'
+import cron from 'node-schedule'
 import cronConfig from '../configs/cron'
 
 const { TYPES } = constants
@@ -163,7 +163,7 @@ export default class GuildContext extends BaseStructure<GuildEntity> {
 
     const premiumMembersReportJobConfig = cronConfig.premiumMembersReportJob
     const premiumMembersReportJob = this.jobFactory(premiumMembersReportJobConfig.name)
-    cron.schedule(premiumMembersReportJobConfig.expression, () => {
+    cron.scheduleJob(premiumMembersReportJobConfig.expression, () => {
       Promise.resolve(premiumMembersReportJob.run(this)).catch(console.error)
     })
   }
