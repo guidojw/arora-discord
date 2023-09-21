@@ -11,7 +11,7 @@ export type GetGroupStatus = GetGroup['shout']
 export type GetGroupRole = GetGroupRoles['roles'][0]
 export interface ChangeMemberRole { oldRole: GetGroupRole, newRole: GetGroupRole }
 
-const { getDate, getTime, getTimeZoneAbbreviation } = timeUtil
+const { getDate } = timeUtil
 const { getAbbreviation } = util
 
 /// Move below API types to own package?
@@ -147,10 +147,8 @@ export async function getTrainingEmbeds (trainings: Training[]): Promise<EmbedBu
 export function getTrainingRow (training: Training, { users }: { users: GetUsers }): string {
   const username = users.find(user => user.id === training.authorId)?.name ?? training.authorId
   const date = new Date(training.date)
-  const readableDate = getDate(date)
-  const readableTime = getTime(date)
 
-  return `${training.id}. **${training.type?.abbreviation ?? '??'}** training on **${readableDate}** at **${readableTime} ${getTimeZoneAbbreviation(date)}**, hosted by **${username}**.`
+  return `${training.id}. **${training.type?.abbreviation ?? '??'}** training on <t:${date.getTime()}:d> at <t:${date.getTime()}:t>, hosted by **${username}**.`
 }
 
 export function groupTrainingsByType (trainings: Training[]): Record<string, Training[]> {

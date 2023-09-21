@@ -32,7 +32,7 @@ import BaseStructure from './base'
 import type { Guild as GuildEntity } from '../entities'
 import type { VerificationProvider } from '../utils/constants'
 import applicationConfig from '../configs/application'
-import cron from 'node-cron'
+import cron from 'node-schedule'
 import cronConfig from '../configs/cron'
 
 const { TYPES } = constants
@@ -155,18 +155,15 @@ export default class GuildContext extends BaseStructure<GuildEntity> {
     }
   }
 
-  public init (): void {
+  public async init (): Promise<void> {
     if (applicationConfig.apiEnabled === true) {
-      const announceTrainingsJobConfig = cronConfig.announceTrainingsJob
-      const announceTrainingsJob = this.jobFactory(announceTrainingsJobConfig.name)
-      cron.schedule(announceTrainingsJobConfig.expression, () => {
-        Promise.resolve(announceTrainingsJob.run(this)).catch(console.error)
-      })
+      const announceTrainingsJob = this.jobFactory('announceTrainings')
+      await announceTrainingsJob.run(this)
     }
 
     const premiumMembersReportJobConfig = cronConfig.premiumMembersReportJob
     const premiumMembersReportJob = this.jobFactory(premiumMembersReportJobConfig.name)
-    cron.schedule(premiumMembersReportJobConfig.expression, () => {
+    cron.scheduleJob(premiumMembersReportJobConfig.expression, () => {
       Promise.resolve(premiumMembersReportJob.run(this)).catch(console.error)
     })
   }

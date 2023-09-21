@@ -4,7 +4,7 @@ import type { BaseJob } from '../jobs'
 import { RewriteFrames } from '@sentry/integrations'
 import { constants } from '../utils'
 import container from '../configs/container'
-import cron from 'node-cron'
+import cron from 'node-schedule'
 import cronConfig from '../configs/cron'
 import dataSource from '../configs/data-source'
 
@@ -29,7 +29,7 @@ export async function init (): Promise<AroraClient> {
   const jobFactory = container.get<(jobName: string) => BaseJob>(TYPES.JobFactory)
   const healthCheckJobConfig = cronConfig.healthCheckJob
   const healthCheckJob = jobFactory(healthCheckJobConfig.name)
-  cron.schedule(
+  cron.scheduleJob(
     healthCheckJobConfig.expression,
     () => {
       Promise.resolve(healthCheckJob.run('main')).catch(console.error)

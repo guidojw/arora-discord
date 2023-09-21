@@ -12,7 +12,7 @@ import { applicationAdapter } from '../../../../adapters'
 import applicationConfig from '../../../../configs/application'
 
 const { TYPES } = constants
-const { getDate, getDateInfo, getTime, getTimeInfo, getTimeZoneAbbreviation } = timeUtil
+const { getDate, getDateInfo, getTime, getTimeInfo } = timeUtil
 const { noChannels, noTags, noUrls, validDate, validTime, validators } = argumentUtil
 
 const parseKey = (val: string): string => val.toLowerCase()
@@ -237,8 +237,8 @@ export default class TrainingsCommand extends SubCommandCommand<TrainingsCommand
         .setTitle(`Training ${training.id}`)
         .addFields([
           { name: 'Type', value: training.type?.abbreviation ?? 'Deleted', inline: true },
-          { name: 'Date', value: getDate(date), inline: true },
-          { name: 'Time', value: `${getTime(date)} ${getTimeZoneAbbreviation(date)}`, inline: true },
+          { name: 'Date', value: `<t:${date.getTime()}:d>`, inline: true },
+          { name: 'Time', value: `<t:${date.getTime()}:t>`, inline: true },
           { name: 'Host', value: username, inline: true }
         ])
         .setColor(context.primaryColor ?? applicationConfig.defaultColor)
