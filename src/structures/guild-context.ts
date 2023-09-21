@@ -155,13 +155,10 @@ export default class GuildContext extends BaseStructure<GuildEntity> {
     }
   }
 
-  public init (): void {
+  public async init (): Promise<void> {
     if (applicationConfig.apiEnabled === true) {
-      const announceTrainingsJobConfig = cronConfig.announceTrainingsJob
-      const announceTrainingsJob = this.jobFactory(announceTrainingsJobConfig.name)
-      cron.schedule(announceTrainingsJobConfig.expression, () => {
-        Promise.resolve(announceTrainingsJob.run(this)).catch(console.error)
-      })
+      const announceTrainingsJob = this.jobFactory('announceTrainings')
+      await announceTrainingsJob.run(this)
     }
 
     const premiumMembersReportJobConfig = cronConfig.premiumMembersReportJob
