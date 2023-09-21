@@ -81,8 +81,6 @@ async function getTrainingsEmbed (groupId: number, trainings: Training[], author
 
   const types = Object.keys(groupedTrainings)
   const embed = new EmbedBuilder()
-    .setFooter({ text: 'Updated at' })
-    .setTimestamp()
 
   for (let i = 0; i < types.length; i++) {
     const type = types[i]
