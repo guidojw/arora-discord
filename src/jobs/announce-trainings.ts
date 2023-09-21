@@ -8,16 +8,13 @@ import { applicationAdapter } from '../adapters'
 import applicationConfig from '../configs/application'
 import { injectable } from 'inversify'
 import lodash from 'lodash'
-import pluralize from 'pluralize'
 import { timeUtil } from '../utils'
-
-const { getDate, getTime, getTimeZoneAbbreviation } = timeUtil
 
 @injectable()
 export default class AnnounceTrainingsJob implements BaseJob {
   public async run (context: GuildContext): Promise<void> {
     if (context.robloxGroupId === null) {
-      return
+      throw new Error(`GuildContext with id '${context.id}' has no robloxGroupId`)
     }
     const trainingsInfoPanel = context.panels.resolve('trainingsInfoPanel')
     const trainingsPanel = context.panels.resolve('trainingsPanel')
@@ -36,10 +33,6 @@ export default class AnnounceTrainingsJob implements BaseJob {
     if (trainingsInfoPanel?.message != null) {
       const embed = trainingsInfoPanel.embed.setColor(context.primaryColor ?? applicationConfig.defaultColor)
       const now = new Date()
-
-      if (typeof embed.data.description !== 'undefined') {
-        embed.setDescription(embed.data.description.replace(/{timezone}/g, getTimeZoneAbbreviation(now)))
-      }
 
       const nextTraining = trainings.find(training => new Date(training.date) > now)
       embed.addFields([
@@ -102,29 +95,10 @@ async function getTrainingsEmbed (groupId: number, trainings: Training[], author
 }
 
 function getTrainingMessage (training: Training, authors: GetUsers): string {
-  const now = new Date()
-  const today = now.getDate()
   const date = new Date(training.date)
-  const timeString = getTime(date)
-  const trainingDay = date.getDate()
-  const dateString = trainingDay === today ? 'Today' : trainingDay === today + 1 ? 'Tomorrow' : getDate(date)
   const author = authors.find(author => author.id === training.authorId)
-  const hourDifference = date.getHours() - now.getHours()
 
-  let result = `:calendar_spiral: **${dateString}** at **${timeString}** hosted by ${author?.name ?? training.authorId}`
-
-  if (trainingDay === today && hourDifference <= 5) {
-    if (hourDifference <= 1) {
-      const minuteDifference = hourDifference * 60 + date.getMinutes() - now.getMinutes()
-      if (minuteDifference >= 0) {
-        result += `\n> :alarm_clock: Starts in: **${pluralize('minute', minuteDifference, true)}**`
-      } else {
-        result += `\n> :alarm_clock: Started **${pluralize('minute', -1 * minuteDifference, true)}** ago`
-      }
-    } else {
-      result += `\n> :alarm_clock: Starts in: **${pluralize('hour', hourDifference, true)}**`
-    }
-  }
+  let result = `:calendar_spiral: <t:${date.getTime()}:d> at <t:${date.getTime()}:t> hosted by ${author?.name ?? training.authorId}`
 
   if (training.notes !== null) {
     result += `\n> :notepad_spiral: ${training.notes}`
@@ -133,15 +107,10 @@ function getTrainingMessage (training: Training, authors: GetUsers): string {
 }
 
 function getNextTrainingMessage (training: Training, authors: GetUsers): string {
-  const now = new Date()
-  const today = now.getDate()
   const date = new Date(training.date)
-  const timeString = getTime(date)
-  const trainingDay = date.getDate()
-  const dateString = trainingDay === today ? 'today' : trainingDay === today + 1 ? 'tomorrow' : getDate(date)
   const author = authors.find(author => author.id === training.authorId)
 
-  let result = `${training.type?.abbreviation ?? '(Deleted)'} **${dateString}** at **${timeString}** hosted by ${author?.name ?? training.authorId}`
+  let result = `${training.type?.abbreviation ?? '(Deleted)'} training on <t:${date.getTime()}:d> at <t:${date.getTime()}:t> hosted by ${author?.name ?? training.authorId}`
 
   if (training.notes !== null) {
     result += `\n${training.notes}`

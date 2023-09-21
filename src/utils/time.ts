@@ -53,12 +53,3 @@ export function getTimeInfo (timeString: string): TimeInfo {
   const minutes = parseInt(timeString.substring(timeString.indexOf(':') + 1, timeString.length))
   return { hours, minutes }
 }
-
-export function getTimeZoneAbbreviation (date: Date): string {
-  return date.toLocaleTimeString('en-us', { hour12: false, hour: '2-digit', minute: '2-digit', timeZoneName: 'long' })
-    .replace(/^(2[0-4]|[0-1][1-9]):[0-5]\d\s/, '')
-    .split(' ')
-    .filter(word => word !== 'Standard')
-    .map(word => word.charAt(0))
-    .join('')
-}
