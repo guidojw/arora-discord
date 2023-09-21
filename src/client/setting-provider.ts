@@ -84,6 +84,6 @@ export default class SettingProvider {
     // Remove more from the relations and put it here if above error returns..
 
     const context = this.guildContexts.add(data, { id: data.id, extras: [guild] })
-    context.init()
+    await context.init()
   }
 }

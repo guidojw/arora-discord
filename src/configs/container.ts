@@ -233,6 +233,12 @@ bind<interfaces.AutoNamedFactory<BaseJob>>(TYPES.JobFactory)
 // Packet Handlers
 bind<BaseHandler>(TYPES.Handler).to(packetHandlers.RankChangePacketHandler)
   .whenTargetTagged('packetHandler', 'rankChange')
+bind<BaseHandler>(TYPES.Handler).to(packetHandlers.TrainingCancelPacketHandler)
+  .whenTargetTagged('packetHandler', 'trainingCancel')
+bind<BaseHandler>(TYPES.Handler).to(packetHandlers.TrainingCreatePacketHandler)
+  .whenTargetTagged('packetHandler', 'trainingCreate')
+bind<BaseHandler>(TYPES.Handler).to(packetHandlers.TrainingUpdatePacketHandler)
+  .whenTargetTagged('packetHandler', 'trainingUpdate')
 
 bind<interfaces.SimpleFactory<BaseHandler, [string]>>(TYPES.PacketHandlerFactory)
   .toFactory<BaseHandler, [string]>(
