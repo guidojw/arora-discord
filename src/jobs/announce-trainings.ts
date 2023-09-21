@@ -32,7 +32,7 @@ export default class AnnounceTrainingsJob implements BaseJob {
       if (typeof job === 'undefined') {
         cron.scheduleJob(
           jobName,
-          new Date(new Date(training.date).getTime() + 15 * 60_000),
+          new Date(new Date(training.date).getTime() / 1000 + 15 * 60),
           this.run.bind(this, context) as JobCallback
         )
       }
@@ -110,7 +110,7 @@ function getTrainingMessage (training: Training, authors: GetUsers): string {
   const date = new Date(training.date)
   const author = authors.find(author => author.id === training.authorId)
 
-  let result = `:calendar_spiral: <t:${date.getTime()}:d> at <t:${date.getTime()}:t> hosted by ${author?.name ?? training.authorId}`
+  let result = `:calendar_spiral: <t:${date.getTime() / 1000}:d> at <t:${date.getTime() / 1000}:t> hosted by ${author?.name ?? training.authorId}`
 
   if (training.notes !== null) {
     result += `\n> :notepad_spiral: ${training.notes}`
@@ -122,7 +122,7 @@ function getNextTrainingMessage (training: Training, authors: GetUsers): string 
   const date = new Date(training.date)
   const author = authors.find(author => author.id === training.authorId)
 
-  let result = `${training.type?.abbreviation ?? '(Deleted)'} training on <t:${date.getTime()}:d> at <t:${date.getTime()}:t> hosted by ${author?.name ?? training.authorId}`
+  let result = `${training.type?.abbreviation ?? '(Deleted)'} training on <t:${date.getTime() / 1000}:d> at <t:${date.getTime() / 1000}:t> hosted by ${author?.name ?? training.authorId}`
 
   if (training.notes !== null) {
     result += `\n${training.notes}`
