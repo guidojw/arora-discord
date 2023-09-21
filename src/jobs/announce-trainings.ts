@@ -32,7 +32,7 @@ export default class AnnounceTrainingsJob implements BaseJob {
       if (typeof job === 'undefined') {
         cron.scheduleJob(
           jobName,
-          new Date(new Date(training.date).getTime() / 1000 + 15 * 60),
+          new Date(new Date(training.date).getTime() + 15 * 60_000),
           this.run.bind(this, context) as JobCallback
         )
       }
