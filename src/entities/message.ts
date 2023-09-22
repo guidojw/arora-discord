@@ -3,7 +3,7 @@ import { IsArray, IsNumberString, IsOptional, ValidateIf, ValidateNested } from 
 import Channel from './channel'
 import Guild from './guild'
 import Panel from './panel'
-import RoleMessage from './role-message'
+import RoleList from './role-list'
 import TicketType from './ticket-type'
 
 @Entity('messages')
@@ -42,9 +42,9 @@ export default class Message {
   @ValidateNested()
   public ticketType?: TicketType | null
 
-  @OneToMany(() => RoleMessage, roleMessage => roleMessage.message)
-  @ValidateIf(message => typeof message.roleMessages !== 'undefined')
+  @OneToMany(() => RoleList, roleList => roleList.message)
+  @ValidateIf(message => typeof message.roleLists !== 'undefined')
   @ValidateNested()
   @IsArray()
-  public roleMessages?: RoleMessage[]
+  public roleLists?: RoleList[]
 }

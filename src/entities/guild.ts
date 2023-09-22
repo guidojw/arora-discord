@@ -16,7 +16,7 @@ import Message from './message'
 import Panel from './panel'
 import Role from './role'
 import RoleBinding from './role-binding'
-import RoleMessage from './role-message'
+import RoleList from './role-list'
 import Tag from './tag'
 import Ticket from './ticket'
 import TicketType from './ticket-type'
@@ -98,11 +98,11 @@ export default class Guild {
   @IsArray()
   public roleBindings?: RoleBinding[]
 
-  @OneToMany(() => RoleMessage, roleMessage => roleMessage.guild)
-  @ValidateIf(guild => typeof guild.roleMessages !== 'undefined')
+  @OneToMany(() => RoleList, roleList => roleList.guild)
+  @ValidateIf(guild => typeof guild.roleLists !== 'undefined')
   @ValidateNested()
   @IsArray()
-  public roleMessages?: RoleMessage[]
+  public roleLists?: RoleList[]
 
   @OneToMany(() => Group, group => group.guild)
   @ValidateIf(guild => typeof guild.groups !== 'undefined')

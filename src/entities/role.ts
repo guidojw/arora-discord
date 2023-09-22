@@ -4,7 +4,7 @@ import Group from './group'
 import Guild from './guild'
 import Member from './member'
 import RoleBinding from './role-binding'
-import RoleMessage from './role-message'
+import RoleRoleList from './role-role-list'
 
 @Entity('roles')
 export default class Role {
@@ -28,11 +28,11 @@ export default class Role {
   @IsArray()
   public groups?: Group[]
 
-  @OneToMany(() => RoleMessage, roleMessage => roleMessage.role)
-  @ValidateIf(role => typeof role.roleMessages !== 'undefined')
+  @OneToMany(() => RoleRoleList, roleRoleList => roleRoleList.role)
+  @ValidateIf(role => typeof role.roleRoleLists !== 'undefined')
   @ValidateNested()
   @IsArray()
-  public roleMessages?: RoleMessage[]
+  public roleRoleLists?: RoleRoleList[]
 
   @OneToMany(() => RoleBinding, roleBinding => roleBinding.role)
   @ValidateIf(role => typeof role.roleBindings !== 'undefined')
