@@ -12,7 +12,8 @@ import {
 } from 'discord.js'
 import { type AnyFunction, constants } from '../utils'
 import { type BaseHandler, SettingProvider, WebSocketManager } from '.'
-import { decorate, inject, injectable, type interfaces, optional } from 'inversify'
+import { decorate, inject, injectable, type interfaces, multiInject, optional } from 'inversify'
+import type { BaseMigration } from './migrations'
 import applicationConfig from '../configs/application'
 
 const { TYPES } = constants
@@ -48,6 +49,9 @@ export default class AroraClient<Ready extends boolean = boolean> extends Client
   @optional()
   private readonly aroraWs?: WebSocketManager
 
+  @multiInject(TYPES.Migration)
+  private readonly migrations!: BaseMigration[]
+
   public mainGuild: Guild | null = null
 
   private currentActivity: number = 0
@@ -60,6 +64,7 @@ export default class AroraClient<Ready extends boolean = boolean> extends Client
   }
 
   private async ready (): Promise<void> {
+    await this.runMigrations()
     await this.settingProvider.init(this)
 
     const mainGuildId = process.env.NODE_ENV === 'production'
@@ -130,6 +135,14 @@ export default class AroraClient<Ready extends boolean = boolean> extends Client
     const usedToken = await super.login(token)
     this.aroraWs?.connect()
     return usedToken
+  }
+
+  private async runMigrations (): Promise<void> {
+    for (const migration of this.migrations) {
+      if (await migration.shouldRun?.(this) ?? true) {
+        await migration.run(this)
+      }
+    }
   }
 
   private bindEvent (eventName: keyof ClientEvents): void {
