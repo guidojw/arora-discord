@@ -64,8 +64,8 @@ export default class AroraClient<Ready extends boolean = boolean> extends Client
   }
 
   private async ready (): Promise<void> {
-    await this.runMigrations()
     await this.settingProvider.init(this)
+    await this.runMigrations()
 
     const mainGuildId = process.env.NODE_ENV === 'production'
       ? applicationConfig.productionMainGuildId
@@ -139,8 +139,8 @@ export default class AroraClient<Ready extends boolean = boolean> extends Client
 
   private async runMigrations (): Promise<void> {
     for (const migration of this.migrations) {
-      if (await migration.shouldRun?.(this) ?? true) {
-        await migration.run(this)
+      if (await migration.shouldRun?.(this as AroraClient<true>) ?? true) {
+        await migration.run(this as AroraClient<true>)
       }
     }
   }
