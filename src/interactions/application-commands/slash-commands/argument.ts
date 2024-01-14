@@ -28,12 +28,8 @@ interface ResolvedArgumentOptions<T> extends Omit<ArgumentOptions<T>, 'type'> {
 }
 
 type ResolvedArgumentTypes<T extends string> = T extends `${infer U}|${infer V}`
-  ? U extends keyof MappedArgumentTypes
-    ? [MappedArgumentTypes[U], ...ResolvedArgumentTypes<V>]
-    : never
-  : T extends keyof MappedArgumentTypes
-    ? [MappedArgumentTypes[T]]
-    : never
+  ? [U extends keyof MappedArgumentTypes ? MappedArgumentTypes[U] : never, ...ResolvedArgumentTypes<V>]
+  : [T extends keyof MappedArgumentTypes ? MappedArgumentTypes[T] : never]
 
 @injectable()
 export default class Argument<T> {
