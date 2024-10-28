@@ -38,7 +38,7 @@
     "@guidojw/bloxy": "^5.7.6",
     "@types/common-tags": "^1.8.1",
     "@types/lodash": "^4.14.197",
-    "@types/node": "^18.17.14",
+    "@types/node": "^20.17.2",
     "@types/node-schedule": "^2.1.0",
     "@types/pluralize": "^0.0.30",
     "@types/ws": "^8.5.5",
