@@ -230,7 +230,7 @@ export default class TrainingsCommand extends SubCommandCommand<TrainingsCommand
     if (id !== null) {
       const training: Training = (await applicationAdapter('GET', `v1/groups/${context.robloxGroupId}/trainings/${id}`))
         .data
-      const username = (await userService.getUser(training.authorId)).name
+      const username = await userService.getUsername(training.authorId)
       const date = new Date(training.date)
 
       const embed = new EmbedBuilder()

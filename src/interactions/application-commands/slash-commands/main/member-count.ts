@@ -44,7 +44,7 @@ export default class MemberCountCommand extends Command {
     const group = await groupService.getGroup(id)
 
     const embed = new EmbedBuilder()
-      .addFields([{ name: `${group.name}'s member count`, value: group.memberCount.toString() }])
+      .addFields([{ name: `${group.displayName}'s member count`, value: group.memberCount.toString() }])
       .setColor(context?.primaryColor ?? applicationConfig.defaultColor)
     await interaction.reply({ embeds: [embed] })
   }
