@@ -14,7 +14,7 @@ export interface GetUser {
   readonly id: string
   readonly name: string
   readonly displayName: string
-  readonly about: string
+  readonly about?: string
   readonly locale: string
   readonly premium: boolean
   readonly idVerified?: boolean

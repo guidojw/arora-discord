@@ -56,7 +56,7 @@ export default class WhoIsCommand extends Command {
       .setThumbnail(`https://www.roblox.com/outfit-thumbnail/image?width=150&height=150&format=png&userOutfitId=${outfits[0]?.id ?? 0}`)
       .setColor(context?.primaryColor ?? applicationConfig.defaultColor)
       .addFields([
-        { name: 'Blurb', value: userInfo.about !== '' ? userInfo.about : 'No blurb' },
+        { name: 'Blurb', value: userInfo.about ?? 'No blurb' },
         { name: 'Join Date', value: getDate(new Date(userInfo.createTime)), inline: true },
         { name: 'Account Age', value: pluralize('day', age, true), inline: true },
         { name: '\u200b', value: '\u200b', inline: true }
