@@ -1,20 +1,81 @@
 import * as discordService from './discord'
 import * as userService from '../services/user'
-import type { GetGroup, GetGroupRoles } from '@guidojw/bloxy/dist/client/apis/GroupsAPI'
-import { applicationAdapter, robloxAdapter } from '../adapters'
 import { timeUtil, util } from '../utils'
 import type { EmbedBuilder } from 'discord.js'
 import type { GetUsers } from './user'
+import { applicationAdapter } from '../adapters'
 import pluralize from 'pluralize'
-
-export type GetGroupStatus = GetGroup['shout']
-export type GetGroupRole = GetGroupRoles['roles'][0]
-export interface ChangeMemberRole { oldRole: GetGroupRole, newRole: GetGroupRole }
 
 const { getDate } = timeUtil
 const { getAbbreviation } = util
 
+export interface ChangeMemberRole { oldRole: GroupRole, newRole: GroupRole }
+
 /// Move below API types to own package?
+export interface Group {
+  readonly path: string
+  readonly createTime: string
+  readonly updateTime: string
+  readonly id: string
+  readonly displayName: string
+  readonly description: string
+  readonly owner: string
+  readonly memberCount: number
+  readonly publicEntryAllowed: number
+  readonly locked: boolean
+  readonly verified: boolean
+}
+
+export interface GroupRole {
+  readonly path: string
+  readonly createTime: string
+  readonly updateTime: string
+  readonly id: string
+  readonly displayName: string
+  readonly description: string
+  readonly rank: number
+  readonly memberCount: number
+  readonly permissions: GroupRolePermissions
+}
+
+export interface GroupRolePermissions {
+  viewWallPosts: boolean
+  createWallPosts: boolean
+  deleteWallPosts: boolean
+  viewGroupShout: boolean
+  createGroupShout: boolean
+  changeRank: boolean
+  acceptRequests: boolean
+  exileMembers: boolean
+  manageRelationships: boolean
+  viewAuditLog: boolean
+  spendGroupFunds: boolean
+  advertiseGroup: boolean
+  createAvatarItems: boolean
+  manageAvatarItems: boolean
+  manageGroupUniverses: boolean
+  viewUniverseAnalytics: boolean
+  createApiKeys: boolean
+  manageApiKeys: boolean
+  banMembers: boolean
+  viewForums: boolean
+  manageCategories: boolean
+  createPosts: boolean
+  lockPosts: boolean
+  pinPosts: boolean
+  removePosts: boolean
+  createComments: boolean
+  removeComments: boolean
+}
+
+export interface GroupShout {
+  readonly path: string
+  readonly createTime: string
+  readonly updateTime: string
+  readonly content: string
+  readonly poster: string
+}
+
 export interface BanExtension {
   readonly id: number
   readonly authorId: number
@@ -62,9 +123,9 @@ export interface TrainingType {
   readonly name: string
 }
 
-export async function getGroup (groupId: number): Promise<GetGroup> {
+export async function getGroup (groupId: number): Promise<Group> {
   try {
-    return (await robloxAdapter('GET', 'groups', `v1/groups/${groupId}`)).data
+    return (await applicationAdapter('GET', `v2/groups/${groupId}`)).data
   } catch (err) {
     throw new Error('Invalid group.')
   }
@@ -86,11 +147,11 @@ export async function getBanEmbeds (groupId: number, bans: Ban[]): Promise<Embed
   )
 }
 
-export function getBanRow (ban: Ban, { users, roles }: { users: GetUsers, roles: GetGroupRoles }): string {
+export function getBanRow (ban: Ban, { users, roles }: { users: GetUsers, roles: GroupRole[] }): string {
   const username = users.find(user => user.id === ban.userId)?.name ?? ban.userId
   const authorName = users.find(user => user.id === ban.authorId)?.name ?? ban.authorId
-  const role = roles.roles.find(role => role.id === ban.roleId)
-  const roleAbbreviation = typeof role !== 'undefined' ? getAbbreviation(role.name) : '??'
+  const role = roles.find(role => Number(role.id) === ban.roleId)
+  const roleAbbreviation = typeof role !== 'undefined' ? getAbbreviation(role.displayName) : '??'
   const dateString = getDate(new Date(ban.date))
 
   let durationString = ''
@@ -163,8 +224,12 @@ export function groupTrainingsByType (trainings: Training[]): Record<string, Tra
   return result
 }
 
-export async function getRoles (groupId: number): Promise<GetGroupRoles> {
-  return (await applicationAdapter('GET', `v1/groups/${groupId}/roles`)).data
+export async function getRole (groupId: number, userId: number): Promise<GroupRole> {
+  return (await applicationAdapter('GET', `v2/users/${userId}/role/${groupId}`)).data
+}
+
+export async function getRoles (groupId: number): Promise<GroupRole[]> {
+  return (await applicationAdapter('GET', `v2/groups/${groupId}/roles`)).data
 }
 
 export async function getTrainingTypes (groupId: number): Promise<TrainingType[]> {
