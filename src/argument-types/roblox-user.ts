@@ -44,7 +44,7 @@ export default class RobloxUserArgumentType extends BaseArgumentType<RobloxUser>
       const id = parseInt(match[0].match(/^(\d+)$/)?.[1] ?? '')
       if (!isNaN(id)) {
         try {
-          const username = (await userService.getUser(id)).name
+          const username = await userService.getUsername(id)
           this.setCache(interaction.id, id, username)
           return true
         } catch {}

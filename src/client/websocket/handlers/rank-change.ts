@@ -20,7 +20,7 @@ export default class RankChangePacketHandler implements BaseHandler {
 
   public async handle ({ data }: { data: RankChangePacket }): Promise<void> {
     const { groupId, userId, rank } = data
-    const username = (await userService.getUser(userId)).name
+    const username = await userService.getUsername(userId)
     for (const context of this.guildContexts.cache.values()) {
       if (context.robloxGroupId === groupId) {
         const roleBindings = await context.roleBindings.fetch()

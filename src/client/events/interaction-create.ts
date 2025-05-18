@@ -30,12 +30,13 @@ export default class InteractionCreateEventHandler implements BaseHandler {
         )
       }
     } catch (err: any) {
+      const errorMessage = err.response?.data?.errors?.[0].message ?? err.toString()
       if (interaction.isRepliable() && !interaction.replied) {
         if (interaction.deferred) {
-          await interaction.editReply(err.toString())
+          await interaction.editReply(errorMessage)
         } else {
           await interaction.reply({
-            content: err.toString(),
+            content: errorMessage,
             ephemeral: true
           })
         }

@@ -3,12 +3,13 @@ import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
 import { Command } from '../base'
 import type { CommandOptions } from '..'
-import type { GetGroupStatus } from '../../../../services/group'
+import type { GroupShout } from '../../../../services/group'
 import type { GuildContext } from '../../../../structures'
 import { GuildContextManager } from '../../../../managers'
 import { applicationAdapter } from '../../../../adapters'
 import applicationConfig from '../../../../configs/application'
 import { constants } from '../../../../utils'
+import { userService } from '../../../../services'
 
 const { TYPES } = constants
 
@@ -25,12 +26,14 @@ export default class GetShoutCommand extends Command {
   public async execute (interaction: ChatInputCommandInteraction<'raw' | 'cached'>): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
 
-    const shout: GetGroupStatus | '' = (await applicationAdapter('GET', `v1/groups/${context.robloxGroupId}/status`)).data
+    const shout: GroupShout = (await applicationAdapter('GET', `v2/groups/${context.robloxGroupId}/shout`)).data
 
-    if (shout !== '' && shout.body !== '') {
+    if (shout.content !== '') {
+      const userId = Number(shout.poster.split('/')[1])
+      const username = await userService.getUsername(userId)
       const embed = new EmbedBuilder()
-        .addFields([{ name: `Current shout by ${shout.poster.username}`, value: shout.body }])
-        .setTimestamp(new Date(shout.updated))
+        .addFields([{ name: `Current shout by ${username}`, value: shout.content }])
+        .setTimestamp(new Date(shout.updateTime))
         .setColor(context.primaryColor ?? applicationConfig.defaultColor)
       await interaction.reply({ embeds: [embed] })
     } else {

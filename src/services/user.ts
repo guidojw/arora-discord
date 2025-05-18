@@ -1,17 +1,24 @@
-import type { GetUserById, GetUsersByUserIds, GetUsersByUsernames } from '@guidojw/bloxy/dist/client/apis/UsersAPI'
+import type { GetUsersByUserIds, GetUsersByUsernames } from '@guidojw/bloxy/dist/client/apis/UsersAPI'
+import { applicationAdapter, robloxAdapter } from '../adapters'
 import type { GetUserOutfits as BloxyGetUserOutfits } from '@guidojw/bloxy/dist/client/apis/AvatarAPI'
-import type { GetUserGroups } from '@guidojw/bloxy/dist/client/apis/GroupsAPI'
-import { robloxAdapter } from '../adapters'
 import { util } from '../utils'
-
-export type GetUsers = GetUsersByUserIds['data']
-export type GetGroupsRoles = GetUserGroups['data']
-export type GetUserOutfits = BloxyGetUserOutfits['data']
 
 const { split } = util
 
-export async function getGroupsRoles (userId: number): Promise<GetGroupsRoles> {
-  return (await robloxAdapter('GET', 'groups', `v1/users/${userId}/groups/roles`)).data.data
+export type GetUsers = GetUsersByUserIds['data']
+export type GetUserOutfits = BloxyGetUserOutfits['data']
+
+export interface GetUser {
+  readonly path: string
+  readonly createTime: string
+  readonly id: string
+  readonly name: string
+  readonly displayName: string
+  readonly about?: string
+  readonly locale: string
+  readonly premium: boolean
+  readonly idVerified?: boolean
+  readonly socialNetworkProfiles?: Record<string, string>
 }
 
 export async function getIdFromUsername (username: string): Promise<number> {
@@ -25,9 +32,13 @@ export async function getIdFromUsername (username: string): Promise<number> {
   return users[0].id
 }
 
-export async function getUser (userId: number): Promise<GetUserById> {
+export async function getUsername (userId: number): Promise<string> {
+  return (await getUser(userId)).name
+}
+
+export async function getUser (userId: number): Promise<GetUser> {
   try {
-    return (await robloxAdapter('GET', 'users', `v1/users/${userId}`)).data
+    return (await applicationAdapter('GET', `v2/users/${userId}`)).data
   } catch (err) {
     throw new Error(`**${userId}** doesn't exist on Roblox.`)
   }
