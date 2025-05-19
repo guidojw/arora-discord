@@ -29,7 +29,7 @@ const AVAILABLE_STATUS_CODES = [
 export default class HttpCatCommand extends Command {
   public async execute (
     interaction: ChatInputCommandInteraction,
-    { statusCode }: { statusCode: number }
+    { statusCode }: { statusCode?: number }
   ): Promise<void> {
     statusCode ??= AVAILABLE_STATUS_CODES[Math.floor(Math.random() * AVAILABLE_STATUS_CODES.length)]
     await interaction.reply(`https://http.cat/${statusCode}`)
