@@ -5,19 +5,14 @@ on:
     - cron: '0 0 * * 1' # https://crontab.guru/#0_0_*_*_1
   workflow_dispatch:
 
-env:
-  IMAGE_NAMES: arora-discord
-
 jobs:
   cleanup:
     name: Cleanup
     runs-on: ubuntu-latest
     steps:
-      - name: Delete old versions
-        uses: snok/container-retention-policy@b56f4ff7539c1f94f01e5dc726671cd619aa8072 # v2.2.1
+      - name: Delete untagged images
+        uses: actions/delete-package-versions@e5bc658cc4c965c472efe991f8beea3981499c55 # v5.0.0
         with:
-          image-names: ${{ env.IMAGE_NAMES }}
-          cut-off: 2 days ago UTC
-          account-type: personal
-          skip-tags: latest,staging
-          token: ${{ secrets.GH_PAT }}
+          package-name: ${{ github.event.repository.name }}
+          package-type: container
+          delete-only-untagged-versions: true
