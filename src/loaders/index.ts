@@ -1,7 +1,6 @@
 import * as Sentry from '@sentry/node'
 import type { AroraClient } from '../client'
 import type { BaseJob } from '../jobs'
-import { RewriteFrames } from '@sentry/integrations'
 import { constants } from '../utils'
 import container from '../configs/container'
 import cron from 'node-schedule'
@@ -17,10 +16,11 @@ export async function init (): Promise<AroraClient> {
       environment: process.env.NODE_ENV,
       release: process.env.BUILD_HASH,
       integrations: [
-        new RewriteFrames({
+        Sentry.rewriteFramesIntegration({
           root: process.cwd()
         })
-      ]
+      ],
+      tracesSampleRate: 0.2
     })
   }
 
