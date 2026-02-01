@@ -127,7 +127,7 @@ export default class TrainsCommand extends SubCommandCommand<TrainsCommand> {
         if (typeof name === 'undefined') {
           return
         }
-        if (!Object.keys(this.trainsCache.get('cache')).includes(name)) {
+        if (!Object.keys(filterTrains(this.trainsCache.get('cache'))).includes(name)) {
           await interaction.reply('Invalid name')
           return
         }
@@ -154,7 +154,7 @@ export default class TrainsCommand extends SubCommandCommand<TrainsCommand> {
         if (typeof name === 'undefined') {
           return
         }
-        if (!Object.keys(this.trainsCache.get('cache')).includes(name)) {
+        if (!Object.keys(filterTrains(this.trainsCache.get('cache'))).includes(name)) {
           await interaction.reply('Invalid name')
           return
         }
