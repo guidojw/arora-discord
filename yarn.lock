@@ -1273,7 +1273,7 @@ __metadata:
     dotenv: "npm:^17.2.3"
     emoji-regex: "npm:^10.2.1"
     eslint: "npm:^8.48.0"
-    eslint-config-standard-with-typescript: "npm:^39.0.0"
+    eslint-config-standard-with-typescript: "npm:^43.0.1"
     eslint-plugin-import: "npm:^2.28.1"
     eslint-plugin-n: "npm:^16.0.2"
     eslint-plugin-promise: "npm:^6.1.1"
@@ -2246,9 +2246,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-config-standard-with-typescript@npm:^39.0.0":
-  version: 39.0.0
-  resolution: "eslint-config-standard-with-typescript@npm:39.0.0"
+"eslint-config-standard-with-typescript@npm:^43.0.1":
+  version: 43.0.1
+  resolution: "eslint-config-standard-with-typescript@npm:43.0.1"
   dependencies:
     "@typescript-eslint/parser": "npm:^6.4.0"
     eslint-config-standard: "npm:17.1.0"
@@ -2259,7 +2259,7 @@ __metadata:
     eslint-plugin-n: "^15.0.0 || ^16.0.0 "
     eslint-plugin-promise: ^6.0.0
     typescript: "*"
-  checksum: 10c0/53c0bc37fb476adc8b1a6c562c0a1f2c832ccf0c4f35c9868aa0a72d528a1e755a4ee97befa9169ade2e4bc6dc262bfef6abb341e2bb3fedd5e1f091583b4512
+  checksum: 10c0/e01d9fb0ee5b3a435417926f9356a572f9ba0393a2db4892421c383830aa29308fbe52ecc8395a2e5fc005acfba4465f470d23fcdf4f9c2060238e9907da0d28
   languageName: node
   linkType: hard
 
