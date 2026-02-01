@@ -1,5 +1,5 @@
+import type { BaseArgumentType, MappedArgumentTypes } from '../../../argument-types'
 import { inject, injectable, type interfaces } from 'inversify'
-import type { BaseArgumentType } from '../../../argument-types'
 import type { ChatInputCommandInteraction } from 'discord.js'
 import type { GuildContextManager } from '../../../managers'
 import { constants } from '../../../utils'
@@ -23,9 +23,13 @@ export interface ArgumentOptions<T> {
   parse?: ParserFunction<T>
 }
 
-interface ArgumentResolvedOptions<T> extends Omit<ArgumentOptions<T>, 'type'> {
+interface ResolvedArgumentOptions<T> extends Omit<ArgumentOptions<T>, 'type'> {
   type?: BaseArgumentType<any> | Array<BaseArgumentType<any>>
 }
+
+type ResolvedArgumentTypes<T extends string> = T extends `${infer U}|${infer V}`
+  ? [U extends keyof MappedArgumentTypes ? MappedArgumentTypes[U] : never, ...ResolvedArgumentTypes<V>]
+  : [T extends keyof MappedArgumentTypes ? MappedArgumentTypes[T] : never]
 
 @injectable()
 export default class Argument<T> {
@@ -95,7 +99,7 @@ export default class Argument<T> {
     )
   }
 
-  private resolveOptions (options: ArgumentOptions<T>): ArgumentResolvedOptions<T> {
+  private resolveOptions (options: ArgumentOptions<T>): ResolvedArgumentOptions<T> {
     let resolvedType
     if (typeof options.type !== 'undefined') {
       if (!options.type.includes('|')) {
