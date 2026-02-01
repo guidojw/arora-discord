@@ -20,6 +20,6 @@ RUN curl -L "https://github.com/lune-org/lune/releases/download/v${LUNE_VERSION}
 COPY . .
 RUN yarn build:prod
 
-RUN chmod +x ./bin/wait-for-it.sh
+RUN chmod -R +x bin/*
 
 CMD yarn start
