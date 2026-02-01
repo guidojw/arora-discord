@@ -119,7 +119,7 @@ export default class TrainsCommand extends SubCommandCommand<TrainsCommand> {
 
         await interaction.reply({
           content: `**${user.username}'s Inventory**`,
-          files: [new AttachmentBuilder(Buffer.from(markdown), { name: `${user.username}-trains.json` })]
+          files: [new AttachmentBuilder(Buffer.from(markdown), { name: `${user.username}-trains.md` })]
         })
         return
       }
