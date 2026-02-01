@@ -25,6 +25,8 @@ export const TYPES = {
   Manager: Symbol.for('Manager'),
   ManagerFactory: Symbol.for('ManagerFactory'),
 
+  Migration: Symbol.for('Migration'),
+
   Structure: Symbol.for('Structure'),
   StructureFactory: Symbol.for('StructureFactory'),
 

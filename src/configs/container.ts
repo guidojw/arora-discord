@@ -8,6 +8,7 @@ import { Argument, type ArgumentOptions, type BaseCommand } from '../interaction
 import {
   AroraClient,
   type BaseHandler,
+  type BaseMigration,
   Dispatcher,
   SettingProvider,
   WebSocketManager,
@@ -293,6 +294,21 @@ bind<interfaces.MultiFactory<managers.BaseManager<number | string, any, unknown>
     }
   }
 )
+
+// Migrations
+container.onActivation(TYPES.Migration, (_context: interfaces.Context, migration: BaseMigration) => {
+  const handler = {
+    apply: function (target: (...args: any[]) => any, thisArgument: BaseMigration, argumentsList: any[]) {
+      return target.apply(thisArgument, [...argumentsList, dataSource.createQueryRunner()])
+    }
+  }
+  if (typeof migration.shouldRun !== 'undefined') {
+    migration.shouldRun = new Proxy(migration.shouldRun, handler)
+  }
+  migration.run = new Proxy(migration.run, handler)
+  migration.revert = new Proxy(migration.revert, handler)
+  return migration
+})
 
 // Structures
 bind<structures.ChannelGroup>(TYPES.Structure).to(structures.ChannelGroup)

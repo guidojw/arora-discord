@@ -1,5 +1,7 @@
+export * from './migrations'
 export * from './websocket'
 export * as eventHandlers from './events'
+export * as migrations from './migrations'
 export type { default as BaseHandler } from './base'
 export { default as AroraClient } from './client'
 export { default as Dispatcher } from './dispatcher'
