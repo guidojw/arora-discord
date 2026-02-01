@@ -12,5 +12,7 @@ dist
 .pnp.*
 yarn-error.log
 
+*.rbxmx*
+
 ecosystem.config.js
 .idea
