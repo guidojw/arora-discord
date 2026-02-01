@@ -1276,7 +1276,7 @@ __metadata:
     eslint-config-standard-with-typescript: "npm:^39.0.0"
     eslint-plugin-import: "npm:^2.28.1"
     eslint-plugin-n: "npm:^16.0.2"
-    eslint-plugin-promise: "npm:^6.1.1"
+    eslint-plugin-promise: "npm:^7.2.1"
     eslint-plugin-unicorn: "npm:^48.0.1"
     fuse.js: "npm:^7.1.0"
     inversify: "npm:^6.0.1"
@@ -2355,12 +2355,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-promise@npm:^6.1.1":
-  version: 6.1.1
-  resolution: "eslint-plugin-promise@npm:6.1.1"
+"eslint-plugin-promise@npm:^7.2.1":
+  version: 7.2.1
+  resolution: "eslint-plugin-promise@npm:7.2.1"
+  dependencies:
+    "@eslint-community/eslint-utils": "npm:^4.4.0"
   peerDependencies:
-    eslint: ^7.0.0 || ^8.0.0
-  checksum: 10c0/ec705741c110cd1cb4d702776e1c7f7fe60b671b71f706c88054ab443cf2767aae5a663928fb426373ba1095eaeda312a740a4f880546631f0e0727f298b3393
+    eslint: ^7.0.0 || ^8.0.0 || ^9.0.0
+  checksum: 10c0/d494982faeeafbd2aa5fae9cbceca546169a8399000f72d5d940fa5c4ba554612903bcafbb8033647179e5d21ccf1d621b433d089695f7f47ce3d9fcf4cd0abf
   languageName: node
   linkType: hard
 
