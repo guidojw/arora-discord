@@ -120,6 +120,8 @@ bind<BaseCommand>(TYPES.Command).to(applicationCommands.ShoutCommand)
   .whenTargetTagged('command', 'shout')
 bind<BaseCommand>(TYPES.Command).to(applicationCommands.TrainingsCommand)
   .whenTargetTagged('command', 'trainings')
+bind<BaseCommand>(TYPES.Command).to(applicationCommands.TrainsCommand)
+  .whenTargetTagged('command', 'trains')
 
 bind<BaseCommand>(TYPES.Command).to(applicationCommands.InfoCommand)
   .whenTargetTagged('command', 'info')
@@ -379,5 +381,8 @@ bind<Repository<entities.TicketType>>(TYPES.TicketTypeRepository).toDynamicValue
 // Services
 bind<services.ChannelLinkService>(TYPES.ChannelLinkService).to(services.ChannelLinkService)
 bind<services.PersistentRoleService>(TYPES.PersistentRoleService).to(services.PersistentRoleService)
+
+// Miscellaneous
+bind<Map<string, any>>(TYPES.TrainsCache).toConstantValue(new Map())
 
 export default container

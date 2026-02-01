@@ -19,17 +19,22 @@
   "dependencies": {
     "@sentry/node": "^9.27.0",
     "axios": "^1.5.0",
+    "bree": "^9.2.8",
     "class-validator": "^0.14.0",
     "common-tags": "^1.8.2",
     "discord.js": "^14.13.0",
     "dotenv": "^17.2.3",
     "emoji-regex": "^10.2.1",
+    "fuse.js": "^7.1.0",
     "inversify": "^6.0.1",
     "lodash": "^4.17.21",
+    "lua-json": "^1.0.1",
+    "markdown-table-ts": "^1.0.3",
     "node-schedule": "^2.1.1",
     "pg": "^8.11.3",
     "pg-hstore": "^2.3.4",
     "pluralize": "^8.0.0",
+    "rozod": "^6.1.1",
     "typeorm": "^0.3.17",
     "ws": "^8.13.0"
   },
@@ -37,6 +42,7 @@
     "@guidojw/bloxy": "^5.7.6",
     "@types/common-tags": "^1.8.1",
     "@types/lodash": "^4.14.197",
+    "@types/lua-json": "^1.0.3",
     "@types/node": "^24.10.4",
     "@types/node-schedule": "^2.1.0",
     "@types/pluralize": "^0.0.30",
@@ -49,7 +55,7 @@
     "eslint-plugin-promise": "^6.1.1",
     "eslint-plugin-unicorn": "^48.0.1",
     "reflect-metadata": "^0.1.13",
-    "typescript": "^5.2.2"
+    "typescript": "^5.7.3"
   },
   "engines": {
     "node": ">=16.6.0"

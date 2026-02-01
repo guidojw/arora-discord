@@ -46,7 +46,10 @@ export const TYPES = {
 
   // Services
   ChannelLinkService: Symbol.for('ChannelLinkService'),
-  PersistentRoleService: Symbol.for('PersistentRoleService')
+  PersistentRoleService: Symbol.for('PersistentRoleService'),
+
+  // Miscellaneous
+  TrainsCache: Symbol.for('TrainsCache')
 }
 
 export enum GuildSetting {
