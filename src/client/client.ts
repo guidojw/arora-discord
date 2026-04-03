@@ -122,8 +122,9 @@ export default class AroraClient<Ready extends boolean = boolean> extends Client
     user: PartialTextBasedChannelFields,
     ...args: Parameters<PartialTextBasedChannelFields['send']>
   ): Promise<Message | null> {
-    return await failSilently(user.send.bind(user, ...args), [50007])
-    // 50007: Cannot send messages to this user, user probably has DMs closed.
+    return await failSilently(user.send.bind(user, ...args), [50007, 50278])
+    // 50007: Cannot send messages to this user, user has DMs closed.
+    // 50278: Cannot send messages to this user, user is not in a mutual guild.
   }
 
   public override async login (token?: string): Promise<string> {
