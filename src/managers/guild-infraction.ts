@@ -2,7 +2,7 @@ import { type GuildContext, Infraction, type InfractionUpdateOptions } from '../
 import { inject, injectable } from 'inversify'
 import { DataManager } from './base'
 import type { Infraction as InfractionEntity } from '../entities'
-import { InfractionType } from '../utils/constants'
+import type { InfractionType } from '../utils/constants'
 import { Repository } from 'typeorm'
 import { constants } from '../utils'
 

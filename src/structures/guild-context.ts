@@ -14,10 +14,11 @@ import {
   type TextChannelResolvable,
   type User
 } from 'discord.js'
-import type { Group, Panel, RoleBinding, RoleMessage, Tag, Ticket, TicketType } from '.'
+import type { Group, Infraction, Panel, RoleBinding, RoleMessage, Tag, Ticket, TicketType } from '.'
 import {
   GuildContextManager,
   type GuildGroupManager,
+  type GuildInfractionManager,
   type GuildPanelManager,
   type GuildRoleBindingManager,
   type GuildRoleMessageManager,
@@ -62,6 +63,7 @@ export default class GuildContext extends BaseStructure<GuildEntity> {
   public readonly jobFactory!: interfaces.AutoNamedFactory<BaseJob>
 
   public readonly groups: GuildGroupManager
+  public readonly infractions: GuildInfractionManager
   public readonly panels: GuildPanelManager
   public readonly roleBindings: GuildRoleBindingManager
   public readonly roleMessages: GuildRoleMessageManager
@@ -86,6 +88,7 @@ export default class GuildContext extends BaseStructure<GuildEntity> {
     super()
 
     this.groups = managerFactory<GuildGroupManager, Group>('GuildGroupManager')(this)
+    this.infractions = managerFactory<GuildInfractionManager, Infraction>('GuildInfractionManager')(this)
     this.panels = managerFactory<GuildPanelManager, Panel>('GuildPanelManager')(this)
     this.roleBindings = managerFactory<GuildRoleBindingManager, RoleBinding>('GuildRoleBindingManager')(this)
     this.roleMessages = managerFactory<GuildRoleMessageManager, RoleMessage>('GuildRoleMessageManager')(this)
@@ -115,6 +118,12 @@ export default class GuildContext extends BaseStructure<GuildEntity> {
     if (typeof data.groups !== 'undefined') {
       for (const rawGroup of data.groups) {
         this.groups.add(rawGroup)
+      }
+    }
+
+    if (typeof data.infractions !== 'undefined') {
+      for (const rawInfraction of data.infractions) {
+        this.infractions.add(rawInfraction)
       }
     }
 
