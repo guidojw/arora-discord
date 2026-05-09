@@ -122,6 +122,8 @@ bind<BaseCommand>(TYPES.Command).to(applicationCommands.TrainingsCommand)
   .whenTargetTagged('command', 'trainings')
 bind<BaseCommand>(TYPES.Command).to(applicationCommands.TrainsCommand)
   .whenTargetTagged('command', 'trains')
+bind<BaseCommand>(TYPES.Command).to(applicationCommands.WarnCommand)
+  .whenTargetTagged('command', 'warn')
 
 bind<BaseCommand>(TYPES.Command).to(applicationCommands.InfoCommand)
   .whenTargetTagged('command', 'info')
