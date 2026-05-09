@@ -347,6 +347,9 @@ bind<Repository<entities.Group>>(TYPES.GroupRepository).toDynamicValue(() => {
 bind<Repository<entities.Guild>>(TYPES.GuildRepository).toDynamicValue(() => {
   return dataSource.getRepository(entities.Guild)
 })
+bind<Repository<entities.Infraction>>(TYPES.InfractionRepository).toDynamicValue(() => {
+  return dataSource.getRepository(entities.Infraction)
+})
 bind<Repository<entities.Member>>(TYPES.MemberRepository).toDynamicValue(() => {
   return dataSource.getRepository(entities.Member)
 })

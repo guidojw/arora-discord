@@ -33,6 +33,7 @@ export const TYPES = {
   EmojiRepository: Symbol.for('EmojiRepository'),
   GroupRepository: Symbol.for('GroupRepository'),
   GuildRepository: Symbol.for('GuildRepository'),
+  InfractionRepository: Symbol.for('InfractionRepository'),
   MemberRepository: Symbol.for('MemberRepository'),
   MessageRepository: Symbol.for('MessageRepository'),
   PanelRepository: Symbol.for('PanelRepository'),
@@ -72,4 +73,11 @@ export enum GroupType {
 export enum VerificationProvider {
   Bloxlink = 'bloxlink',
   RoVer = 'rover'
+}
+
+export enum InfractionType {
+  Warn = 'warn',
+  Kick = 'kick',
+  Ban = 'ban',
+  Mute = 'mute'
 }
