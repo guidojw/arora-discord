@@ -2,6 +2,7 @@ import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 't
 import {
   IsBoolean,
   IsEnum,
+  IsNotEmpty,
   IsNumber,
   IsNumberString,
   IsString,
@@ -18,10 +19,6 @@ export default class Infraction {
   @ValidateIf(infraction => typeof infraction.id !== 'undefined')
   @IsNumber({ maxDecimalPlaces: 0 })
   public readonly id!: number
-
-  @Column('bigint', { name: 'guild_id' })
-  @IsNumberString({ no_symbols: true })
-  public guildId!: string
 
   @Column('bigint', { name: 'user_id' })
   @IsNumberString({ no_symbols: true })
@@ -41,8 +38,13 @@ export default class Infraction {
 
   @Column({ length: 255 })
   @IsString()
+  @IsNotEmpty()
   @MaxLength(255)
   public reason!: string
+
+  @Column('bigint', { name: 'guild_id' })
+  @IsNumberString({ no_symbols: true })
+  public guildId!: string
 
   @ManyToOne(() => Guild, guild => guild.infractions, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'guild_id' })

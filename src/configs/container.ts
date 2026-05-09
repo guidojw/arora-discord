@@ -261,6 +261,8 @@ bind<managers.GuildContextManager>(TYPES.Manager).to(managers.GuildContextManage
   .whenTargetNamed('GuildContextManager')
 bind<managers.GuildGroupManager>(TYPES.Manager).to(managers.GuildGroupManager)
   .whenTargetNamed('GuildGroupManager')
+bind<managers.GuildInfractionManager>(TYPES.Manager).to(managers.GuildInfractionManager)
+  .whenTargetNamed('GuildInfractionManager')
 bind<managers.GuildPanelManager>(TYPES.Manager).to(managers.GuildPanelManager)
   .whenTargetNamed('GuildPanelManager')
 bind<managers.GuildRoleBindingManager>(TYPES.Manager).to(managers.GuildRoleBindingManager)
