@@ -14,10 +14,11 @@ import {
   type TextChannelResolvable,
   type User
 } from 'discord.js'
-import type { Group, Panel, RoleBinding, RoleMessage, Tag, Ticket, TicketType } from '.'
+import type { Group, Infraction, Panel, RoleBinding, RoleMessage, Tag, Ticket, TicketType } from '.'
 import {
   GuildContextManager,
   type GuildGroupManager,
+  type GuildInfractionManager,
   type GuildPanelManager,
   type GuildRoleBindingManager,
   type GuildRoleMessageManager,
@@ -30,6 +31,7 @@ import { inject, injectable, type interfaces, named } from 'inversify'
 import type { BaseJob } from '../jobs'
 import BaseStructure from './base'
 import type { Guild as GuildEntity } from '../entities'
+import { SettingProvider } from '../client'
 import type { VerificationProvider } from '../utils/constants'
 import applicationConfig from '../configs/application'
 import cron from 'node-schedule'
@@ -61,7 +63,11 @@ export default class GuildContext extends BaseStructure<GuildEntity> {
   @inject(TYPES.JobFactory)
   public readonly jobFactory!: interfaces.AutoNamedFactory<BaseJob>
 
+  @inject(TYPES.SettingProvider)
+  private readonly settingProvider!: SettingProvider
+
   public readonly groups: GuildGroupManager
+  public readonly infractions: GuildInfractionManager
   public readonly panels: GuildPanelManager
   public readonly roleBindings: GuildRoleBindingManager
   public readonly roleMessages: GuildRoleMessageManager
@@ -86,6 +92,7 @@ export default class GuildContext extends BaseStructure<GuildEntity> {
     super()
 
     this.groups = managerFactory<GuildGroupManager, Group>('GuildGroupManager')(this)
+    this.infractions = managerFactory<GuildInfractionManager, Infraction>('GuildInfractionManager')(this)
     this.panels = managerFactory<GuildPanelManager, Panel>('GuildPanelManager')(this)
     this.roleBindings = managerFactory<GuildRoleBindingManager, RoleBinding>('GuildRoleBindingManager')(this)
     this.roleMessages = managerFactory<GuildRoleMessageManager, RoleMessage>('GuildRoleMessageManager')(this)
@@ -115,6 +122,12 @@ export default class GuildContext extends BaseStructure<GuildEntity> {
     if (typeof data.groups !== 'undefined') {
       for (const rawGroup of data.groups) {
         this.groups.add(rawGroup)
+      }
+    }
+
+    if (typeof data.infractions !== 'undefined') {
+      for (const rawInfraction of data.infractions) {
+        this.infractions.add(rawInfraction)
       }
     }
 
@@ -209,6 +222,11 @@ export default class GuildContext extends BaseStructure<GuildEntity> {
     } else {
       return new Collection()
     }
+  }
+
+  public async fetchInfractions (member: GuildMember): Promise<Infraction[]> {
+    const infractions = await this.settingProvider.fetchInfractions(this.guild, member.user)
+    return infractions.map(this.infractions.add)
   }
 
   public async handleRoleMessage (

@@ -1,12 +1,13 @@
+import type { Guild, User } from 'discord.js'
 import type {
   Guild as GuildEntity,
+  Infraction as InfractionEntity,
   Role as RoleEntity,
   RoleMessage as RoleMessageEntity,
   Tag as TagEntity
 } from '../entities'
 import { inject, injectable, named } from 'inversify'
 import type { AroraClient } from '.'
-import type { Guild } from 'discord.js'
 import { GuildContextManager } from '../managers'
 import { Repository } from 'typeorm'
 import { constants } from '../utils'
@@ -21,6 +22,9 @@ export default class SettingProvider {
 
   @inject(TYPES.GuildRepository)
   private readonly guildRepository!: Repository<GuildEntity>
+
+  @inject(TYPES.InfractionRepository)
+  private readonly infractionRepository!: Repository<InfractionEntity>
 
   @inject(TYPES.RoleRepository)
   private readonly roleRepository!: Repository<RoleEntity>
@@ -85,5 +89,11 @@ export default class SettingProvider {
 
     const context = this.guildContexts.add(data, { id: data.id, extras: [guild] })
     await context.init()
+  }
+
+  public async fetchInfractions (guild: Guild, user: User): Promise<InfractionEntity[]> {
+    return await this.infractionRepository.find({
+      where: { guildId: guild.id, userId: user.id }
+    })
   }
 }
