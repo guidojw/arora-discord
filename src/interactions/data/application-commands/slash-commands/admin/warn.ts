@@ -8,11 +8,13 @@ const warnCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   options: [{
     name: 'user',
     description: 'The user to warn',
-    type: ApplicationCommandOptionType.User
+    type: ApplicationCommandOptionType.User,
+    required: true
   }, {
     name: 'reason',
     description: 'The warning',
-    type: ApplicationCommandOptionType.String
+    type: ApplicationCommandOptionType.String,
+    required: true
   }]
 }
 

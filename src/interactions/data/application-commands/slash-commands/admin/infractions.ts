@@ -8,7 +8,8 @@ const infractionsCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
   options: [{
     name: 'user',
     description: 'The user to get the infraction logs of',
-    type: ApplicationCommandOptionType.User
+    type: ApplicationCommandOptionType.User,
+    required: true
   }]
 }
 
