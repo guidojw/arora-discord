@@ -226,7 +226,7 @@ export default class GuildContext extends BaseStructure<GuildEntity> {
 
   public async fetchInfractions (member: GuildMember): Promise<Infraction[]> {
     const infractions = await this.settingProvider.fetchInfractions(this.guild, member.user)
-    return infractions.map(this.infractions.add)
+    return infractions.map(this.infractions.add.bind(this.infractions))
   }
 
   public async handleRoleMessage (
