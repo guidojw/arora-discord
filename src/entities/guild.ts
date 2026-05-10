@@ -11,6 +11,7 @@ import {
 import Channel from './channel'
 import Emoji from './emoji'
 import Group from './group'
+import Infraction from './infraction'
 import Member from './member'
 import Message from './message'
 import Panel from './panel'
@@ -181,4 +182,10 @@ export default class Guild {
   @ValidateNested()
   @IsArray()
   public members?: Member[]
+
+  @OneToMany(() => Infraction, infraction => infraction.guild)
+  @ValidateIf(guild => typeof guild.infractions !== 'undefined')
+  @ValidateNested()
+  @IsArray()
+  public infractions?: Infraction[]
 }
