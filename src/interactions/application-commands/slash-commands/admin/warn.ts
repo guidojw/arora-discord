@@ -31,11 +31,15 @@ export default class WarnCommand extends Command {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
     const infraction = await context.infractions.create(user.id, interaction.user.id, InfractionType.Warn, reason)
+    await interaction.channel?.send({
+      content: `**:white_check_mark: <@${user.id}> has been warned for:**\n\`${reason}\``,
+      allowedMentions: {}
+    })
     await this.client.send(user, `You have been warned in server **${context.guild.name}** for:\n\`${reason}\``)
 
     await interaction.reply({
       content: `Successfully warned <@${user.id}> in infraction **${infraction.id}**. Reason:\n\`${reason}\``,
-      allowedMentions: {}
+      ephemeral: true
     })
   }
 }
