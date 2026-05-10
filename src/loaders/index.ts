@@ -1,4 +1,4 @@
-import * as Sentry from '@sentry/node'
+import './sentry'
 import type { AroraClient } from '../client'
 import type { BaseJob } from '../jobs'
 import Bree from 'bree'
@@ -13,20 +13,6 @@ import path from 'node:path'
 const { TYPES } = constants
 
 export async function init (): Promise<AroraClient> {
-  if (typeof process.env.SENTRY_DSN !== 'undefined') {
-    Sentry.init({
-      dsn: process.env.SENTRY_DSN,
-      environment: process.env.NODE_ENV,
-      release: process.env.BUILD_HASH,
-      integrations: [
-        Sentry.rewriteFramesIntegration({
-          root: process.cwd()
-        })
-      ],
-      tracesSampleRate: 0.2
-    })
-  }
-
   await dataSource.initialize()
 
   const jobFactory = container.get<(jobName: string) => BaseJob>(TYPES.JobFactory)
