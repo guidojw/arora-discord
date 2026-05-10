@@ -1,4 +1,4 @@
-import type { ChatInputCommandInteraction, User } from 'discord.js'
+import type { ChatInputCommandInteraction, GuildMember } from 'discord.js'
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
 import { Command } from '../base'
@@ -26,7 +26,7 @@ export default class WarnCommand extends Command {
 
   public async execute (
     interaction: ChatInputCommandInteraction<'raw' | 'cached'>,
-    { user, reason }: { user: User, reason: string }
+    { user, reason }: { user: GuildMember, reason: string }
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
@@ -34,7 +34,7 @@ export default class WarnCommand extends Command {
     await this.client.send(user, `You have been warned in server **${context.guild.name}** for:\n\`${reason}\``)
 
     await interaction.reply({
-      content: `Successfully warned <@${user.id}> in case id: **${infraction.id}**. Reason:\n\`${reason}\``,
+      content: `Successfully warned <@${user.id}> in infraction **${infraction.id}**. Reason:\n\`${reason}\``,
       allowedMentions: {}
     })
   }
