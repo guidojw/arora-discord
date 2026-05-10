@@ -5,7 +5,6 @@ import { Command } from '../base'
 import type { CommandOptions } from '..'
 import type { GuildContext } from '../../../../structures'
 import { GuildContextManager } from '../../../../managers'
-import { InfractionType } from '../../../../utils/constants'
 import { constants } from '../../../../utils'
 
 const { TYPES } = constants
@@ -14,27 +13,27 @@ const { TYPES } = constants
 @ApplyOptions<CommandOptions>({
   command: {
     args: [
-      { key: 'user' },
-      { key: 'reason' }
+      { key: 'user' }
     ]
   }
 })
-export default class WarnCommand extends Command {
+export default class InfractionsCommand extends Command {
   @inject(TYPES.Manager)
   @named('GuildContextManager')
   private readonly guildContexts!: GuildContextManager
 
   public async execute (
     interaction: ChatInputCommandInteraction<'raw' | 'cached'>,
-    { user, reason }: { user: User, reason: string }
+    { user }: { user: User }
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
-    const infraction = await context.infractions.create(user.id, interaction.user.id, InfractionType.Warn, reason)
-    await this.client.send(user, `You have been warned in server **${context.guild.name}** for:\n\`${reason}\``)
+    const infractions = await context.fetchInfractions(user)
+
+    console.log(infractions)
 
     await interaction.reply({
-      content: `Successfully warned <@${user.id}> in case id: **${infraction.id}**. Reason:\n\`${reason}\``,
+      content: 'test',
       allowedMentions: {}
     })
   }

@@ -31,6 +31,7 @@ import { inject, injectable, type interfaces, named } from 'inversify'
 import type { BaseJob } from '../jobs'
 import BaseStructure from './base'
 import type { Guild as GuildEntity } from '../entities'
+import { SettingProvider } from '../client'
 import type { VerificationProvider } from '../utils/constants'
 import applicationConfig from '../configs/application'
 import cron from 'node-schedule'
@@ -61,6 +62,9 @@ export default class GuildContext extends BaseStructure<GuildEntity> {
 
   @inject(TYPES.JobFactory)
   public readonly jobFactory!: interfaces.AutoNamedFactory<BaseJob>
+
+  @inject(TYPES.SettingProvider)
+  private readonly settingProvider!: SettingProvider
 
   public readonly groups: GuildGroupManager
   public readonly infractions: GuildInfractionManager
@@ -218,6 +222,15 @@ export default class GuildContext extends BaseStructure<GuildEntity> {
     } else {
       return new Collection()
     }
+  }
+
+  public async fetchInfractions (user: User): Promise<Infraction[]> {
+    const infractions = await this.settingProvider.fetchInfractions(this.guild, user)
+    const result: Infraction[] = []
+    for (const rawInfraction of infractions) {
+      result.push(this.infractions.add(rawInfraction))
+    }
+    return result
   }
 
   public async handleRoleMessage (
