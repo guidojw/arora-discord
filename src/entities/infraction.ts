@@ -1,6 +1,7 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
 import {
   IsBoolean,
+  IsDate,
   IsEnum,
   IsNotEmpty,
   IsNumber,
@@ -20,6 +21,11 @@ export default class Infraction {
   @IsNumber({ maxDecimalPlaces: 0 })
   public readonly id!: number
 
+  @CreateDateColumn({ name: 'created_at' })
+  @ValidateIf(infraction => typeof infraction.createdAt !== 'undefined')
+  @IsDate()
+  public readonly createdAt!: Date
+
   @Column('bigint', { name: 'user_id' })
   @IsNumberString({ no_symbols: true })
   public userId!: string
@@ -33,6 +39,7 @@ export default class Infraction {
   public type!: InfractionType
 
   @Column({ default: false })
+  @ValidateIf(infraction => typeof infraction.active !== 'undefined')
   @IsBoolean()
   public active!: boolean
 

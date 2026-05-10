@@ -11,13 +11,13 @@ export class createInfractions1778363531403 implements MigrationInterface {
         isGenerated: true
       }, {
         name: 'guild_id',
-        type: 'int'
+        type: 'bigint'
       }, {
         name: 'user_id',
-        type: 'int'
+        type: 'bigint'
       }, {
         name: 'author_id',
-        type: 'int'
+        type: 'bigint'
       }, {
         name: 'type',
         type: 'enum',
@@ -29,6 +29,10 @@ export class createInfractions1778363531403 implements MigrationInterface {
       }, {
         name: 'reason',
         type: 'varchar(255)'
+      }, {
+        name: 'created_at',
+        type: 'timestamp',
+        default: 'CURRENT_TIMESTAMP'
       }],
       foreignKeys: [{
         columnNames: ['guild_id'],

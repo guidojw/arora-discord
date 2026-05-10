@@ -11,6 +11,7 @@ export default class Infraction extends BaseStructure<InfractionEntity> {
   public context!: GuildContext
 
   public id!: number
+  public createdAt!: Date
   public userId!: string
   public authorId!: string
   public type!: InfractionType
@@ -25,6 +26,7 @@ export default class Infraction extends BaseStructure<InfractionEntity> {
 
   public setup (data: InfractionEntity): void {
     this.id = data.id
+    this.createdAt = data.createdAt
     this.userId = data.userId
     this.authorId = data.authorId
     this.type = data.type
