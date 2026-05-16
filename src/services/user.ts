@@ -1,12 +1,17 @@
-import type { GetUsersByUserIds, GetUsersByUsernames } from '@guidojw/bloxy/dist/client/apis/UsersAPI'
 import { applicationAdapter, robloxAdapter } from '../adapters'
-import type { GetUserOutfits as BloxyGetUserOutfits } from '@guidojw/bloxy/dist/client/apis/AvatarAPI'
 import { util } from '../utils'
 
 const { split } = util
 
-export type GetUsers = GetUsersByUserIds['data']
-export type GetUserOutfits = BloxyGetUserOutfits['data']
+export interface GetUsersByUsernames {
+  data: Array<{
+    requestedUsername: string
+    hasVerifiedBadge: boolean
+    id: number
+    name: string
+    displayName: string
+  }>
+}
 
 export interface GetUser {
   readonly path: string
@@ -19,6 +24,10 @@ export interface GetUser {
   readonly premium: boolean
   readonly idVerified?: boolean
   readonly socialNetworkProfiles?: Record<string, string>
+}
+
+export interface GetUsersByIds {
+  data: Array<Omit<GetUsersByUsernames['data'][0], 'requestedUsername'>>
 }
 
 export async function getIdFromUsername (username: string): Promise<number> {
@@ -44,12 +53,8 @@ export async function getUser (userId: number): Promise<GetUser> {
   }
 }
 
-export async function getUserOutfits (userId: number): Promise<GetUserOutfits> {
-  return (await robloxAdapter('GET', 'avatar', `v1/users/${userId}/outfits`)).data.data
-}
-
-export async function getUsers (userIds: number[]): Promise<GetUsers> {
-  let result: GetUsers = []
+export async function getUsers (userIds: number[]): Promise<GetUsersByIds['data']> {
+  let result: GetUsersByIds['data'] = []
   const chunks = split(userIds, 100)
   for (const chunk of chunks) {
     result = result.concat((await robloxAdapter('POST', 'users', 'v1/users', {
