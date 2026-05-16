@@ -27,7 +27,7 @@ export interface GetUser {
 }
 
 export interface GetUsersByIds {
-  data: Omit<GetUsersByUsernames['data'], 'requestedUsername'>
+  data: Array<Omit<GetUsersByUsernames['data'][0], 'requestedUsername'>>
 }
 
 export async function getIdFromUsername (username: string): Promise<number> {
