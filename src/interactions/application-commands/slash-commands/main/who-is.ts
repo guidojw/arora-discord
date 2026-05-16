@@ -46,14 +46,12 @@ export default class WhoIsCommand extends Command {
 
     const userInfo = await userService.getUser(user.id)
     const age = Math.floor((Date.now() - new Date(userInfo.createTime).getTime()) / 86_400_000)
-    const outfits = await userService.getUserOutfits(user.id)
 
     const embed = new EmbedBuilder()
       .setAuthor({
         name: userInfo.name ?? 'Unknown',
         iconURL: `https://www.roblox.com/headshot-thumbnail/image?width=150&height=150&format=png&userId=${user.id}`
       })
-      .setThumbnail(`https://www.roblox.com/outfit-thumbnail/image?width=150&height=150&format=png&userOutfitId=${outfits[0]?.id ?? 0}`)
       .setColor(context?.primaryColor ?? applicationConfig.defaultColor)
       .addFields([
         { name: 'Blurb', value: userInfo.about ?? 'No blurb' },
