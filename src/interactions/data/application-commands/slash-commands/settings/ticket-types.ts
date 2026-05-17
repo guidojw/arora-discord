@@ -15,7 +15,7 @@ const ticketTypesCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
       type: ApplicationCommandOptionType.String,
       required: true
     }, {
-      name: 'requiresVerification',
+      name: 'requiresverification',
       description: 'Whether verification is required to open a ticket of this type',
       type: ApplicationCommandOptionType.Boolean
     }]

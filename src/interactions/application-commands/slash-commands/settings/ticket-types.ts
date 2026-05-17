@@ -17,7 +17,7 @@ const { TYPES } = constants
     create: {
       args: [
         { key: 'name' },
-        { key: 'requiresVerification', required: false }
+        { key: 'requiresverification', required: false }
       ]
     },
     delete: {
@@ -62,7 +62,7 @@ export default class TicketTypesCommand extends SubCommandCommand<TicketTypesCom
 
   public async create (
     interaction: ChatInputCommandInteraction,
-    { name, requiresVerification }: { name: string, requiresVerification: boolean | null }
+    { name, requiresverification: requiresVerification }: { name: string, requiresverification: boolean | null }
   ): Promise<void> {
     if (!interaction.inGuild()) {
       return
@@ -103,7 +103,7 @@ export default class TicketTypesCommand extends SubCommandCommand<TicketTypesCom
       }
 
       changes.name = value
-    } else if (key === 'requiresVerification') {
+    } else if (key === 'requiresverification') {
       if (typeof value === 'string') {
         await interaction.reply({ content: '`value` must be a string.', ephemeral: true })
         return
@@ -177,5 +177,5 @@ export default class TicketTypesCommand extends SubCommandCommand<TicketTypesCom
 }
 
 function getTicketTypeRow (type: TicketType): string {
-  return `${type.id}. \`${type.name}\` - Requires verification: \`${type.requiresVerification}\``
+  return `${type.id}\\. \`${type.name}\` - Requires verification: \`${type.requiresVerification}\``
 }
