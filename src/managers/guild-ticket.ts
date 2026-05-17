@@ -12,7 +12,9 @@ import { DataManager } from './base'
 import { Repository } from 'typeorm'
 import type { Ticket as TicketEntity } from '../entities'
 import type { TicketTypeResolvable } from './guild-ticket-type'
+import axios from 'axios'
 import { constants } from '../utils'
+import { oAuthService } from '../services'
 
 const { TYPES } = constants
 
@@ -150,6 +152,22 @@ export default class GuildTicketManager extends DataManager<number, Ticket, Tick
     if (match !== null) {
       const ticketType = this.context.ticketTypes.resolve(parseInt(match[1]))
       if (ticketType !== null) {
+        let userInfo
+        if (ticketType.requiresVerification) {
+          try {
+            userInfo = await oAuthService.fetchUserInfo(interaction.user.id)
+          } catch (err) {
+            if (axios.isAxiosError(err) && typeof err.response !== 'undefined' && err.response.status === 404) {
+              const embed = new EmbedBuilder()
+                .addFields([{ name: 'Verify your Discord user with Roblox', value: 'By using `/verify`' }])
+                .setColor(0x00ff00)
+              await interaction.reply({ embeds: [embed], ephemeral: true })
+              return
+            }
+            throw err
+          }
+        }
+
         const user = interaction.user
         if (!this.debounces.has(user.id)) {
           this.debounces.set(user.id, true)
@@ -159,29 +177,29 @@ export default class GuildTicketManager extends DataManager<number, Ticket, Tick
             await interaction.deferReply({ ephemeral: true })
 
             const ticket = await this.create({ author: user, ticketType })
-            await ticket.populateChannel()
+            await ticket.populateChannel(userInfo)
             ticket.timeout = setTimeout(() => {
               ticket.close('Timeout: ticket closed', false).catch(console.error)
             }, SUBMISSION_TIME).unref()
 
             const embed = new EmbedBuilder()
               .setColor(0x00ff00)
-              .setTitle('Successfully opened ticket.')
+              .setTitle('Successfully opened ticket')
               // eslint-disable-next-line @typescript-eslint/no-base-to-string
-              .setDescription(`You can visit it in ${ticket.channel.toString()}.`)
+              .setDescription(`You can visit it in ${ticket.channel.toString()}`)
             await interaction.editReply({ embeds: [embed] })
           } else {
             const embed = new EmbedBuilder()
               .setColor(0xff0000)
               .setTitle('Couldn\'t make ticket')
-              .setDescription('You already have an open ticket.')
+              .setDescription('You already have an open ticket')
             await interaction.reply({ embeds: [embed], ephemeral: true })
           }
         } else {
           const embed = new EmbedBuilder()
             .setColor(0xff0000)
             .setTitle('Please wait a few seconds')
-            .setDescription('before trying to open a new ticket.')
+            .setDescription('Before trying to open a new ticket')
           await interaction.reply({ embeds: [embed], ephemeral: true })
         }
       }
