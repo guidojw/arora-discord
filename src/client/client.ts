@@ -141,7 +141,7 @@ export default class AroraClient<Ready extends boolean = boolean> extends Client
       (...args) => {
         Promise.resolve(
           Sentry.startSpan(
-            { name: `event: ${eventName}`, op: 'ws.message.receive' },
+            { name: `receive: ${eventName}`, op: 'ws.message.receive' },
             handler.handle.bind(handler, ...args)
           )
         ).catch(console.error)
