@@ -153,10 +153,10 @@ export default class GuildTicketManager extends DataManager<number, Ticket, Tick
       const ticketType = this.context.ticketTypes.resolve(parseInt(match[1]))
       if (ticketType !== null) {
         let userInfo
-        if (ticketType.requiresVerification) {
-          try {
-            userInfo = await oAuthService.fetchUserInfo(interaction.user.id)
-          } catch (err) {
+        try {
+          userInfo = await oAuthService.fetchUserInfo(interaction.user.id)
+        } catch (err) {
+          if (ticketType.requiresVerification) {
             if (axios.isAxiosError(err) && typeof err.response !== 'undefined' && err.response.status === 404) {
               const embed = new EmbedBuilder()
                 .addFields([{ name: 'Verify your Discord user with Roblox', value: 'By using `/verify`' }])
