@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/node'
 import { type BaseHandler, Dispatcher } from '..'
 import type { Interaction, TextChannel } from 'discord.js'
 import { inject, injectable, named } from 'inversify'
@@ -18,17 +19,19 @@ export default class InteractionCreateEventHandler implements BaseHandler {
 
   public async handle (interaction: Interaction): Promise<void> {
     try {
-      await this.dispatcher.handleInteraction(interaction)
+      await Sentry.startSpan({ name: 'interactionCreate', op: 'ws.message.receive' }, async () => {
+        await this.dispatcher.handleInteraction(interaction)
 
-      if (interaction.isChatInputCommand() && interaction.inGuild()) {
-        const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
-        const subCommandName = interaction.options.getSubcommand(false)
-        await context.log(
-          interaction.user,
-          // eslint-disable-next-line @typescript-eslint/no-base-to-string
-          `${interaction.user.toString()} **used command** \`/${interaction.commandName}${subCommandName !== null ? ` ${subCommandName}` : ''}\`${interaction.channel !== null ? ` **in** ${(interaction.channel as TextChannel).toString()}` : ''}:\n\`${interaction.toString()}\``
-        )
-      }
+        if (interaction.isChatInputCommand() && interaction.inGuild()) {
+          const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
+          const subCommandName = interaction.options.getSubcommand(false)
+          await context.log(
+            interaction.user,
+            // eslint-disable-next-line @typescript-eslint/no-base-to-string
+            `${interaction.user.toString()} **used command** \`/${interaction.commandName}${subCommandName !== null ? ` ${subCommandName}` : ''}\`${interaction.channel !== null ? ` **in** ${(interaction.channel as TextChannel).toString()}` : ''}:\n\`${interaction.toString()}\``
+          )
+        }
+      })
     } catch (err: any) {
       const errorMessage = err.response?.data?.errors?.[0].message ?? err.toString()
       if (interaction.isRepliable() && !interaction.replied) {

@@ -1,4 +1,3 @@
-import './sentry'
 import type { AroraClient } from '../client'
 import type { BaseJob } from '../jobs'
 import Bree from 'bree'
