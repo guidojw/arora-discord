@@ -1,6 +1,6 @@
 import { type ChatInputCommandInteraction, EmbedBuilder } from 'discord.js'
 import { argumentUtil, constants, timeUtil } from '../../../../utils'
-import { groupService, userService, verificationService } from '../../../../services'
+import { groupService, oAuthService, userService } from '../../../../services'
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
 import type { GuildContext } from '../../../../structures'
@@ -10,6 +10,7 @@ import { SubCommandCommand } from '../base'
 import type { SubCommandCommandOptions } from '..'
 import { applicationAdapter } from '../../../../adapters'
 import applicationConfig from '../../../../configs/application'
+import axios from 'axios'
 import pluralize from 'pluralize'
 
 const { TYPES } = constants
@@ -83,16 +84,18 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
 
-    const authorId = (await verificationService.fetchVerificationData(
-      interaction.user.id,
-      interaction.guildId
-    ))?.robloxId
-    if (typeof authorId === 'undefined') {
-      await interaction.reply({
-        content: 'This command requires you to be verified with a verification provider.',
-        ephemeral: true
-      })
-      return
+    let authorId
+    try {
+      authorId = parseInt((await oAuthService.fetchUserInfo(interaction.user.id)).sub)
+    } catch (err) {
+      if (axios.isAxiosError(err) && typeof err.response !== 'undefined' && err.response.status === 404) {
+        await interaction.reply({
+          content: 'Could not get user info, please `/verify`',
+          ephemeral: true
+        })
+        return
+      }
+      throw err
     }
 
     await applicationAdapter('POST', `v1/groups/${context.robloxGroupId}/bans`, {
@@ -111,16 +114,18 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
 
-    const authorId = (await verificationService.fetchVerificationData(
-      interaction.user.id,
-      interaction.guildId
-    ))?.robloxId
-    if (typeof authorId === 'undefined') {
-      await interaction.reply({
-        content: 'This command requires you to be verified with a verification provider.',
-        ephemeral: true
-      })
-      return
+    let authorId
+    try {
+      authorId = parseInt((await oAuthService.fetchUserInfo(interaction.user.id)).sub)
+    } catch (err) {
+      if (axios.isAxiosError(err) && typeof err.response !== 'undefined' && err.response.status === 404) {
+        await interaction.reply({
+          content: 'Could not get user info, please `/verify`',
+          ephemeral: true
+        })
+        return
+      }
+      throw err
     }
 
     await applicationAdapter('POST', `v1/groups/${context.robloxGroupId}/bans/${user.id}/cancel`, {
@@ -147,16 +152,18 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
     } else if (key === 'reason') {
       changes.reason = value
     }
-    const editorId = (await verificationService.fetchVerificationData(
-      interaction.user.id,
-      interaction.guildId
-    ))?.robloxId
-    if (typeof editorId === 'undefined') {
-      await interaction.reply({
-        content: 'This command requires you to be verified with a verification provider.',
-        ephemeral: true
-      })
-      return
+    let editorId
+    try {
+      editorId = parseInt((await oAuthService.fetchUserInfo(interaction.user.id)).sub)
+    } catch (err) {
+      if (axios.isAxiosError(err) && typeof err.response !== 'undefined' && err.response.status === 404) {
+        await interaction.reply({
+          content: 'Could not get user info, please `/verify`',
+          ephemeral: true
+        })
+        return
+      }
+      throw err
     }
 
     await applicationAdapter('PUT', `v1/groups/${context.robloxGroupId}/bans/${user.id}`, { changes, editorId })
@@ -174,16 +181,18 @@ export default class BansCommand extends SubCommandCommand<BansCommand> {
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
 
-    const authorId = (await verificationService.fetchVerificationData(
-      interaction.user.id,
-      interaction.guildId
-    ))?.robloxId
-    if (typeof authorId === 'undefined') {
-      await interaction.reply({
-        content: 'This command requires you to be verified with a verification provider.',
-        ephemeral: true
-      })
-      return
+    let authorId
+    try {
+      authorId = parseInt((await oAuthService.fetchUserInfo(interaction.user.id)).sub)
+    } catch (err) {
+      if (axios.isAxiosError(err) && typeof err.response !== 'undefined' && err.response.status === 404) {
+        await interaction.reply({
+          content: 'Could not get user info, please `/verify`',
+          ephemeral: true
+        })
+        return
+      }
+      throw err
     }
 
     await applicationAdapter('POST', `v1/groups/${context.robloxGroupId}/bans/${user.id}/extend`, {

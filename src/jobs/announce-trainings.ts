@@ -2,7 +2,7 @@ import cron, { type JobCallback } from 'node-schedule'
 import { groupService, userService } from '../services'
 import type BaseJob from './base'
 import { EmbedBuilder } from 'discord.js'
-import type { GetUsers } from '../services/user'
+import type { GetUsersByIds } from '../services/user'
 import type { GuildContext } from '../structures'
 import type { Training } from '../services/group'
 import { applicationAdapter } from '../adapters'
@@ -70,7 +70,11 @@ export default class AnnounceTrainingsJob implements BaseJob {
   }
 }
 
-async function getTrainingsEmbed (groupId: number, trainings: Training[], authors: GetUsers): Promise<EmbedBuilder> {
+async function getTrainingsEmbed (
+  groupId: number,
+  trainings: Training[],
+  authors: GetUsersByIds['data']
+): Promise<EmbedBuilder> {
   const trainingTypes = (await groupService.getTrainingTypes(groupId))
     .map(trainingType => trainingType.name)
     .reduce((result: Record<string, Training[]>, item) => {
@@ -104,7 +108,7 @@ async function getTrainingsEmbed (groupId: number, trainings: Training[], author
   return embed
 }
 
-function getTrainingMessage (training: Training, authors: GetUsers): string {
+function getTrainingMessage (training: Training, authors: GetUsersByIds['data']): string {
   const date = new Date(training.date)
   const author = authors.find(author => author.id === training.authorId)
 
@@ -116,7 +120,7 @@ function getTrainingMessage (training: Training, authors: GetUsers): string {
   return result
 }
 
-function getNextTrainingMessage (training: Training, authors: GetUsers): string {
+function getNextTrainingMessage (training: Training, authors: GetUsersByIds['data']): string {
   const date = new Date(training.date)
   const author = authors.find(author => author.id === training.authorId)
 

@@ -1,6 +1,7 @@
 import type { ChatInputCommandInteraction, GuildMember } from 'discord.js'
-import { userService, verificationService } from '../services'
+import { oAuthService, userService } from '../services'
 import BaseArgumentType from './base'
+import axios from 'axios'
 import { injectable } from 'inversify'
 
 export interface RobloxUser { id: number, username: string | null }
@@ -12,17 +13,18 @@ export default class RobloxUserArgumentType extends BaseArgumentType<RobloxUser>
   public async validate (
     val: string,
     interaction: ChatInputCommandInteraction
-  ): Promise<boolean> {
+  ): Promise<boolean | string> {
     if (val === 'self') {
-      const verificationData = await verificationService.fetchVerificationData(
-        interaction.user.id,
-        interaction.guildId ?? undefined
-      )
-      if (verificationData !== null) {
-        this.setCache(interaction.id, verificationData.robloxId, verificationData.robloxUsername)
+      try {
+        const userInfo = await oAuthService.fetchUserInfo(interaction.user.id)
+        this.setCache(interaction.id, parseInt(userInfo.sub), userInfo.preferred_username)
         return true
+      } catch (err) {
+        if (axios.isAxiosError(err) && typeof err.response !== 'undefined' && err.response.status === 404) {
+          return 'Could not get user info, please `/verify`'
+        }
+        throw err
       }
-      return false
     }
 
     const match = val.match(/^(?:<@!?)?([0-9]+)>?$/)
@@ -32,10 +34,16 @@ export default class RobloxUserArgumentType extends BaseArgumentType<RobloxUser>
         try {
           const member = await interaction.guild.members.fetch(await interaction.client.users.fetch(match[1]))
           if (!member.user.bot) {
-            const verificationData = await verificationService.fetchVerificationData(member.id, interaction.guildId)
-            if (verificationData !== null) {
-              this.setCache(interaction.id, verificationData.robloxId, verificationData.robloxUsername)
+            try {
+              const userInfo = await oAuthService.fetchUserInfo(member.id)
+              this.setCache(interaction.id, parseInt(userInfo.sub), userInfo.preferred_username)
               return true
+            } catch (err) {
+              if (member.id === interaction.user.id && axios.isAxiosError(err) && typeof err.response !== 'undefined' &&
+                err.response.status === 404) {
+                return 'Could not get user info, please `/verify`'
+              }
+              throw err
             }
           }
         } catch {}
@@ -59,11 +67,11 @@ export default class RobloxUserArgumentType extends BaseArgumentType<RobloxUser>
       if (members.size === 1) {
         const member = members.first()
         if (typeof member !== 'undefined' && !member.user.bot) {
-          const verificationData = await verificationService.fetchVerificationData(member.id, interaction.guildId)
-          if (verificationData !== null) {
-            this.setCache(interaction.id, verificationData.robloxId, verificationData.robloxUsername)
+          try {
+            const userInfo = await oAuthService.fetchUserInfo(member.id)
+            this.setCache(interaction.id, parseInt(userInfo.sub), userInfo.preferred_username)
             return true
-          }
+          } catch {}
         }
       }
     }

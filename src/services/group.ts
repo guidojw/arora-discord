@@ -2,7 +2,7 @@ import * as discordService from './discord'
 import * as userService from '../services/user'
 import { timeUtil, util } from '../utils'
 import type { EmbedBuilder } from 'discord.js'
-import type { GetUsers } from './user'
+import type { GetUsersByIds } from './user'
 import { applicationAdapter } from '../adapters'
 import pluralize from 'pluralize'
 
@@ -147,7 +147,7 @@ export async function getBanEmbeds (groupId: number, bans: Ban[]): Promise<Embed
   )
 }
 
-export function getBanRow (ban: Ban, { users, roles }: { users: GetUsers, roles: GroupRole[] }): string {
+export function getBanRow (ban: Ban, { users, roles }: { users: GetUsersByIds['data'], roles: GroupRole[] }): string {
   const username = users.find(user => user.id === ban.userId)?.name ?? ban.userId
   const authorName = users.find(user => user.id === ban.authorId)?.name ?? ban.authorId
   const role = roles.find(role => Number(role.id) === ban.roleId)
@@ -183,7 +183,7 @@ export async function getExileEmbeds (exiles: Exile[]): Promise<EmbedBuilder[]> 
   )
 }
 
-export function getExileRow (exile: Exile, { users }: { users: GetUsers }): string {
+export function getExileRow (exile: Exile, { users }: { users: GetUsersByIds['data'] }): string {
   const username = users.find(user => user.id === exile.userId)?.name ?? exile.userId
   const authorName = users.find(user => user.id === exile.authorId)?.name ?? exile.authorId
   const dateString = getDate(new Date(exile.date))
@@ -205,7 +205,7 @@ export async function getTrainingEmbeds (trainings: Training[]): Promise<EmbedBu
   )
 }
 
-export function getTrainingRow (training: Training, { users }: { users: GetUsers }): string {
+export function getTrainingRow (training: Training, { users }: { users: GetUsersByIds['data'] }): string {
   const username = users.find(user => user.id === training.authorId)?.name ?? training.authorId
   const date = new Date(training.date)
 

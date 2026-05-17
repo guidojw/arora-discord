@@ -1,16 +1,14 @@
 import { CategoryChannel, type ChatInputCommandInteraction, GuildChannel, TextChannel } from 'discord.js'
 import type { GuildContext, GuildUpdateOptions } from '../../../../structures'
-import { argumentUtil, constants, util } from '../../../../utils'
+import { argumentUtil, constants } from '../../../../utils'
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
 import { GuildContextManager } from '../../../../managers'
 import { SubCommandCommand } from '../base'
 import type { SubCommandCommandOptions } from '..'
-import { VerificationProvider } from '../../../../utils/constants'
 
 const GuildSetting = constants.GuildSetting
 const { TYPES } = constants
-const { getEnumValues } = util
 const { guildSettingTransformer, parseEnum } = argumentUtil
 
 @injectable()
@@ -84,11 +82,11 @@ export default class SettingsCommand extends SubCommandCommand<SettingsCommand> 
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
     const changes: GuildUpdateOptions = {}
-    if (value === null && !['robloxUsernamesInNicknames', 'verificationPreference'].includes(setting)) {
+    if (value === null && !['robloxUsernamesInNicknames'].includes(setting)) {
       changes[
         guildSettingTransformer(setting) as keyof Omit<
         GuildUpdateOptions,
-        'robloxUsernamesInNicknames' | 'verificationPreference' | 'supportEnabled'
+        'robloxUsernamesInNicknames' | 'supportEnabled'
         >
       ] = null
     } else {
@@ -119,14 +117,6 @@ export default class SettingsCommand extends SubCommandCommand<SettingsCommand> 
         }
 
         changes.robloxUsernamesInNicknames = value
-      } else if (setting === 'verificationPreference') {
-        if (typeof value !== 'string' || !getEnumValues(VerificationProvider).includes(value.toLowerCase())) {
-          await interaction.reply('Invalid verification provider.')
-          return
-        }
-        value = value.toLowerCase()
-
-        changes.verificationPreference = value as VerificationProvider
       } else if (setting.includes('Channel') || setting.includes('Category')) {
         if (setting === 'ticketsCategoryId') {
           if (!(value instanceof CategoryChannel)) {

@@ -61,18 +61,12 @@ export enum GuildSetting {
   robloxUsernamesInNicknames,
   suggestionsChannelId,
   ticketArchivesChannelId,
-  ticketsCategoryId,
-  verificationPreference
+  ticketsCategoryId
 }
 
 export enum GroupType {
   Channel = 'channel',
   Role = 'role'
-}
-
-export enum VerificationProvider {
-  Bloxlink = 'bloxlink',
-  RoVer = 'rover'
 }
 
 export enum InfractionType {

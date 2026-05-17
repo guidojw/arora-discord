@@ -151,6 +151,8 @@ bind<BaseCommand>(TYPES.Command).to(applicationCommands.SuggestCommand)
   .whenTargetTagged('command', 'suggest')
 bind<BaseCommand>(TYPES.Command).to(applicationCommands.TagCommand)
   .whenTargetTagged('command', 'tag')
+bind<BaseCommand>(TYPES.Command).to(applicationCommands.VerifyCommand)
+  .whenTargetTagged('command', 'verify')
 bind<BaseCommand>(TYPES.Command).to(applicationCommands.WhoIsCommand)
   .whenTargetTagged('command', 'whois')
 
@@ -247,10 +249,12 @@ bind<BaseHandler>(TYPES.Handler).to(packetHandlers.TrainingUpdatePacketHandler)
   .whenTargetTagged('packetHandler', 'trainingUpdate')
 
 bind<interfaces.SimpleFactory<BaseHandler, [string]>>(TYPES.PacketHandlerFactory)
-  .toFactory<BaseHandler, [string]>(
+  .toFactory<BaseHandler | undefined, [string]>(
   (context: interfaces.Context) => {
     return (eventName: string) => {
-      return context.container.getTagged<BaseHandler>(TYPES.Handler, 'packetHandler', eventName)
+      return context.container.isBoundTagged(TYPES.Handler, 'packetHandler', eventName)
+        ? context.container.getTagged<BaseHandler>(TYPES.Handler, 'packetHandler', eventName)
+        : undefined
     }
   }
 )

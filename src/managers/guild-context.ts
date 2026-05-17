@@ -99,9 +99,6 @@ GuildEntity
       }
       changes.ticketsCategoryId = channel?.id ?? null
     }
-    if (typeof data.verificationPreference !== 'undefined') {
-      changes.verificationPreference = data.verificationPreference
-    }
 
     await this.guildRepository.save(this.guildRepository.create({
       ...changes,
