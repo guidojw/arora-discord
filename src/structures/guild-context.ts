@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/node'
 import {
   type CategoryChannel,
   type CategoryChannelResolvable,
@@ -173,7 +174,12 @@ export default class GuildContext extends BaseStructure<GuildEntity> {
     const premiumMembersReportJobConfig = cronConfig.premiumMembersReportJob
     const premiumMembersReportJob = this.jobFactory(premiumMembersReportJobConfig.name)
     cron.scheduleJob(premiumMembersReportJobConfig.expression, () => {
-      Promise.resolve(premiumMembersReportJob.run(this)).catch(console.error)
+      Promise.resolve(
+        Sentry.startSpan(
+          { name: 'scheduled-task: premiumMembersReport' },
+          premiumMembersReportJob.run.bind(premiumMembersReportJob, this)
+        )
+      ).catch(console.error)
     })
   }
 
