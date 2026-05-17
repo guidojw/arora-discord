@@ -16,6 +16,7 @@ import { discordService, oAuthService } from '../services'
 import { inject, injectable } from 'inversify'
 import { AroraClient } from '../client'
 import BaseStructure from './base'
+import type { GetUserInfo } from '../services/oauth'
 import type { Ticket as TicketEntity } from '../entities'
 import type { TicketGuildMemberManager } from '../managers'
 import applicationConfig from '../configs/application'
@@ -101,12 +102,11 @@ export default class Ticket extends BaseStructure<TicketEntity> {
     return this.managerFactory<TicketGuildMemberManager, GuildMember>('TicketGuildMemberManager')(this)
   }
 
-  public async populateChannel (): Promise<void> {
+  public async populateChannel (userInfo?: GetUserInfo): Promise<void> {
     if (!this.isNew()) {
       return
     }
 
-    const { robloxId, robloxUsername } = await this.fetchAuthorData()
     const date = new Date()
     const readableDate = getDate(date)
     const readableTime = getTime(date)
@@ -114,8 +114,8 @@ export default class Ticket extends BaseStructure<TicketEntity> {
       .setColor(this.context.primaryColor ?? applicationConfig.defaultColor)
       .setTitle('Ticket Information')
       .setDescription(stripIndents`
-      Username: \`${robloxUsername ?? 'unknown'}\`
-      User ID: \`${robloxId ?? 'unknown'}\`
+      Username: \`${userInfo?.preferred_username ?? 'unknown'}\`
+      User ID: \`${userInfo?.sub ?? 'unknown'}\`
       Start time: \`${readableDate} ${readableTime}\`
       `)
       .setFooter({ text: `Ticket ID: ${this.id} | ${this.type.name}` })
@@ -228,10 +228,15 @@ export default class Ticket extends BaseStructure<TicketEntity> {
         await this.author.fetch()
       } catch {}
     }
-    const { robloxId, robloxUsername } = await this.fetchAuthorData()
+    let userInfo: GetUserInfo | undefined
+    if (this.author !== null) {
+      try {
+        userInfo = await oAuthService.fetchUserInfo(this.author?.id)
+      } catch {}
+    }
     output += 'AUTHOR INFORMATION\n'
     output += `Discord username: ${this.author?.user?.username ?? 'unknown'}\nDiscord ID: ${this.authorId ?? 'unknown'}\n`
-    output += `Roblox username: ${robloxUsername ?? 'unknown'}\nRoblox ID: ${robloxId ?? 'unknown'}\n\n`
+    output += `Roblox username: ${userInfo?.preferred_username ?? 'unknown'}\nRoblox ID: ${userInfo?.sub ?? 'unknown'}\n\n`
 
     output += `Created at: ${this.channel.createdAt.toString()}\nClosed at: ${new Date().toString()}\n\n`
 
@@ -266,19 +271,6 @@ export default class Ticket extends BaseStructure<TicketEntity> {
     output += 'END OF TICKET\n'
 
     return new AttachmentBuilder(Buffer.from(output), { name: `${this.id}-${this.channel.name}.txt` })
-  }
-
-  public async fetchAuthorData (): Promise<{ robloxId: number | null, robloxUsername: string | null }> {
-    let robloxId = null
-    let robloxUsername = null
-    if (this.author !== null) {
-      try {
-        const userInfo = await oAuthService.fetchUserInfo(this.author.id)
-        robloxId = parseInt(userInfo.sub)
-        robloxUsername = userInfo.preferred_username
-      } catch {}
-    }
-    return { robloxId, robloxUsername }
   }
 
   public async fetchMessages (): Promise<Collection<string, Message>> {

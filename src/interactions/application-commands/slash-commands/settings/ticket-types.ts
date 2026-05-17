@@ -15,7 +15,10 @@ const { TYPES } = constants
 @ApplyOptions<SubCommandCommandOptions<TicketTypesCommand>>({
   subCommands: {
     create: {
-      args: [{ key: 'name' }]
+      args: [
+        { key: 'name' },
+        { key: 'requiresverification', required: false }
+      ]
     },
     delete: {
       args: [{ key: 'id', name: 'ticketType', type: 'ticket-type' }]
@@ -27,7 +30,7 @@ const { TYPES } = constants
           key: 'key',
           parse: (val: string) => val.toLowerCase()
         },
-        { key: 'value' }
+        { key: 'value', type: 'boolean|always' }
       ]
     },
     link: {
@@ -59,14 +62,14 @@ export default class TicketTypesCommand extends SubCommandCommand<TicketTypesCom
 
   public async create (
     interaction: ChatInputCommandInteraction,
-    { name }: { name: string }
+    { name, requiresverification: requiresVerification }: { name: string, requiresverification: boolean | null }
   ): Promise<void> {
     if (!interaction.inGuild()) {
       return
     }
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
-    const type = await context.ticketTypes.create(name)
+    const type = await context.ticketTypes.create({ name, requiresVerification: requiresVerification ?? undefined })
 
     await interaction.reply(`Successfully created ticket type \`${type.name}\`.`)
   }
@@ -87,14 +90,26 @@ export default class TicketTypesCommand extends SubCommandCommand<TicketTypesCom
     { ticketType, key, value }: {
       ticketType: TicketType
       key: string
-      value: string
+      value: boolean | string
     }
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext
 
     const changes: TicketTypeUpdateOptions = {}
     if (key === 'name') {
+      if (typeof value === 'boolean') {
+        await interaction.reply({ content: '`value` must be a boolean.', ephemeral: true })
+        return
+      }
+
       changes.name = value
+    } else if (key === 'requiresverification') {
+      if (typeof value === 'string') {
+        await interaction.reply({ content: '`value` must be a string.', ephemeral: true })
+        return
+      }
+
+      changes.requiresVerification = value
     }
 
     ticketType = await context.ticketTypes.update(ticketType, changes)
@@ -139,7 +154,10 @@ export default class TicketTypesCommand extends SubCommandCommand<TicketTypesCom
 
     if (ticketType !== null) {
       const embed = new EmbedBuilder()
-        .addFields([{ name: `Ticket Type ${ticketType.id}`, value: `Name: \`${ticketType.name}\`` }])
+        .addFields([{
+          name: `Ticket Type ${ticketType.id}`,
+          value: `Name: \`${ticketType.name}\`\nRequires verification: \`${ticketType.requiresVerification}\``
+        }])
         .setColor(context.primaryColor ?? applicationConfig.defaultColor)
       await interaction.reply({ embeds: [embed] })
     } else {
@@ -159,5 +177,5 @@ export default class TicketTypesCommand extends SubCommandCommand<TicketTypesCom
 }
 
 function getTicketTypeRow (type: TicketType): string {
-  return `${type.id}. \`${type.name}\``
+  return `${type.id}\\. \`${type.name}\` - Requires verification: \`${type.requiresVerification}\``
 }

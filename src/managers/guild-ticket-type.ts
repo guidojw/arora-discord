@@ -45,13 +45,17 @@ TicketTypeEntity
     return super.add(data, { id: data.id, extras: [this.context] })
   }
 
-  public async create (name: string): Promise<TicketType> {
+  public async create ({ name, requiresVerification }: {
+    name: string
+    requiresVerification?: boolean
+  }): Promise<TicketType> {
     if (this.resolve(name) !== null) {
       throw new Error('A ticket type with that name already exists.')
     }
 
     const newData = await this.ticketTypeRepository.save(this.ticketTypeRepository.create({
       name,
+      requiresVerification,
       guildId: this.context.id
     }))
 
@@ -118,6 +122,9 @@ TicketTypeEntity
           }))
         })
       }
+    }
+    if (typeof data.requiresVerification !== 'undefined') {
+      changes.requiresVerification = data.requiresVerification
     }
 
     await this.ticketTypeRepository.save(this.ticketTypeRepository.create({
