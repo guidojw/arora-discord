@@ -2,7 +2,7 @@ import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryColumn } from '
 import {
   IsArray,
   IsBoolean,
-  IsEnum, IsNumber,
+  IsNumber,
   IsNumberString,
   IsOptional,
   ValidateIf,
@@ -21,7 +21,6 @@ import RoleMessage from './role-message'
 import Tag from './tag'
 import Ticket from './ticket'
 import TicketType from './ticket-type'
-import { VerificationProvider } from '../utils/constants'
 
 @Entity('guilds')
 export default class Guild {
@@ -46,15 +45,6 @@ export default class Guild {
   @Column({ name: 'support_enabled', default: false })
   @IsBoolean()
   public supportEnabled!: boolean
-
-  @Column({
-    name: 'verification_preference',
-    type: 'enum',
-    enum: VerificationProvider,
-    default: VerificationProvider.RoVer
-  })
-  @IsEnum(VerificationProvider)
-  public verificationPreference!: VerificationProvider
 
   @Column('bigint', { name: 'logs_channel_id', nullable: true })
   @IsOptional()

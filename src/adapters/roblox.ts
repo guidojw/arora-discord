@@ -4,11 +4,13 @@ export default async function robloxAdapter (
   method: Method,
   api: string,
   pathname: string,
-  data?: any
+  data?: any,
+  headers?: Record<string, string>
 ): Promise<AxiosPromise> {
   return await axios({
     url: `https://${api}.roblox.com/${pathname}`,
     method,
-    data
+    data,
+    headers
   })
 }

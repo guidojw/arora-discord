@@ -1,6 +1,6 @@
 import { type ChatInputCommandInteraction, EmbedBuilder } from 'discord.js'
 import { constants, timeUtil } from '../../../../utils'
-import { groupService, verificationService } from '../../../../services'
+import { groupService, oAuthService } from '../../../../services'
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
 import type { Exile } from '../../../../services/group'
@@ -11,6 +11,7 @@ import { SubCommandCommand } from '../base'
 import type { SubCommandCommandOptions } from '..'
 import { applicationAdapter } from '../../../../adapters'
 import applicationConfig from '../../../../configs/application'
+import axios from 'axios'
 
 const { TYPES } = constants
 const { getDate, getTime } = timeUtil
@@ -49,16 +50,18 @@ export default class ExilesCommand extends SubCommandCommand<ExilesCommand> {
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
 
-    const authorId = (await verificationService.fetchVerificationData(
-      interaction.user.id,
-      interaction.guildId
-    ))?.robloxId
-    if (typeof authorId === 'undefined') {
-      await interaction.reply({
-        content: 'This command requires you to be verified with a verification provider.',
-        ephemeral: true
-      })
-      return
+    let authorId
+    try {
+      authorId = parseInt((await oAuthService.fetchUserInfo(interaction.user.id)).sub)
+    } catch (err) {
+      if (axios.isAxiosError(err) && typeof err.response !== 'undefined' && err.response.status === 404) {
+        await interaction.reply({
+          content: 'Could not get user info, please `/verify`',
+          ephemeral: true
+        })
+        return
+      }
+      throw err
     }
 
     await applicationAdapter('POST', `v1/groups/${context.robloxGroupId}/exiles`, {
@@ -76,16 +79,18 @@ export default class ExilesCommand extends SubCommandCommand<ExilesCommand> {
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
 
-    const authorId = (await verificationService.fetchVerificationData(
-      interaction.user.id,
-      interaction.guildId
-    ))?.robloxId
-    if (typeof authorId === 'undefined') {
-      await interaction.reply({
-        content: 'This command requires you to be verified with a verification provider.',
-        ephemeral: true
-      })
-      return
+    let authorId
+    try {
+      authorId = parseInt((await oAuthService.fetchUserInfo(interaction.user.id)).sub)
+    } catch (err) {
+      if (axios.isAxiosError(err) && typeof err.response !== 'undefined' && err.response.status === 404) {
+        await interaction.reply({
+          content: 'Could not get user info, please `/verify`',
+          ephemeral: true
+        })
+        return
+      }
+      throw err
     }
 
     await applicationAdapter('DELETE', `v1/groups/${context.robloxGroupId}/exiles/${user.id}`, {
