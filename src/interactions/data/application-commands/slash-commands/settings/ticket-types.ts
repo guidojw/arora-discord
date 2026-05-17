@@ -14,6 +14,10 @@ const ticketTypesCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
       description: 'The name for the new ticket type',
       type: ApplicationCommandOptionType.String,
       required: true
+    }, {
+      name: 'requiresVerification',
+      description: 'Whether verification is required to open a ticket of this type',
+      type: ApplicationCommandOptionType.Boolean
     }]
   }, {
     name: 'delete',
@@ -39,7 +43,10 @@ const ticketTypesCommand: RESTPutAPIApplicationCommandsJSONBody[number] = {
       description: 'The key of the ticket type to edit',
       type: ApplicationCommandOptionType.String,
       required: true,
-      choices: [{ name: 'name', value: 'name' }]
+      choices: [
+        { name: 'name', value: 'name' },
+        { name: 'requiresVerification', value: 'requiresVerification' }
+      ]
     }, {
       name: 'value',
       description: 'The value to change this key to',
