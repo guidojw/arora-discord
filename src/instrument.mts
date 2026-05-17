@@ -17,6 +17,8 @@ if (typeof process.env.SENTRY_DSN !== 'undefined') {
       })
     ],
     tracesSampleRate: 1.0,
+    tracePropagationTargets: typeof process.env.HOST !== 'undefined' ? [process.env.HOST] : [],
+    sendDefaultPii: true,
     enableLogs: true,
     debug: true
   })
