@@ -162,6 +162,7 @@ export default class GuildTicketManager extends DataManager<number, Ticket, Tick
                 .addFields([{ name: 'Verify your Discord user with Roblox', value: 'By using `/verify`' }])
                 .setColor(0x00ff00)
               await interaction.reply({ embeds: [embed], ephemeral: true })
+              return
             }
             throw err
           }
