@@ -12,7 +12,7 @@ import {
 } from 'discord.js'
 import type { GuildContext, TicketType } from '.'
 import { type ManagerFactory, constants, timeUtil, util } from '../utils'
-import { discordService, userService, verificationService } from '../services'
+import { discordService, oAuthService } from '../services'
 import { inject, injectable } from 'inversify'
 import { AroraClient } from '../client'
 import BaseStructure from './base'
@@ -273,13 +273,9 @@ export default class Ticket extends BaseStructure<TicketEntity> {
     let robloxUsername = null
     if (this.author !== null) {
       try {
-        const verificationData = await verificationService.fetchVerificationData(this.author.id, this.guildId)
-        if (verificationData !== null) {
-          robloxId = verificationData.robloxId
-          robloxUsername = robloxId !== null
-            ? (await userService.getUser(robloxId)).name
-            : null
-        }
+        const userInfo = await oAuthService.fetchUserInfo(this.author.id)
+        robloxId = parseInt(userInfo.sub)
+        robloxUsername = userInfo.preferred_username
       } catch {}
     }
     return { robloxId, robloxUsername }

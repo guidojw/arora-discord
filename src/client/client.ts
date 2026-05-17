@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/node'
 import {
   ActivityType,
   Client,
@@ -135,7 +136,17 @@ export default class AroraClient<Ready extends boolean = boolean> extends Client
 
   private bindEvent (eventName: keyof ClientEvents): void {
     const handler = this.eventHandlerFactory(eventName)
-    this.on(eventName, handler.handle.bind(handler))
+    this.on(
+      eventName,
+      (...args) => {
+        Promise.resolve(
+          Sentry.startSpan(
+            { name: `receive: ${eventName}`, op: 'ws.message.receive' },
+            handler.handle.bind(handler, ...args)
+          )
+        ).catch(console.error)
+      }
+    )
   }
 }
 

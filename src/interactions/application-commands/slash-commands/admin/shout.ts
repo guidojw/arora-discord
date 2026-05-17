@@ -8,7 +8,8 @@ import type { GuildContext } from '../../../../structures'
 import { GuildContextManager } from '../../../../managers'
 import { applicationAdapter } from '../../../../adapters'
 import applicationConfig from '../../../../configs/application'
-import { verificationService } from '../../../../services'
+import axios from 'axios'
+import { oAuthService } from '../../../../services'
 
 const { TYPES } = constants
 const { validators, noChannels, noTags, noUrls } = argumentUtil
@@ -37,16 +38,18 @@ export default class ShoutCommand extends Command {
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
 
-    const authorId = (await verificationService.fetchVerificationData(
-      interaction.user.id,
-      interaction.guildId
-    ))?.robloxId
-    if (typeof authorId === 'undefined') {
-      await interaction.reply({
-        content: 'This command requires you to be verified with a verification provider.',
-        ephemeral: true
-      })
-      return
+    let authorId
+    try {
+      authorId = parseInt((await oAuthService.fetchUserInfo(interaction.user.id)).sub)
+    } catch (err) {
+      if (axios.isAxiosError(err) && typeof err.response !== 'undefined' && err.response.status === 404) {
+        await interaction.reply({
+          content: 'Could not get user info, please `/verify`',
+          ephemeral: true
+        })
+        return
+      }
+      throw err
     }
 
     const shout = (await applicationAdapter('PUT', `v1/groups/${context.robloxGroupId}/status`, {

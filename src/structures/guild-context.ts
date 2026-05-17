@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/node'
 import {
   type CategoryChannel,
   type CategoryChannelResolvable,
@@ -32,7 +33,6 @@ import type { BaseJob } from '../jobs'
 import BaseStructure from './base'
 import type { Guild as GuildEntity } from '../entities'
 import { SettingProvider } from '../client'
-import type { VerificationProvider } from '../utils/constants'
 import applicationConfig from '../configs/application'
 import cron from 'node-schedule'
 import cronConfig from '../configs/cron'
@@ -51,7 +51,6 @@ export interface GuildUpdateOptions {
   supportEnabled?: boolean
   ticketArchivesChannel?: TextChannelResolvable | null
   ticketsCategory?: CategoryChannelResolvable | null
-  verificationPreference?: VerificationProvider
 }
 
 @injectable()
@@ -86,7 +85,6 @@ export default class GuildContext extends BaseStructure<GuildEntity> {
   public supportEnabled!: boolean
   public ticketArchivesChannelId!: Snowflake | null
   public ticketsCategoryId!: Snowflake | null
-  public verificationPreference!: VerificationProvider
 
   public constructor (@inject(TYPES.ManagerFactory) managerFactory: ManagerFactory) {
     super()
@@ -117,7 +115,6 @@ export default class GuildContext extends BaseStructure<GuildEntity> {
     this.supportEnabled = data.supportEnabled
     this.ticketArchivesChannelId = data.ticketArchivesChannelId ?? null
     this.ticketsCategoryId = data.ticketsCategoryId ?? null
-    this.verificationPreference = data.verificationPreference
 
     if (typeof data.groups !== 'undefined') {
       for (const rawGroup of data.groups) {
@@ -177,7 +174,12 @@ export default class GuildContext extends BaseStructure<GuildEntity> {
     const premiumMembersReportJobConfig = cronConfig.premiumMembersReportJob
     const premiumMembersReportJob = this.jobFactory(premiumMembersReportJobConfig.name)
     cron.scheduleJob(premiumMembersReportJobConfig.expression, () => {
-      Promise.resolve(premiumMembersReportJob.run(this)).catch(console.error)
+      Promise.resolve(
+        Sentry.startSpan(
+          { name: 'scheduled-task: premiumMembersReport' },
+          premiumMembersReportJob.run.bind(premiumMembersReportJob, this)
+        )
+      ).catch(console.error)
     })
   }
 

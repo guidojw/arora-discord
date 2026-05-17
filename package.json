@@ -13,11 +13,11 @@
     "build": "tsc",
     "build:prod": "tsc -p tsconfig.production.json",
     "lint": "eslint src",
-    "start": "node dist/app.js",
+    "start": "node --import ./dist/instrument.mjs dist/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@sentry/node": "^9.27.0",
+    "@sentry/node": "^10.53.1",
     "axios": "^1.5.0",
     "bree": "^9.2.8",
     "class-validator": "^0.14.0",
@@ -39,7 +39,6 @@
     "ws": "^8.13.0"
   },
   "devDependencies": {
-    "@guidojw/bloxy": "^5.7.6",
     "@types/common-tags": "^1.8.1",
     "@types/lodash": "^4.14.197",
     "@types/lua-json": "^1.0.3",

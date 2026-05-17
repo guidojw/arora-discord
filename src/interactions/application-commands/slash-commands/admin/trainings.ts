@@ -1,6 +1,6 @@
 import { type AutocompleteInteraction, type ChatInputCommandInteraction, EmbedBuilder } from 'discord.js'
 import { argumentUtil, constants, timeUtil } from '../../../../utils'
-import { groupService, userService, verificationService } from '../../../../services'
+import { groupService, oAuthService, userService } from '../../../../services'
 import { inject, injectable, named } from 'inversify'
 import { ApplyOptions } from '../../../../utils/decorators'
 import type { GuildContext } from '../../../../structures'
@@ -10,6 +10,7 @@ import type { SubCommandCommandOptions } from '..'
 import type { Training } from '../../../../services/group'
 import { applicationAdapter } from '../../../../adapters'
 import applicationConfig from '../../../../configs/application'
+import axios from 'axios'
 
 const { TYPES } = constants
 const { getDate, getDateInfo, getTime, getTimeInfo } = timeUtil
@@ -90,16 +91,18 @@ export default class TrainingsCommand extends SubCommandCommand<TrainingsCommand
       await interaction.reply({ content: 'Type not found.', ephemeral: true })
       return
     }
-    const authorId = (await verificationService.fetchVerificationData(
-      interaction.user.id,
-      interaction.guildId
-    ))?.robloxId
-    if (typeof authorId === 'undefined') {
-      await interaction.reply({
-        content: 'This command requires you to be verified with a verification provider.',
-        ephemeral: true
-      })
-      return
+    let authorId
+    try {
+      authorId = parseInt((await oAuthService.fetchUserInfo(interaction.user.id)).sub)
+    } catch (err) {
+      if (axios.isAxiosError(err) && typeof err.response !== 'undefined' && err.response.status === 404) {
+        await interaction.reply({
+          content: 'Could not get user info, please `/verify`',
+          ephemeral: true
+        })
+        return
+      }
+      throw err
     }
 
     const training = (await applicationAdapter('POST', `v1/groups/${context.robloxGroupId}/trainings`, {
@@ -124,16 +127,18 @@ export default class TrainingsCommand extends SubCommandCommand<TrainingsCommand
   ): Promise<void> {
     const context = this.guildContexts.resolve(interaction.guildId) as GuildContext & { robloxGroupId: number }
 
-    const authorId = (await verificationService.fetchVerificationData(
-      interaction.user.id,
-      interaction.guildId
-    ))?.robloxId
-    if (typeof authorId === 'undefined') {
-      await interaction.reply({
-        content: 'This command requires you to be verified with a verification provider.',
-        ephemeral: true
-      })
-      return
+    let authorId
+    try {
+      authorId = parseInt((await oAuthService.fetchUserInfo(interaction.user.id)).sub)
+    } catch (err) {
+      if (axios.isAxiosError(err) && typeof err.response !== 'undefined' && err.response.status === 404) {
+        await interaction.reply({
+          content: 'Could not get user info, please `/verify`',
+          ephemeral: true
+        })
+        return
+      }
+      throw err
     }
 
     await applicationAdapter('POST', `v1/groups/${context.robloxGroupId}/trainings/${id}/cancel`, {
@@ -201,16 +206,18 @@ export default class TrainingsCommand extends SubCommandCommand<TrainingsCommand
       changes.date = Math.floor(new Date(dateInfo.year, dateInfo.month, dateInfo.day, timeInfo.hours, timeInfo.minutes)
         .getTime())
     }
-    const editorId = (await verificationService.fetchVerificationData(
-      interaction.user.id,
-      interaction.guildId
-    ))?.robloxId
-    if (typeof editorId === 'undefined') {
-      await interaction.reply({
-        content: 'This command requires you to be verified with a verification provider.',
-        ephemeral: true
-      })
-      return
+    let editorId
+    try {
+      editorId = parseInt((await oAuthService.fetchUserInfo(interaction.user.id)).sub)
+    } catch (err) {
+      if (axios.isAxiosError(err) && typeof err.response !== 'undefined' && err.response.status === 404) {
+        await interaction.reply({
+          content: 'Could not get user info, please `/verify`',
+          ephemeral: true
+        })
+        return
+      }
+      throw err
     }
 
     await applicationAdapter('PUT', `v1/groups/${context.robloxGroupId}/trainings/${id}`, {
