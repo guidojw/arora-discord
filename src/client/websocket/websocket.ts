@@ -88,14 +88,14 @@ export default class WebSocketManager extends EventEmitter {
 
   private handlePacket (packet: Packet): void {
     Sentry.continueTrace(packet.metadata, () => {
-      Sentry.startSpan({ name: `receive: ${packet.event}`, op: 'ws.message.receive' }, () => {
+      Promise.resolve(Sentry.startSpan({ name: `receive: ${packet.event}`, op: 'ws.message.receive' }, async () => {
         const packetHandler = this.packetHandlerFactory(packet.event)
         if (typeof packetHandler !== 'undefined') {
-          Promise.resolve(packetHandler.handle(packet)).catch(console.error)
+          await packetHandler.handle(packet)
         } else {
           this.emit(packet.event, packet)
         }
-      })
+      })).catch(console.error)
     })
   }
 }
