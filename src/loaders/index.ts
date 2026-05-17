@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/node'
 import type { AroraClient } from '../client'
 import type { BaseJob } from '../jobs'
 import Bree from 'bree'
@@ -20,7 +21,9 @@ export async function init (): Promise<AroraClient> {
   cron.scheduleJob(
     healthCheckJobConfig.expression,
     () => {
-      Promise.resolve(healthCheckJob.run('main')).catch(console.error)
+      Promise.resolve(
+        Sentry.startSpan({ name: 'scheduled-task: healthCheckJob' }, healthCheckJob.run.bind(healthCheckJob, 'main'))
+      ).catch(console.error)
     }
   )
 
