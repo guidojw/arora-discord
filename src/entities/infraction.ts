@@ -38,7 +38,7 @@ export default class Infraction {
   @IsEnum(InfractionType)
   public type!: InfractionType
 
-  @Column({ default: false })
+  @Column({ default: true })
   @ValidateIf(infraction => typeof infraction.active !== 'undefined')
   @IsBoolean()
   public active!: boolean

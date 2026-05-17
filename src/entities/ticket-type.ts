@@ -1,6 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm'
 import {
   IsArray,
+  IsBoolean,
   IsNotEmpty,
   IsNumber,
   IsNumberString,
@@ -26,6 +27,11 @@ export default class TicketType {
   @IsNotEmpty()
   @MaxLength(16)
   public name!: string
+
+  @Column({ name: 'requires_verification', default: false })
+  @ValidateIf(ticketType => typeof ticketType.requiresVerification !== 'undefined')
+  @IsBoolean()
+  public requiresVerification!: boolean
 
   @Column('bigint', { name: 'guild_id' })
   @IsNumberString({ no_symbols: true })

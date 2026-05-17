@@ -6,7 +6,7 @@ import { Postable } from './mixins'
 import type { TicketType as TicketTypeEntity } from '../entities'
 import { injectable } from 'inversify'
 
-export interface TicketTypeUpdateOptions { name?: string }
+export interface TicketTypeUpdateOptions { name?: string, requiresVerification?: boolean }
 
 @injectable()
 export default class TicketType extends Postable<
@@ -17,6 +17,7 @@ TicketTypeEntity
 
   public id!: number
   public name!: string
+  public requiresVerification!: boolean
   public messageId!: string | null
   public channelId!: string | null
 
@@ -29,6 +30,7 @@ TicketTypeEntity
   public setup (data: TicketTypeEntity): void {
     this.id = data.id
     this.name = data.name
+    this.requiresVerification = data.requiresVerification
     this.messageId = data.message?.id ?? null
     this.channelId = data.message?.channelId ?? null
   }

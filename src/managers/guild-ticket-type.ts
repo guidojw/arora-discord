@@ -119,6 +119,9 @@ TicketTypeEntity
         })
       }
     }
+    if (typeof data.requiresVerification !== 'undefined') {
+      changes.requiresVerification = data.requiresVerification
+    }
 
     await this.ticketTypeRepository.save(this.ticketTypeRepository.create({
       ...changes,
