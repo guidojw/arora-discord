@@ -102,7 +102,7 @@ jobs:
     name: Continuous Integration
     needs: [metadata, merge]
     if: fromJSON(needs.metadata.outputs.has_diff)
-    uses: guidojw/arora-discord/.github/workflows/continuous-integration.yml@staging
+    uses: guidojw/arora-discord/.github/workflows/continuous-integration.yml@573621e4a9b16686ef933fdb6cefe13843e829ab # staging
     with:
       sha: ${{ needs.merge.outputs.sha }}
 
@@ -110,7 +110,7 @@ jobs:
     name: Publish Image
     needs: [metadata, merge]
     if: fromJSON(needs.metadata.outputs.has_diff)
-    uses: guidojw/arora-discord/.github/workflows/publish-image.yml@staging
+    uses: guidojw/arora-discord/.github/workflows/publish-image.yml@573621e4a9b16686ef933fdb6cefe13843e829ab # staging
     with:
       sha: ${{ needs.merge.outputs.sha }}
     secrets:
