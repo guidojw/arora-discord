@@ -148,16 +148,16 @@ jobs:
           envs: PROJECT_NAME,STAGE
           script: |
             cd /opt/docker/$PROJECT_NAME/$STAGE
-            docker-compose pull
+            docker compose pull
             if [ "$STAGE" = 'production' ]; then
-              docker-compose run --rm nsadmin yarn run typeorm migration:run -d dist/configs/data-source.js
-              docker-compose run --rm nsadmin node bin/update-commands.js
-              docker-compose run --rm tradmin node bin/update-commands.js
+              docker compose run --rm nsadmin yarn run typeorm migration:run -d dist/configs/data-source.js
+              docker compose run --rm nsadmin node bin/update-commands.js
+              docker compose run --rm tradmin node bin/update-commands.js
             else
-              docker-compose run --rm app yarn run typeorm migration:run -d dist/configs/data-source.js
-              docker-compose run --rm app node bin/update-commands.js
+              docker compose run --rm app yarn run typeorm migration:run -d dist/configs/data-source.js
+              docker compose run --rm app node bin/update-commands.js
             fi
-            docker-compose up -d
+            docker compose up -d
 
       - name: Finalize Sentry release
         uses: getsentry/action-release@128c5058bbbe93c8e02147fe0a9c713f166259a6 # v3.4.0
