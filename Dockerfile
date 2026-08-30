@@ -13,7 +13,7 @@ COPY package.json yarn.lock .yarnrc.yml ./
 COPY .yarn .yarn
 RUN yarn install --immutable
 
-ARG LUNE_VERSION=0.10.4
+ARG LUNE_VERSION=0.10.5
 RUN curl -L "https://github.com/lune-org/lune/releases/download/v${LUNE_VERSION}/lune-${LUNE_VERSION}-linux-x86_64.zip" -o tmp.zip && \
   unzip tmp.zip -d /usr/local/bin && \
   rm tmp.zip
