@@ -1191,7 +1191,7 @@ __metadata:
     class-validator: "npm:^0.14.0"
     common-tags: "npm:^1.8.2"
     discord.js: "npm:^14.13.0"
-    dotenv: "npm:^17.2.3"
+    dotenv: "npm:^18.0.9"
     emoji-regex: "npm:^10.2.1"
     eslint: "npm:^8.48.0"
     eslint-config-standard-with-typescript: "npm:^39.0.0"
@@ -1819,10 +1819,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv@npm:^17.2.3":
-  version: 17.2.3
-  resolution: "dotenv@npm:17.2.3"
-  checksum: 10c0/c884403209f713214a1b64d4d1defa4934c2aa5b0002f5a670ae298a51e3c3ad3ba79dfee2f8df49f01ae74290fcd9acdb1ab1d09c7bfb42b539036108bb2ba0
+"dotenv@npm:^18.0.9":
+  version: 18.0.9
+  resolution: "dotenv@npm:18.0.9"
+  bin:
+    dotenv: dist/index.cjs
+  checksum: 10c0/62a70960e611f1d26bf5ade0e0baa7850513f65d56789ba282c8ae7f690411d364457d33d4302b2611cc18157d03dea589ac7e33f1aa85b8f69737b8c05cf726
   languageName: node
   linkType: hard
 
