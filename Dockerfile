@@ -1,4 +1,4 @@
-FROM node:25.5.0@sha256:e6b32434aba48dcb8730d56de2df3d137de213f1f527a922a6bf7b2853a24e86
+FROM node:26.12.1@sha256:a98e6fda54fdbb22d4238054cca9a2a113bcd1191c09193a535aae22f400aa8e
 
 ARG NODE_ENV
 ENV NODE_ENV=$NODE_ENV
@@ -7,6 +7,9 @@ ENV BUILD_HASH=$BUILD_HASH
 
 # Install dependencies
 RUN apt-get update && apt-get install -y jq
+
+# Node 25+ no longer bundles corepack, which provides yarn
+RUN npm install -g corepack && corepack enable
 
 WORKDIR /opt/app
 COPY package.json yarn.lock .yarnrc.yml ./
