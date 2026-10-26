@@ -8,6 +8,9 @@ ENV BUILD_HASH=$BUILD_HASH
 # Install dependencies
 RUN apt-get update && apt-get install -y jq
 
+# Node 25+ no longer bundles corepack, which provides yarn
+RUN npm install -g corepack && corepack enable
+
 WORKDIR /opt/app
 COPY package.json yarn.lock .yarnrc.yml ./
 COPY .yarn .yarn
