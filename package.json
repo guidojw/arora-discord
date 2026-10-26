@@ -24,7 +24,7 @@
     "common-tags": "^1.8.2",
     "discord.js": "^14.13.0",
     "dotenv": "^17.2.3",
-    "emoji-regex": "^10.2.1",
+    "emoji-regex": "^11.0.0",
     "fuse.js": "^7.1.0",
     "inversify": "^6.0.1",
     "lodash": "^4.17.21",
